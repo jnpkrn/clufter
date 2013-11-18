@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 name = __package__
 version = '0.1'
 copyright = """\
