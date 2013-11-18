@@ -1,0 +1,1 @@
+full = "failoverdomains-full"

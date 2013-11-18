@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//XML-DEV//DTD XHTML RDDL 1.0//EN"
+                      "http://www.w3.org/2001/rddl/rddl-xhtml.dtd" >
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      xmlns:rddl="http://www.rddl.org/" xml:lang="en">
+<head>
+  <title>clufter Namespace</title>
+</head>
+<body>
+  <h1><code>clufter</code> Namespace</h1>
+  <p>Note: resources are being published as they (continually) emerge.</p>
+  <h2>Common tags</h2>
+  <div>
+    <dl>
+      <dt><code>clufter:snippet</code></dt>
+      <dd>
+        <dl>
+          <dt><em>content</em></dt>
+          <dd>
+            either application-specific, <code>clufter</code> or top-level/special XSL tags
+            or their combination
+          </dd>
+        </dl>
+        <p>
+          used in the internal <code>clufter</code> logic, not intended
+          for direct usage
+        </p>
+      </dd>
+      <dt><code>clufter:recursion</code></dt>
+      <dd>
+        <dl>
+          <dt><code>at</code></dt>
+          <dd>
+            the target of the recursion
+            (optional, defaults to <code>*</code> under the hood)
+          </dd>
+          <dt><em>content</em></dt>
+          <dd>
+            (empty)
+          </dd>
+        </dl>
+        <p>
+          triggers the recursion (in the XSLT sense)
+        </p>
+      </dd>
+      <dt><code>clufter:message</code></dt>
+      <dd>
+        <dl>
+          <dt><code>prefix</code></dt>
+          <dd>
+            additional prefix to enable fine-grained filtering of the messages later on
+            (optional, defaults to <code>&apos;&apos;</code> under the hood)
+          </dd>
+          <dt><em>content</em></dt>
+          <dd>
+            the actual message
+          </dd>
+        </dl>
+        <p>
+          custom wrapper for <code>xsl:message</code> so that correct messages
+          can be picked up later on (from presumably chaotic soup of messages)
+        </p>
+      </dd>
+    </dl> 
+  </div>
+  <div>
+    <p>
+      contact: <code>jpokorny at redhat dot com</code>
+      <br/>
+      last change: <code>2013-01-10</code>
+    </p>
+  </div>
+</body>
+</html> 
