@@ -248,6 +248,7 @@ class XML(Format):
                 # at root, we do not traverse to any other dir than `xml_root`
                 map(lambda d: d != xml_root and dirs.remove(d), dirs[:])
                 current_tracking = tree_stack[-1][2]
+                files = []
 
             for i in dirs + files:
                 name, ext = splitext(i)  # does not hurt even if it is a dir
