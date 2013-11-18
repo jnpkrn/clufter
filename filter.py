@@ -288,7 +288,7 @@ class XMLFilter(Filter):
                 log.debug("snippet {0}".format(etree.tostring(snippet)))
                 template = etree.Element('{{{0}}}template'.format(XSL_NS),
                                          match=elem.tag)
-                template.extend(snippet) # XXX was append
+                template.append(snippet) # XXX was extend
                 xslt_root.append(template)
                 print "ee", etree.tostring(xslt_root)
             #else:
