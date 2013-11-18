@@ -51,7 +51,7 @@ class XMLTraverse(unittest.TestCase):
         flt = XMLFilter(ccs, ccs)
         in_obj = ccs('file', join(dirname(__file__), 'filled.conf'))
         r = flt.get_template(in_obj, symbol='direct_xslt_test',
-                             root_dir=join(dirname(__file__), 'XMLFormat-walk'))
+                             root_dir=WALK_DIR)
         #if isinstance(r, list):
         #    ret = [etree.tostring(i) for i in r]
         #else:
