@@ -40,31 +40,27 @@ class XMLTraverse(unittest.TestCase):
         in_obj = ccs('file', join(dirname(__file__), 'filled.conf'))
         r = flt.proceed_xslt(in_obj, symbol='direct_xslt_test',
                              root_dir=join(dirname(__file__), 'XMLFormat-walk'))
-        if isinstance(r, list):
-            ret = [etree.tostring(i) for i in r]
-        else:
-            ret = etree.tostring(r)
-        #print ret  # --> expected
-        self.assertTrue(ret == RESULT_DIRECT_XSLT)
+
+        #ret = r if isinstance(r, list) else [r]
+        #print "\n".join([etree.tostring(i, pretty_print=True) for i in ret])
+        #print "\n".join([etree.tostring(i) for i in ret])  # --> expected
+
+        assert not isinstance(r, list)
+        self.assertTrue(etree.tostring(r) == RESULT_DIRECT_XSLT)
 
     def testXSLTTemplate(self):
         flt = XMLFilter(ccs, ccs)
         in_obj = ccs('file', join(dirname(__file__), 'filled.conf'))
         r = flt.get_template(in_obj, symbol='direct_xslt_test',
                              root_dir=WALK_DIR)
-        #if isinstance(r, list):
-        #    ret = [etree.tostring(i) for i in r]
-        #else:
-        #    ret = etree.tostring(r)
-        #print "|", ret, "|"  # --> expected
 
         assert not isinstance(r, list)
         et = in_obj('etree')
-        #print ">>>", etree.tostring(r)
+        #print ">>>", etree.tostring(et)
         #print ">>>", etree.tostring(r)
         modified = et.xslt(r)
         ret = etree.tostring(modified)
-        #print "<<<", ret
+        #print "<<<", ret  # --> expected
         self.assertTrue(ret == RESULT_DIRECT_XSLT)
 
 
