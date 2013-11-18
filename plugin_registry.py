@@ -3,7 +3,7 @@
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Easy (at least for usage) plugin framework"""
-__author__ = "Jan Pokorný <jpokorny at redhat dot com>"
+__author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import imp
 import logging

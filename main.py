@@ -1,9 +1,9 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2012 Red Hat, Inc.
+# Copyright 2013 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Machinery entry point"""
-__author__ = "Jan Pokorný <jpokorny at redhat dot com>"
+__author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import sys
 from .format_manager import FormatManager
@@ -21,6 +21,3 @@ def main(argv):
         cm = CommandManager(FilterManager(FormatManager()))
         ec = cm(argv)
     return ec
-
-if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:]))
