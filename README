@@ -1,0 +1,45 @@
+clufter aka Cluster Filter
+==========================
+
+Toolset for cluster config conversion, primarily from cluster.conf
+as recognized by CMAN-based cluster to something to configure your
+Pacemaker-based one (with optional get-ready heavy lifting by pcs).
+
+
+Prerequisites
+-------------
+
+Python-wise:
+- lxml (python-lxml)
+
+general:
+- Python 2
+- ccs_flatten from pacemaker/extra/rgmanager:
+  ./configure --with-cman=1 && cd pacemaker/extra/rgmanager && make
+
+
+Concepts
+--------
+
+There are a few concepts that tries to unify effective conversion
+recipes in a relatively loosely coupled way and with clear
+relationships:
+
+  - command is a composition of one or more filters (see below)
+    with some level of flexibility (tee-like splits, etc.)
+
+  . filter is an isolated set of steps from object _A_ of a format _X_
+    (see below) and having the respective internal representation _x_
+    to the same or modified object _A'_ of a format _Y_ and having
+    the respective internal representation _y_ (possibly _X_=_Y_
+    and/or _x_=_y_, whereas string representation is frequented)
+
+  . format is something having possibly many more-or-less interchangeable
+    representations (string, parsed XML/ElementTree, ...), whereas
+    the possible format transitions depend on the available filters;
+    note that the format alone does not fully specify/restrict the set
+    of values/properties of objects being held as these are further
+    refined by previously used uni-format filters (context of
+    previous transitions plays the role)
+    
+TBD
