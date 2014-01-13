@@ -10,13 +10,17 @@ import os
 
 # name the exitcodes
 ecodes = 'SUCCESS', 'FAILURE'
-EC = type('EC', (), {n: v for v, n in enumerate('EXIT_' + i for i in ecodes)})
+EC = type('EC', (), dict((n, v) for v, n
+                         in enumerate('EXIT_' + i for i in ecodes)))
 
 
 head_tail = lambda x=None, *y: (x, x if x is None else y)
-filtervars = lambda src,which: {x: src[x] for x in which if x in src}
-filtervarsdef = lambda src,which: {x: src[x] for x in which if src.get(x, None)}
-filtervarspop = lambda src,which: {x: src.pop(x) for x in which if x in src}
+filtervars = lambda src, which: \
+             dict((x, src[x]) for x in which if x in src)
+filtervarsdef = lambda src, which: \
+                dict((x, src[x]) for x in which if src.get(x, None))
+filtervarspop = lambda src, which: \
+                dict((x, src.pop(x)) for x in which if x in src)
 
 
 def which(name, *where):

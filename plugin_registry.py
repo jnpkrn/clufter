@@ -185,10 +185,10 @@ class PluginRegistry(type):
                 path_plugins = registry._path_mapping[path]
 
             # filled as a side-effect of meta-magic, see `__new__`
-            ret.update({n: registry._plugins[n] for n in path_plugins})
+            ret.update((n, registry._plugins[n]) for n in path_plugins)
             if registry.use_local:
                 # add "built-in" ones
-                ret.update({n: p for n, p in registry._plugins.iteritems()
-                            if p.__module__ == registry.__module__})
+                ret.update((n, p) for n, p in registry._plugins.iteritems()
+                           if p.__module__ == registry.__module__)
 
         return ret
