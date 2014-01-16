@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """ccs2pcs command"""
@@ -11,7 +11,7 @@ from ..command import as_command
 @as_command(['ccs2ccsflat', ('ccs2pcs', 'ccs2coro')])
 def ccs2pcs(input='/etc/cluster/cluster.conf',
             output='./cib.xml',
-            coro='/.corosync.conf'):
+            coro='./corosync.conf'):
     """Converts cman-based cluster configuration to Pacemaker-based one
 
     Options:
