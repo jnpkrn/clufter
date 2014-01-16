@@ -6,11 +6,11 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from os.path import pardir
-from subprocess import Popen, PIPE
+from subprocess import PIPE
 import logging
 
 from clufter.filter import Filter, FilterError
-from clufter.utils import which
+from clufter.utils import which, OneoffWrappedStdinPopen
 
 log = logging.getLogger(__name__)
 # XXX
@@ -26,7 +26,7 @@ def ccs2ccsflat(self, in_obj, verify=False):
     try:
         command = [CCS_FLATTEN, in_file]
         log.info("running `{0}'".format(' '.join(command)))
-        proc = Popen(command, stdout=PIPE, stderr=PIPE)
+        proc = OneoffWrappedStdinPopen(command, stdout=PIPE, stderr=PIPE)
     except OSError:
         raise FilterError(self, "ccs_flatten binary seems unavailable")
     out, err = proc.communicate()

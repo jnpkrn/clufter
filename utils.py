@@ -6,6 +6,8 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import os
+import sys
+from subprocess import Popen
 
 
 # name the exitcodes
@@ -52,6 +54,24 @@ class ClufterError(Exception):
 class ClufterPlainError(ClufterError):
     def __init__(self, msg, *args):
         super(ClufterPlainError, self).__init__(self, None, msg, *args)
+
+
+class OneoffWrappedStdinPopen(object):
+    """Singleton to watch for atmost one use of stdin in Popen context"""
+    def __init__(self):
+        self._used = False
+
+    def __call__(self, args, **kwargs):
+        if not 'stdin' in kwargs and '-' in args:
+            if self._used:
+                raise ClufterError(self, 'repeated use detected')
+            kwargs['stdin'] = sys.stdin
+            # only the first '-' substituted
+            args[args.index('-')] = '/dev/stdin'
+            self._used |= True
+        return Popen(args, **kwargs)
+
+OneoffWrappedStdinPopen = OneoffWrappedStdinPopen()
 
 
 # Inspired by http://stackoverflow.com/a/1383402
