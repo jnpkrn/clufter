@@ -10,8 +10,9 @@
 # [1] http://docs.python.org/2/library/unittest.html#command-line-interface
 
 stop=$(printf "\033\[0m")
-blue=$(printf "\033[01;34m") red=$(printf "\033[01;31m") green=$(printf "\033[01;32m")
-cyan=$(printf "\033[01;36m") magenta=$(printf "\033[01;35m")
+blue=$(printf "\033[01;34m") red=$(printf "\033[01;31m")
+green=$(printf "\033[01;32m") cyan=$(printf "\033[01;36m")
+magenta=$(printf "\033[01;35m")
 COLORIZE='|& sed \
     -e "s/\(^\|[^A-Za-z]\)\(OK\)/\1${blue}\2${stop}/"      \
     -e "s/\(^\|[^A-Za-z]\)\(FAILED.*\)/\1${red}\2${stop}/" \
