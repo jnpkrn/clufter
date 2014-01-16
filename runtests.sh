@@ -22,7 +22,12 @@ COLORIZE='|& sed \
     -e "s/\(^\|[^A-Za-z]\)\(ERROR\)/\1${red}\2${stop}/"    \
     -e "s/^\(Ran [1-9][0-9]*.*\)/${cyan}\1${stop}/"'
 
-CMD="python -m unittest"
+if python -c "import sys; sys.exit(sys.version_info[:2] < (2,7))"; then
+	CMD="python -m unittest"
+else
+	# pre-2.7 unittest doesn't offer test discovery, use external unittest2
+	CMD="unit2"
+fi
 DEBUG="|& sed 's|\(.*\)DEBUG:.*|\1|' | grep -v '^[ ]*$'"
 VERBOSE=1
 ACC=

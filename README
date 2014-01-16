@@ -17,6 +17,9 @@ general:
 - ccs_flatten from pacemaker/extra/rgmanager:
   ./configure --with-cman=1 && cd pacemaker/extra/rgmanager && make
 
+tests:
+- outside of Python 2.7+, unittest2 (python-unittest2) is needed
+
 
 Concepts
 --------
