@@ -52,7 +52,7 @@ class Filter(object):
     Base principles:
         - protocols: string label denoting how to int-/externalize
         - create filter instance = pass particular formats,
-          all = start conversion
+          call = start conversion
     """
     __metaclass__ = filters
 

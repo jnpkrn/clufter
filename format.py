@@ -46,7 +46,7 @@ class formats(PluginRegistry):
 def producing(protocol, protect=False):
     """Decorator for externalization method understood by the `formats` magic
 
-    Caching of representations is a bonus."""
+    As a bonus: caching of representations."""
     def deco_meth(meth):
         def deco_args(self, protocol, protect_safe=False, *args):
             try:
