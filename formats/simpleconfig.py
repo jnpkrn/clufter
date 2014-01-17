@@ -8,7 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from ..format import Format, producing
 
 
-class simpleconfig( Format):
+class simpleconfig(Format):
     """"Structured configuration formats such as corosync.conf"""
     # yacc-based parser in fence-virt
     native_protocol = 'struct'
