@@ -28,7 +28,7 @@ There are a few concepts that tries to unify effective conversion
 recipes in a relatively loosely coupled way and with clear
 relationships:
 
-  - command is a composition of one or more filters (see below)
+  . command is a composition of one or more filters (see below)
     with some level of flexibility (tee-like splits, etc.)
 
   . filter is an isolated set of steps from object _A_ of a format _X_
@@ -44,5 +44,8 @@ relationships:
     of values/properties of objects being held as these are further
     refined by previously used uni-format filters (context of
     previous transitions plays the role)
+
+  . protocol denotes a form of internal representation interchange
+    (either internal in the filters' chain or user-requested IO)
     
 TBD
