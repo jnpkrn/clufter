@@ -10,7 +10,7 @@ from lxml import etree
 
 
 @XMLFilter.deco('XML', 'simpleconfig')
-def xml2simpleconfig(flt, in_obj):
+def xml2simpleconfig(flt, in_obj, cmd_ctxt):
     for context in etree.iterwalk(in_obj('etree'), events=('start', 'end')):
         pass
     pass

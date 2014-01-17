@@ -10,6 +10,6 @@ from clufter.filter import XMLFilter
 
 
 @XMLFilter.deco('ccs', 'ccs')
-def ccs_obfuscate_credentials(flt, in_obj):
+def ccs_obfuscate_credentials(flt, in_obj, cmd_ctxt):
     #print etree.tostring(in_obj('etree').xslt(flt.get_template(in_obj)))
     return ('etree', flt.proceed_xslt_filter(in_obj, symbol='obfuscate_credentials'))

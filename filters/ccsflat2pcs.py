@@ -9,5 +9,5 @@ from clufter.filter import Filter
 
 
 @Filter.deco('ccsflat', 'pcs')
-def ccsflat2pcs(flt, in_obj):
+def ccsflat2pcs(flt, in_obj, cmd_ctxt):
     pass

@@ -14,6 +14,7 @@ from lxml import etree
 
 from .plugin_registry import PluginRegistry
 from .utils import ClufterError, head_tail, hybridproperty, filtervarspop
+from .command_context import CommandContext
 
 log = logging.getLogger(__name__)
 
@@ -69,9 +70,11 @@ class Filter(object):
         """Output format identifier/class for the filter"""
         return this._out_format
 
-    def __call__(self, in_obj, **kwargs):
+    def __call__(self, in_obj, cmd_ctxt=None, **kwargs):
         """Default is to use a function decorated with `deco`"""
-        out_decl = self._fnc(self, in_obj, **kwargs)
+        if not cmd_ctxt:  # for estranged (not under Command control) use-cases
+            cmd_ctxt = CommandContext()
+        out_decl = self._fnc(self, in_obj, cmd_ctxt, **kwargs)
         return self.out_format(*out_decl)
 
     @classmethod
