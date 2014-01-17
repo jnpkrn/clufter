@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Filter manager"""
@@ -8,15 +8,16 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 import logging
 
 from .filter import filters
+from .plugin_registry import PluginManager
 
 log = logging.getLogger(__name__)
 
 
-class FilterManager(object):
+class FilterManager(PluginManager):
     """Class responsible to manage filters and filtering itself"""
-    def __init__(self, fmt_mgr, registry=filters, paths=(), filters={}):
-        self._registry = registry
-        filters = dict(registry.discover(paths), **filters)
+    _default_registry = filters
+
+    def _handle_plugins(self, filters, fmt_mgr):
         log.debug("Filters before resolving: {0}"
                   .format(filters))
         self._filters = self._resolve(fmt_mgr.formats, filters)
@@ -46,10 +47,6 @@ class FilterManager(object):
     @property
     def filters(self):
         return self._filters.copy()
-
-    @property
-    def registry(self):
-        return self._registry
 
     def __call__(self, which, in_decl, **kwargs):
         flt = self._filters[which]

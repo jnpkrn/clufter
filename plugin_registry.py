@@ -192,3 +192,19 @@ class PluginRegistry(type):
                            if p.__module__ == registry.__module__)
 
         return ret
+
+
+class PluginManager(object):
+    """Common (abstract) base for *Manager objects"""
+    def __init__(self, *args, **kwargs):
+        registry = kwargs.pop('registry', None) or self._default_registry
+        self._registry = registry
+        paths = kwargs.pop('paths', ())
+        plugins = registry.discover(paths)
+        plugins.update(kwargs.pop(registry.name if registry else '', {}))
+        assert hasattr(self, '_handle_plugins'), 'override _handle_plugins'
+        self._handle_plugins(plugins, *args, **kwargs)
+
+    @property
+    def registry(self):
+        return self._registry

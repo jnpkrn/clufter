@@ -1,22 +1,20 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Format manager"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from .format import formats
+from .plugin_registry import PluginManager
 
 
-class FormatManager(object):
+class FormatManager(PluginManager):
     """Class responsible for available formats of data to be converted"""
-    def __init__(self, registry=formats, paths=(), formats={}):
-        self._registry = registry
-        self._formats = dict(registry.discover(paths), **formats)
+    _default_registry = formats
 
-    @property
-    def registry(self):
-        return self._registry
+    def _handle_plugins(self, formats):
+        self._formats = formats
 
     @property
     def formats(self):
