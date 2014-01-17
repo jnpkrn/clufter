@@ -100,8 +100,8 @@ def tag_log(s, elem):
 
 class XMLFilter(Filter):
     @staticmethod
-    def _traverse(in_fmt, walk, walk_default=None, et=None, preprocess=lambda s, n, r: s,
-                  proceed=lambda *x: x,
+    def _traverse(in_fmt, walk, walk_default=None, et=None,
+                  preprocess=lambda s, n, r: s, proceed=lambda *x: x,
                   postprocess=lambda x: x[0] if len(x) == 1 else x):
         """Generic traverse through XML as per symbols within schema tree"""
         tree_stack = [('', (None, walk), OrderedDict())]
