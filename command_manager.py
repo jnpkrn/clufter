@@ -85,10 +85,11 @@ class CommandManager(PluginManager):
         return ec
 
     def help(self, script):
+        """Generate a main help screen"""
         return '\n'.join([
             version_line(package=__package__),
             '',
-            "Usage: {0} {{[-v|--version|-h|--help]|<cmd> ...}}".format(script),
+            "Usage: {0} {{[-v|--version|-h|--help] | <cmd> ...}}".format(script),
             '',
             "discovered commands (cmd):"
         ] + map(lambda (cname, ccls):
