@@ -60,28 +60,35 @@ class CommandManager(PluginManager):
     def commands(self):
         return self._commands.copy()
 
-    def __call__(self, argv0='<clufter script>', *args):
+    def __call__(self, script='<script>', *args):
         ec = EC.EXIT_SUCCESS
         if args and args[0] not in ('-h', '--help'):
             try:
-                pass
+                cmd = args[0]
+                try:
+                    command = self._commands[cmd]
+                except KeyError:
+                    raise CommandNotFoundError(cmd)
+                opts, args = command.parse_args(script, cmd,
+                                                args=list(args[1:]))
+                print opts, args
             except ClufterError as e:
                 ec = EC.EXIT_FAILURE
                 print e
                 if isinstance(e, CommandNotFoundError):
-                    print self.help(argv0)
+                    print self.help(script)
             #except Exception as e:
             #    print "OOPS: underlying unexpected exception:\n{0}".format(e)
             #    ec = EC.EXIT_FAILURE
         else:
-            print self.help(argv0)
+            print self.help(script)
         return ec
 
-    def help(self, argv0):
+    def help(self, script):
         return '\n'.join([
             version_line(package=__package__),
             '',
-            "Usage: {0} {{[-v|--version|-h|--help]|<cmd> ...}}".format(argv0),
+            "Usage: {0} {{[-v|--version|-h|--help]|<cmd> ...}}".format(script),
             '',
             "discovered commands (cmd):"
         ] + map(lambda (cname, ccls):

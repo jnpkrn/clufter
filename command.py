@@ -6,9 +6,10 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
+from optparse import make_option, OptionParser
 
 from .plugin_registry import PluginRegistry
-from .utils import ClufterError, hybridproperty
+from .utils import ClufterError, head_tail, hybridproperty
 
 log = logging.getLogger(__name__)
 
@@ -28,6 +29,48 @@ class Command(object):
 
     def __init__(self, *filter_chain):
         self._filter_chain = filter_chain
+        self._option_parser = None  # later on-demand
+
+    def _make_option_parser(self, script, cmd=None):
+        # extract options from docstring
+        canonical_cmd = self.__class__.name
+        cmd = cmd or canonical_cmd
+        readopts, optionset, options = False, set(), []
+        usage = ["{0} {1} [<option> ...]".format(script, cmd)]
+        if cmd != canonical_cmd:
+            usage.append("{0} {1} [<option> ...]".format(cmd, canonical_cmd))
+        usage.append('')
+        for line in self.__doc__.splitlines():
+            line = line.lstrip()
+            if readopts:
+                if not line:
+                    continue
+                line = line.replace('\t', ' ')
+                optname, optdesc = head_tail(*line.split(' ', 1))  # 2nd->tuple
+                if not all((optname, optdesc)):
+                    log.debug("Bad option line: {0}".format(line))
+                else:
+                    log.debug("Command `{0}', found option `{1}'".format(
+                        self.__class__.name, optname
+                    ))
+                    assert optname not in optionset
+                    optionset.add(optname)
+                    options.append(
+                        make_option("--{0}".format(optname),
+                                    help=optdesc[0].strip())
+                    )
+            elif line.lower().startswith('options:'):
+                readopts = True
+            else:
+                usage.append(line)
+        usage = usage[:-1] if not usage[-1] else usage
+        return OptionParser(option_list=options, usage='\n'.join(usage))
+
+    def parse_args(self, script, cmd, **kwargs):
+        """Perform per-command options/arguments parsing"""
+        if not self._option_parser:
+            self._option_parser = self._make_option_parser(script, cmd)
+        return self._option_parser.parse_args(**kwargs)
 
     @hybridproperty
     def filter_chain(this):
