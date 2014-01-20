@@ -9,6 +9,9 @@ import logging
 
 from .filter import filters
 from .plugin_registry import PluginManager
+from .utils import apply_preserving_depth, \
+                   apply_aggregation_preserving_depth, \
+                   apply_intercalate
 
 log = logging.getLogger(__name__)
 
@@ -25,22 +28,20 @@ class FilterManager(PluginManager):
     @staticmethod
     def _resolve(formats, filters):
         for flt_name, flt_cls in filters.items():
-            in_format = formats.get(flt_cls.in_format)
-            out_format = formats.get(flt_cls.out_format)
-            if in_format is not None and out_format is not None:
-                log.debug("Resolve at `{0}' filter: `{1}' -> {2},"
-                          " `{3}' -> {4}"
-                          .format(flt_name, flt_cls.in_format, in_format,
-                                  flt_cls.out_format, out_format))
-                filters[flt_name] = flt_cls(in_format, out_format)
+            res_input = [flt_cls.in_format, flt_cls.out_format]
+            res_output = apply_preserving_depth(formats.get)(res_input)
+            if apply_aggregation_preserving_depth(all)(res_output):
+                log.debug("Resolve at `{0}' filter: `{1}' -> {2}"
+                          .format(flt_name, repr(res_input), repr(res_output)))
+                filters[flt_name] = flt_cls(*res_output)
                 continue
-            # drop the filter if cannot resolve either format
-            if not in_format:
-                log.warning("Resolve at `{0}' filter: `{1}' input format fail"
-                            .format(flt_name, flt_cls.in_format))
-            if not out_format:
-                log.warning("Resolve at `{0}' filter: `{1}' output format fail"
-                            .format(flt_name, flt_cls.out_format))
+            # drop the filter if cannot resolve any of the formats
+            res_input = apply_intercalate(res_input)
+            map(lambda (i, x): log.warning("Resolve at `{0}' filter:"
+                                           " `{1}' (#{2}) format fail"
+                                           .format(flt_name, res_input[i], i)),
+                filter(lambda (i, x): not(x),
+                       enumerate(apply_intercalate(res_output))))
             filters.pop(flt_name)
         return filters
 
