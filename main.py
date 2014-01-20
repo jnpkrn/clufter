@@ -14,7 +14,7 @@ from . import metadata
 
 def run(argv):
     ec = EC.EXIT_SUCCESS
-    if len(argv) and argv[0] in ('-v', '--version'):
+    if len(argv) > 1 and argv[1] in ('-v', '--version'):
         print '\n'.join((__package__,) + metadata)
     else:
         cm = CommandManager(FilterManager(FormatManager()))
