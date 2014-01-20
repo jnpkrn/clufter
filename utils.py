@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Various helpers"""
@@ -23,6 +23,25 @@ filtervarsdef = lambda src, which: \
                 dict((x, src[x]) for x in which if src.get(x, None))
 filtervarspop = lambda src, which: \
                 dict((x, src.pop(x)) for x in which if x in src)
+apply_preserving_depth = \
+    lambda action: \
+        lambda item: \
+            type(item)([apply_preserving_depth(action)(i) for i in item]) \
+            if isinstance(item, (tuple, list)) else action(item)
+apply_aggregation_preserving_depth = \
+    lambda agg_fn: \
+        lambda item: \
+            agg_fn([apply_aggregation_preserving_depth(agg_fn)(i)
+                    for i in item]) \
+            if isinstance(item, (tuple, list)) else item
+# name comes from Haskell
+# note: always returns list even for input tuple
+# note: when returning from recursion, should always observe scalar or list(?)
+apply_intercalate = apply_aggregation_preserving_depth(
+    lambda i:
+        reduce(lambda a, b: a + (b if isinstance(b, list) else [b]),
+               i, [])
+)
 
 
 def which(name, *where):
