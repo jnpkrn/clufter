@@ -5,14 +5,17 @@
 """ccs2pcs command"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from ..command import as_command
+from ..command import Command
 
 
-@as_command(['ccs2ccsflat', ('ccs2pcs', 'ccs2coro')])
+@Command.deco('ccs2ccsflat', ('ccsflat2pcs', 'ccs2coroxml'))
 def ccs2pcs(input='/etc/cluster/cluster.conf',
             output='./cib.xml',
             coro='./corosync.conf'):
     """Converts cman-based cluster configuration to Pacemaker-based one
+
+    There are two outputs: Pacemaker configuration ala cib.xml and
+    configuration for corosync ala corosync.conf.
 
     Options:
         input      input cman-based cluster configuration file
