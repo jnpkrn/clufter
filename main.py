@@ -17,6 +17,10 @@ def run(argv):
     if len(argv) > 1 and argv[1] in ('-v', '--version'):
         print version_line()
     else:
+        #try:
         cm = CommandManager(FilterManager(FormatManager()))
         ec = cm(argv)
+        #except Exception as e:
+        #    print "FATAL: Unhandled exception: {0}".format(e)
+        #    ex = EC.EXIT_FAILURE
     return ec
