@@ -35,11 +35,13 @@ class Command(object):
         # extract options from docstring
         canonical_cmd = self.__class__.name
         cmd = cmd or canonical_cmd
+
         readopts, optionset, options = False, set(), []
         usage = ["{0} {1} [<option> ...]".format(script, cmd)]
         if cmd != canonical_cmd:
             usage.append("{0} {1} [<option> ...]".format(cmd, canonical_cmd))
         usage.append('')
+
         for line in self.__doc__.splitlines():
             line = line.lstrip()
             if readopts:
@@ -64,7 +66,9 @@ class Command(object):
             else:
                 usage.append(line)
         usage = usage[:-1] if not usage[-1] else usage
-        return OptionParser(option_list=options, usage='\n'.join(usage))
+        hint = "To list all available commands, use {0} --help ".format(script)
+        return OptionParser(option_list=options, usage='\n'.join(usage),
+                            epilog=hint)
 
     def parse_args(self, script, cmd, **kwargs):
         """Perform per-command options/arguments parsing"""
