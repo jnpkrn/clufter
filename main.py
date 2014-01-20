@@ -19,7 +19,7 @@ def run(argv):
     else:
         #try:
         cm = CommandManager(FilterManager(FormatManager()))
-        ec = cm(argv)
+        ec = cm(*argv)
         #except Exception as e:
         #    print "FATAL: Unhandled exception: {0}".format(e)
         #    ex = EC.EXIT_FAILURE

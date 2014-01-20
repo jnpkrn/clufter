@@ -9,11 +9,21 @@ import logging
 
 from .command import commands
 from .plugin_registry import PluginManager
-from .utils import apply_preserving_depth, \
+from .utils import ClufterError, EC, \
+                   apply_preserving_depth, \
                    apply_aggregation_preserving_depth, \
                    apply_intercalate
+from . import version_line
 
 log = logging.getLogger(__name__)
+
+
+class CommandManagerError(ClufterError):
+    pass
+
+
+class CommandNotFoundError(CommandManagerError):
+    pass
 
 
 class CommandManager(PluginManager):
@@ -50,11 +60,33 @@ class CommandManager(PluginManager):
     def commands(self):
         return self._commands.copy()
 
-    def __call__(self, args):
-        # 1. figure out commands + inject artificial ones (help)
-        #print self.commands
-        raise NotImplementedError
-        # commands =
-        # 2. check if command matches define ones (or none = default?)
-        # 2a. success -> pass further (TODO)
-        # 2b. failure -> print help/diagnostics
+    def __call__(self, argv0='<clufter script>', *args):
+        ec = EC.EXIT_SUCCESS
+        if args and args[0] not in ('-h', '--help'):
+            try:
+                pass
+            except ClufterError as e:
+                ec = EC.EXIT_FAILURE
+                print e
+                if isinstance(e, CommandNotFoundError):
+                    print self.help(argv0)
+            #except Exception as e:
+            #    print "OOPS: underlying unexpected exception:\n{0}".format(e)
+            #    ec = EC.EXIT_FAILURE
+        else:
+            print self.help(argv0)
+        return ec
+
+    def help(self, argv0):
+        return '\n'.join([
+            version_line(package=__package__),
+            '',
+            "Usage: {0} {{[-v|--version|-h|--help]|<cmd> ...}}".format(argv0),
+            '',
+            "discovered commands (cmd):"
+        ] + map(lambda (cname, ccls):
+                '  {0!s:12}{1}'.format(cname, ccls.__doc__.splitlines()[0]),
+                self._commands.iteritems()) + [
+            '',
+            "To get a help for selected command, follow it with `--help'"
+        ])
