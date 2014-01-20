@@ -9,13 +9,13 @@ from .format_manager import FormatManager
 from .filter_manager import FilterManager
 from .command_manager import CommandManager
 from .utils import EC
-from . import metadata
+from . import version_line
 
 
 def run(argv):
     ec = EC.EXIT_SUCCESS
     if len(argv) > 1 and argv[1] in ('-v', '--version'):
-        print '\n'.join((__package__,) + metadata)
+        print version_line()
     else:
         cm = CommandManager(FilterManager(FormatManager()))
         ec = cm(argv)
