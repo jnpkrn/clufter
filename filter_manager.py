@@ -20,7 +20,7 @@ class FilterManager(PluginManager):
     """Class responsible to manage filters and filtering itself"""
     _default_registry = filters
 
-    def _handle_plugins(self, filters, fmt_mgr):
+    def _init_handle_plugins(self, filters, fmt_mgr):
         log.debug("Filters before resolving: {0}"
                   .format(filters))
         self._filters = self._resolve(fmt_mgr.formats, filters)

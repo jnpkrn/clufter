@@ -30,7 +30,7 @@ class CommandManager(PluginManager):
     """Class responsible for commands routing to filters or other actions"""
     _default_registry = commands
 
-    def _handle_plugins(self, commands, flt_mgr):
+    def _init_handle_plugins(self, commands, flt_mgr):
         log.debug("Commands before resolving: {0}"
                   .format(commands))
         self._commands = self._resolve(flt_mgr.filters, commands)

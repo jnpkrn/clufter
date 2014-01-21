@@ -202,8 +202,10 @@ class PluginManager(object):
         paths = kwargs.pop('paths', ())
         plugins = registry.discover(paths)
         plugins.update(kwargs.pop(registry.name if registry else '', {}))
-        assert hasattr(self, '_handle_plugins'), 'override _handle_plugins'
-        self._handle_plugins(plugins, *args, **kwargs)
+        self._init_handle_plugins(plugins, *args, **kwargs)
+
+    def _init_handle_plugins(self, plugins, *args, **kwargs):
+        raise NotImplementedError('subclasses should implement')
 
     @property
     def registry(self):
