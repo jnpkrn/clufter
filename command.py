@@ -35,6 +35,10 @@ class Command(object):
         # extract options from docstring
         canonical_cmd = self.__class__.name
         cmd = cmd or canonical_cmd
+        fnc_defaults, fnc_varnames = dict(zip(
+            self._fnc.func_code.co_varnames[-len(self._fnc.func_defaults):],
+            self._fnc.func_defaults
+        )), self._fnc.func_code.co_varnames
 
         readopts, optionset, options = False, set(), []
         usage = ["{0} {1} [<option> ...]".format(script, cmd)]
@@ -49,7 +53,7 @@ class Command(object):
                     continue
                 line = line.replace('\t', ' ')
                 optname, optdesc = head_tail(*line.split(' ', 1))  # 2nd->tuple
-                if not all((optname, optdesc)):
+                if not all((optname, optdesc)) or optname not in fnc_varnames:
                     log.debug("Bad option line: {0}".format(line))
                 else:
                     log.debug("Command `{0}', found option `{1}'".format(
@@ -57,10 +61,12 @@ class Command(object):
                     ))
                     assert optname not in optionset
                     optionset.add(optname)
-                    options.append(
-                        make_option("--{0}".format(optname),
-                                    help=optdesc[0].strip())
-                    )
+                    opt = {}
+                    opt['help'] = optdesc[0].strip()
+                    if optname in fnc_defaults:  # default if known
+                        opt['default'] = fnc_defaults[optname]
+                        opt['help'] += " [%default]"
+                    options.append(make_option("--{0}".format(optname), **opt))
             elif line.lower().startswith('options:'):
                 readopts = True
             else:
