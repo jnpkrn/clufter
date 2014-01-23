@@ -63,16 +63,20 @@ class ClufterError(Exception):
     def __init__(self, ctx_self, msg, *args):
         self.ctx_self = ctx_self
         self.msg = msg
+        self.args = args
 
     def __str__(self):
-        ret = getattr(self.ctx_self, '__name__',
-                      self.ctx_self.__class__.__name__)
-        return ret + ': ' + self.msg.format(*self.args)
+        ret = ''
+        if self.ctx_self:
+            ret = getattr(self.ctx_self, '__name__',
+                          self.ctx_self.__class__.__name__)
+            ret += ': '
+        return ret + self.msg.format(*self.args)
 
 
 class ClufterPlainError(ClufterError):
     def __init__(self, msg, *args):
-        super(ClufterPlainError, self).__init__(self, None, msg, *args)
+        super(ClufterPlainError, self).__init__(None, msg, *args)
 
 
 class OneoffWrappedStdinPopen(object):
