@@ -7,8 +7,9 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import imp
-imp.load_source('_bootstrap', 'tests/_bootstrap.py')
+imp.load_source('main_bootstrap', 'tests/_bootstrap.py')
 from clufter.main import run
+
 
 if __name__ == '__main__':
     from sys import argv

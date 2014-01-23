@@ -28,7 +28,7 @@ else
 	# pre-2.7 unittest doesn't offer test discovery, use external unittest2
 	CMD="unit2"
 fi
-DEBUG="|& sed 's|\(.*\)DEBUG:.*|\1|' | grep -v '^[ ]*$'"
+DEBUG="env LOGLEVEL=WARNING"
 VERBOSE=1
 ACC=
 while [ $# -gt 0 ]; do
@@ -54,4 +54,4 @@ fi
 if [ ! -t 0 ]; then
     COLORIZE=
 fi
-eval "$CMD $ACC $DEBUG $COLORIZE"
+eval "$DEBUG $CMD $ACC $COLORIZE"
