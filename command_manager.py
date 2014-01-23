@@ -9,11 +9,11 @@ import logging
 
 from .command import commands
 from .plugin_registry import PluginManager
-from .utils import ClufterError, EC, \
+from .utils import ClufterError, ClufterPlainError, \
+                   EC, \
                    apply_preserving_depth, \
                    apply_aggregation_preserving_depth, \
                    apply_intercalate
-from . import version_line
 
 log = logging.getLogger(__name__)
 
@@ -22,8 +22,10 @@ class CommandManagerError(ClufterError):
     pass
 
 
-class CommandNotFoundError(CommandManagerError):
-    pass
+class CommandNotFoundError(ClufterPlainError):
+    def __init__(self, cmd):
+        super(CommandNotFoundError, self).__init__("Command not found: `{0}'",
+                                                   cmd)
 
 
 class CommandManager(PluginManager):
@@ -34,6 +36,9 @@ class CommandManager(PluginManager):
         log.debug("Commands before resolving: {0}"
                   .format(commands))
         self._commands = self._resolve(flt_mgr.filters, commands)
+        # as this is called by the constructor, we also instantiate
+        # OptionParser here
+        #self._option_parser = self._make_option_parser()
 
     @staticmethod
     def _resolve(filters, commands):
@@ -60,41 +65,50 @@ class CommandManager(PluginManager):
     def commands(self):
         return self._commands.copy()
 
-    def __call__(self, script='<script>', *args):
+    def __call__(self, parser, args=None):
+        """Follow up of the entry point, facade to particular commands"""
         ec = EC.EXIT_SUCCESS
-        if args and args[0] not in ('-h', '--help'):
-            try:
-                cmd = args[0]
-                try:
-                    command = self._commands[cmd]
-                except KeyError:
-                    raise CommandNotFoundError(cmd)
-                opts, args = command.parse_args(script, cmd,
-                                                args=list(args[1:]))
-                print opts, args
-            except ClufterError as e:
-                ec = EC.EXIT_FAILURE
-                print e
-                if isinstance(e, CommandNotFoundError):
-                    print self.help(script)
-            #except Exception as e:
-            #    print "OOPS: underlying unexpected exception:\n{0}".format(e)
-            #    ec = EC.EXIT_FAILURE
-        else:
-            print self.help(script)
+        values = parser.values
+        try:
+            cmd = getattr(values, 'help', None) or args[0]
+
+            command = self._commands.get(cmd, None)
+            if not command:
+                raise CommandNotFoundError(cmd)
+            canonical_cmd = command.__class__.name
+
+            parser.description, options = command.parser_desc_opts()
+            parser.option_groups[0].add_options(options)
+
+            args = ['--help'] if values.help else args[1:]
+            parser.defaults.update(values.__dict__)  # from global options
+            opts, args = parser.parse_args(args)
+            if opts.help:
+                usage = '\n'.join(map(
+                    lambda c:
+                        "%prog [<global option> ...] {0} [<cmd option ...>]"
+                        .format(c),
+                    sorted(set([cmd, canonical_cmd]),
+                           key=lambda i: int(i == canonical_cmd))
+                ))
+                print parser.format_customized_help(usage=usage)
+                return ec
+            print opts, args  # TODO
+        except ClufterError as e:
+            ec = EC.EXIT_FAILURE
+            print e
+            if isinstance(e, CommandNotFoundError):
+                print "\nSupported commands:\n" + self.cmds()
+        #except Exception as e:
+        #    print "OOPS: underlying unexpected exception:\n{0}".format(e)
+        #    ec = EC.EXIT_FAILURE
         return ec
 
-    def help(self, script):
-        """Generate a main help screen"""
-        return '\n'.join([
-            version_line(package=__package__),
-            '',
-            "Usage: {0} {{[-v|--version|-h|--help] | <cmd> ...}}".format(script),
-            '',
-            "discovered commands (cmd):"
-        ] + map(lambda (cname, ccls):
-                '  {0!s:12}{1}'.format(cname, ccls.__doc__.splitlines()[0]),
-                self._commands.iteritems()) + [
-            '',
-            "To get a help for selected command, follow it with `--help'"
-        ])
+    def cmds(self, ind='', sep='\n'):
+        """Return string containing formatted list of commands (name + desc)"""
+        return '\n'.join(map(
+            lambda (cname, ccls):
+                '{0}{1!s:12}{2}'.format(ind, cname,
+                                        ccls.__doc__.splitlines()[0]),
+            self._commands.iteritems()
+        ))

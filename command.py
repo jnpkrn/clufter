@@ -1,12 +1,12 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Base command stuff (TBD)"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
-from optparse import make_option, OptionParser
+from optparse import make_option
 
 from .plugin_registry import PluginRegistry
 from .utils import ClufterError, head_tail, hybridproperty
@@ -29,22 +29,19 @@ class Command(object):
 
     def __init__(self, *filter_chain):
         self._filter_chain = filter_chain
-        self._option_parser = None  # later on-demand
+        self._desc, self._options = None, None  # later on-demand
 
-    def _make_option_parser(self, script, cmd=None):
-        # extract options from docstring
-        canonical_cmd = self.__class__.name
-        cmd = cmd or canonical_cmd
+    def parser_desc_opts(self, cmd=None):
+        """Parse docstring as description + optparse.Option instances list"""
+        if self._desc and self._options:
+            return self._desc, self._options
         fnc_defaults, fnc_varnames = dict(zip(
             self._fnc.func_code.co_varnames[-len(self._fnc.func_defaults):],
             self._fnc.func_defaults
         )), self._fnc.func_code.co_varnames
 
         readopts, optionset, options = False, set(), []
-        usage = ["{0} {1} [<option> ...]".format(script, cmd)]
-        if cmd != canonical_cmd:
-            usage.append("{0} {1} [<option> ...]".format(cmd, canonical_cmd))
-        usage.append('')
+        description = []
 
         for line in self.__doc__.splitlines():
             line = line.lstrip()
@@ -70,11 +67,11 @@ class Command(object):
             elif line.lower().startswith('options:'):
                 readopts = True
             else:
-                usage.append(line)
-        usage = usage[:-1] if not usage[-1] else usage
-        hint = "To list all available commands, use {0} --help ".format(script)
-        return OptionParser(option_list=options, usage='\n'.join(usage),
-                            epilog=hint)
+                description.append(line)
+        description = description[:-1] if not description[-1] else description
+        description = '\n'.join(description)
+        self._description, self._options = description, options
+        return description, options
 
     def parse_args(self, script, cmd, **kwargs):
         """Perform per-command options/arguments parsing"""
