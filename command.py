@@ -6,7 +6,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
-from optparse import make_option
+from optparse import make_option, SUPPRESS_HELP
 
 from .plugin_registry import PluginRegistry
 from .utils import ClufterError, head_tail, hybridproperty
@@ -68,6 +68,12 @@ class Command(object):
                 readopts = True
             else:
                 description.append(line)
+
+        for var in fnc_varnames:
+            if var not in optionset:
+                options.append(make_option("--{0}".format(var),
+                                           help=SUPPRESS_HELP))
+
         description = description[:-1] if not description[-1] else description
         description = '\n'.join(description)
         self._description, self._options = description, options
