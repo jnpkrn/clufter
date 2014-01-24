@@ -34,6 +34,12 @@ apply_aggregation_preserving_depth = \
             agg_fn([apply_aggregation_preserving_depth(agg_fn)(i)
                     for i in item]) \
             if isinstance(item, (tuple, list)) else item
+apply_aggregation_preserving_passing_depth = \
+    lambda agg_fn, d=0: \
+        lambda item: \
+            agg_fn([apply_aggregation_preserving_passing_depth(agg_fn, d+1)(i)
+                    for i in item], d+1) \
+            if isinstance(item, (tuple, list)) else item
 # name comes from Haskell
 # note: always returns list even for input tuple
 # note: when returning from recursion, should always observe scalar or list(?)
