@@ -9,7 +9,10 @@ import logging
 from optparse import make_option, SUPPRESS_HELP
 
 from .plugin_registry import PluginRegistry
-from .utils import ClufterError, head_tail, hybridproperty
+from .utils import ClufterError, \
+                   func_defaults_varnames, \
+                   head_tail, \
+                   hybridproperty
 
 log = logging.getLogger(__name__)
 
@@ -30,20 +33,24 @@ class Command(object):
     def __init__(self, *filter_chain):
         self._filter_chain = filter_chain
         self._desc, self._options = None, None  # later on-demand
+        self._fnc_defaults, self._fnc_varnames = None, None  # ditto
 
-    def parser_desc_opts(self, cmd=None):
-        """Parse docstring as description + optparse.Option instances list"""
-        if self._desc and self._options:
-            return self._desc, self._options
-        fnc_defaults, fnc_varnames = dict(zip(
-            self._fnc.func_code.co_varnames[-len(self._fnc.func_defaults):],
-            self._fnc.func_defaults
-        )), self._fnc.func_code.co_varnames
+    def _figure_func_defaults_varnames(self, fnc=None):
+        fnc = fnc or getattr(self, '_fnc', None)
+        if self._fnc_defaults is None or self._fnc_varnames is None:
+            if not fnc:
+                self._fnc_defaults, self._fnc_varnames = {}, ()
+            else:
+                self._fnc_defaults, self._fnc_varnames = \
+                    func_defaults_varnames(fnc)
+        return self._fnc_defaults, self._fnc_varnames
 
+    @classmethod
+    def _figure_parser_desc_opts(cls, fnc_defaults, fnc_varnames):
         readopts, optionset, options = False, set(), []
         description = []
 
-        for line in self.__doc__.splitlines():
+        for line in cls.__doc__.splitlines():
             line = line.lstrip()
             if readopts:
                 if not line:
@@ -54,7 +61,7 @@ class Command(object):
                     log.debug("Bad option line: {0}".format(line))
                 else:
                     log.debug("Command `{0}', found option `{1}'".format(
-                        self.__class__.name, optname
+                        cls.name, optname
                     ))
                     assert optname not in optionset
                     optionset.add(optname)
@@ -76,14 +83,15 @@ class Command(object):
 
         description = description[:-1] if not description[-1] else description
         description = '\n'.join(description)
-        self._description, self._options = description, options
         return description, options
 
-    def parse_args(self, script, cmd, **kwargs):
-        """Perform per-command options/arguments parsing"""
-        if not self._option_parser:
-            self._option_parser = self._make_option_parser(script, cmd)
-        return self._option_parser.parse_args(**kwargs)
+    def parser_desc_opts(self):
+        """Parse docstring as description + optparse.Option instances list"""
+        if self._desc is None or self._options is None:
+            self._desc, self._options = self._figure_parser_desc_opts(
+                *self._figure_func_defaults_varnames()
+            )
+        return self._desc, self._options
 
     @hybridproperty
     def filter_chain(this):
