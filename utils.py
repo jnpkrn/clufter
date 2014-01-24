@@ -45,6 +45,7 @@ apply_intercalate = apply_aggregation_preserving_depth(
 
 
 def which(name, *where):
+    """Mimic `which' UNIX utility"""
     where = tuple(os.path.abspath(i) for i in where)
     if 'PATH' in os.environ:
         path = tuple(i for i in os.environ['PATH'].split(os.pathsep)
