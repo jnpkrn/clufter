@@ -60,6 +60,16 @@ def which(name, *where):
         return None
 
 
+def func_defaults_varnames(func):
+    """Using introspection, get a dict of kwargs' defaults + all arg names"""
+    func_varnames = func.func_code.co_varnames
+    func_defaults = dict(zip(
+        func_varnames[-len(func.func_defaults):],
+        func.func_defaults
+    ))
+    return func_defaults, func_varnames
+
+
 class ClufterError(Exception):
     def __init__(self, ctx_self, msg, *args):
         self.ctx_self = ctx_self
