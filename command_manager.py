@@ -36,9 +36,6 @@ class CommandManager(PluginManager):
         log.debug("Commands before resolving: {0}"
                   .format(commands))
         self._commands = self._resolve(flt_mgr.filters, commands)
-        # as this is called by the constructor, we also instantiate
-        # OptionParser here
-        #self._option_parser = self._make_option_parser()
 
     @staticmethod
     def _resolve(filters, commands):
