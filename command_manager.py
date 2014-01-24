@@ -90,7 +90,10 @@ class CommandManager(PluginManager):
                 ))
                 print parser.format_customized_help(usage=usage)
                 return ec
-            print opts, args  # TODO
+            logging.getLogger().setLevel(opts.loglevel)
+            log.debug("Running command `{0}';  opts={1}, args={2}"
+                      .format(cmd, opts.__dict__, args))
+            ec = command(opts, args)
         except ClufterError as e:
             ec = EC.EXIT_FAILURE
             print e

@@ -10,6 +10,7 @@ from optparse import make_option, SUPPRESS_HELP
 
 from .plugin_registry import PluginRegistry
 from .utils import ClufterError, \
+                   EC, \
                    func_defaults_varnames, \
                    head_tail, \
                    hybridproperty
@@ -97,6 +98,30 @@ class Command(object):
     def filter_chain(this):
         """Chain of filter identifiers/classes for the command"""
         return this._filter_chain
+
+    def __call__(self, opts, args=None):
+        """Proceed the command"""
+        ec = EC.EXIT_SUCCESS
+        fnc_defaults, fnc_varnames = self._figure_func_defaults_varnames()
+        kwargs = {}
+        for v in fnc_varnames:
+            if hasattr(opts, v):
+                kwargs[v] = getattr(opts, v)
+        format_chain = self._fnc(**kwargs)
+        ##print format_chain
+        ##from .utils import apply_aggregation_preserving_passing_depth
+        ##print apply_aggregation_preserving_passing_depth(
+        ##    lambda x, d: ('\n' + d * ' ') + (' ').join(x)
+        ##)(format_chain)
+        # TODO
+        # - validate format_chain vs chain
+        #   1. "shapes" match
+        #   2. I/O formats path(s) through the graph exist(s)
+        #   3. some per-filter validations?
+        #   - could some initial steps be done earlier?
+        # - perform the chain
+        #   - [advanced] threading for parallel branches?
+        return ec
 
     @classmethod
     def deco(cls, *filter_chain):
