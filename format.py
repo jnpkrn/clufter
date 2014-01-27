@@ -69,7 +69,8 @@ def producing(protocol, protect=False):
                 produced = deepcopy(produced)
             return produced
 
-        setattr(deco_args, '_protocol', protocol)  # mark for later recognition
+        deco_args.__name__, deco_args.__doc__ = meth.__name__, meth.__doc__
+        deco_args._protocol = protocol  # mark for later recognition
         return deco_args
     return deco_meth
 
