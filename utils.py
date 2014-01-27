@@ -45,6 +45,23 @@ apply_intercalate = apply_aggregation_preserving_depth(
                i, [])
 )
 
+zipped_outlier = type('zipped_outlier', (tuple, ), {})
+# NOTE: automatically shortens the longer counterpart in the pair
+#       to the length of the bigger one
+apply_loose_zip_preserving_depth = \
+    lambda a, b: \
+        (type(a) if type(a) == type(b) else type(a))(
+            [apply_loose_zip_preserving_depth(*p) for p in zip(a, b)]
+        ) if isinstance(a, (tuple, list)) == isinstance(b, (tuple, list)) \
+          == True else zipped_outlier([a, b])
+# as previous, but with length checking of some sort
+apply_strict_zip_preserving_depth = \
+    lambda a, b: \
+        (type(a) if type(a) == type(b) else type(a))(
+            [apply_strict_zip_preserving_depth(*p) for p in zip(a, b)]
+        ) if isinstance(a, (tuple, list)) == isinstance(b, (tuple, list)) \
+          == True and len(a) == len(b) else zipped_outlier([a, b])
+
 
 def which(name, *where):
     """Mimic `which' UNIX utility"""
