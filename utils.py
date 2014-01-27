@@ -9,11 +9,7 @@ import os
 import sys
 from subprocess import Popen
 
-
-# name the exitcodes
-ecodes = 'SUCCESS', 'FAILURE'
-EC = type('EC', (), dict((n, v) for v, n
-                         in enumerate('EXIT_' + i for i in ecodes)))
+from .error import ClufterError
 
 
 head_tail = lambda x=None, *y: (x, x if x is None else y)
@@ -74,26 +70,6 @@ def func_defaults_varnames(func):
         func.func_defaults
     ))
     return func_defaults, func_varnames
-
-
-class ClufterError(Exception):
-    def __init__(self, ctx_self, msg, *args):
-        self.ctx_self = ctx_self
-        self.msg = msg
-        self.args = args
-
-    def __str__(self):
-        ret = ''
-        if self.ctx_self:
-            ret = getattr(self.ctx_self, '__name__',
-                          self.ctx_self.__class__.__name__)
-            ret += ': '
-        return ret + self.msg.format(*self.args)
-
-
-class ClufterPlainError(ClufterError):
-    def __init__(self, msg, *args):
-        super(ClufterPlainError, self).__init__(None, msg, *args)
 
 
 class OneoffWrappedStdinPopen(object):

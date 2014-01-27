@@ -12,8 +12,9 @@ from collections import OrderedDict, defaultdict
 
 from lxml import etree
 
+from .error import ClufterError
 from .plugin_registry import PluginRegistry
-from .utils import ClufterError, head_tail, hybridproperty, filtervarspop
+from .utils import head_tail, hybridproperty, filtervarspop
 from .command_context import CommandContext
 
 log = logging.getLogger(__name__)

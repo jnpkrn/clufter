@@ -16,8 +16,9 @@ from sys import modules
 
 from lxml import etree
 
+from .error import ClufterError
 from .plugin_registry import PluginRegistry
-from .utils import ClufterError, classproperty
+from .utils import classproperty
 
 log = logging.getLogger(__name__)
 MAX_DEPTH = 1000

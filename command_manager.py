@@ -8,10 +8,10 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 import logging
 
 from .command import commands
+from .error import ClufterError, ClufterPlainError, \
+                   EC
 from .plugin_registry import PluginManager
-from .utils import ClufterError, ClufterPlainError, \
-                   EC, \
-                   apply_preserving_depth, \
+from .utils import apply_preserving_depth, \
                    apply_aggregation_preserving_depth, \
                    apply_intercalate
 

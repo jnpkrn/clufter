@@ -7,7 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
 
-from .utils import ClufterError
+from .error import ClufterError
 
 log = logging.getLogger(__name__)
 

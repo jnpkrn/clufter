@@ -12,10 +12,10 @@ from optparse import make_option, \
                      OptionGroup, \
                      IndentedHelpFormatter
 
+from .error import EC
 from .format_manager import FormatManager
 from .filter_manager import FilterManager
 from .command_manager import CommandManager
-from .utils import EC
 from . import version_text, description_text
 
 

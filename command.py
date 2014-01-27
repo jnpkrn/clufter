@@ -8,10 +8,10 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 import logging
 from optparse import make_option, SUPPRESS_HELP
 
+from .error import ClufterError, \
+                   EC
 from .plugin_registry import PluginRegistry
-from .utils import ClufterError, \
-                   EC, \
-                   func_defaults_varnames, \
+from .utils import func_defaults_varnames, \
                    head_tail, \
                    hybridproperty
 
