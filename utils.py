@@ -12,13 +12,18 @@ from subprocess import Popen
 from .error import ClufterError
 
 
-head_tail = lambda x=None, *y: (x, x if x is None else y)
-filtervars = lambda src, which: \
-             dict((x, src[x]) for x in which if x in src)
-filtervarsdef = lambda src, which: \
-                dict((x, src[x]) for x in which if src.get(x, None))
-filtervarspop = lambda src, which: \
-                dict((x, src.pop(x)) for x in which if x in src)
+head_tail = \
+    lambda x=None, *y, **kwargs: \
+        (x, y) if not isinstance(x, (list, tuple)) or kwargs.get('stop', 0) \
+            else head_tail(stop=1, *tuple(x) + y)
+protect_string_from_unpacking = \
+    lambda v: (v, ) if isinstance(v, basestring) else v
+filtervars = \
+    lambda src, which: dict((x, src[x]) for x in which if x in src)
+filtervarsdef = \
+    lambda src, which: dict((x, src[x]) for x in which if src.get(x, None))
+filtervarspop = \
+    lambda src, which: dict((x, src.pop(x)) for x in which if x in src)
 apply_preserving_depth = \
     lambda action: \
         lambda item: \
@@ -46,15 +51,20 @@ apply_intercalate = apply_aggregation_preserving_depth(
 )
 
 zipped_outlier = type('zipped_outlier', (tuple, ), {})
-# NOTE: automatically shortens the longer counterpart in the pair
-#       to the length of the bigger one
+zip_empty = type('zip_filler', (str, ), {})("EMPTY")
+loose_zip = lambda a, b: zip(
+    list(a) + (max(len(a), len(b)) - len(a)) * [zip_empty],
+    list(b) + (max(len(a), len(b)) - len(b)) * [zip_empty]
+)
 apply_loose_zip_preserving_depth = \
     lambda a, b: \
         (type(a) if type(a) == type(b) else type(a))(
-            [apply_loose_zip_preserving_depth(*p) for p in zip(a, b)]
+            [apply_loose_zip_preserving_depth(*p) for p in loose_zip(a, b)]
         ) if isinstance(a, (tuple, list)) == isinstance(b, (tuple, list)) \
           == True else zipped_outlier([a, b])
 # as previous, but with length checking of some sort
+# NOTE: automatically shortens the longer counterpart in the pair
+#       to the length of the bigger one
 apply_strict_zip_preserving_depth = \
     lambda a, b: \
         (type(a) if type(a) == type(b) else type(a))(

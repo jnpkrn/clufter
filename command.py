@@ -14,10 +14,11 @@ from .filter import Filter
 from .plugin_registry import PluginRegistry
 from .utils import apply_aggregation_preserving_depth, \
                    apply_intercalate, \
-                   apply_strict_zip_preserving_depth, \
+                   apply_loose_zip_preserving_depth, \
                    func_defaults_varnames, \
                    head_tail, \
-                   hybridproperty
+                   hybridproperty, \
+                   zip_empty
 
 log = logging.getLogger(__name__)
 
@@ -61,7 +62,7 @@ class Command(object):
                 if not line:
                     continue
                 line = line.replace('\t', ' ')
-                optname, optdesc = head_tail(*line.split(' ', 1))  # 2nd->tuple
+                optname, optdesc = head_tail(line.split(' ', 1))  # 2nd->tuple
                 if not all((optname, optdesc)) or optname not in fnc_varnames:
                     log.debug("Bad option line: {0}".format(line))
                 else:
@@ -120,28 +121,30 @@ class Command(object):
         # validate format_chain vs chain
         # 1. "shapes" match
         check_input, check_output = head_tail(
-            *apply_strict_zip_preserving_depth(self.filter_chain, format_chain)
+            apply_loose_zip_preserving_depth(self.filter_chain, format_chain)
         )
         checked_input = apply_aggregation_preserving_depth(
             lambda i:
-                head_tail(*i[1])[0] not in i[0].in_format._protocols
-                    and head_tail(*i[1])[0] or None
+                head_tail(i[1])[0] not in
+                    i[0].in_format._protocols and head_tail(i[1])[0] or None
                 if len(i) == 2 and isinstance(i[0], Filter)
                 else i if any(i) else None
         )(check_input)
         checked_output = apply_aggregation_preserving_depth(
             lambda i:
-                head_tail(*i[1])[0] not in i[0].out_format._protocols
-                    and head_tail(*i[1])[0] or None
+                head_tail(i[1])[0] not in i[0].out_format._protocols
+                    and head_tail(i[1])[0] or None
                 if len(i) == 2 and isinstance(i[0], Filter)
                 else i if any(i) else None
         )(check_output)
         for passno, checked in enumerate((checked_input, checked_output)):
             for order, cmd in filter(lambda (i, x): x,
                                      enumerate(apply_intercalate((checked,)))):
-                raise CommandError(self, "filter resolution at #{0} of {1}:"
-                                   " `{2}' protocol not recognized", order + 1,
-                                   ('input', 'output')[passno], cmd)
+                raise CommandError(self, "filter resolution #{0} of {1}: {2}",
+                                   order + 1, ('input', 'output')[passno],
+                                   "`{0}' protocol not recognized".format(cmd)
+                                   if cmd is not zip_empty else "filter/format"
+                                   " chain definition (shape) mismatch")
         # TODO
         #   2. I/O formats path(s) through the graph exist(s)
         #   3. some per-filter validations?
