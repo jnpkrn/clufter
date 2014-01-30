@@ -26,7 +26,7 @@ from clufter.utils import apply_preserving_depth, \
 
 
 class ChainResolve(unittest.TestCase):
-    def testShapeMatch(self):
+    def testShapeAndProtocolMatch(self):
 
         filters = dict(
             ccs2ccsflat=ccs2ccsflat(ccs, ccsflat),
@@ -44,9 +44,14 @@ class ChainResolve(unittest.TestCase):
                       ('ccsflat2pcs', 'ccs2coroxml', 'ccs2coroxml'))
         def cmd_chain_nonmatch_02(input='.in', output='.out', coro='.coro'):
             return ('file', input), (('file', output), ('file', coro))
+        # malformed protocol name
+        @Command.deco('ccs2ccsflat', ('ccsflat2pcs', 'ccs2coroxml'))
+        def cmd_chain_nonmatch_03(input='.in', output='.out', coro='.coro'):
+            return ('file', input), (('file', output), ('life', coro))
 
         cmd_classes = (cmd_chain_match, cmd_chain_nonmatch_01,
-                                        cmd_chain_nonmatch_02)
+                                        cmd_chain_nonmatch_02,
+                                        cmd_chain_nonmatch_03)
         cmd_names = map(lambda x: x.name, cmd_classes)
         commands = {}
         for cmd_cls, cmd_name in zip(cmd_classes, cmd_names):
