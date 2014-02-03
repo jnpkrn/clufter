@@ -119,25 +119,19 @@ class Command(object):
         ##    lambda x, d: ('\n' + d * ' ') + (' ').join(x)
         ##)(format_chain)
         # validate format_chain vs chain
-        # 1. "shapes" match
+        # 1. "shapes" match incl. input (head)/output (tail) protocol match
         check_input, check_output = head_tail(
             apply_loose_zip_preserving_depth(self.filter_chain, format_chain)
         )
-        checked_input = apply_aggregation_preserving_depth(
-            lambda i:
-                head_tail(i[1])[0] not in
-                    i[0].in_format._protocols and head_tail(i[1])[0] or None
-                if len(i) == 2 and isinstance(i[0], Filter)
-                else i if any(i) else None
-        )(check_input)
-        checked_output = apply_aggregation_preserving_depth(
-            lambda i:
-                head_tail(i[1])[0] not in i[0].out_format._protocols
-                    and head_tail(i[1])[0] or None
-                if len(i) == 2 and isinstance(i[0], Filter)
-                else i if any(i) else None
-        )(check_output)
-        for passno, checked in enumerate((checked_input, checked_output)):
+        for passno, check in enumerate((check_input, check_output)):
+            checked = apply_aggregation_preserving_depth(
+                lambda i:
+                    head_tail(i[1])[0] not in getattr(i[0],
+                        ('in_format', 'out_format')[passno])._protocols
+                        and head_tail(i[1])[0] or None
+                    if len(i) == 2 and isinstance(i[0], Filter)
+                    else i if any(i) else None
+            )((check_input, check_output)[passno])
             for order, cmd in filter(lambda (i, x): x,
                                      enumerate(apply_intercalate((checked,)))):
                 raise CommandError(self, "filter resolution #{0} of {1}: {2}",
