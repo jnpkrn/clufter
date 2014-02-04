@@ -120,10 +120,10 @@ class Command(object):
         ##)(io_chain)
         # validate io_chain vs chain
         # 1. "shapes" match incl. input (head)/output (tail) protocol match
-        check_input, check_output = head_tail(
+        to_check = head_tail(
             apply_loose_zip_preserving_depth(self.filter_chain, io_chain)
         )
-        for passno, check in enumerate((check_input, check_output)):
+        for passno, check in enumerate(to_check):
             checked = apply_aggregation_preserving_depth(
                 lambda i:
                     head_tail(i[1])[0] not in getattr(i[0],
@@ -131,7 +131,7 @@ class Command(object):
                         and head_tail(i[1])[0] or None
                     if len(i) == 2 and isinstance(i[0], Filter)
                     else i if any(i) else None
-            )((check_input, check_output)[passno])
+            )(to_check[passno])
             for order, cmd in filter(lambda (i, x): x,
                                      enumerate(apply_intercalate((checked,)))):
                 raise CommandError(self, "filter resolution #{0} of {1}: {2}",
