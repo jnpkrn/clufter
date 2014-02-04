@@ -112,16 +112,16 @@ class Command(object):
         for v in fnc_varnames:
             if hasattr(opts, v):
                 kwargs[v] = getattr(opts, v)
-        format_chain = self._fnc(**kwargs)
-        ##print format_chain
+        io_chain = self._fnc(**kwargs)
+        ##print io_chain
         ##from .utils import apply_aggregation_preserving_passing_depth
         ##print apply_aggregation_preserving_passing_depth(
         ##    lambda x, d: ('\n' + d * ' ') + (' ').join(x)
-        ##)(format_chain)
-        # validate format_chain vs chain
+        ##)(io_chain)
+        # validate io_chain vs chain
         # 1. "shapes" match incl. input (head)/output (tail) protocol match
         check_input, check_output = head_tail(
-            apply_loose_zip_preserving_depth(self.filter_chain, format_chain)
+            apply_loose_zip_preserving_depth(self.filter_chain, io_chain)
         )
         for passno, check in enumerate((check_input, check_output)):
             checked = apply_aggregation_preserving_depth(
@@ -137,7 +137,7 @@ class Command(object):
                 raise CommandError(self, "filter resolution #{0} of {1}: {2}",
                                    order + 1, ('input', 'output')[passno],
                                    "`{0}' protocol not recognized".format(cmd)
-                                   if cmd is not zip_empty else "filter/format"
+                                   if cmd is not zip_empty else "filter/io"
                                    " chain definition (shape) mismatch")
         # TODO
         #   2. I/O formats path(s) through the graph exist(s)
