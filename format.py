@@ -169,6 +169,57 @@ class Format(object):
         return filename
 
 
+class CompositeFormat(Format):
+    """Quasi-format to stand in place of multiple formats at once
+
+    It is intended to build on top of atomic formats (and only these,
+    i.e., multi-level nesting is not supported as it doesn't bring
+    any better handling anyway).
+
+    Common format API is overridden so as to be performed per each
+    contained/designated format in isolation, whereas the aggregated
+    result is then returned.
+
+    See also: Format
+    """
+    native_protocol = 'composite'  # to be overridden by per-instance one
+                                   # XXX: hybridproperty?
+
+    def __init__(self, protocol, formats):
+        """Format constructor, i.e., object = concrete multiformat data
+
+        Parameters:
+            protocol    protocol, should match: ('composite', ('file', ...))
+                        where 'file' is indeed variable
+            formats     particular format classes, matching the order of
+                        the "proper data part" within protocols
+        """
+        assert isinstance(protocol, (tuple, list)) and len(protocol) > 1
+        assert protocol[0] == self.__class__.native_protocol
+        assert isinstance(protocol[1], (tuple, list)) and len(protocol[1]) > 1
+        assert isinstance(formats, (tuple, list))
+        assert len(protocol[1]) == len(formats)
+        #assert all(p[0] in f._protocols
+        #           for (f, p) in zip(formats, protocol[1]))
+        self.native_protocol = (self.__class__.native_protocol,
+                                tuple(f.native_protocol for f in formats))
+        # instantiate particular designated formats
+        self._designee = tuple(f(*p) for (f, p) in zip(formats, protocol[1]))
+        self._protocols.clear()  # get rid of bytestring/file base protocols
+        super(CompositeFormat, self).__init__(protocol)
+
+    def produce(self, protocol, *args, **kwargs):
+        """"Called by implicit invocation to get data externalized"""
+        if protocol == 'native':
+            protocol = self.native_protocol
+
+        assert isinstance(protocol, (tuple, list)) and len(protocol) > 1
+        assert protocol[0] == self.__class__.native_protocol
+        assert len(protocol[1]) == len(self._designee, protocol[1])
+        return tuple(f._protocols[p](self, p, *a, **kwargs)
+                     for f, p, a in zip(self._designed, protocol[1], args))
+
+
 class XML(Format):
     """"Base for XML-based configuration formats"""
     @classproperty
