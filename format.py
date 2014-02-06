@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Base format stuff (metaclass, classes, etc.)"""
@@ -38,7 +38,7 @@ class formats(PluginRegistry):
         for base in reversed(cls.__bases__):
             if hasattr(base, '_protocols'):
                 cls._protocols.update(base._protocols)
-        # updated with locally defined protocols (marked by `producing` wrapper)
+        # updated with locally defined proto's (marked by `producing` wrapper)
         for attr, obj in attrs.iteritems():
             if hasattr(obj, '_protocol'):
                 cls._protocols.update(**{obj._protocol: obj})
