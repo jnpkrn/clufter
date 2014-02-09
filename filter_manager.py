@@ -7,6 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
 
+from .error import ClufterError
 from .filter import filters
 from .format import CompositeFormat, Format
 from .plugin_registry import PluginManager
@@ -15,6 +16,10 @@ from .utils import apply_preserving_depth, \
                    apply_intercalate
 
 log = logging.getLogger(__name__)
+
+
+class FilterManagerError(ClufterError):
+    pass
 
 
 class FilterManager(PluginManager):
@@ -67,5 +72,13 @@ class FilterManager(PluginManager):
 
     def __call__(self, which, in_decl, **kwargs):
         flt = self._filters[which]
-        in_obj = flt.in_format(*in_decl)
+        if isinstance(in_decl, Format):
+            if not issubclass(in_decl, flt.in_format):
+                raise FilterManagerError(self, "input object: format mismatch"
+                                         " (expected `{0}', got `{1}')",
+                                         in_decl.__class__.name,
+                                         flt.in_format.name)
+            in_obj = in_decl
+        else:
+            in_obj = flt.in_format(*in_decl)
         return flt(in_obj, **kwargs)
