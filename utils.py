@@ -14,10 +14,15 @@ from .error import ClufterError
 
 head_tail = \
     lambda x=None, *y, **kwargs: \
-        (x, y) if not isinstance(x, (list, tuple)) or kwargs.get('stop', 0) \
-            else head_tail(stop=1, *tuple(x) + y)
-protect_string_from_unpacking = \
-    lambda v: (v, ) if isinstance(v, basestring) else v
+        (x, args2sgpl(*y)) if not isinstance(x, (list, tuple)) \
+            or kwargs.get('stop', 0) \
+        else (head_tail(stop=1, *tuple(x) + y))
+# turn args into tuple unless single iterable arg
+args2sgpl = \
+    lambda x=(), *y: \
+        x if not y and isinstance(x, (tuple, list)) else (x, ) + y
+# turn args into tuple unconditionally
+args2tuple = lambda *args: tuple(args)
 filtervars = \
     lambda src, which: dict((x, src[x]) for x in which if x in src)
 filtervarsdef = \
