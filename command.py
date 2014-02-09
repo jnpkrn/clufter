@@ -37,7 +37,7 @@ class Command(object):
     __metaclass__ = commands
 
     def __init__(self, *filter_chain):
-        self._filter_chain = filter_chain
+        self._filter_chain = filter_chain  # already resolved
         self._desc, self._options = None, None  # later on-demand
         self._fnc_defaults, self._fnc_varnames = None, None  # ditto
 

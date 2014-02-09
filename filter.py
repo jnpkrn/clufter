@@ -59,7 +59,7 @@ class Filter(object):
     __metaclass__ = filters
 
     def __init__(self, in_format, out_format):
-        self._in_format, self._out_format = in_format, out_format
+        self._in_format, self._out_format = in_format, out_format  # resolved
 
     @hybridproperty
     def in_format(this):
