@@ -1,4 +1,5 @@
-Notable points:
+Notable points
+--------------
 
 1. plugins has to use absolute (clufter.*) imports otherwise issues can
    occur in some contexts of use
@@ -6,3 +7,9 @@ Notable points:
 2. please use only lower-cased identifiers for plugins, UPPER-CASED are
    reserved for implicit ones (technically, not plugins, but can be used
    on a few places accepting plugins) such as XML
+
+
+Common problems run into (just for self-reference)
+--------------------------------------------------
+
+(lambda a, *b)('file') -> 'f', ("ile",)

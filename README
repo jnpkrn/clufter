@@ -46,6 +46,12 @@ relationships:
     previous transitions plays the role)
 
   . protocol denotes a form of internal representation interchange
-    (either internal in the filters' chain or user-requested IO)
+    (either internal in the filters' chain or user-requested IO),
+    with these special kinds:
+    - 'native' denotes most natural/economic form of dealing with
+      (the instance of) given data format, e.g., XML -> parsed tree
+    - 'composite' denotes multi-channel interchange format
+      (consisting of automic ones)
+
     
 TBD
