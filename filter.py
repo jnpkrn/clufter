@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Base filter stuff (metaclass, decorator, etc.)"""
@@ -8,13 +8,15 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 import logging
 from os.path import dirname, join
 from copy import deepcopy
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict
 
 from lxml import etree
 
 from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
-from .utils import head_tail, hybridproperty, filtervarspop
+from .utils import head_tail, \
+                   hybridproperty, \
+                   filtervarspop
 from .command_context import CommandContext
 
 log = logging.getLogger(__name__)
@@ -75,8 +77,9 @@ class Filter(object):
         """Default is to use a function decorated with `deco`"""
         if not cmd_ctxt:  # for estranged (not under Command control) use-cases
             cmd_ctxt = CommandContext()
-        out_decl = self._fnc(self, in_obj, cmd_ctxt, **kwargs)
-        return self.out_format(*out_decl)
+        outdecl = self._fnc(self, in_obj, cmd_ctxt, **kwargs)
+        outdecl_head, outdecl_tail = head_tail(outdecl)
+        return self.out_format(outdecl_head, *outdecl_tail)
 
     @classmethod
     def deco(cls, in_format, out_format):

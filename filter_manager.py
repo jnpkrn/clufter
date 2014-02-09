@@ -8,6 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 import logging
 
 from .filter import filters
+from .format import CompositeFormat, Format
 from .plugin_registry import PluginManager
 from .utils import apply_preserving_depth, \
                    apply_aggregation_preserving_depth, \
@@ -33,6 +34,21 @@ class FilterManager(PluginManager):
             if apply_aggregation_preserving_depth(all)(res_output):
                 log.debug("Resolve at `{0}' filter: `{1}' -> {2}"
                           .format(flt_name, repr(res_input), repr(res_output)))
+                # capture composite formats if present;  when running
+                # into composite format, we replace in-situ the whole iterable
+                # with as-of-now resolved formats with lazily pulled
+                # CompositeFormat passing it these formats along the standard
+                # business (as opposed to on-the-fly class creation when it
+                # probably won't be ever instantiated anyway);
+                # extra lambda wrapping so as to surely make a closure around
+                # ("remember correctly") the current value of res_output
+                res_output = tuple(
+                    (lambda formats:
+                        lambda protocol, *args:
+                            CompositeFormat(protocol, formats=formats, *args)
+                    )(res_output[i]) if isinstance(o, (tuple, list)) else o
+                    for i, o in enumerate(res_output)
+                )
                 filters[flt_name] = flt_cls(*res_output)
                 continue
             # drop the filter if cannot resolve any of the formats
