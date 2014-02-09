@@ -18,7 +18,7 @@ from lxml import etree
 
 from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
-from .utils import classproperty
+from .utils import args2tuple, classproperty
 
 log = logging.getLogger(__name__)
 MAX_DEPTH = 1000
@@ -160,6 +160,13 @@ class SimpleFormat(Format, MetaPlugin):
     """This is what most of the format classes want to subclass"""
     native_protocol = 'bytestring'
 
+    def __init__(self, protocol, *args):
+        """Format constructor, i.e., object = concrete uniformat data"""
+        assert isinstance(protocol, basestring), \
+               "protocol has to be string for {0}" \
+               .format(self.__class__.__name__)
+        super(SimpleFormat, self).__init__(protocol, *args)
+
     @Format.producing('bytestring')
     def get_bytestring(self, protocol):
         if 'file' in self._representations:  # break the possible loop
@@ -195,28 +202,41 @@ class CompositeFormat(Format, MetaPlugin):
     native_protocol = 'composite'  # to be overridden by per-instance one
                                    # XXX: hybridproperty?
 
-    def __init__(self, protocol, formats):
+    def __init__(self, protocol, *args, **kwargs):
         """Format constructor, i.e., object = concrete multiformat data
 
         Parameters:
             protocol    protocol, should match: ('composite', ('file', ...))
                         where 'file' is indeed variable
-            formats     particular format classes, matching the order of
-                        the "proper data part" within protocols
+            args        each should represent arguments to be passed
+                        into format instantiation for respective (order-wise)
+                        protocol within the composite one
+            kwargs      further keyword arguments; supported:
+                        formats     iterable of format classes involved,
+                                    matching the order of the "proper data
+                                    part" within protocols
         """
-        assert isinstance(protocol, (tuple, list)) and len(protocol) > 1
-        assert protocol[0] == self.__class__.native_protocol
+        assert isinstance(protocol, tuple) and protocol \
+               and protocol[0] == self.__class__.native_protocol, \
+               "protocol has to be tuple initiated with {0} for {1}" \
+               .format(self.__class__.native_protocol, self.__class__.__name__)
+        formats = kwargs['formats']  # has to be present
+        # further checks
+        assert len(protocol) > 1
         assert isinstance(protocol[1], (tuple, list)) and len(protocol[1]) > 1
         assert isinstance(formats, (tuple, list))
         assert len(protocol[1]) == len(formats)
-        #assert all(p[0] in f._protocols
-        #           for (f, p) in zip(formats, protocol[1]))
+        assert len(args) == len(formats)
+        assert all(p in f._protocols for (f, p) in zip(formats, protocol[1]))
+        self._protocols[protocol] = lambda *_: args  # just to pass the assert
         self.native_protocol = (self.__class__.native_protocol,
                                 tuple(f.native_protocol for f in formats))
         # instantiate particular designated formats
-        self._designee = tuple(f(*p) for (f, p) in zip(formats, protocol[1]))
-        self._protocols.clear()  # get rid of bytestring/file base protocols
-        super(CompositeFormat, self).__init__(protocol)
+        self._designee = tuple(
+            f(p, *args2tuple(a))
+            for (f, p, a) in zip(formats, protocol[1], args)
+        )
+        super(CompositeFormat, self).__init__(protocol, *args)
 
     def produce(self, protocol, *args, **kwargs):
         """"Called by implicit invocation to get data externalized"""
@@ -225,9 +245,10 @@ class CompositeFormat(Format, MetaPlugin):
 
         assert isinstance(protocol, (tuple, list)) and len(protocol) > 1
         assert protocol[0] == self.__class__.native_protocol
-        assert len(protocol[1]) == len(self._designee, protocol[1])
-        return tuple(f._protocols[p](self, p, *a, **kwargs)
-                     for f, p, a in zip(self._designed, protocol[1], args))
+        assert len(protocol[1]) == len(self._designee)
+        args = args or ((),) * len(protocol[1])
+        return tuple(f._protocols[p](f, p, *a, **kwargs)
+                     for f, p, a in zip(self._designee, protocol[1], args))
 
 
 class XML(SimpleFormat):
