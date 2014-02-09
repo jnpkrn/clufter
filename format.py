@@ -42,37 +42,6 @@ class formats(PluginRegistry):
                 cls._protocols.update({obj._protocol: obj})
 
 
-def producing(protocol, protect=False):
-    """Decorator for externalization method understood by the `formats` magic
-
-    As a bonus: caching of representations."""
-    def deco_meth(meth):
-        def deco_args(self, protocol, protect_safe=False, *args):
-            try:
-                produced = self._representations[protocol]
-            except KeyError:
-                produced = meth(self, protocol, *args)
-                # computed -> stored normalization: tuple nontupled or len == 1
-                if not isinstance(produced, tuple) or len(produced) == 1:
-                    produced = (produced, )
-                self._representations[protocol] = produced
-
-            # stored -> computed normalization: detuple if len == 1
-            if isinstance(produced, tuple) and len(produced) == 1:
-                produced = produced[0]
-            if protect and not protect_safe:
-                log.debug("{0}:{1}:Forced deepcopy of `{2}' instance"
-                          .format(self.__class__.name, meth.__name__,
-                                  type(produced).__name__))
-                produced = deepcopy(produced)
-            return produced
-
-        deco_args.__name__, deco_args.__doc__ = meth.__name__, meth.__doc__
-        deco_args._protocol = protocol  # mark for later recognition
-        return deco_args
-    return deco_meth
-
-
 class Format(object):
     """Base for configuration formats
 
@@ -80,7 +49,8 @@ class Format(object):
         - protocols: string label denoting how to int-/externalize
           - union of protocols within inheritance hierarchy and
             locally defined ones (prioritized)
-            - to define one, add a method decorated with `@producing(<proto>)`
+            - to define one, add a method decorated with
+              `@Format.producing(<proto>)`
             - be default, all such protocols are suitable for both
               int- and externalization, but you can prevent the latter
               context by raising an exception in the method body
@@ -154,18 +124,49 @@ class Format(object):
 
     native_protocol = 'to-be-defined-in-subclasses'
 
+    @staticmethod
+    def producing(protocol, protect=False):
+        """Decorator for externalizing method understood by the `Format` magic
+
+        As a bonus: caching of representations."""
+        def deco_meth(meth):
+            def deco_args(self, protocol, protect_safe=False, *args):
+                try:
+                    produced = self._representations[protocol]
+                except KeyError:
+                    produced = meth(self, protocol, *args)
+                    # computed -> stored normalization
+                    if not isinstance(produced, tuple) or len(produced) == 1:
+                        produced = (produced, )
+                    self._representations[protocol] = produced
+
+                # stored -> computed normalization: detuple if len == 1
+                if isinstance(produced, tuple) and len(produced) == 1:
+                    produced = produced[0]
+                if protect and not protect_safe:
+                    log.debug("{0}:{1}:Forced deepcopy of `{2}' instance"
+                              .format(self.__class__.name, meth.__name__,
+                                      type(produced).__name__))
+                    produced = deepcopy(produced)
+                return produced
+
+            deco_args.__name__, deco_args.__doc__ = meth.__name__, meth.__doc__
+            deco_args._protocol = protocol  # mark for later recognition
+            return deco_args
+        return deco_meth
+
 
 class SimpleFormat(Format, MetaPlugin):
     """This is what most of the format classes want to subclass"""
     native_protocol = 'bytestring'
 
-    @producing('bytestring')
+    @Format.producing('bytestring')
     def get_bytestring(self, protocol):
         if 'file' in self._representations:  # break the possible loop
             with file(self('file'), 'rb') as f:
                 return f.read()
 
-    @producing('file')
+    @Format.producing('file')
     def get_file(self, protocol, filename):
         with file(filename, 'wb') as f:
             f.write(self('bytestring'))
@@ -358,7 +359,7 @@ class XML(SimpleFormat):
 
     native_protocol = 'etree'
 
-    @producing('bytestring')
+    @SimpleFormat.producing('bytestring')
     def get_bytestring(self, protocol):
         ret = super(XML, self).get_bytestring(self)
         if ret is not None:
@@ -368,6 +369,6 @@ class XML(SimpleFormat):
         return etree.tostring(self('etree', protect_safe=True),
                               pretty_print=True)
 
-    @producing('etree', protect=True)
+    @SimpleFormat.producing('etree', protect=True)
     def get_etree(self, protocol):
         return etree.fromstring(self('bytestring')).getroottree()

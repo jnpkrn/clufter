@@ -13,7 +13,7 @@ class simpleconfig(SimpleFormat):
     # yacc-based parser in fence-virt
     native_protocol = 'struct'
 
-    @producing('bytestring')
+    @SimpleFormat.producing('bytestring')
     def get_bytestring(self, protocol):
         ret = super(Format, self).get_bytestring(self)
         if ret is not None:
@@ -23,7 +23,7 @@ class simpleconfig(SimpleFormat):
         # XXX TODO self('struct')
         raise NotImplementedError
 
-    @producing('struct', protect=True)
+    @SimpleFormat.producing('struct', protect=True)
     def get_struct(self, protocol):
         #return etree.fromstring(self('bytestring')).getroottree()
         pass
