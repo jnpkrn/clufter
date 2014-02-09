@@ -17,7 +17,7 @@ from sys import modules
 from lxml import etree
 
 from .error import ClufterError
-from .plugin_registry import PluginRegistry
+from .plugin_registry import MetaPlugin, PluginRegistry
 from .utils import classproperty
 
 log = logging.getLogger(__name__)
@@ -30,8 +30,6 @@ class FormatError(ClufterError):
 
 class formats(PluginRegistry):
     """Format registry (to be used as a metaclass for formats)"""
-    use_local = True
-
     def __init__(cls, name, bases, attrs):
         cls._protocols = {}
         # protocols merge: top-down through inheritance
@@ -154,6 +152,11 @@ class Format(object):
 
     ####
 
+    native_protocol = 'to-be-defined-in-subclasses'
+
+
+class SimpleFormat(Format, MetaPlugin):
+    """This is what most of the format classes want to subclass"""
     native_protocol = 'bytestring'
 
     @producing('bytestring')
@@ -169,7 +172,7 @@ class Format(object):
         return filename
 
 
-class CompositeFormat(Format):
+class CompositeFormat(Format, MetaPlugin):
     """Quasi-format to stand in place of multiple formats at once
 
     It is intended to build on top of atomic formats (and only these,
@@ -180,7 +183,13 @@ class CompositeFormat(Format):
     contained/designated format in isolation, whereas the aggregated
     result is then returned.
 
-    See also: Format
+    Note that the semantics implicitly require protocols prescribing
+    the `CompositeFormat` instantiation to also become "composite",
+    i.e., having form like ('composite', ('file', 'file')) instead
+    of mere scalar like 'file' (IOW, whole declaration remains
+    fully "typed").
+
+    See also: Format, SimpleFormat
     """
     native_protocol = 'composite'  # to be overridden by per-instance one
                                    # XXX: hybridproperty?
@@ -220,7 +229,7 @@ class CompositeFormat(Format):
                      for f, p, a in zip(self._designed, protocol[1], args))
 
 
-class XML(Format):
+class XML(SimpleFormat):
     """"Base for XML-based configuration formats"""
     @classproperty
     def root(self):

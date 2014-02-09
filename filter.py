@@ -13,7 +13,7 @@ from collections import OrderedDict, defaultdict
 from lxml import etree
 
 from .error import ClufterError
-from .plugin_registry import PluginRegistry
+from .plugin_registry import MetaPlugin, PluginRegistry
 from .utils import head_tail, hybridproperty, filtervarspop
 from .command_context import CommandContext
 
@@ -102,7 +102,7 @@ def tag_log(s, elem):
     return s.format(elem.tag, ', '.join(':'.join(i) for i in elem.items()))
 
 
-class XMLFilter(Filter):
+class XMLFilter(Filter, MetaPlugin):
     @staticmethod
     def _traverse(in_fmt, walk, walk_default=None, et=None,
                   preprocess=lambda s, n, r: s, proceed=lambda *x: x,

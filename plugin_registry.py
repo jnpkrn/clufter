@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Easy (at least for usage) plugin framework"""
@@ -15,6 +15,10 @@ from sys import modules
 from .utils import classproperty, hybridproperty
 
 log = logging.getLogger(__name__)
+
+
+class MetaPlugin(object):
+    """For use in the internal meta-hierarchy as "do not register me" mark"""
 
 
 class PluginRegistry(type):
@@ -40,8 +44,7 @@ class PluginRegistry(type):
     # non-API
 
     def __new__(registry, name, bases, attrs):
-        if '__metaclass__' not in attrs and (registry.use_local
-          or not registry.__module__.startswith(attrs['__module__'])):
+        if '__metaclass__' not in attrs and MetaPlugin not in bases:
             # alleged end-use plugin
             ret = registry.probe(name, bases, attrs)
         else:
@@ -143,8 +146,6 @@ class PluginRegistry(type):
 
     # API
 
-    use_local = False
-
     @classmethod
     def setup(registry, reset=False):
         """Implicit setup upon first registry involvement or external reset"""
@@ -186,10 +187,9 @@ class PluginRegistry(type):
 
             # filled as a side-effect of meta-magic, see `__new__`
             ret.update((n, registry._plugins[n]) for n in path_plugins)
-            if registry.use_local:
-                # add "built-in" ones
-                ret.update((n, p) for n, p in registry._plugins.iteritems()
-                           if p.__module__ == registry.__module__)
+            # add "built-in" ones
+            ret.update((n, p) for n, p in registry._plugins.iteritems()
+                       if MetaPlugin not in p.__bases__)
 
         return ret
 
