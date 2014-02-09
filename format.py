@@ -238,6 +238,12 @@ class CompositeFormat(Format, MetaPlugin):
         )
         super(CompositeFormat, self).__init__(protocol, *args)
 
+    def __iter__(self):
+        return iter(self._designee)
+
+    def __getitem__(self, index):
+        return self._designee[index]
+
     def produce(self, protocol, *args, **kwargs):
         """"Called by implicit invocation to get data externalized"""
         if protocol == 'native':
