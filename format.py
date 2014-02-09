@@ -39,7 +39,7 @@ class formats(PluginRegistry):
         # updated with locally defined proto's (marked by `producing` wrapper)
         for attr, obj in attrs.iteritems():
             if hasattr(obj, '_protocol'):
-                cls._protocols.update(**{obj._protocol: obj})
+                cls._protocols.update({obj._protocol: obj})
 
 
 def producing(protocol, protect=False):
