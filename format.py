@@ -18,7 +18,7 @@ from lxml import etree
 
 from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
-from .utils import args2tuple, classproperty
+from .utils import args2tuple, classproperty, tuplist
 
 log = logging.getLogger(__name__)
 MAX_DEPTH = 1000
@@ -223,9 +223,8 @@ class CompositeFormat(Format, MetaPlugin):
         formats = kwargs['formats']  # has to be present
         # further checks
         assert len(protocol) > 1
-        assert isinstance(protocol[1], (tuple, list)) and len(protocol[1]) > 1
-        assert isinstance(formats, (tuple, list))
-        assert len(protocol[1]) == len(formats)
+        assert tuplist(protocol[1]) and len(protocol[1]) > 1
+        assert tuplist(formats) and len(protocol[1]) == len(formats)
         assert len(args) == len(formats)
         assert all(p in f._protocols for (f, p) in zip(formats, protocol[1]))
         self._protocols[protocol] = lambda *_: args  # just to pass the assert
@@ -249,7 +248,7 @@ class CompositeFormat(Format, MetaPlugin):
         if protocol == 'native':
             protocol = self.native_protocol
 
-        assert isinstance(protocol, (tuple, list)) and len(protocol) > 1
+        assert tuplist(protocol) and len(protocol) > 1
         assert protocol[0] == self.__class__.native_protocol
         assert len(protocol[1]) == len(self._designee)
         args = args or ((),) * len(protocol[1])

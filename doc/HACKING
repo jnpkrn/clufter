@@ -9,6 +9,12 @@ Notable points
    on a few places accepting plugins) such as XML
 
 
+Terms
+-----
+
+tuplist		tuple or list (also see utils.py)
+
+
 Common problems run into (just for self-reference)
 --------------------------------------------------
 

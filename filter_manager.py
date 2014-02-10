@@ -13,7 +13,8 @@ from .format import CompositeFormat, Format
 from .plugin_registry import PluginManager
 from .utils import apply_preserving_depth, \
                    apply_aggregation_preserving_depth, \
-                   apply_intercalate
+                   apply_intercalate, \
+                   tuplist
 
 log = logging.getLogger(__name__)
 
@@ -51,7 +52,7 @@ class FilterManager(PluginManager):
                     (lambda formats:
                         lambda protocol, *args:
                             CompositeFormat(protocol, formats=formats, *args)
-                    )(res_output[i]) if isinstance(o, (tuple, list)) else o
+                    )(res_output[i]) if tuplist(o) else o
                     for i, o in enumerate(res_output)
                 )
                 filters[flt_name] = flt_cls(*res_output)

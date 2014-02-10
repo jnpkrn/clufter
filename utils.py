@@ -12,17 +12,17 @@ from subprocess import Popen
 from .error import ClufterError
 
 
-head_tail = \
-    lambda x=None, *y, **kwargs: \
-        (x, args2sgpl(*y)) if not isinstance(x, (list, tuple)) \
-            or kwargs.get('stop', 0) \
-        else (head_tail(stop=1, *tuple(x) + y))
-# turn args into tuple unless single iterable arg
+tuplist = lambda x: isinstance(x, (tuple, list))
+# turn args into tuple unless single tuplist arg
 args2sgpl = \
-    lambda x=(), *y: \
-        x if not y and isinstance(x, (tuple, list)) else (x, ) + y
+    lambda x=(), *y: x if not y and tuplist(x) else (x, ) + y
 # turn args into tuple unconditionally
 args2tuple = lambda *args: tuple(args)
+head_tail = \
+    lambda x=None, *y, **kwargs: \
+        (x, args2sgpl(*y)) if not tuplist(x)  or kwargs.get('stop', 0) \
+                           else (head_tail(stop=1, *tuple(x) + y))
+
 filtervars = \
     lambda src, which: dict((x, src[x]) for x in which if x in src)
 filtervarsdef = \
@@ -33,19 +33,19 @@ apply_preserving_depth = \
     lambda action: \
         lambda item: \
             type(item)([apply_preserving_depth(action)(i) for i in item]) \
-            if isinstance(item, (tuple, list)) else action(item)
+            if tuplist(item) else action(item)
 apply_aggregation_preserving_depth = \
     lambda agg_fn: \
         lambda item: \
             agg_fn([apply_aggregation_preserving_depth(agg_fn)(i)
                     for i in item]) \
-            if isinstance(item, (tuple, list)) else item
+            if tuplist(item) else item
 apply_aggregation_preserving_passing_depth = \
     lambda agg_fn, d=0: \
         lambda item: \
             agg_fn([apply_aggregation_preserving_passing_depth(agg_fn, d+1)(i)
                     for i in item], d+1) \
-            if isinstance(item, (tuple, list)) else item
+            if tuplist(item) else item
 # name comes from Haskell
 # note: always returns list even for input tuple
 # note: when returning from recursion, should always observe scalar or list(?)
@@ -65,8 +65,7 @@ apply_loose_zip_preserving_depth = \
     lambda a, b: \
         (type(a) if type(a) == type(b) else type(a))(
             [apply_loose_zip_preserving_depth(*p) for p in loose_zip(a, b)]
-        ) if isinstance(a, (tuple, list)) == isinstance(b, (tuple, list)) \
-          == True else zipped_outlier([a, b])
+        ) if tuplist(a) == tuplist(b) == True else zipped_outlier([a, b])
 # as previous, but with length checking of some sort
 # NOTE: automatically shortens the longer counterpart in the pair
 #       to the length of the bigger one
@@ -74,8 +73,8 @@ apply_strict_zip_preserving_depth = \
     lambda a, b: \
         (type(a) if type(a) == type(b) else type(a))(
             [apply_strict_zip_preserving_depth(*p) for p in zip(a, b)]
-        ) if isinstance(a, (tuple, list)) == isinstance(b, (tuple, list)) \
-          == True and len(a) == len(b) else zipped_outlier([a, b])
+        ) if tuplist(a) == tuplist(b) == True and len(a) == len(b) \
+        else zipped_outlier([a, b])
 
 
 def which(name, *where):
