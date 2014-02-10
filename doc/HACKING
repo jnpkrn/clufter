@@ -18,4 +18,8 @@ tuplist		tuple or list (also see utils.py)
 Common problems run into (just for self-reference)
 --------------------------------------------------
 
-(lambda a, *b)('file') -> 'f', ("ile",)
+(lambda a, *b: (a, b))(*'file')     -> 'f', ('ile',)
+(lambda a, *b: (a, b))(*('file', )) -> 'file', ()
+
+'123' if True else True, None       -> ('123', None)
+'123' if True else (True, None)     -> '123'
