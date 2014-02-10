@@ -18,6 +18,11 @@ args2sgpl = \
     lambda x=(), *y: x if not y and tuplist(x) else (x, ) + y
 # turn args into tuple unconditionally
 args2tuple = lambda *args: tuple(args)
+any2iter = \
+    lambda x: \
+        x if hasattr(x, 'next') and hasattr(x.next, '__call__') \
+        else iter(args2sgpl(x, None))
+
 head_tail = \
     lambda x=None, *y, **kwargs: \
         (x, args2sgpl(*y)) if not tuplist(x)  or kwargs.get('stop', 0) \
