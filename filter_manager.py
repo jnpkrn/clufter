@@ -73,13 +73,5 @@ class FilterManager(PluginManager):
 
     def __call__(self, which, in_decl, **kwargs):
         flt = self._filters[which]
-        if isinstance(in_decl, Format):
-            if not issubclass(in_decl, flt.in_format):
-                raise FilterManagerError(self, "input object: format mismatch"
-                                         " (expected `{0}', got `{1}')",
-                                         in_decl.__class__.name,
-                                         flt.in_format.name)
-            in_obj = in_decl
-        else:
-            in_obj = flt.in_format(*in_decl)
+        in_obj = flt.as_instance(*in_decl)
         return flt(in_obj, **kwargs)

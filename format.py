@@ -106,6 +106,19 @@ class Format(object):
         self._representations = {}
         self.swallow(protocol, *args)
 
+    @classmethod
+    def as_instance(cls, *decl_or_instance):
+        """Create an instance or verify and return existing one"""
+        if isinstance(decl_or_instance, Format):
+            if not isinstance(decl_or_instance, cls):
+                raise FormarError(cls, "input object: format mismatch"
+                                  " (expected `{0}', got `{1}')", cls.name,
+                                  decl_or_instance.__class__.name)
+            instance = decl_or_instance
+        else:
+            instance = cls(*in_decl)
+        return instance
+
     def __call__(self, protocol='native', *args, **kwargs):
         """Way to externalize object's internal data"""
         return self.produce(protocol, *args)
