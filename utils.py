@@ -12,6 +12,14 @@ from subprocess import Popen
 from .error import ClufterError
 
 
+def selfaware(func):
+    """Decorator suitable for recursive staticmethod"""
+    def selfaware_inner(*args, **kwargs):
+        return func(selfaware(func), *args, **kwargs)
+    map(lambda a: setattr(selfaware_inner, a, getattr(func, a)),
+        ('__doc__', '__name__'))
+    return selfaware_inner
+
 tuplist = lambda x: isinstance(x, (tuple, list))
 # turn args into tuple unless single tuplist arg
 args2sgpl = \
