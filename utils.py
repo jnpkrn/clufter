@@ -25,7 +25,7 @@ any2iter = \
 
 head_tail = \
     lambda x=None, *y, **kwargs: \
-        (x, args2sgpl(*y)) if not tuplist(x)  or kwargs.get('stop', 0) \
+        (x, args2sgpl(*y)) if not tuplist(x) or kwargs.get('stop', 0) \
                            else (head_tail(stop=1, *tuple(x) + y))
 
 filtervars = \
@@ -37,19 +37,22 @@ filtervarspop = \
 apply_preserving_depth = \
     lambda action: \
         lambda item: \
-            type(item)([apply_preserving_depth(action)(i) for i in item]) \
+            type(item)(apply_preserving_depth(action)(i) for i in item) \
             if tuplist(item) else action(item)
 apply_aggregation_preserving_depth = \
     lambda agg_fn: \
         lambda item: \
-            agg_fn([apply_aggregation_preserving_depth(agg_fn)(i)
-                    for i in item]) \
+            agg_fn(type(item)(apply_aggregation_preserving_depth(agg_fn)(i)
+                              for i in item)) \
             if tuplist(item) else item
 apply_aggregation_preserving_passing_depth = \
     lambda agg_fn, d=0: \
         lambda item: \
-            agg_fn([apply_aggregation_preserving_passing_depth(agg_fn, d+1)(i)
-                    for i in item], d+1) \
+            agg_fn(type(item)(
+                apply_aggregation_preserving_passing_depth(agg_fn, d+1)(i)
+                for i in item),
+                d+1
+            ) \
             if tuplist(item) else item
 # name comes from Haskell
 # note: always returns list even for input tuple
