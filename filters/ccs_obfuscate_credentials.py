@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """ccs_obfuscate_credentials filter"""
@@ -10,6 +10,7 @@ from clufter.filter import XMLFilter
 
 
 @XMLFilter.deco('ccs', 'ccs')
-def ccs_obfuscate_credentials(flt, in_obj, cmd_ctxt):
+def ccs_obfuscate_credentials(flt_ctxt, in_obj):
     #print etree.tostring(in_obj('etree').xslt(flt.get_template(in_obj)))
-    return ('etree', flt.proceed_xslt_filter(in_obj, symbol='obfuscate_credentials'))
+    res = flt_ctxt.proceed_xslt_filter(in_obj, symbol='obfuscate_credentials')
+    return ('etree', res)

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """ccs2ccsflat filter"""
@@ -18,7 +18,8 @@ CCS_FLATTEN = which('ccs_flatten', pardir) or ''
 
 
 @Filter.deco('ccs', 'ccsflat')
-def ccs2ccsflat(self, in_obj, cmd_ctxt, verify=False):
+def ccs2ccsflat(flt_ctxt, in_obj, verify=False):
+    self = flt_ctxt.ctxt_wrapped
     # XXX currently ccs_flatten does not handle stdin (tempfile.mkstemp?)
     if verify:
         in_obj.verify()

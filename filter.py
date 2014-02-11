@@ -77,7 +77,9 @@ class Filter(object):
         """Default is to use a function decorated with `deco`"""
         if not cmd_ctxt:  # for estranged (not under Command control) use-cases
             cmd_ctxt = CommandContext()
-        outdecl = self._fnc(self, in_obj, cmd_ctxt, **kwargs)
+            cmd_ctxt.add_filter(self)
+        flt_ctxt = cmd_ctxt.filter(self.__class__.name)
+        outdecl = self._fnc(flt_ctxt, in_obj, **kwargs)
         outdecl_head, outdecl_tail = head_tail(outdecl)
         return self.out_format(outdecl_head, *outdecl_tail)
 

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """ccsflat2pcs filter"""
@@ -9,5 +9,5 @@ from clufter.filter import Filter
 
 
 @Filter.deco('ccsflat', 'pcs')
-def ccsflat2pcs(flt, in_obj, cmd_ctxt):
+def ccsflat2pcs(flt_ctxt, in_obj):
     pass

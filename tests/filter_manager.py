@@ -56,7 +56,7 @@ class CompositeFormatIO(FilterManagerTestCase):
     """Exercising filters with composite formats"""
     def setUp(self):
         @Filter.deco(('ccs', 'ccs'), ('ccsflat', 'ccsflat'))
-        def double_ccs2ccsflat(self, in_objs, flt_ctxt, verify=False):
+        def double_ccs2ccsflat(flt_ctxt, in_objs, verify=False):
             from clufter.filters.ccs2ccsflat import ccs2ccsflat
             from clufter.formats.ccs import ccs, ccsflat
             ccs2ccsflat = ccs2ccsflat(ccs, ccsflat)

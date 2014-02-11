@@ -10,6 +10,6 @@ from clufter.filter import XMLFilter
 
 
 @XMLFilter.deco('ccs', 'coroxml')
-def ccs2coroxml(flt, in_obj, cmd_ctxt):
+def ccs2coroxml(flt_ctxt, in_obj):
     #print etree.tostring(in_obj('etree').xslt(flt.get_template(in_obj)))
-    return ('etree', flt.proceed_xslt(in_obj))
+    return ('etree', flt_ctxt.proceed_xslt(in_obj))
