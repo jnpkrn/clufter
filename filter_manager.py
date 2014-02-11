@@ -34,6 +34,14 @@ class FilterManager(PluginManager):
 
     @staticmethod
     def _resolve(formats, filters):
+        def get_composite_onthefly(formats):
+            composite_onthefly = \
+                lambda protocol, *args: \
+                    CompositeFormat(protocol, formats=formats, *args)
+            # XXX currently instantiation only (no match for composite classes)
+            composite_onthefly.as_instance = composite_onthefly
+            return composite_onthefly
+
         for flt_name, flt_cls in filters.items():
             res_input = [flt_cls.in_format, flt_cls.out_format]
             res_output = apply_preserving_depth(formats.get)(res_input)
@@ -49,11 +57,8 @@ class FilterManager(PluginManager):
                 # extra lambda wrapping so as to surely make a closure around
                 # ("remember correctly") the current value of res_output
                 res_output = tuple(
-                    (lambda formats:
-                        lambda protocol, *args:
-                            CompositeFormat(protocol, formats=formats, *args)
-                    )(res_output[i]) if tuplist(o) else o
-                    for i, o in enumerate(res_output)
+                    get_composite_onthefly(o) if tuplist(o) else o
+                    for o in res_output
                 )
                 filters[flt_name] = flt_cls(*res_output)
                 continue
@@ -73,5 +78,5 @@ class FilterManager(PluginManager):
 
     def __call__(self, which, in_decl, **kwargs):
         flt = self._filters[which]
-        in_obj = flt.as_instance(*in_decl)
+        in_obj = flt.in_format.as_instance(*in_decl)
         return flt(in_obj, **kwargs)

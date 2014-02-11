@@ -116,7 +116,7 @@ class Format(object):
                                   decl_or_instance.__class__.name)
             instance = decl_or_instance
         else:
-            instance = cls(*in_decl)
+            instance = cls(*decl_or_instance)
         return instance
 
     def __call__(self, protocol='native', *args, **kwargs):
