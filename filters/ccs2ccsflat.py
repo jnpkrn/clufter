@@ -36,6 +36,9 @@ def ccs2ccsflat(flt_ctxt, in_obj, verify=False):
                           proc.returncode, err)
     elif out == '':
         # "No resource trees defined; nothing to do"
-        with file(in_file, 'r') as f:
-            out = f.read()
+        try:
+            with file(in_file, 'r') as f:
+                out = f.read()
+        except IOError, e:
+            raise FilterError(self, e.strerror + ": {0}", e.filename)
     return ('bytestring', out)
