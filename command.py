@@ -34,7 +34,10 @@ class commands(PluginRegistry):
 
 
 class Command(object):
-    """Base for commands, i.e., encapsulations of filter chains"""
+    """Base for commands, i.e., encapsulations of filter chains
+
+    Also see the docstring for `deco`.
+    """
     __metaclass__ = commands
 
     @hybridproperty
@@ -170,7 +173,91 @@ class Command(object):
 
     @classmethod
     def deco(cls, *filter_chain):
-        """Decorator as an easy factory of actual commands"""
+        """Decorator as an easy factory of actual commands
+
+        Parameters:
+            filter_chain: particular scalars and vectors (variable depth)
+                          representing graph of filters that form this command
+
+        Note on graph representation within filter_chain:
+
+                 __B    ___D
+                /      /
+            A--<___C--<             in ----------------> out
+                       \
+            O___________>--P
+
+
+        graph with letter denoting the filters and with the left->right
+        direction of flow from the inputs towards outputs (final outputs
+        at terminals: B, D, P), is encoded as:
+
+            ((A, B, (C, D, P)), (O, P), )
+
+        where, for filter X (in {A, ..., D, O, P} for the example at hand):
+
+            EXPRESSION  ::= UPFILTERS
+            UPFILTERS   ::= TERMINAL | ( FILTERS )
+            FILTERS     ::= FILTER, | FILTERS FILTER
+            FILTER      ::= TERMINAL | PASSDOWN
+            TERMINAL    ::= X
+            PASSDOWN    ::= (X, DOWNFILTERS)
+            DOWNFILTERS ::= FILTERS
+
+        where:
+            - {UP,DOWN}FILTERS dichotomy is present only as
+              a forward-reference for easier explanation
+            - there is a limitation such that each filter can
+              be contained as at most one node in the graph as above
+              (this corresponds to the notion of inputs merge for
+              the filter, as otherwise there would be ambiguity:
+              in the selected notation, can the filter occurences stand
+              for unique nodes?  remember, filters as singletons)
+            - UPFILTERS ::= TERMINAL is a syntactic sugar exploiting
+              unambiguity in converting such expression as (TERMINAL, )
+
+
+        Note on the decorated function:
+            It should either return an iterable or behave itself as a generator
+            yielding the items (at once) and on subsequent round triggering
+            some postprocessing (still from decorated function's perspective).
+            The items coming from the function encodes the protocols at
+            the input(s) and the output(s) of the filter graph encoded in
+            `filter_chain` and ought to reflect this processing construct
+            as follows:
+                1. for each UPFILTER in order, there is a tuple of two parts
+                   1b. first part denotes the input (only single decl)
+                   2b. second part denotes the output, which follows the
+                       branch of filter chain pertaining the particular
+                       UPFILTER, and can be either scalar or (arbitrarily)
+                       nested iterable to match that filter chain branch
+                       (proper nesting is not needed, only the order is
+                       important, see point 4.)
+                2. if there is just one UPFILTER, the toplevel definition
+                   can be just the respective un-nested item, as this case
+                   is easy to distinguish and apply un-sugaring if applicable
+                3. when there is the same filter down the line shared by
+                   2+ UPFILTERs (cf. "limitation such that each filter" above)
+                   the respective protocol encoding is expected just once
+                   within the first(!) respective UPFILTER definition
+                #-- not yet, if ever, as it is opposed by good diagnostics --
+                #4. nesting of the second part of the tuple (2b.) is not
+                #   strictly needed and only the order is important,
+                #   as the association is performed on intercalated chains
+                #   anyway (note that this is orthogonal to simplification 2.)
+
+            for the graph above, it would be, e.g.,:
+
+            (('Aproto', 'a-in.txt'),
+                (('Bproto', 'b-out.txt'), (('Dproto', 'd-out.txt'), ('Pproto')))),
+            (('Oproto', 'e-in.txt'), )
+
+            #which, as per point 4., can be further simplified as:
+
+            #(('Aproto', 'a-in.txt'),
+            #    ('Bproto', 'b-out.txt'), ('Dproto', 'd-out.txt'), ('Pproto')),
+            #(('Oproto', 'e-in.txt'), )
+        """
         def deco_fnc(fnc):
             log.debug("Command: deco for {0}"
                       .format(fnc))
