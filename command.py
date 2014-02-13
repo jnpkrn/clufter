@@ -87,8 +87,15 @@ class Command(object):
                     opt = {}
                     opt['help'] = optdesc[0].strip()
                     if optname in fnc_defaults:  # default if known
-                        opt['default'] = fnc_defaults[optname]
-                        opt['help'] += " [%default]"
+                        default = fnc_defaults[optname]
+                        if default in (True, False):
+                            opt['action'] = ('store_true',
+                                             'store_false')[int(default)]
+                            opt['help'] += " [{0}]".format('enabled' if default
+                                                           else 'disabled')
+                        else:
+                            opt['help'] += " [%default]"
+                        opt['default'] = default
                     options.append(make_option("--{0}".format(optname), **opt))
             elif line.lower().startswith('options:'):
                 readopts = True
