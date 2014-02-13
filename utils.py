@@ -71,6 +71,33 @@ apply_intercalate = apply_aggregation_preserving_depth(
                i, [])
 )
 
+bifilter = \
+    lambda fnc, seq: \
+        reduce(lambda acc, x: acc[int(not fnc(x))].append(x) or acc,
+               seq, ([], []))
+
+# Given the partitioning function, do the recursive refinement in a way
+# the parts reaching the bottom line in more steps are continually "shaked"
+# towards the end (with stable the relative order, though).
+# Default partitioning function just distinguishes between tuples/lists
+# and other values (presumably scalars) so when passed a tuple/list encoding
+# a graph (tree/forest) in a DFS manner using unrestricted nesting, it will
+# return serialized BFS walk of the same.
+# NOTE if there are scalars already at the start-level depth, use
+#      `tail_shake_safe` (not that it provides much more guarantee :-p)
+tailshake = \
+    lambda src, partitioner=(lambda x: not tuplist(x)): \
+        reduce(lambda a, b: a + (tailshake(b, partitioner) if b else b),
+               reduce(lambda a, b: (a[0] + b[0], a[1] + b[1]),
+                      tuple(bifilter(partitioner, i) if tuplist(i) else (i, [])
+                      for i in src), ([], [])))
+
+tailshake_safe = \
+    lambda src, partitioner=(lambda x: not tuplist(x)): \
+        tailshake(src if all(tuplist(i) for i in src) else (src, ),
+                  partitioner)
+
+
 zipped_outlier = type('zipped_outlier', (tuple, ), {})
 zip_empty = type('zip_filler', (str, ), {})("EMPTY")
 loose_zip = lambda a, b: zip(

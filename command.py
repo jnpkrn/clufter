@@ -6,13 +6,17 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
+from itertools import izip_longest
 from optparse import make_option, SUPPRESS_HELP
 
+from .command_context import CommandContext
 from .error import ClufterError, \
                    EC
 from .filter import Filter
 from .plugin_registry import PluginRegistry
-from .utils import args2sgpl, \
+from .utils import any2iter, \
+                   args2sgpl, \
+                   args2tuple, \
                    apply_aggregation_preserving_depth, \
                    apply_intercalate, \
                    apply_loose_zip_preserving_depth, \
@@ -21,10 +25,12 @@ from .utils import args2sgpl, \
                    hybridproperty, \
                    selfaware, \
                    tuplist, \
+                   tailshake, \
                    zip_empty
 
 log = logging.getLogger(__name__)
 
+protodecl = lambda x: len(x) == 2 and isinstance(x[0], Filter)
 
 class CommandError(ClufterError):
     pass
@@ -212,7 +218,95 @@ class Command(object):
     # execution related
     #
 
-    def __call__(self, opts, args=None):
+    @classmethod
+    def _iochain_check_shape(cls, cmd_ctxt, io_chain):
+        # validate "filter chain" vs "io chain"
+        # 1. "shapes" match incl. input (head)/output (tail) protocol match
+        terminal_chain = cmd_ctxt['filter_chain_analysis']['terminal_chain']
+        if len(terminal_chain) == 1 and len(io_chain) == len(terminal_chain[0]):
+            # see `deco`: 2.
+            io_chain = args2tuple(io_chain)
+        to_check = apply_loose_zip_preserving_depth(terminal_chain, io_chain)
+        for to_check_inner in to_check:
+            for passno, check in enumerate(head_tail(to_check_inner)):
+                checked = apply_aggregation_preserving_depth(
+                    lambda i:
+                        head_tail(i[1])[0] not in getattr(i[0],
+                            ('in_format', 'out_format')[passno])._protocols
+                            and str(head_tail(i[1])[0]) or None
+                        if protodecl(i) else i if any(i) else None
+                )(to_check_inner[passno])
+                checked_flat = apply_intercalate((checked,))
+                for order, cmd in filter(lambda (i, x): x,
+                                         enumerate(checked_flat)):
+                    raise CommandError(cls,
+                        "filter resolution #{0} of {1}: {2}", order + 1,
+                        ('input', 'output')[passno],
+                        "filter/io chain definition (shape) mismatch"
+                        if isinstance(cmd, (type(zip_empty), Filter))
+                        else "`{0}' protocol not suitable".format(cmd)
+                    )
+        return to_check
+
+    @classmethod
+    def _iochain_run(cls, cmd_ctxt, checked_io_chain):
+        # XXX could be made more robust (ordering still not as strict as it
+        #                                should)
+        # XXX some parts could be performed in parallel (requires previous
+        #     item so to prevent deadlocks on cond. var. wait)
+        #     - see also `heapq` standard module
+        filter_backtrack = cmd_ctxt['filter_chain_analysis']['filter_backtrack']
+        terminals = apply_intercalate(
+            cmd_ctxt['filter_chain_analysis']['terminal_chain']
+        )
+        input_cache = cmd_ctxt.setdefault('input_cache', {})
+        for flt, io_decl in tailshake(checked_io_chain,
+                                      partitioner=lambda x:
+                                        not (tuplist(x)) or protodecl(x)):
+            flt_ctxt = cmd_ctxt.ensure_filter(flt)
+            if not filter_backtrack[flt] and not flt_ctxt['out']:
+                # INFILTER in in-mode
+                log.debug("Run `{0}' filter with `{1}' io decl. as INFILTER"
+                          .format(flt.__class__.__name__, io_decl))
+                if io_decl in input_cache:
+                    in_obj = input_cache[io_decl]
+                else:
+                    in_obj = flt.in_format.as_instance(*io_decl)
+                    input_cache[io_decl] = in_obj
+            elif filter_backtrack[flt] and not flt_ctxt['out']:
+                # not INFILTER in either mode (nor output already precomputed?)
+                log.debug("Run `{0}' filter with `{1}' io decl. as DOWNFILTER"
+                          .format(flt.__class__.__name__, io_decl))
+                inputs = map(lambda x: cmd_ctxt.filter(x.__class__.__name__)['out'],
+                             filter_backtrack[flt])
+                assert all(inputs)
+                in_obj = flt.in_format.as_instance(*inputs)
+            if not flt_ctxt['out'] or flt not in terminals:
+                if not flt_ctxt['out']:
+                    flt_ctxt['out'] = flt(in_obj, flt_ctxt)
+                if flt not in terminals or not filter_backtrack[flt]:
+                    continue
+            # output time!  (INFILTER terminal listed twice in io_chain)
+            log.debug("Run `{0}' filter with `{1}' io decl. as TERMINAL"
+                      .format(flt.__class__.__name__, io_decl))
+            # XXX following could be stored somewhere, but rather pointless
+            log.debug("FOO: {0}".format(flt_ctxt['out']))
+            flt_ctxt['out'](*io_decl)
+        return EC.EXIT_SUCCESS  # XXX some better decision?
+
+    @classmethod
+    def _iochain_proceed(cls, cmd_ctxt, io_chain):
+        #io_chain_intercalated = apply_intercalate(io_chain)
+        #terminal_chain_intercalated = apply_intercalate(terminal_chain)
+        ##from .utils import apply_aggregation_preserving_passing_depth
+        ##print apply_aggregation_preserving_passing_depth(
+        ##    lambda x, d: ('\n' + d * ' ') + (' ').join(x)
+        ##)(io_chain)
+        checked = cls._iochain_check_shape(cmd_ctxt, io_chain)
+
+        return cls._iochain_run(cmd_ctxt, checked)
+
+    def __call__(self, opts, args=None, cmd_ctxt=None):
         """Proceed the command"""
         ec = EC.EXIT_SUCCESS
         fnc_defaults, fnc_varnames = self._figure_fnc_defaults_varnames()
@@ -220,39 +314,17 @@ class Command(object):
         for v in fnc_varnames:
             if getattr(opts, v, None) is not None:
                 kwargs[v] = getattr(opts, v)
-        io_chain = self._fnc(**kwargs)
-        ##print io_chain
-        ##from .utils import apply_aggregation_preserving_passing_depth
-        ##print apply_aggregation_preserving_passing_depth(
-        ##    lambda x, d: ('\n' + d * ' ') + (' ').join(x)
-        ##)(io_chain)
-        # validate io_chain vs chain
-        # 1. "shapes" match incl. input (head)/output (tail) protocol match
-        to_check = head_tail(
-            apply_loose_zip_preserving_depth(self.filter_chain, io_chain)
-        )
-        for passno, check in enumerate(to_check):
-            checked = apply_aggregation_preserving_depth(
-                lambda i:
-                    head_tail(i[1])[0] not in getattr(i[0],
-                        ('in_format', 'out_format')[passno])._protocols
-                        and head_tail(i[1])[0] or None
-                    if len(i) == 2 and isinstance(i[0], Filter)
-                    else i if any(i) else None
-            )(to_check[passno])
-            for order, cmd in filter(lambda (i, x): x,
-                                     enumerate(apply_intercalate((checked,)))):
-                raise CommandError(self, "filter resolution #{0} of {1}: {2}",
-                                   order + 1, ('input', 'output')[passno],
-                                   "`{0}' protocol not recognized".format(cmd)
-                                   if cmd is not zip_empty else "filter/io"
-                                   " chain definition (shape) mismatch")
-        # TODO
-        #   2. I/O formats path(s) through the graph exist(s)
-        #   3. some per-filter validations?
-        #   - could some initial steps be done earlier?
-        # - perform the chain
-        #   - [advanced] threading for parallel branches?
+        cmd_ctxt = cmd_ctxt or CommandContext()
+        cmd_ctxt.ensure_filters(apply_intercalate(self._filter_chain))
+        cmd_ctxt['filter_chain_analysis'] = self.filter_chain_analysis
+        io_driver = any2iter(self._fnc(cmd_ctxt, **kwargs))
+        io_handler = (self._iochain_proceed, lambda c, ec=EC.EXIT_SUCCESS: ec)
+        io_driver_map = izip_longest(io_driver, io_handler)
+        for driver, handler in io_driver_map:
+            driver = () if driver is None else (driver, )
+            ec = handler(cmd_ctxt, *driver)
+            if ec != EC.EXIT_SUCCESS:
+                break
         return ec
 
     @classmethod
