@@ -143,7 +143,8 @@ class Format(object):
 
         As a bonus: caching of representations."""
         def deco_meth(meth):
-            def deco_args(self, protocol, protect_safe=False, *args):
+            def deco_args(self, protocol, *args, **kwargs):
+                protect_safe = kwargs.pop('protect_safe', False)
                 try:
                     produced = self._representations[protocol]
                 except KeyError:
