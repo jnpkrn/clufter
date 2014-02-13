@@ -51,7 +51,7 @@ relationships:
     - 'native' denotes most natural/economic form of dealing with
       (the instance of) given data format, e.g., XML -> parsed tree
     - 'composite' denotes multi-channel interchange format
-      (consisting of automic ones)
+      (consisting of atomic ones)
 
     
 TBD
