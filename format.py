@@ -109,12 +109,12 @@ class Format(object):
     @classmethod
     def as_instance(cls, *decl_or_instance):
         """Create an instance or verify and return existing one"""
-        if isinstance(decl_or_instance, Format):
-            if not isinstance(decl_or_instance, cls):
-                raise FormarError(cls, "input object: format mismatch"
+        if decl_or_instance and isinstance(decl_or_instance[0], Format):
+            instance = decl_or_instance[0]
+            if not isinstance(instance, cls):
+                raise FormatError(cls, "input object: format mismatch"
                                   " (expected `{0}', got `{1}')", cls.name,
-                                  decl_or_instance.__class__.name)
-            instance = decl_or_instance
+                                  instance.__class__.name)
         else:
             instance = cls(*decl_or_instance)
         return instance
