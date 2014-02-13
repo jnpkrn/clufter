@@ -78,14 +78,17 @@ class CommandContext(CommandContextBase):
                 obj.__setattribute__(name, value)
         return (wrapped(parent=self))
 
-    def add_filter(self, flt):
-        existing = self._filters
-        if flt.__class__.name not in existing:
-            existing[flt.__class__.name] = self._wrapping_nested_context(flt)
+    def ensure_filter(self, flt):
+        existing, key = self._filters, flt.__class__.name
+        ret = existing.get(key, None)
+        if ret:
+            assert id(ret.ctxt_wrapped) == id(flt)
+        else:
+            ret = existing[key] = self._wrapping_nested_context(flt)
+        return ret
 
-    def add_filters(self, flts):
-        for flt in flts:
-            self.add_filter(flt)
+    def ensure_filters(self, flts):
+        return map(self.ensure_filter, flts)
 
     def filter(self, which):
         return self._filters[which]

@@ -73,12 +73,11 @@ class Filter(object):
         """Output format identifier/class for the filter"""
         return this._out_format
 
-    def __call__(self, in_obj, cmd_ctxt=None, **kwargs):
+    def __call__(self, in_obj, flt_ctxt=None, **kwargs):
         """Default is to use a function decorated with `deco`"""
-        if not cmd_ctxt:  # for estranged (not under Command control) use-cases
+        if flt_ctxt is None:  # when estranged (not under Command control)
             cmd_ctxt = CommandContext()
-            cmd_ctxt.add_filter(self)
-        flt_ctxt = cmd_ctxt.filter(self.__class__.name)
+            flt_ctxt = cmd_ctxt.ensure_filter(self)
         outdecl = self._fnc(flt_ctxt, in_obj, **kwargs)
         outdecl_head, outdecl_tail = head_tail(outdecl)
         return self.out_format(outdecl_head, *outdecl_tail)
