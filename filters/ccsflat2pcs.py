@@ -10,4 +10,4 @@ from clufter.filter import Filter
 
 @Filter.deco('ccsflat', 'pcs')
 def ccsflat2pcs(flt_ctxt, in_obj):
-    pass
+    return ('bytestring', "Real result soon (WIP)")
