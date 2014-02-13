@@ -131,7 +131,7 @@ class Command(object):
         fnc_defaults, fnc_varnames = self._figure_fnc_defaults_varnames()
         kwargs = {}
         for v in fnc_varnames:
-            if hasattr(opts, v):
+            if getattr(opts, v, None) is not None:
                 kwargs[v] = getattr(opts, v)
         io_chain = self._fnc(**kwargs)
         ##print io_chain
