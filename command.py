@@ -36,20 +36,33 @@ class Command(object):
     """Base for commands, i.e., encapsulations of filter chains"""
     __metaclass__ = commands
 
+    @hybridproperty
+    def filter_chain(this):
+        """Chain of filter identifiers/classes for the command"""
+        return this._filter_chain
+
     def __init__(self, *filter_chain):
         self._filter_chain = filter_chain  # already resolved
-        self._desc, self._options = None, None  # later on-demand
-        self._fnc_defaults, self._fnc_varnames = None, None  # ditto
+        # following will all be resolved lazily, on-demand;
+        # all of these could be evaluated upon instantiation immediately,
+        # but this is not the right thing to do due to potentially many
+        # commands being instantiated initially, while presumably only one
+        # of them will be run later on
+        self._desc_opts = None
+        self._fnc_defaults_varnames = None
 
-    def _figure_func_defaults_varnames(self, fnc=None):
+    #
+    # self-introspection (arguments, description, options)
+    #
+
+    def _figure_fnc_defaults_varnames(self, fnc=None):
         fnc = fnc or getattr(self, '_fnc', None)
-        if self._fnc_defaults is None or self._fnc_varnames is None:
+        if self._fnc_defaults_varnames is None:
             if not fnc:
-                self._fnc_defaults, self._fnc_varnames = {}, ()
+                self._fnc_defaults_varnames = {}, ()
             else:
-                self._fnc_defaults, self._fnc_varnames = \
-                    func_defaults_varnames(fnc)
-        return self._fnc_defaults, self._fnc_varnames
+                self._fnc_defaults_varnames = func_defaults_varnames(fnc)
+        return self._fnc_defaults_varnames
 
     @classmethod
     def _figure_parser_desc_opts(cls, fnc_defaults, fnc_varnames):
@@ -94,21 +107,17 @@ class Command(object):
     @property
     def parser_desc_opts(self):
         """Parse docstring as description + optparse.Option instances list"""
-        if self._desc is None or self._options is None:
-            self._desc, self._options = self._figure_parser_desc_opts(
-                *self._figure_func_defaults_varnames()
+        if self._desc_opts is None:
+            self._desc_opts = self._figure_parser_desc_opts(
+                *self._figure_fnc_defaults_varnames()
             )
-        return self._desc, self._options
+        return self._desc_opts
 
-    @hybridproperty
-    def filter_chain(this):
-        """Chain of filter identifiers/classes for the command"""
-        return this._filter_chain
 
     def __call__(self, opts, args=None):
         """Proceed the command"""
         ec = EC.EXIT_SUCCESS
-        fnc_defaults, fnc_varnames = self._figure_func_defaults_varnames()
+        fnc_defaults, fnc_varnames = self._figure_fnc_defaults_varnames()
         kwargs = {}
         for v in fnc_varnames:
             if hasattr(opts, v):
