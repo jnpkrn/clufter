@@ -350,14 +350,14 @@ class Command(object):
 
             ((A, B, (C, D, P)), (O, P), )
 
-        where, for filter X (in {A, ..., D, O, P} for the example at hand):
+        where, for filter x (in {A, ..., D, O, P} for the example at hand):
 
             EXPRESSION  ::= UPFILTERS
             UPFILTERS   ::= TERMINAL | ( FILTERS )
             FILTERS     ::= FILTER, | FILTERS FILTER
-            FILTER      ::= TERMINAL | PASSDOWN
-            TERMINAL    ::= X
-            PASSDOWN    ::= (X, DOWNFILTERS)
+            FILTER      ::= PASSDOWN | TERMINAL
+            PASSDOWN    ::= (TERMINAL, DOWNFILTERS)
+            TERMINAL    ::= x
             DOWNFILTERS ::= FILTERS
 
         where:
@@ -371,6 +371,8 @@ class Command(object):
               for unique nodes?  remember, filters as singletons)
             - UPFILTERS ::= TERMINAL is a syntactic sugar exploiting
               unambiguity in converting such expression as (TERMINAL, )
+            - to make it explicit, the graph is expressed in depth-first
+              (or DFS) manner
 
 
         Note on the decorated function:
