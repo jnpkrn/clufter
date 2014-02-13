@@ -177,8 +177,8 @@ class SimpleFormat(Format, MetaPlugin):
     def __init__(self, protocol, *args):
         """Format constructor, i.e., object = concrete uniformat data"""
         assert isinstance(protocol, basestring), \
-               "protocol has to be string for {0}" \
-               .format(self.__class__.__name__)
+               "protocol has to be string for `{0}', not `{1}'" \
+               .format(self.__class__.__name__, protocol)
         super(SimpleFormat, self).__init__(protocol, *args)
 
     @Format.producing('bytestring')
