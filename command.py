@@ -91,6 +91,7 @@ class Command(object):
         description = '\n'.join(description)
         return description, options
 
+    @property
     def parser_desc_opts(self):
         """Parse docstring as description + optparse.Option instances list"""
         if self._desc is None or self._options is None:

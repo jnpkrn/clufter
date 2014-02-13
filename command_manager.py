@@ -74,7 +74,7 @@ class CommandManager(PluginManager):
                 raise CommandNotFoundError(cmd)
             canonical_cmd = command.__class__.name
 
-            parser.description, options = command.parser_desc_opts()
+            parser.description, options = command.parser_desc_opts
             parser.option_groups[0].add_options(options)
 
             args = ['--help'] if values.help else args[1:]
