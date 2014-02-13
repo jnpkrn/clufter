@@ -12,7 +12,8 @@ from .error import ClufterError, \
                    EC
 from .filter import Filter
 from .plugin_registry import PluginRegistry
-from .utils import apply_aggregation_preserving_depth, \
+from .utils import args2sgpl, \
+                   apply_aggregation_preserving_depth, \
                    apply_intercalate, \
                    apply_loose_zip_preserving_depth, \
                    func_defaults_varnames, \
@@ -120,6 +121,9 @@ class Command(object):
             )
         return self._desc_opts
 
+    #
+    # execution related
+    #
 
     def __call__(self, opts, args=None):
         """Proceed the command"""
@@ -173,7 +177,7 @@ class Command(object):
             attrs = {
                 '__module__': fnc.__module__,
                 '__doc__': fnc.__doc__,
-                '_filter_chain': filter_chain,
+                '_filter_chain': args2sgpl(filter_chain),
                 '_fnc': staticmethod(fnc),
             }
             # optimization: shorten type() -> new() -> probe
