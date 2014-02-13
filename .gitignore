@@ -1,3 +1,4 @@
 *.py[co]
 /.ropeproject
 /tests/lon-test/
+/tests/tmp/
