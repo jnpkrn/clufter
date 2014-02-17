@@ -20,6 +20,7 @@ from .utils import any2iter, \
                    apply_aggregation_preserving_depth, \
                    apply_intercalate, \
                    apply_loose_zip_preserving_depth, \
+                   bifilter, \
                    func_defaults_varnames, \
                    head_tail, \
                    hybridproperty, \
@@ -218,11 +219,11 @@ class Command(object):
     # execution related
     #
 
-    @classmethod
-    def _iochain_check_shape(cls, cmd_ctxt, io_chain):
-        # validate "filter chain" vs "io chain"
+    @staticmethod
+    @selfaware
+    def _iochain_check_terminals(me, io_chain, terminal_chain):
+        # validate "terminal filter chain" vs "io chain"
         # 1. "shapes" match incl. input (head)/output (tail) protocol match
-        terminal_chain = cmd_ctxt['filter_chain_analysis']['terminal_chain']
         if len(terminal_chain) == 1 and len(io_chain) == len(terminal_chain[0]):
             # see `deco`: 2.
             io_chain = args2tuple(io_chain)
@@ -239,7 +240,7 @@ class Command(object):
                 checked_flat = apply_intercalate((checked,))
                 for order, cmd in filter(lambda (i, x): x,
                                          enumerate(checked_flat)):
-                    raise CommandError(cls,
+                    raise CommandError(me,
                         "filter resolution #{0} of {1}: {2}", order + 1,
                         ('input', 'output')[passno],
                         "filter/io chain definition (shape) mismatch"
@@ -249,20 +250,32 @@ class Command(object):
         return to_check
 
     @classmethod
-    def _iochain_run(cls, cmd_ctxt, checked_io_chain):
+    def _iochain_proceed(cls, cmd_ctxt, io_chain):
+        # currently works sequentially, jumping through the terminals in-order;
+        # when any of them (apparently the output one) hasn't its prerequisites
+        # (i.e., input data) satisfied, the run is restarted with first
+        # producing such data (which are output of another filter feeding
+        # the one in question) -- this can be repeated multiple times if
+        # there is a longer chain forming such a gap
+        # -- this is certainly needlessly slow method, but there is a hope
+        #    the same approach could be applied when parallelizing the stuff
         # XXX could be made more robust (ordering still not as strict as it
         #                                should)
         # XXX some parts could be performed in parallel (requires previous
         #     item so to prevent deadlocks on cond. var. wait)
         #     - see also `heapq` standard module
         filter_backtrack = cmd_ctxt['filter_chain_analysis']['filter_backtrack']
-        terminals = apply_intercalate(
-            cmd_ctxt['filter_chain_analysis']['terminal_chain']
-        )
+        terminal_chain = cmd_ctxt['filter_chain_analysis']['terminal_chain']
+        terminals = apply_intercalate(terminal_chain)
+
+        terminal_chain = cls._iochain_check_terminals(io_chain, terminal_chain)
+
         input_cache = cmd_ctxt.setdefault('input_cache', {})
-        for flt, io_decl in tailshake(checked_io_chain,
-                                      partitioner=lambda x:
-                                        not (tuplist(x)) or protodecl(x)):
+        worklist = list(reversed(tailshake(terminal_chain,
+                                           partitioner=lambda x:
+                                           not (tuplist(x)) or protodecl(x))))
+        while worklist:
+            flt, io_decl = worklist.pop()
             flt_ctxt = cmd_ctxt.ensure_filter(flt)
             if not filter_backtrack[flt] and not flt_ctxt['out']:
                 # INFILTER in in-mode
@@ -279,6 +292,19 @@ class Command(object):
                           .format(flt.__class__.__name__, io_decl))
                 inputs = map(lambda x: cmd_ctxt.filter(x.__class__.__name__)['out'],
                              filter_backtrack[flt])
+                notyet, ok = bifilter(lambda x:
+                                  cmd_ctxt.filter(x.__class__.__name__)['out'] is None,
+                                  filter_backtrack[flt])
+                if notyet:
+                    log.debug("Backtrack with inclusion of {0} to feed `{1}'"
+                              .format(', '.join("`{0}'"
+                                      .format(nt.__class__.__name__)
+                                              for nt in notyet),
+                                      flt.__class__.__name__))
+                    worklist.append((flt, io_decl))
+                    worklist.extend(reversed(tuple((ny, None)
+                                             for ny in notyet)))
+                    continue
                 assert all(inputs)
                 in_obj = flt.in_format.as_instance(*inputs)
             if not flt_ctxt['out'] or flt not in terminals:
@@ -290,21 +316,8 @@ class Command(object):
             log.debug("Run `{0}' filter with `{1}' io decl. as TERMINAL"
                       .format(flt.__class__.__name__, io_decl))
             # XXX following could be stored somewhere, but rather pointless
-            log.debug("FOO: {0}".format(flt_ctxt['out']))
             flt_ctxt['out'](*io_decl)
         return EC.EXIT_SUCCESS  # XXX some better decision?
-
-    @classmethod
-    def _iochain_proceed(cls, cmd_ctxt, io_chain):
-        #io_chain_intercalated = apply_intercalate(io_chain)
-        #terminal_chain_intercalated = apply_intercalate(terminal_chain)
-        ##from .utils import apply_aggregation_preserving_passing_depth
-        ##print apply_aggregation_preserving_passing_depth(
-        ##    lambda x, d: ('\n' + d * ' ') + (' ').join(x)
-        ##)(io_chain)
-        checked = cls._iochain_check_shape(cmd_ctxt, io_chain)
-
-        return cls._iochain_run(cmd_ctxt, checked)
 
     def __call__(self, opts, args=None, cmd_ctxt=None):
         """Proceed the command"""
