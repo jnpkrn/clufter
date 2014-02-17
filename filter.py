@@ -194,7 +194,7 @@ class XMLFilter(Filter, MetaPlugin):
             if parent_sym and isinstance(parent_sym[0], etree._Element):
                 top = filter(lambda x: x.tag in TOP_LEVEL_XSL, parent_sym[0])
                 for e in top:
-                    print "at", sym, "appending", etree.tostring(e)
+                    #print "at", sym, "appending", etree.tostring(e)
                     ret.append(deepcopy(e))
                 #for e in toplevel:
                 #    parent_sym[0].append(e)
@@ -290,7 +290,7 @@ class XMLFilter(Filter, MetaPlugin):
                                       version="1.0")
             top = filter(lambda x: x.tag in TOP_LEVEL_XSL, snippet)
             for e in top:
-                print "e", etree.tostring(e)
+                #print "e", etree.tostring(e)
                 xslt_root.append(e)
             if len(snippet):
                 log.debug("snippet {0}".format(etree.tostring(snippet)))
@@ -298,7 +298,7 @@ class XMLFilter(Filter, MetaPlugin):
                                          match=elem.tag)
                 template.append(snippet) # XXX was extend
                 xslt_root.append(template)
-                print "ee", etree.tostring(xslt_root)
+                #print "ee", etree.tostring(xslt_root)
             #else:
             #    # we dont't apply if there is nothing local and not at root
             #    print "zdrham", elem.tag
