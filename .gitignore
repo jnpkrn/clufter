@@ -1,4 +1,8 @@
 *.py[co]
-/.ropeproject
-/tests/lon-test/
-/tests/tmp/
+!/.gitignore
+!/tests/XMLFormat-walk/
+/.*
+/cib.xml
+/corosync.conf
+/tests/*/
+/tests/*-archive
