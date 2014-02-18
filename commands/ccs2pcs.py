@@ -9,10 +9,7 @@ from ..command import Command
 
 
 @Command.deco(('ccs2ccsflat',
-               'ccsflat2pcs', 'ccs2coroxml'))
-# XXX should be
-#@Command.deco(('ccs2ccsflat',
-#               'ccsflat2pcs', ('ccs2coroxml', 'coroxml2coroconf')))
+               'ccsflat2pcs', ('ccs2coroxml', 'xml2simpleconfig')))
 def ccs2pcs(cmd_ctxt,
             input='/etc/cluster/cluster.conf',
             output='./cib.xml',
@@ -31,4 +28,4 @@ def ccs2pcs(cmd_ctxt,
     """
     #cmd_ctxt.filter()['validate'] = not nocheck
     #cmd_ctxt.filter('ccs2ccsflat')['validate'] = not nocheck
-    return ('file', input), (('file', output), ('file', coro))
+    return ('file', input), (('file', output), (('file', coro), ))
