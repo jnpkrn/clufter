@@ -210,7 +210,7 @@ class XMLFilter(Filter, MetaPlugin):
                 #if elem is ret:
                 #    continue
                 log.debug("Got {0}".format(elem.tag))
-                if elem.tag == '{{{0}}}recursion'.format(CLUFTER_NS):
+                if elem.tag == '{{{0}}}descent'.format(CLUFTER_NS):
                     up = elem
                     walk = []
                     while up != ret:
@@ -277,7 +277,7 @@ class XMLFilter(Filter, MetaPlugin):
                     else:
                         parent.append(s)
 
-            cl = snippet.xpath("//clufter:recursion",
+            cl = snippet.xpath("//clufter:descent",
                                  namespaces={'clufter': CLUFTER_NS})
             if len(cl):
                 log.info("Not all tags from clufter namespace used")

@@ -20,5 +20,5 @@ ccs2coroxml = '''\
             '|token_retransmits_before_loss_const',
             '|window_size',
             '|'), concat('|', name(), '|'))]" />
-    <clufter:recursion at="interface"/>
+    <clufter:descent at="interface"/>
 '''

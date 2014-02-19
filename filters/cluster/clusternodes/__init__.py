@@ -5,6 +5,6 @@
 
 ccs2coroxml = '''\
     <nodelist>
-        <clufter:recursion at="clusternode"/>
+        <clufter:descent at="clusternode"/>
     </nodelist>
 '''

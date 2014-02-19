@@ -9,13 +9,13 @@ ccs2coroxml = '''\
     <corosync>
 
         <!-- clusternodes ~ nodelist</xsl:comment -->
-        <clufter:recursion at="clusternodes"/>
+        <clufter:descent at="clusternodes"/>
 
         <!-- cman ~ quorum -->
-        <clufter:recursion at="cman"/>
+        <clufter:descent at="cman"/>
 
         <!-- logging ~ logging -->
-        <clufter:recursion at="logging"/>
+        <clufter:descent at="logging"/>
 
         <!-- totem (pieces from cluster=current and cman) ~ totem -->
         <totem version="2"
@@ -36,7 +36,7 @@ ccs2coroxml = '''\
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:if>
-            <clufter:recursion at="totem"/>
+            <clufter:descent at="totem"/>
         </totem>
     </corosync>
 '''
@@ -51,8 +51,8 @@ ccsflat2pcs = '''\
                   <nvpair id="default-resource-stickiness" name="default-resource-stickiness" value="INFINITY"/>
                 </cluster_property_set -->
             </crm_config>
-            <clufter:recursion at="clusternodes"/>
-            <clufter:recursion at="rm"/>
+            <clufter:descent at="clusternodes"/>
+            <clufter:descent at="rm"/>
         </configuration>
         <status/>
     </cib>
@@ -62,7 +62,7 @@ obfuscate_credentials = '''\
     <xsl:template match="*">
         <xsl:copy>
             <xsl:copy-of select="@*"/>
-            <clufter:recursion/>
+            <clufter:descent/>
        </xsl:copy>
     </xsl:template>
 '''
@@ -73,7 +73,7 @@ obfuscate_identifiers = '''\
     <xsl:template match="@*|node()">
         <xsl:copy>
             <xsl:apply-templates select="@*|node()"/>
-            <!--clufter:recursion/-->
+            <!--clufter:descent/-->
        </xsl:copy>
     </xsl:template>
 

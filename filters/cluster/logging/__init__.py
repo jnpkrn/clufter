@@ -6,6 +6,6 @@
 ccs2coroxml = '''\
     <logging>
         <!-- XXX: the latter match (if any) should overwrite the former -->
-        <clufter:recursion at="logging_daemon"/>
+        <clufter:descent at="logging_daemon"/>
     </logging>
 '''
