@@ -20,6 +20,9 @@ def selfaware(func):
         ('__doc__', '__name__'))
     return selfaware_inner
 
+# inspired by http://stackoverflow.com/a/4374075
+mutable = lambda x: isinstance(x, (basestring, int, long, bool, float, tuple))
+
 tuplist = lambda x: isinstance(x, (tuple, list))
 # turn args into tuple unless single tuplist arg
 args2sgpl = \

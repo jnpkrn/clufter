@@ -18,7 +18,7 @@ from lxml import etree
 
 from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
-from .utils import args2tuple, classproperty, tuplist
+from .utils import args2tuple, classproperty, mutable, tuplist
 
 log = logging.getLogger(__name__)
 MAX_DEPTH = 1000
@@ -121,7 +121,7 @@ class Format(object):
 
     def __call__(self, protocol='native', *args, **kwargs):
         """Way to externalize object's internal data"""
-        return self.produce(protocol, *args)
+        return self.produce(protocol, *args, **kwargs)
 
     @property
     def protocols(self):
@@ -148,7 +148,7 @@ class Format(object):
                 try:
                     produced = self._representations[protocol]
                 except KeyError:
-                    produced = meth(self, protocol, *args)
+                    produced = meth(self, protocol, *args, **kwargs)
                     # computed -> stored normalization
                     if not isinstance(produced, tuple) or len(produced) == 1:
                         produced = (produced, )
@@ -157,7 +157,7 @@ class Format(object):
                 # stored -> computed normalization: detuple if len == 1
                 if isinstance(produced, tuple) and len(produced) == 1:
                     produced = produced[0]
-                if protect and not protect_safe:
+                if protect and not protect_safe and not mutable(produced):
                     log.debug("{0}:{1}:Forced deepcopy of `{2}' instance"
                               .format(self.__class__.name, meth.__name__,
                                       type(produced).__name__))

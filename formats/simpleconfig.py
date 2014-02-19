@@ -67,12 +67,13 @@ class simpleconfig(SimpleFormat):
             two_node: 1
         }
         """
-        ret = super(simpleconfig, self).get_bytestring(self)
+        # try to look (indirectly) if we have a file at hand first
+        ret = super(simpleconfig, self).get_bytestring('bytestring')
         if ret is not None:
             return ret
 
         # fallback
-        struct = self('struct')
+        struct = self('struct', protect_safe=True)
         indent, optindent = ('\t', ) * 2
         lbrace, rbrace, optsep = '{', '}', ': '
         # XXX previous apply_aggregation_preserving_passing_depth attempt
