@@ -331,7 +331,8 @@ class Command(object):
                 args = args[0].split('::') + args[1:]
             args.reverse()  # we will be poping from the end
         for v in fnc_varnames:
-            if getattr(opts, v, None) != fnc_defaults.get(v, None):
+            opt = getattr(opts, v, None)
+            if opt is not None and opt != fnc_defaults.get(v, None):
                 kwargs[v] = getattr(opts, v)
                 continue
             if args:
