@@ -8,6 +8,19 @@ Notable points
    reserved for implicit ones (technically, not plugins, but can be used
    on a few places accepting plugins) such as XML
 
+3. to ease the perception of embedded XSLT snippets in the Python files,
+   there is respective _vimrc_local.vim provided (in filters/cluster)
+   so either run the contained sequence manually, or install lh-vim [1]
+   (or get its minimal subset via [2]) -- that is also why it is strongly
+   recommended to enclose such snippets like this so it has the right
+   effect (pipe symbol denotes the start of the line):
+
+   |foo = '''\
+   |    [...]
+   |'''
+
+[1] http://code.google.com/p/lh-vim/
+[2] http://fedorapeople.org/cgit/jpokorny/public_git/vim4projects.git
 
 Terms
 -----
