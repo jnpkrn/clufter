@@ -136,9 +136,14 @@ def which(name, *where):
         return None
 
 
-def func_defaults_varnames(func):
-    """Using introspection, get a dict of kwargs' defaults + all arg names"""
-    func_varnames = func.func_code.co_varnames
+def func_defaults_varnames(func, skip=0):
+    """Using introspection, get a dict of kwargs' defaults + all arg names
+
+    Parameters:
+        skipfirst   how many initial arguments to skip
+    """
+    # XXX assert len(func_varnames) - skip >= len(func.func_defaults)
+    func_varnames = func.func_code.co_varnames[skip:]
     func_defaults = dict(zip(
         func_varnames[-len(func.func_defaults):],
         func.func_defaults

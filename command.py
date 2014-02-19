@@ -150,13 +150,13 @@ class Command(object):
     # self-introspection (arguments, description, options)
     #
 
-    def _figure_fnc_defaults_varnames(self, fnc=None):
-        fnc = fnc or getattr(self, '_fnc', None)
+    def _figure_fnc_defaults_varnames(self):
+        try:
+            fnc = self._fnc
+        except:
+            raise CommandError(self, "Subclass does not implement _fnc")
         if self._fnc_defaults_varnames is None:
-            if not fnc:
-                self._fnc_defaults_varnames = {}, ()
-            else:
-                self._fnc_defaults_varnames = func_defaults_varnames(fnc)
+            self._fnc_defaults_varnames = func_defaults_varnames(fnc, skip=1)
         return self._fnc_defaults_varnames
 
     @classmethod
@@ -324,9 +324,23 @@ class Command(object):
         ec = EC.EXIT_SUCCESS
         fnc_defaults, fnc_varnames = self._figure_fnc_defaults_varnames()
         kwargs = {}
+        if args:
+            if '::' in args[0]:
+                # desugaring, which is useful mainly if non-contiguous sequence
+                # of value-based options need to be specified
+                args = args[0].split('::') + args[1:]
+            args.reverse()  # we will be poping from the end
         for v in fnc_varnames:
-            if getattr(opts, v, None) is not None:
+            if getattr(opts, v, None) != fnc_defaults.get(v, None):
                 kwargs[v] = getattr(opts, v)
+                continue
+            if args:
+                cur = args.pop()
+                if cur != '':
+                    kwargs[v] = cur
+                    continue
+            if getattr(opts, v, None) != fnc_defaults.get(v, None):
+                raise CommandError(self, "missing value for `{0}'", v)
         cmd_ctxt = cmd_ctxt or CommandContext()
         cmd_ctxt.ensure_filters(apply_intercalate(self._filter_chain))
         cmd_ctxt['filter_chain_analysis'] = self.filter_chain_analysis
