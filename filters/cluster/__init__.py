@@ -1,15 +1,41 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+__author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 ccs2coroxml = '''\
+    <!-- cluster=current ~ corosync -->
     <corosync>
+
+        <!-- clusternodes ~ nodelist</xsl:comment -->
         <clufter:recursion at="clusternodes"/>
+
+        <!-- cman ~ quorum -->
         <clufter:recursion at="cman"/>
+
+        <!-- logging ~ logging -->
         <clufter:recursion at="logging"/>
+
+        <!-- totem (pieces from cluster=current and cman) ~ totem -->
         <totem version="2"
                cluster_name="{@name}">
+            <xsl:if test="cman/@transport">
+                <xsl:choose>
+                    <xsl:when test="cman/@transport[
+                        contains(concat(
+                            '|udp',
+                            '|udpu',
+                            '|'), concat('|', ., '|'))]">
+                        <xsl:copy-of select="cman/@transport"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:message>
+                            <xsl:value-of select="concat('Unsupported value for `transport&quot; dropped: ', .)"/>
+                        </xsl:message>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:if>
             <clufter:recursion at="totem"/>
         </totem>
     </corosync>
