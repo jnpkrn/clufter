@@ -39,15 +39,15 @@ class ChainResolve(unittest.TestCase):
         testoutput = mktemp(prefix='out', suffix='.conf',
                             dir=join(dirname(__file__), 'tmp'))
 
-        @Command.deco(('ccs2ccsflat',
-                       'ccsflat2pcs', 'ccs2coroxml'))
-        def cmd_chain_match_01(cmd_ctxt,
-                            input=testfile, output=testoutput, coro='.coro'):
-            return ('file', input), (('file', output), ('file', coro))
-        @Command.deco(('ccs2ccsflat'))
-        def cmd_chain_match_02(cmd_ctxt,
-                            input=testfile, output=testoutput, coro='.coro'):
-            return ('file', input), ('file', output)
+        #@Command.deco(('ccs2ccsflat',
+        #               'ccsflat2pcs', 'ccs2coroxml'))
+        #def cmd_chain_match_01(cmd_ctxt,
+        #                    input=testfile, output=testoutput, coro='.coro'):
+        #    return ('file', input), (('file', output), ('file', coro))
+        #@Command.deco(('ccs2ccsflat'))
+        #def cmd_chain_match_02(cmd_ctxt,
+        #                    input=testfile, output=testoutput, coro='.coro'):
+        #    return ('file', input), ('file', output)
         @Command.deco(('ccs2ccsflat'))
         def cmd_chain_nonmatch_01(cmd_ctxt,
                                   input=testfile, output=testoutput,
@@ -67,8 +67,8 @@ class ChainResolve(unittest.TestCase):
                                   coro='.coro'):
             return ('file', input), (('file', output), ('life', coro))
 
-        cmd_classes = (cmd_chain_match_01,
-                       cmd_chain_match_02,
+        cmd_classes = (#cmd_chain_match_01,
+                       #cmd_chain_match_02,
                        cmd_chain_nonmatch_01,
                        cmd_chain_nonmatch_02,
                        cmd_chain_nonmatch_03
