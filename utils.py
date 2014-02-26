@@ -139,6 +139,14 @@ def which(name, *where):
     else:
         return None
 
+# prioritize consonants, deprioritize vowels (except for the first letter
+# overall), which seems to be widely adopted technique for selecting short
+# options based on their long counterparts :)
+longopt_letters_reprio = \
+    lambda longopt: \
+        longopt[0] + ''.join(sorted(longopt[1:],
+                                    key=lambda x: int(x.lower() in 'aeiouy')))
+
 # extrapolate optparse.make_option to specifically-encoded "plural"
 make_options = lambda opt_decl: [make_option(*a, **kw) for a, kw in opt_decl]
 

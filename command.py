@@ -24,6 +24,7 @@ from .utils import any2iter, \
                    func_defaults_varnames, \
                    head_tail, \
                    hybridproperty, \
+                   longopt_letters_reprio, \
                    selfaware, \
                    tuplist, \
                    tailshake, \
@@ -203,6 +204,18 @@ class Command(object):
                 readopts = True
             else:
                 description.append(line)
+
+        for short, aliases in shortopts.iteritems():  # foreach in ideal shorts
+            for i, alias in enumerate(aliases):  # foreach in conflicting ones
+                for c in longopt_letters_reprio(options[alias][0]):
+                    if c not in shortopts or c == short and i == 0:
+                        use = '-' + short
+                        break
+                else:
+                    log.warning("Could not find short option for `{0}'"
+                                .format(options[alias][0]))
+                    break
+                options[alias][0].append(use)
 
         # unofficial/unsupported ones
         for var in fnc_varnames:
