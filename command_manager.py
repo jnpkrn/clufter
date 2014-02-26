@@ -38,6 +38,9 @@ class CommandManager(PluginManager):
                   .format(commands))
         self._commands = self._resolve(flt_mgr.filters, commands)
 
+    def __iter__(self):
+        return self._commands.itervalues()
+
     @staticmethod
     def _resolve(filters, commands):
         for cmd_name, cmd_cls in commands.items():
@@ -62,6 +65,9 @@ class CommandManager(PluginManager):
     @property
     def commands(self):
         return self._commands.copy()
+
+    def completion(self, completion):
+        return completion(iter(self))
 
     def __call__(self, parser, args=None):
         """Follow up of the entry point, facade to particular commands"""

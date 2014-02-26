@@ -13,6 +13,7 @@ from optparse import OptionParser, \
 
 from . import version_text, description_text
 from .command_manager import CommandManager
+from .completion import Completion
 from .error import EC
 from .format_manager import FormatManager
 from .filter_manager import FilterManager
@@ -152,11 +153,17 @@ def run(argv=None, *args):
 
     logging.basicConfig(level=opts.loglevel)  # what if not the first use?
     cm = CommandManager(FilterManager(FormatManager()))
-    if not opts.help and (opts.list or not args):
+    if not opts.help and (opts.list or opts.completion or not args):
         ind = ' ' * parser.formatter.indent_increment
         cmds = "Available commands (cmd):\n{0}".format(cm.cmds(ind=ind))
         if opts.list:
             print cmds
+        elif opts.completion:
+            print cm.completion(
+                Completion.get_completion(opts.completion,
+                                          prog,
+                                          opts_common, opts_main, opts_nonmain)
+            )
         else:
             print parser.format_customized_help(
                 usage="%prog [<global option> ...] [<cmd> [<cmd option ...>]]",
