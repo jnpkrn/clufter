@@ -1,9 +1,14 @@
 clufter aka Cluster Filter
 ==========================
 
-Toolset for cluster config conversion, primarily from cluster.conf
-as recognized by CMAN-based cluster to something to configure your
-Pacemaker-based one (with optional get-ready heavy lifting by pcs).
+$ clufter -h | head -n+8 | tail -n+3
+
+Tool to perform various transformations on cluster configuration formats.
+
+Primarily aimed at (CMAN, rgmanager) -> (Corosync, Pacemaker) cluster stacks
+configuration conversion (following RHEL trend), the tool, however, offers
+more uses further extensible within the arranged commands-filters-formats
+plugin framework.
 
 
 Prerequisites
@@ -21,37 +26,20 @@ tests:
 - outside of Python 2.7+, unittest2 (python-unittest2) is needed
 
 
-Concepts
---------
-
-There are a few concepts that tries to unify effective conversion
-recipes in a relatively loosely coupled way and with clear
-relationships:
-
-  . command is a composition of one or more filters (see below)
-    with some level of flexibility (tee-like splits, etc.)
-
-  . filter is an isolated set of steps from object _A_ of a format _X_
-    (see below) and having the respective internal representation _x_
-    to the same or modified object _A'_ of a format _Y_ and having
-    the respective internal representation _y_ (possibly _X_=_Y_
-    and/or _x_=_y_, whereas string representation is frequented)
-
-  . format is something having possibly many more-or-less interchangeable
-    representations (string, parsed XML/ElementTree, ...), whereas
-    the possible format transitions depend on the available filters;
-    note that the format alone does not fully specify/restrict the set
-    of values/properties of objects being held as these are further
-    refined by previously used uni-format filters (context of
-    previous transitions plays the role)
-
-  . protocol denotes a form of internal representation interchange
-    (either internal in the filters' chain or user-requested IO),
-    with these special kinds:
-    - 'native' denotes most natural/economic form of dealing with
-      (the instance of) given data format, e.g., XML -> parsed tree
-    - 'composite' denotes multi-channel interchange format
-      (consisting of atomic ones)
-
     
 TBD
+
+
+Other remarks
+-------------
+
+For convenience, bash completion is at user's hands by just running within
+the session:
+
+$ eval "$(clufter --completion-bash)"
+
+Indeed, to make such a feature permanent, the produced script can be appended
+to or referred from some relevant file like ~/.bashrc, or when bash-completion
+package installed, stored to ~/.config/bash_completion (per-user) or
+/usr/share/bash-completion/bash_completion (system-wide).  It's also
+possible this is already performed on the packaging level.
