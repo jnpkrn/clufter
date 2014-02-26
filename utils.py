@@ -140,7 +140,7 @@ def which(name, *where):
 
 
 def func_defaults_varnames(func, skip=0):
-    """Using introspection, get a dict of kwargs' defaults + all arg names
+    """Using introspection, get arg defaults (dict) + all arg names (tuple)
 
     Parameters:
         skipfirst   how many initial arguments to skip

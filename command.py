@@ -151,6 +151,7 @@ class Command(object):
     #
 
     def _figure_fnc_defaults_varnames(self):
+        """Dissect self._fnc to arg defaults (dict) + all arg names (tuple)"""
         try:
             fnc = self._fnc
         except:
@@ -197,6 +198,7 @@ class Command(object):
             else:
                 description.append(line)
 
+        # unofficial/unsupported ones
         for var in fnc_varnames:
             if var not in optionset:
                 options.append(make_option("--{0}".format(var),
