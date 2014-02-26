@@ -10,6 +10,7 @@ import re
 from optparse import OptionParser, \
                      OptionGroup, \
                      IndentedHelpFormatter
+from os.path import basename
 
 from . import version_text, description_text
 from .command_manager import CommandManager
@@ -131,8 +132,9 @@ def run(argv=None, *args):
     ec = EC.EXIT_SUCCESS
     argv = list(argv) + list(args) if argv else list(args)
     prog, args = (argv[0], argv[1:]) if argv else ('<script>', [])
+    prog_simple = basename(prog)
 
-    parser = SharedOptionParser(prog=prog, add_help_option=False)
+    parser = SharedOptionParser(prog=prog_simple, add_help_option=False)
     parser.disable_interspersed_args()  # enforce ordering as per "usage"
     parser.add_option_group_by_args(
         "Standalone global options", "These take precedence over any command.",
@@ -186,8 +188,8 @@ def run(argv=None, *args):
                      " requiring specification there is allowed by syntactic"
                      " sugar: all can be passed as a single, first,"
                      " ::-delimited argument."
-                     "  To list all available commands, use {0} --list"
-                     " (or --help).".format(prog))
+                     "  To list all available commands, use `{0} --list'"
+                     " (alt. --help).".format(prog_simple))
     #try:
     # note that the parser carries opts and "Common options" group
     ec = cm(parser, args)
