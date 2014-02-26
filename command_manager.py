@@ -13,7 +13,8 @@ from .error import ClufterError, ClufterPlainError, \
 from .plugin_registry import PluginManager
 from .utils import apply_preserving_depth, \
                    apply_aggregation_preserving_depth, \
-                   apply_intercalate
+                   apply_intercalate, \
+                   make_options
 
 log = logging.getLogger(__name__)
 
@@ -75,7 +76,7 @@ class CommandManager(PluginManager):
             canonical_cmd = command.__class__.name
 
             parser.description, options = command.parser_desc_opts
-            parser.option_groups[0].add_options(options)
+            parser.option_groups[0].add_options(make_options(options))
 
             args = ['--help'] if values.help else args[1:]
             parser.defaults.update(values.__dict__)  # from global options

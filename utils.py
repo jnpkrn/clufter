@@ -7,6 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import os
 import sys
+from optparse import make_option
 from subprocess import Popen
 
 from .error import ClufterError
@@ -138,6 +139,8 @@ def which(name, *where):
     else:
         return None
 
+# extrapolate optparse.make_option to specifically-encoded "plural"
+make_options = lambda opt_decl: [make_option(*a, **kw) for a, kw in opt_decl]
 
 def func_defaults_varnames(func, skip=0):
     """Using introspection, get arg defaults (dict) + all arg names (tuple)

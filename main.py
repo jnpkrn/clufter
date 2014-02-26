@@ -7,16 +7,16 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
 import re
-from optparse import make_option, \
-                     OptionParser, \
+from optparse import OptionParser, \
                      OptionGroup, \
                      IndentedHelpFormatter
 
+from . import version_text, description_text
+from .command_manager import CommandManager
 from .error import EC
 from .format_manager import FormatManager
 from .filter_manager import FilterManager
-from .command_manager import CommandManager
-from . import version_text, description_text
+from .utils import make_options
 
 
 def parser_callback_help(option, opt_str, value, parser):
@@ -27,45 +27,56 @@ def parser_callback_help(option, opt_str, value, parser):
         del rargs[:1]
     setattr(parser.values, 'help', val)
 
-
-opts_common = [
-    make_option('--loglevel',
-        action='store', dest='loglevel',
+opts_common = (
+    (('--loglevel', ), dict(
+        action='store',
+        dest='loglevel',
         default=logging.getLevelName(logging.WARNING),
-        type="choice", choices=map(logging.getLevelName,
-                                   xrange(logging.NOTSET, logging.CRITICAL+1,
-                                          logging.DEBUG-logging.NOTSET)),
+        type="choice",
+        choices=map(logging.getLevelName,
+                    xrange(logging.NOTSET, logging.CRITICAL+1,
+                           logging.DEBUG-logging.NOTSET)),
         help="set loglevel to specified value [%default out of %choices]"
-    ),
-    make_option('-d', '--debug',
-        action='store_const', dest='loglevel', const='DEBUG',
+    )),
+    (('-d', '--debug'), dict(
+        action='store_const',
+        dest='loglevel',
+        const='DEBUG',
         help="shortcut for --loglevel=DEBUG"
-    ),
+    )),
     # TODO: other logging related stuff (file, ...)
-]
+)
 
-opts_main = [
-    make_option('-h', '--help', metavar="[CMD]",
-        type='string', nargs=0,  # <- we take one if suitable
-        action='callback', callback=parser_callback_help,
+opts_main = (
+    (('-h', '--help'), dict(
+        metavar="[CMD]",
+        type='string',
+        nargs=0,  # <- we take one if suitable
+        action='callback',
+        callback=parser_callback_help,
         help="show this help message (global or command-specific) and exit"
-    ),
-    make_option('-v', '--version',
-        action='store_true', help="show version details and exit"
-    ),
-    make_option('-l', '--list',
+    )),
+    (('-v', '--version'), dict(
+        action='store_true',
+        help="show version details and exit"
+    )),
+    (('-l', '--list'), dict(
         action='store_true',
         help="list commands and exit"
-    ),
-    #make_option('--completion-bash', help="generate bash completion and exit")
-]
+    )),
+    (('--completion-bash', ), dict(
+        action='store_const',
+        dest='completion', const='bash',
+        help="generate bash completion and exit"
+    )),
+)
 
-opts_nonmain = [
-    make_option('-h', '--help',
+opts_nonmain = (
+    (('-h', '--help'), dict(
         action='store_true',
         help="show this help message and exit"
-    )
-]
+    )),
+)
 
 
 class SharedHelpFormatter(IndentedHelpFormatter):
@@ -124,19 +135,18 @@ def run(argv=None, *args):
     parser.disable_interspersed_args()  # enforce ordering as per "usage"
     parser.add_option_group_by_args(
         "Standalone global options", "These take precedence over any command.",
-        option_list=opts_main
+        option_list=make_options(opts_main)
     )
     parser.add_option_group_by_args(
         "Common options",
         "Either in global (before <cmd>) or command scope (after <cmd>).",
-        option_list=opts_common
+        option_list=make_options(opts_common)
     )
 
     opts, args = parser.parse_args(args)
     if opts.help is None:
-        # options that causes return/exit have lower priority than help
+        # options that return/exit + don't need plugin resolutions (not help)
         if opts.version:
-            # this is independent of plugins
             print version_text()
             return ec
 
@@ -157,11 +167,11 @@ def run(argv=None, *args):
 
     # prepare option parser to be reused by sub-commands
     parser.enable_interspersed_args()
-    modify_group = parser.get_option_group(opts_main[0].get_opt_string())
-    map(parser.remove_option, map(lambda x: x.get_opt_string(), opts_main))
+    modify_group = parser.get_option_group(opts_main[0][0][0])
+    map(parser.remove_option, map(lambda x: x[0][0], opts_main))
     modify_group.set_title("Command options")
     modify_group.set_description(None)
-    modify_group.add_options(opts_nonmain)
+    modify_group.add_options(make_options(opts_nonmain))
     parser.epilog = ("Arguments to value-based `command options' can be passed"
                      " without labels as long as the order wrt. parsing logic"
                      " is respected;"

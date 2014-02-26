@@ -7,7 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
 from itertools import izip_longest
-from optparse import make_option, SUPPRESS_HELP
+from optparse import SUPPRESS_HELP
 
 from .command_context import CommandContext
 from .error import ClufterError, \
@@ -162,8 +162,9 @@ class Command(object):
 
     @classmethod
     def _figure_parser_desc_opts(cls, fnc_defaults, fnc_varnames):
-        readopts, optionset, options = False, set(), []
+        readopts, shortopts, options = False, {}, []
         description = []
+        fnc_varnames = set(fnc_varnames)
 
         for line in cls.__doc__.splitlines():
             line = line.lstrip()
@@ -178,8 +179,13 @@ class Command(object):
                     log.debug("Command `{0}', found option `{1}'".format(
                         cls.name, optname
                     ))
-                    assert optname not in optionset
-                    optionset.add(optname)
+                    fnc_varnames.remove(optname)
+                    short_aliases = shortopts.setdefault(optname[0], [])
+                    if short_aliases:
+                        assert optname not in short_aliases
+                        if len(short_aliases) == 1:
+                            aliasing.append(optname[0])
+                    short_aliases.append(len(options))
                     opt = {}
                     opt['help'] = optdesc[0].strip()
                     if optname in fnc_defaults:  # default if known
@@ -192,7 +198,7 @@ class Command(object):
                         else:
                             opt['help'] += " [%default]"
                         opt['default'] = default
-                    options.append(make_option("--{0}".format(optname), **opt))
+                    options.append([["--" + optname], opt])
             elif line.lower().startswith('options:'):
                 readopts = True
             else:
@@ -200,9 +206,7 @@ class Command(object):
 
         # unofficial/unsupported ones
         for var in fnc_varnames:
-            if var not in optionset:
-                options.append(make_option("--{0}".format(var),
-                                           help=SUPPRESS_HELP))
+            options.append([[var], dict(help=SUPPRESS_HELP)])
 
         description = description[:-1] if not description[-1] else description
         description = '\n'.join(description)
@@ -210,7 +214,7 @@ class Command(object):
 
     @property
     def parser_desc_opts(self):
-        """Parse docstring as description + optparse.Option instances list"""
+        """Parse docstring as description + Option constructor args list"""
         if self._desc_opts is None:
             self._desc_opts = self._figure_parser_desc_opts(
                 *self._figure_fnc_defaults_varnames()
