@@ -182,10 +182,7 @@ class Command(object):
                     ))
                     fnc_varnames.remove(optname)
                     short_aliases = shortopts.setdefault(optname[0], [])
-                    if short_aliases:
-                        assert optname not in short_aliases
-                        if len(short_aliases) == 1:
-                            aliasing.append(optname[0])
+                    assert optname not in short_aliases
                     short_aliases.append(len(options))
                     opt = {}
                     opt['help'] = optdesc[0].strip()
@@ -207,9 +204,9 @@ class Command(object):
 
         for short, aliases in shortopts.iteritems():  # foreach in ideal shorts
             for i, alias in enumerate(aliases):  # foreach in conflicting ones
-                for c in longopt_letters_reprio(options[alias][0]):
-                    if c not in shortopts or c == short and i == 0:
-                        use = '-' + short
+                for c in longopt_letters_reprio(options[alias][0][0]):
+                    if c not in shortopts or i == 0:
+                        use = '-' + c
                         break
                 else:
                     log.warning("Could not find short option for `{0}'"
