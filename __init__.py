@@ -20,16 +20,17 @@ commands-filters-formats plugin framework.
 #cluster configuration of supported cluster stacks, and other
 #convenient actions.
 
+_deobfuscate_mail = (lambda what: what.replace(' @at@ ', '@')
+                                      .replace(' .dot. ', '.')
+                                      .replace('@Red Hat.', '@redhat.'))
+
 
 def version_text(package=None, sep='\n'):
     if package is None:
         from os.path import basename, dirname
         package = basename(dirname(__file__))
-    return (package + ' ' + sep.join(metadata)
-            .replace(' \n', '\n')
-            .replace(' @at@ ', '@')
-            .replace(' .dot. ', '.')
-            .replace('@Red Hat.', '@redhat.'))
+    return (package + ' '
+            + _deobfuscate_mail(sep.join(metadata).replace(' \n', '\n')))
 
 
 def description_text(width=70):
