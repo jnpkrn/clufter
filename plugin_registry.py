@@ -71,6 +71,8 @@ class PluginRegistry(type):
     @classmethod
     def probe(registry, name, bases, attrs):
         """Meta-magic to register plugin"""
+        assert '-' not in name, "name cannot contain a dash"
+        name = name.replace('_', '-')
         try:
             ret = registry._plugins[name]
             log.info("Probe `{0}' plugin under `{1}' registry: already tracked"
