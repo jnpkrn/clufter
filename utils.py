@@ -141,7 +141,8 @@ def which(name, *where):
 
 # prioritize consonants, deprioritize vowels (except for the first letter
 # overall), which seems to be widely adopted technique for selecting short
-# options based on their long counterparts :)
+# options based on their long counterparts ;)
+# XXX could eventually also resort to using upper-case chars
 longopt_letters_reprio = \
     lambda longopt: \
         (lambda lo: \
