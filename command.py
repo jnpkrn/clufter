@@ -473,3 +473,34 @@ class Command(object):
             ret = cls.probe(fnc.__name__, (cls, ), attrs)
             return ret
         return deco_fnc
+
+
+class CommandAlias(object):
+    """Way to define either static or dynamic command alias"""
+    __metaclass__ = commands
+
+    @classmethod
+    def deco(outer_cls, decl):
+        if not hasattr(decl, '__call__'):
+            assert issubclass(decl, Command)
+            fnc = lambda **kwargs: decl
+        else:
+            fnc = decl
+        log.debug("CommandAlias: deco for {0}".format(fnc))
+
+        def new(cls, cmds):
+            # XXX really pass mutable cmds dict?
+            use_obj = fnc(cmds)
+            if not isinstance(use_obj, Command):
+                assert isinstance(use_obj, basestring)
+                use_obj = cmds[use_obj]
+                assert isinstance(use_obj, Command)
+            return use_obj
+
+        attrs = {
+            '__module__': fnc.__module__,
+            '__new__': new,
+        }
+        # optimization: shorten type() -> new() -> probe
+        ret = outer_cls.probe(fnc.__name__, (outer_cls, ), attrs)
+        return ret
