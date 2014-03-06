@@ -22,6 +22,7 @@ from .utils import any2iter, \
                    apply_intercalate, \
                    apply_loose_zip_preserving_depth, \
                    bifilter, \
+                   cli_decor, \
                    func_defaults_varnames, \
                    head_tail, \
                    hybridproperty, \
@@ -197,7 +198,7 @@ class Command(object):
                         else:
                             opt['help'] += " [%default]"
                         opt['default'] = default
-                    options.append([["--" + optname], opt])
+                    options.append([["--" + cli_decor(optname)], opt])
             elif line.lower().startswith('options:'):
                 readopts = True
             else:
