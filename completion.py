@@ -88,8 +88,7 @@ class BashCompletion(Completion):
         main = """\
 local opts="{0}"
 
-[[ "$1" =~ -.* ]] \\
-    && compgen -W "${{opts}}" -- $1"""\
+[[ "$1" =~ -.* ]] && compgen -W "${{opts}}" -- $1"""\
         .format(
             ' '.join(reduce(lambda a, b: a + list(b[0]), opts, []))
         ).splitlines()
