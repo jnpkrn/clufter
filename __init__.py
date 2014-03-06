@@ -4,7 +4,8 @@ copyright = """\
 Copyright 2014 Red Hat, Inc.
 Licensed under GPLv2
 """.rstrip()
-author = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
+# XXX eventually there should be precise plugin authorship tracking
+author = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com> and plugin authors"
 
 metadata = (version, copyright, author)
 
