@@ -6,7 +6,10 @@ recipes in a relatively loosely coupled way and with clear
 relationships:
 
   . command is a composition of one or more filters (see below)
-    with some level of flexibility (tee-like splits, etc.)
+    with some level of flexibility (tee-like splits, etc.);
+    special case is a "command alias" that can dynamically select
+    existing underlying command based on the actual environment
+    (commonly as per the OS/distribution and/or available commands)
 
   . filter is an isolated set of steps from object _A_ of a format _X_
     (see below) and having the respective internal representation _x_
