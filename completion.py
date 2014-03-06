@@ -132,7 +132,7 @@ case "$2" in
 -*) COMPREPLY=( $(compgen -W "${{opts_common}} ${{opts_main}}" -- $2) );;
 *)  COMPREPLY=( $(compgen -W "${{commands}}" -- $2) );;
 esac""" .format(
-            self._name, ' '.join(a for a, _ in handles),
+            self._name, ' '.join(a for a, _ in (aliases + handles)),
             opts_common, opts_main, opts_nonmain, alias_case
         ).splitlines()
         epilogue = "complete -o default -F {0} {1}".format(handle, self._prog)
