@@ -47,7 +47,20 @@ Notable points
    reserved for implicit ones (technically, not plugins, but can be used
    on a few places accepting plugins) such as XML
 
-3. to ease the perception of embedded XSLT snippets in the Python files,
+3. use cli_{un,}decor in the code imposes several assumptions that rather
+   be followed (some are also imposed by lexical structure of a valid
+   Python identifier, which is also the main reason for this dichotomy):
+
+   - command-line options as declared in the docstrings as well as actual
+     names of function parameters should always stick with underscore
+     notation (although they will be presented with dashes in CLI)
+
+   - all plugin-identifying identifiers are forced to use underscore
+     notation, but again, CLI will present it with dashes; also
+     CommandAlias-backed functions should return string already
+     promoted to such dash notation
+
+x. to ease the perception of embedded XSLT snippets in the Python files,
    there is respective _vimrc_local.vim provided (in filters/cluster)
    so either run the contained sequence manually, or install lh-vim [1]
    (or get its minimal subset via [2]) -- that is also why it is strongly
