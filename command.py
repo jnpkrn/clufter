@@ -8,6 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 import logging
 from itertools import izip_longest
 from optparse import SUPPRESS_HELP
+from platform import system, linux_distribution
 
 from .command_context import CommandContext
 from .error import ClufterError, \
@@ -479,6 +480,10 @@ class CommandAlias(object):
     """Way to define either static or dynamic command alias"""
     __metaclass__ = commands
 
+    _system = system()
+    _system_extra = linux_distribution(full_distribution_name=0) \
+                    if _system == 'Linux' else ()
+
     @classmethod
     def deco(outer_cls, decl):
         if not hasattr(decl, '__call__'):
@@ -490,7 +495,7 @@ class CommandAlias(object):
 
         def new(cls, cmds):
             # XXX really pass mutable cmds dict?
-            use_obj = fnc(cmds)
+            use_obj = fnc(cmds, outer_cls._system, outer_cls._system_extra)
             if not isinstance(use_obj, Command):
                 assert isinstance(use_obj, basestring)
                 use_obj = cmds[use_obj]
