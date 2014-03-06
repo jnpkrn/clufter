@@ -4,7 +4,49 @@
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-ccs2flatironxml = ccs2needlexml = ccs2coroxml = '''\
+# yield corosync v.1/flatiron configuration compatible with el6.{5,...}
+ccs2flatironxml = '''\
+    <!-- cluster=current ~ corosync -->
+    <corosync>
+
+        <!-- logging ~ logging -->
+        <clufter:descent at="logging"/>
+
+        <!-- totem (pieces from cluster=current and cman) ~ totem -->
+        <totem version="2">
+            <xsl:if test="cman/@transport">
+                <xsl:choose>
+                    <xsl:when test="cman/@transport[
+                        contains(concat(
+                            '|udp',
+                            '|udpu',
+                            '|'), concat('|', ., '|'))]">
+                        <xsl:copy-of select="cman/@transport"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:message>
+                            <xsl:value-of select="concat('Unsupported value for `transport&quot; dropped: ', .)"/>
+                        </xsl:message>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:if>
+            <clufter:descent at="totem"/>
+        </totem>
+
+        <!-- include Pacemaker plugin -->
+        <service name="pacemaker"
+                 ver="1"/>
+
+    </corosync>
+'''
+
+# yield corosync v.2/needle configuration compatible with el7
+# diff to ccs2flatironxml (note that "corosync" is used as pseudoroot):
+# - specify pseudoroot/totem/@cluster_name
+# - enumerate cluster nodes via /pseudoroot/nodelist
+# - do not use Pacemaker plugin via /pseudoroot/service[@name='pacemaker']
+# - possibly specify /pseudoroot/quorum
+ccs2needlexml = '''\
     <!-- cluster=current ~ corosync -->
     <corosync>
 
@@ -38,6 +80,7 @@ ccs2flatironxml = ccs2needlexml = ccs2coroxml = '''\
             </xsl:if>
             <clufter:descent at="totem"/>
         </totem>
+
     </corosync>
 '''
 
