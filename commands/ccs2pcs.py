@@ -5,27 +5,74 @@
 """ccs2pcs command"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from ..command import Command
+from ..command import Command, CommandAlias
 
 
 @Command.deco(('ccs2ccsflat',
-               'ccsflat2pcs', ('ccs2coroxml', 'xml2simpleconfig')))
-def ccs2pcs(cmd_ctxt,
-            input='/etc/cluster/cluster.conf',
-            output='./cib.xml',
-            coro='./corosync.conf',
-            nocheck=False):
-    """Converts cman-based cluster configuration to Pacemaker-based one
+                   'ccsflat2pcs',
+                   'ccs2ccslight',
+                   ('ccs2flatironxml',
+                       'xml2simpleconfig')))
+def ccs2pcs_flatiron(cmd_ctxt,
+                     input='/etc/cluster/cluster.conf',
+                     ccsflatiron='./cluster.conf',
+                     cib='./cib.xml',
+                     coro='./corosync.conf',
+                     nocheck=False):
+    """CMAN -> Pacemaker-based cluster config. (corosync v1)
 
-    There are two outputs: Pacemaker configuration ala cib.xml and
-    configuration for corosync ala corosync.conf.
+    More specifically, the output is suitable for Pacemaker integrated
+    with Corosync ver. 1 (Flatiron) as present, e.g., in el6.{5, ..},
+    and consists of reduced CMAN configuration (~cluster.conf) along with
+    Pacemaker (~cib.xml) and corosync ones (~corosync.conf).
 
     Options:
-        input      input cman-based cluster configuration file
-        output     output pacemaker-based configuration file
+        input        input CMAN-based cluster configuration file
+        ccsflatiron  output reduced CMAN configuration
+        cib          output pacemaker-based configuration file
+        coro         output Corosync configuration file
+        nocheck      do not validate any step (even if self-checks present)
+    """
+    #cmd_ctxt.filter()['validate'] = not nocheck
+    #cmd_ctxt.filter('ccs2ccsflat')['validate'] = not nocheck
+    return ('file', input), \
+           ('file', ccsflatiron), (('file', cib), (('file', coro), ))
+
+
+@Command.deco(('ccs2ccsflat',
+                   'ccsflat2pcs',
+                   ('ccs2needlexml',
+                       'xml2simpleconfig')))
+def ccs2pcs_needle(cmd_ctxt,
+                   input='/etc/cluster/cluster.conf',
+                   cib='./cib.xml',
+                   coro='./corosync.conf',
+                   nocheck=False):
+    """CMAN -> Pacemaker-based cluster config. (corosync v2)
+
+    More specifically, the output is suitable for Pacemaker integrated
+    with Corosync ver. 2 (Needle) as present, e.g., in el7, and consists
+    of Pacemaker (~cib.xml) and tcorosync (~corosync.conf) configurations.
+
+    Options:
+        input      input CMAN-based cluster configuration file
+        cib        output pacemaker-based configuration file
         coro       output Corosync configuration file
         nocheck    do not validate any step (even if self-checks present)
     """
     #cmd_ctxt.filter()['validate'] = not nocheck
     #cmd_ctxt.filter('ccs2ccsflat')['validate'] = not nocheck
-    return ('file', input), (('file', output), (('file', coro), ))
+    return ('file', input), (('file', cib), (('file', coro), ))
+
+
+@CommandAlias.deco
+def ccs2pcs(cmds, system, system_extra):
+    ret = 'ccs2pcs-needle'
+    # unless el <7.0
+    if system == 'Linux' and system_extra[0] == 'redhat' and system_extra[1]:
+        v = system_extra[1]
+        v = v[:-len(v.lstrip('0123456789.'))] or str.isdigit(v[0]) and v or '0'
+        v = tuple(map(int, (v.rstrip('.') + '.0.0').split('.')[:2]))
+        if v < (7, 0):
+            ret = 'ccs2pcs-flatiron'
+    return ret

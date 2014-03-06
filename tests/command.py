@@ -16,7 +16,7 @@ from clufter.command import Command, CommandError
 
 from clufter.filters.ccs2ccsflat import ccs2ccsflat
 from clufter.filters.ccsflat2pcs import ccsflat2pcs
-from clufter.filters.ccs2coro import ccs2coroxml
+from clufter.filters.ccs2coro import ccs2needlexml
 
 from clufter.formats.ccs import ccs, ccsflat
 from clufter.formats.coro import coroxml
@@ -33,7 +33,7 @@ class ChainResolve(unittest.TestCase):
         filters = dict(
             ccs2ccsflat=ccs2ccsflat(ccs, ccsflat),
             ccsflat2pcs=ccsflat2pcs(ccsflat, pcs),
-            ccs2coroxml=ccs2coroxml(ccs, coroxml),
+            ccs2coroxml=ccs2needlexml(ccs, coroxml),
         )
         testfile = join(dirname(__file__), 'empty.conf')
         testoutput = mktemp(prefix='out', suffix='.conf',

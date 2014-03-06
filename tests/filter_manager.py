@@ -70,9 +70,9 @@ class CompositeFormatIO(FilterManagerTestCase):
     def test_run_double_ccs2ccsflat(self):
         testfile = join(dirname(__file__), 'empty.conf')
         # CHECK the filter defined in setUp method properly tracked
-        self.assertTrue('double_ccs2ccsflat' in self.flt_mgr.filters)
+        self.assertTrue('double-ccs2ccsflat' in self.flt_mgr.filters)
         # perform the filter
-        out_objs = self.flt_mgr('double_ccs2ccsflat',
+        out_objs = self.flt_mgr('double-ccs2ccsflat',
             (('composite', ('file', 'file')), testfile, testfile)
         )
         # CHECK resulting objects are not identical (separate processing)
