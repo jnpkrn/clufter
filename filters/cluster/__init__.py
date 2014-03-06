@@ -4,6 +4,7 @@
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+# XXX XML could be generated in a function with cases for flatiron/needle
 # yield corosync v.1/flatiron configuration compatible with el6.{5,...}
 ccs2flatironxml = '''\
     <!-- cluster=current ~ corosync -->
