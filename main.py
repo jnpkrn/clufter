@@ -153,8 +153,12 @@ def run(argv=None, *args):
     logging.basicConfig(level=opts.loglevel)  # what if not the first use?
     cm = CommandManager(FilterManager(FormatManager()))
     if not opts.help and (opts.list or opts.completion or not args):
-        ind = ' ' * parser.formatter.indent_increment
-        cmds = "Available commands (cmd):\n{0}".format(cm.cmds(ind=ind))
+        cmds = cm.pretty_cmds(ind=' ' * parser.formatter.indent_increment,
+                              linesep_width=2,
+                              cmds_intro="Commands"
+                                         " (as available, but stable):",
+                              aliases_intro="Aliases thereof"
+                                            " (environment specific):")
         if opts.list:
             print cmds
         elif opts.completion:
@@ -166,7 +170,8 @@ def run(argv=None, *args):
         else:
             print parser.format_customized_help(
                 usage="%prog [<global option> ...] [<cmd> [<cmd option ...>]]",
-                description="{0}\n{1}".format(description_text(width=0), cmds),
+                description=description_text(width=0),
+                description_raw=cmds,
                 epilog="To get help for given command, follow it with --help."
             )
         return ec

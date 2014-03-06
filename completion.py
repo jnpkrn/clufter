@@ -7,7 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from os.path import basename
 
-from .utils import args2sgpl
+from .utils import args2sgpl, bifilter
 
 
 class Completion(object):
@@ -25,21 +25,25 @@ class Completion(object):
     def handle_script(self, command):
         raise RuntimeError('subclasses ought to override this')
 
-    def scripts_epilogue(self, handles):
+    def scripts_epilogue(self, handles, aliases):
         return ''
 
     def __call__(self, commands):
+        cmds, aliases = bifilter(
+            lambda (name, obj): not isinstance(obj, basestring),
+            commands
+        )
         handles, scripts = reduce(
-            lambda (acc_handle, acc_script), cmd:
+            lambda (acc_handle, acc_script), (cmd_name, cmd):
                 (lambda handle, script: (
-                    acc_handle + [(cmd.__class__.__name__, handle)],
+                    acc_handle + [(cmd_name, handle)],
                     acc_script + [script]
                 ))(*self.handle_script(cmd)),
-            commands,
+            cmds,
             ([], [])
         )
         scripts = [self.scripts_prologue(), ] + scripts
-        scripts.append(self.scripts_epilogue(handles))
+        scripts.append(self.scripts_epilogue(handles, aliases))
         return '\n\n'.join(scripts)
 
     @classmethod
@@ -90,12 +94,18 @@ local opts="{0}"
             ' '.join(reduce(lambda a, b: a + list(b[0]), opts, []))
         ).splitlines()
 
+        handle = handle.replace('-', '_')
         return handle, self._format_function(handle, main)
 
-    def scripts_epilogue(self, handles):
+    def scripts_epilogue(self, handles, aliases):
         handle = self._namespaced_identifier(self._name)
-        handles_dict = dict(handles)
-        opts = self._opts_common, self._opts_main, self._opts_nonmain
+        opts_common, opts_main, opts_nonmain = tuple(
+            ' '.join(reduce(lambda a, b: a + list(b[0]), o, []))
+            for o in (self._opts_common, self._opts_main, self._opts_nonmain)
+        )
+        alias_case = '    ' + '\n    '.join(
+            '{0}) cur="{1}";;'.format(alias, to) for alias, to in aliases
+        )
         main = """\
 local commands="{1}"
 local opts_common="{2}"
@@ -107,7 +117,11 @@ while true; do
     test ${{i}} -eq 0 && break || let i-=1
     cur=${{COMP_WORDS[${{i}}]}}
     [[ "${{cur}}" =~ -.* ]] && continue
-    fnc=_main_boostrap_${{cur}}
+    # handle aliases
+    case ${{cur}} in
+{5}
+    esac
+    fnc=_main_boostrap_${{cur/-/_}}
     declare -f ${{fnc}} >/dev/null && COMPREPLY+=( $(${{fnc}} $2) )
     [[ "$2" =~ -.* ]] \\
       && COMPREPLY+=( $(compgen -W "${{opts_common}} ${{opts_nonmain}}" -- $2) )
@@ -118,10 +132,8 @@ case "$2" in
 -*) COMPREPLY=( $(compgen -W "${{opts_common}} ${{opts_main}}" -- $2) );;
 *)  COMPREPLY=( $(compgen -W "${{commands}}" -- $2) );;
 esac""" .format(
-            self._name,
-            ' '.join(handles_dict.keys()),
-            *(' '.join(reduce(lambda a, b: a + list(b[0]), o, []))
-              for o in opts)
+            self._name, ' '.join(a for a, _ in handles),
+            opts_common, opts_main, opts_nonmain, alias_case
         ).splitlines()
         epilogue = "complete -o default -F {0} {1}".format(handle, self._prog)
         return '\n\n'.join([self._format_function(handle, main), epilogue])

@@ -6,14 +6,16 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
+from textwrap import wrap
 
-from .command import commands
+from .command import commands, CommandAlias
 from .error import ClufterError, ClufterPlainError, \
                    EC
 from .plugin_registry import PluginManager
 from .utils import apply_preserving_depth, \
                    apply_aggregation_preserving_depth, \
                    apply_intercalate, \
+                   bifilter, \
                    make_options
 
 log = logging.getLogger(__name__)
@@ -42,7 +44,12 @@ class CommandManager(PluginManager):
 
     @staticmethod
     def _resolve(filters, commands):
+        # name -> (cmd obj if not alias or resolvable name)
+        aliases = []
         for cmd_name, cmd_cls in commands.items():
+            if issubclass(cmd_cls, CommandAlias):
+                aliases.append(cmd_name)
+                continue
             res_input = cmd_cls.filter_chain
             res_output = apply_preserving_depth(filters.get)(res_input)
             if apply_aggregation_preserving_depth(all)(res_output):
@@ -59,6 +66,23 @@ class CommandManager(PluginManager):
                 filter(lambda (i, x): not(x),
                        enumerate(apply_intercalate(res_output))))
             commands.pop(cmd_name)
+
+        inverse_commands = dict((b, a) for a, b in commands.iteritems())
+        for cmd_name in aliases:
+            try:
+                alias_singleton = commands[cmd_name]
+            except KeyError:
+                continue
+            assert issubclass(alias_singleton, CommandAlias)
+            resolved = alias_singleton(commands)
+            if resolved is None or resolved not in inverse_commands:
+                if resolved:
+                    log.warning("Resolve at `{0}' alias: target unrecognized"
+                                .format(cmd_name))
+                commands.pop(cmd_name)
+                continue
+            commands[cmd_name] = inverse_commands[resolved]
+
         return commands
 
     @property
@@ -66,19 +90,20 @@ class CommandManager(PluginManager):
         return self._commands.copy()
 
     def completion(self, completion):
-        return completion(iter(self))
+        return completion(self._commands.iteritems())
 
     def __call__(self, parser, args=None):
         """Follow up of the entry point, facade to particular commands"""
         ec = EC.EXIT_SUCCESS
         values = parser.values
         try:
-            cmd = getattr(values, 'help', None) or args[0]
-
-            command = self._commands.get(cmd, None)
+            canonical_cmd = command = cmd = getattr(values, 'help', None) \
+                                            or args[0]
+            while isinstance(command, basestring):
+                canonical_cmd = command
+                command = self._commands.get(command, None)
             if not command:
                 raise CommandNotFoundError(cmd)
-            canonical_cmd = command.__class__.name
 
             parser.description, options = command.parser_desc_opts
             parser.option_groups[0].add_options(make_options(options))
@@ -87,7 +112,7 @@ class CommandManager(PluginManager):
             parser.defaults.update(values.__dict__)  # from global options
             opts, args = parser.parse_args(args)
             if opts.help:
-                usage = '\n'.join(map(
+                usage = ('\n' + len('Usage: ') * ' ').join(map(
                     lambda c:
                         "%prog [<global option> ...] {0} [<cmd option ...>]"
                         .format(c),
@@ -104,17 +129,37 @@ class CommandManager(PluginManager):
             ec = EC.EXIT_FAILURE
             print e
             if isinstance(e, CommandNotFoundError):
-                print "\nSupported commands:\n" + self.cmds()
+                print "\n" + self.pretty_cmds()
         #except Exception as e:
         #    print "OOPS: underlying unexpected exception:\n{0}".format(e)
         #    ec = EC.EXIT_FAILURE
         return ec
 
-    def cmds(self, ind='', sep='\n'):
+    def pretty_cmds(self, text_width=70, linesep_width=1,
+                    ind=' ', itemsep='\n', secsep='\n',
+                    cmds_intro='Commands:', aliases_intro='Aliases:',
+                    refer_str='alias for {0}'):
         """Return string containing formatted list of commands (name + desc)"""
-        return '\n'.join(map(
-            lambda (cname, ccls):
-                '{0}{1!s:12}{2}'.format(ind, cname,
-                                        ccls.__doc__.splitlines()[0]),
-            self._commands.iteritems()
-        ))
+        cmds_aliases = [
+            ([(name, refer_str.format(obj) if i
+                     else obj.__doc__.splitlines()[0]) for name, obj in cat],
+              max(tuple(len(name) for name, _ in cat)) if cat else 0)
+            for i, cat in enumerate(
+                bifilter(lambda (name, obj): not isinstance(obj, basestring),
+                         self._commands.iteritems())
+            )
+        ]
+        width = max(i[1] for i in cmds_aliases) + linesep_width
+        desc_indent = ind + (width * ' ')
+        text_width -= len(desc_indent)
+        text_width = max(text_width, 20)
+        return secsep.join(
+            itemsep.join([header] + [
+                '{0}{1:{width}}{2}'.format(
+                    ind, name, '\n'.join(
+                        wrap(desc,
+                             width=text_width, subsequent_indent=desc_indent)
+                    ), width=width
+                ) for name, desc in i[0]
+            ]) for header, i in zip((cmds_intro, aliases_intro), cmds_aliases)
+        )
