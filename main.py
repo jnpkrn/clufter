@@ -6,7 +6,6 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
-import re
 from optparse import OptionParser, \
                      OptionGroup, \
                      IndentedHelpFormatter
@@ -93,26 +92,24 @@ class SharedHelpFormatter(IndentedHelpFormatter):
 class SharedOptionParser(OptionParser):
     """OptionParser with a dynamic on-demand help screen customization."""
 
-    re_description_split = re.compile(r'(?<=:)\n|\n{2}')
-
     # overridden methods
 
     def __init__(self, **kwargs):
         if not 'formatter' in kwargs:
             kwargs['formatter'] = SharedHelpFormatter()
         OptionParser.__init__(self, **kwargs)
+        self.description_raw = ''
 
     def format_description(self, formatter):
         # cf. http://bugs.python.org/issue4318
-        return '\n'.join(
-            formatter.format_description(l).replace(':\n', ':')
-            for l in self.re_description_split.split(self.get_description())
-        )
+        return '\n'.join(formatter.format_description(l)
+                         for l in self.get_description().split('\n\n')) \
+               + (self.description_raw and '\n' + self.description_raw + '\n')
 
     # custom methods
 
     def format_customized_help(self, **kwargs):
-        for k in ('usage', 'description', 'epilog'):
+        for k in ('usage', 'description', 'description_raw', 'epilog'):
             v = kwargs.pop(k, None)
             if v:
                 setattr(self, k, v)
