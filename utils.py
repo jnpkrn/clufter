@@ -139,6 +139,20 @@ def which(name, *where):
     else:
         return None
 
+
+#
+# command-line options and function introspection related
+#
+
+# dashes recommended by 5 of 4 terminal fanboys
+# NB underscores -> dashes swap is idempotent in regards to the member
+#    name of where optparse stores respective option value, but here
+#    the list of possible operations to preserve such property stops!
+#    + also to preserve reversibility/bijection, original ought to be
+#      free of the substituting character
+cli_decor = lambda x: x.replace('_', '-')
+cli_undecor = lambda x: x.replace('-', '_')
+
 # prioritize consonants, deprioritize vowels (except for the first letter
 # overall), which seems to be widely adopted technique for selecting short
 # options based on their long counterparts ;)

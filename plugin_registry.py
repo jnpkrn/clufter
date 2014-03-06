@@ -12,7 +12,7 @@ from os.path import abspath, dirname, join, splitext
 from contextlib import contextmanager
 from sys import modules
 
-from .utils import classproperty, hybridproperty
+from .utils import classproperty, cli_decor, hybridproperty
 
 log = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ class PluginRegistry(type):
     def probe(registry, name, bases, attrs):
         """Meta-magic to register plugin"""
         assert '-' not in name, "name cannot contain a dash"
-        name = name.replace('_', '-')
+        name = cli_decor(name)
         try:
             ret = registry._plugins[name]
             log.info("Probe `{0}' plugin under `{1}' registry: already tracked"

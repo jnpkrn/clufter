@@ -7,7 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from os.path import basename
 
-from .utils import args2sgpl, bifilter
+from .utils import args2sgpl, bifilter, cli_undecor
 
 
 class Completion(object):
@@ -63,7 +63,7 @@ class BashCompletion(Completion):
     def __init__(self, prog, *args):
         prog = basename(prog)
         super(BashCompletion, self).__init__(prog, *args)
-        self._name = prog.replace('-', '_')
+        self._name = cli_undecor(prog)
 
     @staticmethod
     def _namespaced_identifier(namespace, name=None):
@@ -94,7 +94,7 @@ local opts="{0}"
             ' '.join(reduce(lambda a, b: a + list(b[0]), opts, []))
         ).splitlines()
 
-        handle = handle.replace('-', '_')
+        handle = cli_undecor(handle)
         return handle, self._format_function(handle, main)
 
     def scripts_epilogue(self, handles, aliases):
