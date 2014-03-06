@@ -124,7 +124,7 @@ while true; do
     fnc=_main_boostrap_${{cur/-/_}}
     declare -f ${{fnc}} >/dev/null && COMPREPLY+=( $(${{fnc}} $2) )
     [[ "$2" =~ -.* ]] \\
-      && COMPREPLY+=( $(compgen -W "${{opts_common}} ${{opts_nonmain}}" -- $2) )
+     && COMPREPLY+=( $(compgen -W "${{opts_common}} ${{opts_nonmain}}" -- $2) )
     return
 done
 
