@@ -9,13 +9,13 @@ from ..command import Command, CommandAlias
 
 
 @Command.deco(('ccs2ccsflat',
-                   'ccsflat2pcs',
-                   'ccs2ccslight',
-                   ('ccs2flatironxml',
-                       'xml2simpleconfig')))
+                    'ccsflat2pcs',
+                    'ccs2ccs-pcmk',
+                    ('ccs2flatironxml',
+                          'xml2simpleconfig')))
 def ccs2pcs_flatiron(cmd_ctxt,
                      input='/etc/cluster/cluster.conf',
-                     ccsflatiron='./cluster.conf',
+                     ccs_pcmk='./cluster.conf',
                      cib='./cib.xml',
                      coro='./corosync.conf',
                      nocheck=False):
@@ -28,21 +28,28 @@ def ccs2pcs_flatiron(cmd_ctxt,
 
     Options:
         input        input CMAN-based cluster configuration file
-        ccsflatiron  output reduced CMAN configuration
+        ccs_pcmk     output reduced CMAN configuration
         cib          output pacemaker-based configuration file
         coro         output Corosync configuration file
         nocheck      do not validate any step (even if self-checks present)
     """
     #cmd_ctxt.filter()['validate'] = not nocheck
     #cmd_ctxt.filter('ccs2ccsflat')['validate'] = not nocheck
-    return ('file', input), \
-           ('file', ccsflatiron), (('file', cib), (('file', coro), ))
+    return (
+        ('file', input), (
+            ('file', ccs_pcmk),
+            ('file', cib),
+            (
+                ('file', coro),
+            )
+        )
+    )
 
 
 @Command.deco(('ccs2ccsflat',
-                   'ccsflat2pcs',
-                   ('ccs2needlexml',
-                       'xml2simpleconfig')))
+                    'ccsflat2pcs',
+                    ('ccs2needlexml',
+                          'xml2simpleconfig')))
 def ccs2pcs_needle(cmd_ctxt,
                    input='/etc/cluster/cluster.conf',
                    cib='./cib.xml',
@@ -62,7 +69,14 @@ def ccs2pcs_needle(cmd_ctxt,
     """
     #cmd_ctxt.filter()['validate'] = not nocheck
     #cmd_ctxt.filter('ccs2ccsflat')['validate'] = not nocheck
-    return ('file', input), (('file', cib), (('file', coro), ))
+    return (
+        ('file', input), (
+            ('file', cib),
+            (
+                ('file', coro),
+            )
+        )
+    )
 
 
 @CommandAlias.deco
