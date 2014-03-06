@@ -102,6 +102,18 @@ ccsflat2pcs = '''\
     </cib>
 '''
 
+ccs2ccs_pcmk = '''\
+    <cluster config_version="{@version + 1}" name="{@name}">
+
+        <clufter:descent at="clusternodes"/>
+
+        <fencedevices>
+            <fencedevice agent="fence_pcmk" name="pcmk-redirect"/>
+        </fencedevices>
+
+    </cluster>
+'''
+
 obfuscate_credentials = '''\
     <xsl:template match="*">
         <xsl:copy>

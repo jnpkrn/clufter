@@ -16,3 +16,13 @@ obfuscate_identifiers = '''\
         </xsl:attribute>
     </xsl:copy>
 '''
+
+ccs2ccs_pcmk = '''\
+    <clusternode name="{@name}" nodeid="${@nodeid}">
+        <fence>
+            <method name="pcmk-method">
+                <device name="pcmk-redirect" port="{@name}"/>
+            </method>
+        </fence>
+    </clusternode>
+'''
