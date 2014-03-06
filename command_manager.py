@@ -135,7 +135,7 @@ class CommandManager(PluginManager):
         #    ec = EC.EXIT_FAILURE
         return ec
 
-    def pretty_cmds(self, text_width=70, linesep_width=1,
+    def pretty_cmds(self, text_width=76, linesep_width=1,
                     ind=' ', itemsep='\n', secsep='\n',
                     cmds_intro='Commands:', aliases_intro='Aliases:',
                     refer_str='alias for {0}'):

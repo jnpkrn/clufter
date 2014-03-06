@@ -33,7 +33,7 @@ def version_text(package=None, sep='\n'):
             + _deobfuscate_mail(sep.join(metadata).replace(' \n', '\n')))
 
 
-def description_text(width=70):
+def description_text(width=76):
     if not width:
         return description
     from textwrap import fill
