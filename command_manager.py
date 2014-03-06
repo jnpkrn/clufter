@@ -34,8 +34,7 @@ class CommandManager(PluginManager):
     _default_registry = commands
 
     def _init_handle_plugins(self, commands, flt_mgr):
-        log.debug("Commands before resolving: {0}"
-                  .format(commands))
+        log.debug("Commands before resolving: {0}".format(commands))
         self._commands = self._resolve(flt_mgr.filters, commands)
 
     def __iter__(self):
