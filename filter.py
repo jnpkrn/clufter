@@ -14,7 +14,8 @@ from lxml import etree
 
 from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
-from .utils import head_tail, \
+from .utils import cli_undecor, \
+                   head_tail, \
                    hybridproperty, \
                    filtervarspop
 from .command_context import CommandContext
@@ -392,7 +393,7 @@ class XMLFilter(Filter, MetaPlugin):
     @classmethod
     def proceed(cls, in_obj, root_dir=DEFAULT_ROOT_DIR, **kwargs):
         """Push-button to be called from the filter itself"""
-        d = dict(symbol=cls.name)
+        d = dict(symbol=cli_undecor(cls.name))
         d.update(kwargs)
         walk = in_obj.walk_schema(root_dir, **filtervarspop(d, (
                                   'symbol', 'sparse')))
@@ -408,7 +409,7 @@ class XMLFilter(Filter, MetaPlugin):
     @classmethod
     def get_template(cls, in_obj, root_dir=DEFAULT_ROOT_DIR, **kwargs):
         """Generate the overall XSLT template"""
-        d = dict(symbol=cls.name)
+        d = dict(symbol=cli_undecor(cls.name))
         d.update(kwargs)
         walk = in_obj.walk_schema(root_dir, preprocess=cls._xslt_preprocess,
                                   sparse=False, **filtervarspop(d, ('symbol',)))
