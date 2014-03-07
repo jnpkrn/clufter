@@ -183,15 +183,16 @@ def run(argv=None, *args):
     modify_group.set_title("Command options")
     modify_group.set_description(None)
     modify_group.add_options(make_options(opts_nonmain))
-    parser.epilog = ("Arguments to value-based `command options' can be passed"
-                     " without labels as long as the order wrt. parsing logic"
-                     " is respected;"
-                     " skipping arguments backed by default values otherwise"
-                     " requiring specification there is allowed by syntactic"
+    parser.epilog = ("Arguments to value-based `command options' can go"
+                     " without labels when the order wrt. parsing logic"
+                     " respected;"
+                     " skipping those backed by default values otherwise"
+                     " requiring specification then allowed by syntactic"
                      " sugar: all can be passed as a single, first,"
                      " ::-delimited argument."
-                     "  To list all available commands, use `{0} --list'"
-                     " (alt. --help).".format(prog_simple))
+                     "  When `-' specified as file -> std{{in,out}}."
+                     "  All available commands listed as `{0} --list'."
+                     .format(prog_simple))
     #try:
     # note that the parser carries opts and "Common options" group
     ec = cm(parser, args)

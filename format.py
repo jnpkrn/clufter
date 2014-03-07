@@ -12,7 +12,7 @@ import logging
 from copy import deepcopy
 from os import extsep, walk
 from os.path import commonprefix, splitext, basename
-from sys import modules
+from sys import modules, stdout
 
 from lxml import etree
 
@@ -189,8 +189,11 @@ class SimpleFormat(Format, MetaPlugin):
 
     @Format.producing('file')
     def get_file(self, protocol, filename):
-        with file(filename, 'wb') as f:
-            f.write(self('bytestring'))
+        if filename == '-':
+            stdout.write(self('bytestring'))
+        else:
+            with file(filename, 'wb') as f:
+                f.write(self('bytestring'))
         return filename
 
 
