@@ -14,10 +14,10 @@ from ..command import Command, CommandAlias
                     ('ccs2flatironxml',
                           'xml2simpleconfig')))
 def ccs2pcs_flatiron(cmd_ctxt,
-                     input='/etc/cluster/cluster.conf',
-                     ccs_pcmk='./cluster.conf',
-                     cib='./cib.xml',
-                     coro='./corosync.conf',
+                     input="/etc/cluster/cluster.conf",
+                     ccs_pcmk="./cluster.conf",
+                     cib="./cib.xml",
+                     coro="./corosync.conf",
                      nocheck=False):
     """CMAN -> Pacemaker-based cluster config. (corosync v1)
 
@@ -27,16 +27,17 @@ def ccs2pcs_flatiron(cmd_ctxt,
     along with Pacemaker (~cib.xml) and corosync ones (~corosync.conf).
 
     Options:
-        input        input CMAN-based cluster configuration file
-        ccs_pcmk     output Pacemaker pass-through CMAN configuration
-        cib          output pacemaker-based configuration file
-        coro         output Corosync configuration file
-        nocheck      do not validate any step (even if self-checks present)
+        input     input CMAN-based cluster configuration file
+        ccs_pcmk  output Pacemaker pass-through CMAN configuration
+        cib       output Pacemaker-based cluster configuration file
+        coro      output Corosync v1 configuration file
+        nocheck   do not validate any step (even if self-checks present)
     """
     #cmd_ctxt.filter()['validate'] = not nocheck
     #cmd_ctxt.filter('ccs2ccsflat')['validate'] = not nocheck
     return (
-        ('file', input), (
+        ('file', input),
+        (
             ('file', ccs_pcmk),
             ('file', cib),
             (
@@ -51,9 +52,9 @@ def ccs2pcs_flatiron(cmd_ctxt,
                     ('ccs2needlexml',
                           'xml2simpleconfig')))
 def ccs2pcs_needle(cmd_ctxt,
-                   input='/etc/cluster/cluster.conf',
-                   cib='./cib.xml',
-                   coro='./corosync.conf',
+                   input="/etc/cluster/cluster.conf",
+                   cib="./cib.xml",
+                   coro="./corosync.conf",
                    nocheck=False):
     """CMAN -> Pacemaker-based cluster config. (corosync v2)
 
@@ -62,15 +63,16 @@ def ccs2pcs_needle(cmd_ctxt,
     of Pacemaker (~cib.xml) and tcorosync (~corosync.conf) configurations.
 
     Options:
-        input      input CMAN-based cluster configuration file
-        cib        output pacemaker-based configuration file
-        coro       output Corosync configuration file
-        nocheck    do not validate any step (even if self-checks present)
+        input    input CMAN-based cluster configuration file
+        cib      output Pacemaker-based cluster configuration file
+        coro     output Corosync v2 configuration file
+        nocheck  do not validate any step (even if self-checks present)
     """
     #cmd_ctxt.filter()['validate'] = not nocheck
     #cmd_ctxt.filter('ccs2ccsflat')['validate'] = not nocheck
     return (
-        ('file', input), (
+        ('file', input),
+        (
             ('file', cib),
             (
                 ('file', coro),

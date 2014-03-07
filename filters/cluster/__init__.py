@@ -103,12 +103,14 @@ ccsflat2pcs = '''\
 '''
 
 ccs2ccs_pcmk = '''\
-    <cluster config_version="{@config_version + 1}" name="{@name}">
+    <cluster config_version="{@config_version + 1}"
+             name="{@name}">
 
         <clufter:descent at="clusternodes"/>
 
         <fencedevices>
-            <fencedevice agent="fence_pcmk" name="pcmk-redirect"/>
+            <fencedevice agent="fence_pcmk"
+                         name="pcmk-redirect"/>
         </fencedevices>
 
         <!-- see bz#723925 -->
