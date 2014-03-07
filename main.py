@@ -158,7 +158,7 @@ def run(argv=None, *args):
                               cmds_intro="Commands"
                                          " (as available, but stable):",
                               aliases_intro="Aliases thereof"
-                                            " (environment specific):")
+                                            " (environment-specific):")
         if opts.list:
             print cmds
         elif opts.completion:
