@@ -1,0 +1,2 @@
+ccs-obfuscate:
+- result not pretty printed with --skip=creds
