@@ -23,12 +23,12 @@ def ccs2pcs_flatiron(cmd_ctxt,
 
     More specifically, the output is suitable for Pacemaker integrated
     with Corosync ver. 1 (Flatiron) as present, e.g., in el6.{5, ..},
-    and consists of reduced CMAN configuration (~cluster.conf) along with
-    Pacemaker (~cib.xml) and corosync ones (~corosync.conf).
+    and consists of Pacemaker pass-through CMAN configuration (~cluster.conf)
+    along with Pacemaker (~cib.xml) and corosync ones (~corosync.conf).
 
     Options:
         input        input CMAN-based cluster configuration file
-        ccs_pcmk     output reduced CMAN configuration
+        ccs_pcmk     output Pacemaker pass-through CMAN configuration
         cib          output pacemaker-based configuration file
         coro         output Corosync configuration file
         nocheck      do not validate any step (even if self-checks present)
