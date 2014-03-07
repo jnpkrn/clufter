@@ -129,6 +129,7 @@ ccs_obfuscate_credentials = '''\
 
 # check http://stackoverflow.com/questions/4509662/how-to-generate-unique-string
 # TODO comments on top-level not supported
+# device/@port for fence_pcmk
 ccs_obfuscate_identifiers = '''\
     <xsl:template match="@*|node()">
         <xsl:copy>
@@ -146,6 +147,7 @@ ccs_obfuscate_identifiers = '''\
     <xsl:variable name="ClusterNode" select="cluster/clusternodes/clusternode[@name]"/>
     <xsl:template match="cluster/clusternodes/clusternode/@name
                         |cluster/clusternodes/clusternode/fence/method/device/@nodename
+                        |cluster/clusternodes/clusternode/fence/method/device/@port
                         |cluster/rm/failoverdomains/failoverdomain/failoverdomainnode/@name">
         <xsl:variable name="attr_name" select="."/>
         <xsl:attribute name="{name()}">
