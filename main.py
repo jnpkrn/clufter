@@ -172,7 +172,8 @@ def run(argv=None, *args):
                 usage="%prog [<global option> ...] [<cmd> [<cmd option ...>]]",
                 description=description_text(width=0),
                 description_raw=cmds,
-                epilog="To get help for given command, follow it with --help."
+                epilog=("To get help for given command,"
+                        " just precede or follow it with `--help'.")
             )
         return ec
 
