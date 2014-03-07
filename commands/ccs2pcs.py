@@ -81,12 +81,11 @@ def ccs2pcs_needle(cmd_ctxt,
 
 @CommandAlias.deco
 def ccs2pcs(cmds, system, system_extra):
-    ret = 'ccs2pcs-needle'
-    # unless el <7.0
-    if system == 'Linux' and system_extra[0] == 'redhat' and system_extra[1]:
-        v = system_extra[1]
+    # unless el <7.0 (XXX identification of SL and other derivates unknown)
+    if system == 'Linux' and system_extra[0] in ('redhat', 'centos'):
+        v = system_extra[1] if system_extra else '7'  # default if undecidable
         v = v[:-len(v.lstrip('0123456789.'))] or str.isdigit(v[0]) and v or '0'
         v = tuple(map(int, (v.rstrip('.') + '.0.0').split('.')[:2]))
         if v < (7, 0):
-            ret = 'ccs2pcs-flatiron'
-    return ret
+            return 'ccs2pcs-flatiron'
+    return 'ccs2pcs-needle'
