@@ -108,7 +108,7 @@ class simpleconfig(SimpleFormat):
                              + l[len(l.split('#')) - 2:])
                             for x in xs if x for l in x.splitlines())
         )(struct).replace('###', '').replace('##', indent)
-        ret = '\n'.join(ret.splitlines()[1:-1])
+        ret = '\n'.join(ret.splitlines()[1:-1]) + '\n'
         return ret
 
     @SimpleFormat.producing('struct', protect=True)
