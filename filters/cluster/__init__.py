@@ -128,7 +128,7 @@ ccs_obfuscate_credentials = '''\
 '''
 
 # check http://stackoverflow.com/questions/4509662/how-to-generate-unique-string
-# todo: comments on top-level not supported
+# TODO comments on top-level not supported
 ccs_obfuscate_identifiers = '''\
     <xsl:template match="@*|node()">
         <xsl:copy>

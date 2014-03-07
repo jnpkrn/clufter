@@ -163,6 +163,7 @@ class XMLFilter(Filter, MetaPlugin):
 
         ret = tree_stack[-1][2].values()
         # XXX can be [] in case of not finding anything, should we emit error?
+        #     addendum: sometimes comments (top-level only?) will cause this
         return postprocess(ret)
 
     @staticmethod
