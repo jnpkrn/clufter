@@ -111,6 +111,10 @@ ccs2ccs_pcmk = '''\
             <fencedevice agent="fence_pcmk" name="pcmk-redirect"/>
         </fencedevices>
 
+        <!-- see bz#723925 -->
+        <xsl:comment> avoid accidental start of rgmanager </xsl:comment>
+        <rm disabled="1"/>
+
     </cluster>
 '''
 
