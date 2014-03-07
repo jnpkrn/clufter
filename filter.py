@@ -162,6 +162,7 @@ class XMLFilter(Filter, MetaPlugin):
                 #    log.debug("Skipping (C) until: {0}".format(skip_until))
 
         ret = tree_stack[-1][2].values()
+        # XXX can be [] in case of not finding anything, should we emit error?
         return postprocess(ret)
 
     @staticmethod
