@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing destilling XSLT from the sparse tree-organized snippets"""
@@ -21,11 +21,11 @@ from clufter.filter import XMLFilter
 WALK_DIR = join(dirname(dirname(__file__)), 'filters')
 
 
-class Ccs2CoroXsltViewOnly(unittest.TestCase):
+class Ccs2NeedleXsltViewOnly(unittest.TestCase):
     def testXSLTTemplate2(self):
         flt = XMLFilter(ccs, coroxml)
         in_obj = ccs('file', join(dirname(__file__), 'filled.conf'))
-        r = flt.get_template(in_obj, symbol='ccs2coroxml',
+        r = flt.get_template(in_obj, symbol='ccs2needlexml',
                              root_dir=WALK_DIR)
 
         ret = r if isinstance(r, list) else [r]
