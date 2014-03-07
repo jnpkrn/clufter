@@ -13,7 +13,7 @@ from ..command import Command
 def ccs_obfuscate(cmd_ctxt,
                   input="/etc/cluster/cluster.conf",
                   output="./cluster.conf",
-                  skip=''):
+                  skip='none'):
     """Obfuscate credentials/IDs in CMAN-based cluster config.
 
     Either obfuscation pass can be suppressed by skip parameter, by
@@ -22,7 +22,7 @@ def ccs_obfuscate(cmd_ctxt,
     Options:
         input   input CMAN-based cluster configuration file
         output  output file with obfuscated credentials/identifiers
-        skip    which pass to skip [ids, creds]
+        skip    which pass to skip (none/ids/creds)
     """
     try:
         skip = ('creds', 'ids').index(skip.lower()) + 1
