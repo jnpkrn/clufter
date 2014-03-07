@@ -118,7 +118,7 @@ ccs2ccs_pcmk = '''\
     </cluster>
 '''
 
-obfuscate_credentials = '''\
+ccs_obfuscate_credentials = '''\
     <xsl:template match="*">
         <xsl:copy>
             <xsl:copy-of select="@*"/>
@@ -129,7 +129,7 @@ obfuscate_credentials = '''\
 
 # check http://stackoverflow.com/questions/4509662/how-to-generate-unique-string
 # todo: comments on top-level not supported
-obfuscate_identifiers = '''\
+ccs_obfuscate_identifiers = '''\
     <xsl:template match="@*|node()">
         <xsl:copy>
             <xsl:apply-templates select="@*|node()"/>

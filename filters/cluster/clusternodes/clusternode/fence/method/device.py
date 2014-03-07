@@ -3,7 +3,7 @@
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
-obfuscate_credentials = '''\
+ccs_obfuscate_credentials = '''\
     <xsl:copy>
         <xsl:copy-of select="@*"/>
         <xsl:for-each select="@*">

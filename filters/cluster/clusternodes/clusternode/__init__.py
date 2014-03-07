@@ -7,16 +7,6 @@ ccs2needlexml = '''\
     <node id="{@nodeid}" ring0_addr="{@name}"/>
 '''
 
-obfuscate_identifiers = '''\
-    <xsl:copy>
-        <xsl:copy-of select="@*"/>
-        <xsl:attribute name="name">
-            <!-- xsl:value-of select="concat('NODE-', @nodeid)"/ -->
-            <xsl:value-of select="concat('NODE-', count())"/>
-        </xsl:attribute>
-    </xsl:copy>
-'''
-
 ccs2ccs_pcmk = '''\
     <clusternode name="{@name}" nodeid="{@nodeid}">
         <fence>
