@@ -9,8 +9,8 @@ from ..command import Command, CommandAlias
 
 
 @Command.deco(('ccs2ccsflat',
-                    'ccsflat2pcs',
                     'ccs2ccs-pcmk',
+                    'ccsflat2pcs',
                     ('ccs2flatironxml',
                           'xml2simpleconfig')))
 def ccs2pcs_flatiron(cmd_ctxt,
