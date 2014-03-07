@@ -17,7 +17,7 @@ def ccs_obfuscate(cmd_ctxt,
     """Obfuscate credentials/IDs in CMAN-based cluster config.
 
     Either obfuscation pass can be suppressed by skip parameter, by
-    default they are performed both.
+    default they are performed both in row.
 
     Options:
         input   input CMAN-based cluster configuration file
