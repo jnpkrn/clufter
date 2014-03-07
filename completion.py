@@ -105,7 +105,7 @@ local opts="{0}"
         alias_case = '    ' + '\n    '.join(
             '{0}) cur="{1}";;'.format(alias, to) for alias, to in aliases
         )
-        main = """\
+        main = r"""\
 local commands="{1}"
 local opts_common="{2}"
 local opts_main="{3}"
@@ -122,7 +122,7 @@ while true; do
     esac
     fnc=_main_boostrap_${{cur/-/_}}
     declare -f ${{fnc}} >/dev/null && COMPREPLY+=( $(${{fnc}} $2) )
-    [[ "$2" =~ -.* ]] \\
+    [[ "$2" =~ -.* ]] \
      && COMPREPLY+=( $(compgen -W "${{opts_common}} ${{opts_nonmain}}" -- $2) )
     return
 done
