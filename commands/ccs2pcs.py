@@ -60,7 +60,7 @@ def ccs2pcs_needle(cmd_ctxt,
 
     More specifically, the output is suitable for Pacemaker integrated
     with Corosync ver. 2 (Needle) as present, e.g., in el7, and consists
-    of Pacemaker (~cib.xml) and tcorosync (~corosync.conf) configurations.
+    of Pacemaker (~cib.xml) and corosync (~corosync.conf) configurations.
 
     Options:
         input    input CMAN-based cluster configuration file
