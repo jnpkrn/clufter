@@ -18,7 +18,7 @@ obfuscate_identifiers = '''\
 '''
 
 ccs2ccs_pcmk = '''\
-    <clusternode name="{@name}" nodeid="${@nodeid}">
+    <clusternode name="{@name}" nodeid="{@nodeid}">
         <fence>
             <method name="pcmk-method">
                 <device name="pcmk-redirect" port="{@name}"/>

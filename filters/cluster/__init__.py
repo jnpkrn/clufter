@@ -103,7 +103,7 @@ ccsflat2pcs = '''\
 '''
 
 ccs2ccs_pcmk = '''\
-    <cluster config_version="{@version + 1}" name="{@name}">
+    <cluster config_version="{@config_version + 1}" name="{@name}">
 
         <clufter:descent at="clusternodes"/>
 
