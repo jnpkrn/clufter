@@ -1,0 +1,224 @@
+CLUSTERED RESOURCE PROPERTIES IN THE LIGHT OF RGMANAGER-PACEMAKER CONVERSION
+
+Copyright 2014 Red Hat, Inc., Jan Pokorný <jpokorny @at@ Red Hat .dot. com>
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3
+or any later version published by the Free Software Foundation;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled "GNU
+Free Documentation License".
+
+
+intro
+=====
+
+This document elaborates on how selected resource relationship properties
+(denoting the run-time behavior) formalized by the means of LTL logic maps
+to particular RGManager (R) and Pacemaker (P) configuration arrangements.
+Due to the purpose of this document, "selected" here means set of
+properties one commonly uses in case of the former cluster resource
+manager (R).
+
+Properties are categorised, each is further dissected based on
+the property variants (basically holds or doesn't, but can be more
+convoluted), and for each variants, the LTL model and R+P specifics
+are provided.
+
+prerequisities
+--------------
+
+Optionally, basic knowledge of LTL logic [1].
+The meaning of symbols used (mind the ASCII range) goes, ordered by
+descending precedence priority, like this:
+
+. a-z       ... booleans representing satisfaction of the connected claim
+. ()        ... braces (changing evaluation order of enclosed expression)
+.  ~        ... negation
+. X,G,F,U,R ... temporal operators (LTL)
+. AND       ... conjuction
+. OR        ... disjunction
+. ->        ... implication
+
+There are also following sets assumed:
+
+{}          ... empty set (used especially with set difference: \)
+2^Z         ... potential set of a set denoted with Z
+NODES       ... set of all nodes
+RESOURCES   ... set of all resources/services
+
+and these functions:
+
+RUNNABLE: NODES -> RESOURCES
+... all resources that can run on given node
+SCORE:    RESOURCES x NODES -> {0, 1, ...}
+... order of preference for given resource to run on given node
+
+and these predicates:
+
+ACTIVE(A)     ... node A is active cluster member
+RUNNING(A, B) ... node A runs resource B (assumes B in RUNNABLE(A))
+
+and this oxymoron:
+
+exists A1, A2 in NODES: A1 != A2, B in RESOURCES:
+  RUNNING(A1, B) AND RUNNING(A1, B)
+[given unique resource is expected to run on atmost a single node,
+ we don't consider Pacemaker's clones here at all]
+
+notes
+-----
+
+- discreteness of the events in the LTL models is chosen quite deliberately,
+  per common sense and "best fit", for the sake of simplicity
+  (author is by no means expert in this field)
+
+
+resource-resource interaction properites
+========================================
+
+ordering
+--------
+
+TBD
+
+cooccurence
+-----------
+
+[1. mandatory cooccurence]
+
+TBD
+
+P:
+ - mandatory
+ - advisory
+ - anti-colocation
+
+
+resource-node assignment properties
+===================================
+
+resource stickiness property (not moving back to preferred location)
+--------------------------------------------------------------------
+
+STICKY ::= STICKY(RESOURCE, STICKINESS), STICKINESS in {0, 1, ...}
+
+A1, A2 in NODES
+B in RUNNABLE(A1) AND B in RUNNABLE(A2)
+SCORE(B, A1) < SCORE(B, A2)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[1. model of unsticky/cruising resource]
+a AND b -> X c
+
+[2. model of sticky resource]
+a AND b -> X a
+. a ... RUNNING(A1, B)
+. b ... ACTIVE(A2)
+. c ... RUNNING(A2, B) resource X running (relocation if A1 != A2)
+
+R: driven by /cluster/rm/failoverdomains/failoverdomain/@nofailback
+   - note: only applies to service/vm (not primitive resources)
+   - 1. unsticky resource model
+     - default (@nofailback=0)
+   - 2. sticky resource model
+     - when @nofailback is a positive number
+
+P: driven by stickiness parameter
+   - 1. unsticky resource model
+     - default (stickiness = 0)
+   - 2. sticky resource model
+     - when stickiness specified as positive number
+     - group is a sum of stickiness values of underlying resources
+
+
+node-exclusiveness resource property (optionally with priority-based preemption)
+--------------------------------------------------------------------------------
+
+EXCLUSIVE ::= EXCLUSIVE(RESOURCE, FALSE)
+            | EXCLUSIVE(RESOURCE, TRUE)
+            | EXCLUSIVE(RESOURCE, PRIORITY), PRIORITY in {0, 1, ...}
+. EXCLUSIVE(RESOURCE, FALSE)    ... non-exclusive resource
+. EXCLUSIVE(RESOURCE, TRUE)     ... exclusive (flat model)
+. EXCLUSIVE(RESOURCE, PRIORITY) ... exclusive (prioritize pre-emptive model)
+
+[1. model of non-node-exclusive/co-occurence-positive resource, based on 2.]
+A in NODES
+B in RUNNABLE(A)
+for all B' in RUNNABLE(A): EXCLUSIVE(B', FALSE) [implies EXCLUSIVE(B, FALSE)]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~(a OR b) OR ~(~a -> ~b R ~a AND ~b -> ~a R ~b)
+= ~(a OR b) OR ~(~a -> ~b R ~a) OR ~(~b -> ~a R ~b)
+= ~(a OR b) OR ~(a OR ~b R ~a) OR ~(b OR ~a R ~b)
+= ~(a OR b) OR ~a AND ~(~b R ~a) OR ~b AND ~(~a R ~b)
+= ~(a OR b) OR ~a AND ~(~(a U b)) OR ~b AND ~(~(b U a))
+= ~(a OR b) OR ~a AND a U b OR ~b AND b U a
+= ~(a OR b) OR b OR a
+= ~a AND ~b OR b OR a [= true, i.e. no restriction wrt. modelled property, QED]
+. a ... RUNNING(A, B)
+. b ... exists B' in 2^RUNNABLE(A)\{}: RUNNING(A, B')
+
+[2. flat model of node-exclusive/co-occurence-less resource, no preemption]
+A in NODES
+B in RUNNABLE(A)
+EXCLUSIVE(B, TRUE)
+~~~~~~~~~~~~~~~~~~
+~(a OR b) OR (~a -> ~b R ~a) AND (~b -> ~a R ~b)  [mutual exclusion]
+. a ... RUNNING(A, B)
+. b ... exists YS in 2^(RUNNABLE(A)\{B})\{}: for all Y in YS: RUNNING(A, Y)
+        (assuming valid state, i.e., exclusiveness property
+         would be recursively satisfied also within YS)
+
+[3. model of prioritized pre-emptive node-exclusive resource]
+A in NODES
+B, C in RUNNABLE(A)
+I, J in {0, 1, ...}: I > J
+EXCLUSIVE(B, I)
+EXCLUSIVE(C, J)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~(a OR c) OR (~a -> ~c R ~a) AND (~c -> ~a R ~c),  [mutual exclusion]
+(b AND X a) -> (X ~b)                              [exlusivness priority wins]
+. a ... RUNNING(A, B)
+. b ... RUNNING(C, B)
+. c ... exists YS in 2^({Y | Y in RUNNABLE(A)
+                             AND (EXCLUSIVE(Y, FALSE)
+                                  OR exists K > I: EXCLUSIVE(Y, K))}\{B}
+                        )\{}: for all Y' in YS: RUNNING(A, Y')
+        (assuming valid state, i.e., exclusiveness property
+         would be recursively satisfied also within YS)
+
+R: driven by /cluster/rm/<service>/@exclusive
+   - note: only applies to service/vm (not primitive resources)
+   - 1. no node-exclusiveness model
+     - default (@exclusive = 0)
+   - 2. flat model
+     - by default (not in central_processing mode)
+   - 3. pre-emptive model
+     - only in central_processing mode
+     - https://access.redhat.com/site/node/47037
+     - also see https://bugzilla.redhat.com/show_bug.cgi?id=744052#c4
+       (also relevant to Pacemaker)
+     - exclusive resource with value of the respective parameter specifying
+       priority in the inverse sence (1 is highest, XXX or 0?)
+
+P: driven by utilization constraint
+   - 1. no node-exclusiveness model
+     - default (no such purposefully full utilization of node resources
+       specified)
+   - 2. flat model
+     - resources (presumably uniformly, but broken down to utilization
+       of comprising primitives) require full utilization of what
+       resources (presumably uniformly) each node provides
+   - 3. pre-emptive model
+     - 1. + prioritization defined by the means of priority per primitive,
+     - https://access.redhat.com/site/solutions/65542
+   - for 2., 3.:
+     - however modelling "exclusive resource cannot be started on node,
+       with non-exclusive resources already running" seems to be close
+       to impossible (XXX or in a intrusive way, like setting default
+       utilization + priority for those resources not overriding
+       these defaults)?
+
+
+References
+==========
+
+[1] http://en.wikipedia.org/wiki/Linear_temporal_logic
