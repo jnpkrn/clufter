@@ -57,7 +57,8 @@ and these functions:
 RUNNABLE: NODES -> RESOURCES
 ... all resources that can run on given node
 SCORE:    RESOURCES x NODES -> {0, 1, ...}
-... order of preference for given resource to run on given node
+... order of preference for given resource to run on given node (without
+    contribution of preference implied by the examined property)
 
 and these predicates:
 
