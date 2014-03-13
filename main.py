@@ -10,6 +10,7 @@ from optparse import OptionParser, \
                      OptionGroup, \
                      IndentedHelpFormatter
 from os.path import basename
+from sys import version
 
 from . import version_text, description_text
 from .command_manager import CommandManager
@@ -147,7 +148,7 @@ def run(argv=None, *args):
     if opts.help is None:
         # options that return/exit + don't need plugin resolutions (not help)
         if opts.version:
-            print version_text()
+            print '\n'.join((version_text(), '-- \nPython runtime:', version))
             return ec
 
     logging.basicConfig(level=opts.loglevel)  # what if not the first use?
