@@ -107,20 +107,35 @@ Resource-node assignment properties
 Resource stickiness property (not moving back to preferred location)
 --------------------------------------------------------------------
 
-STICKY ::= STICKY(RESOURCE, STICKINESS), STICKINESS in {0, 1, ...}
+STICKY ::= STICKY(RESOURCE, FALSE)
+         | STICKY(RESOURCE, TRUE)
+         | STICKY(RESOURCE, STICKINESS) in {0, 1, 2, ...}, 0 ~ FALSE
+
+STICKY(RESOURCE, FALSE)      ... unsticky/cruising resource
+STICKY(RESOURCE, TRUE)       ... sticky resource (flat model)
+STICKY(RESOURCE, STICKINESS) ... sticky resource (prioritized model)
 
 A1, A2 in NODES
 B in RUNNABLE(A1) AND B in RUNNABLE(A2)
 SCORE(B, A1) < SCORE(B, A2)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 [1. model of unsticky/cruising resource]
+STICKY(RESOURCE, FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~
 a AND b -> X c
 
 [2. model of sticky resource]
+STICKY(RESOURCE, TRUE)
+~~~~~~~~~~~~~~~~~~~~~~
 a AND b -> X a
 . a ... RUNNING(A1, B)
 . b ... ACTIVE(A2)
 . c ... RUNNING(A2, B) resource X running (relocation if A1 != A2)
+
+[3. model of sticky resource with priorities]
+STICKY(RESOURCE, STICKINESS)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+TBD
 
 R: driven by /cluster/rm/failoverdomains/failoverdomain/@nofailback
    - note: only applies to service/vm (not primitive resources)
@@ -128,11 +143,13 @@ R: driven by /cluster/rm/failoverdomains/failoverdomain/@nofailback
      - default (@nofailback=0)
    - 2. sticky resource model
      - when @nofailback is a positive number
+   - 3. XXX not supported unless a way to emulate this
+        using ordered failover domains(?)
 
 P: driven by stickiness parameter
    - 1. unsticky resource model
      - default (stickiness = 0)
-   - 2. sticky resource model
+   - 2.,3. sticky resource model (with priorities)
      - when stickiness specified as positive number
      - group is a sum of stickiness values of underlying resources
 
@@ -142,10 +159,10 @@ Node-exclusiveness resource property (optionally with priority-based preemption)
 
 EXCLUSIVE ::= EXCLUSIVE(RESOURCE, FALSE)
             | EXCLUSIVE(RESOURCE, TRUE)
-            | EXCLUSIVE(RESOURCE, PRIORITY), PRIORITY in {0, 1, ...}
+            | EXCLUSIVE(RESOURCE, PRIORITY), PRIORITY in {0, 1, ...}, 0 ~ FALSE
 . EXCLUSIVE(RESOURCE, FALSE)    ... non-exclusive resource
 . EXCLUSIVE(RESOURCE, TRUE)     ... exclusive (flat model)
-. EXCLUSIVE(RESOURCE, PRIORITY) ... exclusive (prioritize pre-emptive model)
+. EXCLUSIVE(RESOURCE, PRIORITY) ... exclusive (prioritized pre-emptive model)
 
 [1. model of non-node-exclusive/co-occurence-positive resource, based on 2.]
 A in NODES
