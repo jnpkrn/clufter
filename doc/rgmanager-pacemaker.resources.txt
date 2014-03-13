@@ -9,7 +9,7 @@ A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
 
-intro
+Intro
 =====
 
 This document elaborates on how selected resource relationship properties
@@ -24,7 +24,7 @@ the property variants (basically holds or doesn't, but can be more
 convoluted), and for each variants, the LTL model and R+P specifics
 are provided.
 
-prerequisities
+Prerequisities
 --------------
 
 Optionally, basic knowledge of LTL logic [1].
@@ -68,7 +68,7 @@ exists A1, A2 in NODES: A1 != A2, B in RESOURCES:
 [given unique resource is expected to run on atmost a single node,
  we don't consider Pacemaker's clones here at all]
 
-notes
+Notes
 -----
 
 - discreteness of the events in the LTL models is chosen quite deliberately,
@@ -76,15 +76,15 @@ notes
   (author is by no means expert in this field)
 
 
-resource-resource interaction properites
+Resource-resource interaction properites
 ========================================
 
-ordering
+Ordering
 --------
 
 TBD
 
-cooccurence
+Cooccurence
 -----------
 
 [1. mandatory cooccurence]
@@ -97,10 +97,10 @@ P:
  - anti-colocation
 
 
-resource-node assignment properties
+Resource-node assignment properties
 ===================================
 
-resource stickiness property (not moving back to preferred location)
+Resource stickiness property (not moving back to preferred location)
 --------------------------------------------------------------------
 
 STICKY ::= STICKY(RESOURCE, STICKINESS), STICKINESS in {0, 1, ...}
@@ -133,7 +133,7 @@ P: driven by stickiness parameter
      - group is a sum of stickiness values of underlying resources
 
 
-node-exclusiveness resource property (optionally with priority-based preemption)
+Node-exclusiveness resource property (optionally with priority-based preemption)
 --------------------------------------------------------------------------------
 
 EXCLUSIVE ::= EXCLUSIVE(RESOURCE, FALSE)
