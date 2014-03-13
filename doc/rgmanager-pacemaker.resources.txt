@@ -31,20 +31,23 @@ Optionally, basic knowledge of LTL logic [1].
 The meaning of symbols used (mind the ASCII range) goes, ordered by
 descending precedence priority, like this:
 
-. a-z       ... booleans representing satisfaction of the connected claim
-. ()        ... braces (changing evaluation order of enclosed expression)
-. in        ... set's item selector
-.  ~        ... negation
-. X,G,F,U,R ... temporal operators (LTL)
-. AND       ... conjuction
-. OR        ... disjunction
-. exists    ... existential quantifier (predicate logic)
-. for all   ... universal quantifier (predicate logic)
-. ->        ... implication
+. a-z          ... booleans representing satisfaction of the connected claim
+. ()           ... braces (changing evaluation order of enclosed expression)
+. union        ... set union
+. intersection ... set intersection
+. \            ... set difference
+. in           ... set's item selector
+.  ~           ... negation
+. X,G,F,U,R    ... temporal operators (LTL)
+. AND          ... conjuction
+. OR           ... disjunction
+. exists       ... existential quantifier (predicate logic)
+. for all      ... universal quantifier (predicate logic)
+. ->           ... implication
 
 There are also following sets assumed:
 
-{}          ... empty set (used especially with set difference: \)
+{}          ... empty set
 2^Z         ... potential set of a set denoted with Z
 NODES       ... set of all nodes
 RESOURCES   ... set of all resources/services
