@@ -242,6 +242,23 @@ P: driven by utilization constraint
        these defaults)?
 
 
+Other resource properties
+=========================
+
+Is-managed resource property
+----------------------------
+
+MANAGED ::= MANAGED(RESOURCE, TRUE)
+          | MANAGED(RESOURCE, FALSE)
+
+MANAGED(RESOURCE, TRUE)  ... resource is managed (default assumption)
+MANAGED(RESOURCE, FALSE) ... resource is not managed
+
+R: XXX driven by clusvcadm -Z/-U (or at least it is close)
+
+P: via is-managed meta-attribute
+
+
 References
 ==========
 
