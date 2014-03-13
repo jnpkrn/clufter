@@ -33,10 +33,13 @@ descending precedence priority, like this:
 
 . a-z       ... booleans representing satisfaction of the connected claim
 . ()        ... braces (changing evaluation order of enclosed expression)
+. in        ... set's item selector
 .  ~        ... negation
 . X,G,F,U,R ... temporal operators (LTL)
 . AND       ... conjuction
 . OR        ... disjunction
+. exists    ... existential quantifier (predicate logic)
+. for all   ... universal quantifier (predicate logic)
 . ->        ... implication
 
 There are also following sets assumed:
