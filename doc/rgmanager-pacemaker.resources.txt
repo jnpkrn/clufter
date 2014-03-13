@@ -91,14 +91,62 @@ TBD
 Cooccurence
 -----------
 
-[1. mandatory cooccurence]
+COOCCURENCE ::= COOCURENCE(RESOURCE1, RESOURCE2, NONE)
+              | COOCURENCE(RESOURCE1, RESOURCE2, POSITIVE)
+              | COOCURENCE(RESOURCE1, RESOURCE2, NEGATIVE)
+              | COOCURENCE(RESOURCE1, RESOURCE2, SCORE),
+                SCORE in {..., -1, 0, 1, ...}, 0 ~ NONE
 
+COOCCURENCE(RESOURCE1, RESOURCE2, NONE)     ... no any occurence relationship
+COOCCURENCE(RESOURCE1, RESOURCE2, POSITIVE) ... positive occurence
+                                                relationship (flat model)
+COOCCURENCE(RESOURCE1, RESOURCE2, NEGATIVE) ... negative occurence
+                                                relationship (flat model)
+COOCCURENCE(RESOURCE1, RESOURCE2, SCORE)    ... score-based/advisory occurence
+                                                relationship
+
+note: COOCCURENCE relation between RESOURCE1 and RESOURCE2 is not symmetric,
+      RESOURCE1 is "dependent", RESOURCE2 is "leader"
+
+[2. possitive cooccurence]
+A1, A2 in NODES
+B, C in RUNNABLE(A1) intersection RUNNABLE(A2)
+COOCCURENCE(B, C, POSITIVE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+a AND b -> c  [basic positive cooccurence condition]
+X b -> X d    ["dependent" follows its "leader"]
+. a ... RUNNING(A1, B)
+. b ... RUNNING(A2, C)
+. c ... A1 == A2
+. d ... RUNNING(A2, B)
+
+R: driven by putting set of sequentially dependent resources hierarchically
+   (subsequent nesting) into service/resource group
+   - __independent_subtree must not be used
+
+P: driven by colocation constraint
+   - using INFINITY as value
+
+[3. negative cooccurence]
+A1, A2 in NODES
+B, C in RUNNABLE(A1) intersection RUNNABLE(A2)
+COOCCURENCE(B, C, NEGATIVE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+a AND b -> ~c  [basic negative cooccurence condition]
+X b -> X ~d    ["dependent" escapes its "leader"]
+. a ... RUNNING(A1, B)
+. b ... RUNNING(A2, C)
+. c ... A1 == A2
+. d ... RUNNING(A2, B)
+
+R: driven/emulated solely by disjunct failover domains
+   - XXX and possibly with follow_service.sl in central_processing mode
+
+P: driven by colocation constraint
+   - using -INFINITY as value
+
+[4. score-based/advisory occurence]
 TBD
-
-P:
- - mandatory
- - advisory
- - anti-colocation
 
 
 Resource-node assignment properties
