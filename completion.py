@@ -116,14 +116,14 @@ local cur fnc i=${{COMP_CWORD}}
 while true; do
     test ${{i}} -eq 0 && break || let i-=1
     cur=${{COMP_WORDS[${{i}}]}}
-    [[ "${{cur}}" =~ -.* ]] && continue
+    [[ "${{cur}}" =~ ^-.* ]] && continue
     # handle aliases
     case ${{cur}} in
 {5}
     esac
     fnc=_{0}_${{cur/-/_}}
     declare -f ${{fnc}} >/dev/null && COMPREPLY+=( $(${{fnc}} $2) )
-    [[ "$2" =~ -.* ]] \
+    [[ "$2" =~ ^-.* ]] \
      && COMPREPLY+=( $(compgen -W "${{opts_common}} ${{opts_nonmain}}" -- $2) )
     return
 done
