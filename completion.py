@@ -105,6 +105,7 @@ local opts="{0}"
         alias_case = '    ' + '\n    '.join(
             '{0}) cur="{1}";;'.format(alias, to) for alias, to in aliases
         )
+        # usage of self._name: see self._namespaced_identifier
         main = \
 r"""local commands="{1}"
 local opts_common="{2}"
@@ -120,7 +121,7 @@ while true; do
     case ${{cur}} in
 {5}
     esac
-    fnc=_main_boostrap_${{cur/-/_}}
+    fnc=_{0}_${{cur/-/_}}
     declare -f ${{fnc}} >/dev/null && COMPREPLY+=( $(${{fnc}} $2) )
     [[ "$2" =~ -.* ]] \
      && COMPREPLY+=( $(compgen -W "${{opts_common}} ${{opts_nonmain}}" -- $2) )
