@@ -122,7 +122,9 @@ while true; do
 {5}
     esac
     fnc=_{0}_${{cur/-/_}}
-    declare -f ${{fnc}} >/dev/null && COMPREPLY+=( $(${{fnc}} $2) )
+    declare -f ${{fnc}} >/dev/null \
+     && COMPREPLY+=( $(${{fnc}} $2) ) \
+     || continue
     [[ "$2" =~ ^-.* ]] \
      && COMPREPLY+=( $(compgen -W "${{opts_common}} ${{opts_nonmain}}" -- $2) )
     return
