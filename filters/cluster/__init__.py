@@ -181,4 +181,22 @@ ccs_obfuscate_identifiers = '''\
         </xsl:attribute>
         <xsl:apply-templates select="@*|node()"/>
     </xsl:template>
+
+    <xsl:variable name="FailoverDomain" select="cluster/rm/failoverdomains/failoverdomain[@name]"/>
+    <xsl:template match="cluster/rm/failoverdomains/failoverdomain/@name
+                        |cluster/rm/service/@domain
+                        |cluster/rm/vm/@domain">
+        <xsl:variable name="attr_name" select="."/>
+        <xsl:attribute name="{name()}">
+            <xsl:value-of select="concat('FAILOVER-DOMAIN-UNDEF-', generate-id(.))"/>
+        </xsl:attribute>
+        <xsl:attribute name="{name()}">
+            <xsl:for-each select="$FailoverDomain">
+                <xsl:if test="@name = $attr_name">
+                    <xsl:value-of select="concat('FAILOVER-DOMAIN-', position())"/>
+                </xsl:if>
+            </xsl:for-each>
+        </xsl:attribute>
+        <xsl:apply-templates select="@*|node()"/>
+    </xsl:template>
 '''
