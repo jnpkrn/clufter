@@ -105,8 +105,8 @@ local opts="{0}"
         alias_case = '    ' + '\n    '.join(
             '{0}) cur="{1}";;'.format(alias, to) for alias, to in aliases
         )
-        main = r"""\
-local commands="{1}"
+        main = \
+r"""local commands="{1}"
 local opts_common="{2}"
 local opts_main="{3}"
 local opts_nonmain="{4}"
