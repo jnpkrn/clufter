@@ -46,7 +46,7 @@ opts_common = (
         const='DEBUG',
         help="shortcut for --loglevel=DEBUG"
     )),
-    # TODO: other logging related stuff (file, ...)
+    # TODO other logging related stuff (file, ...)
 )
 
 opts_main = (
@@ -192,7 +192,7 @@ def run(argv=None, *args):
                      " requiring specification then allowed by syntactic"
                      " sugar: all can be passed as a single, first,"
                      " ::-delimited argument."
-                     "  When `-' specified as file -> std{{in,out}}."
+                     "  Magic files: `-', `@DIGIT'."
                      "  All available commands listed as `{0} --list'."
                      .format(prog_simple))
     #try:

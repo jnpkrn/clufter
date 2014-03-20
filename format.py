@@ -10,7 +10,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 import imp
 import logging
 from copy import deepcopy
-from os import extsep, walk
+from os import extsep, fdopen, walk
 from os.path import commonprefix, splitext, basename
 from sys import modules, stdout
 
@@ -189,8 +189,12 @@ class SimpleFormat(Format, MetaPlugin):
 
     @Format.producing('file')
     def get_file(self, protocol, filename):
-        if filename == '-':
-            stdout.write(self('bytestring'))
+        if filename == '-' or filename.rstrip('0123456789') == '@':
+            if filename == '-':
+                stdout.write(self('bytestring'))
+            else:
+                with fdopen(int(filename[1:]), 'ab') as f:
+                    f.write(self('bytestring'))
         else:
             with file(filename, 'wb') as f:
                 f.write(self('bytestring'))
