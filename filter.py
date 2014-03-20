@@ -142,12 +142,15 @@ class XMLFilter(Filter, MetaPlugin):
                 log.debug(tag_log("Moving downwards: {0} ({1})", elem))
                 if elem.tag in tree_stack[-1][1][1] or default is not None:
                     if elem.tag not in tree_stack[-1][1][1]:
-                        log.debug("Not")
-                        walk_new_sym, walk_new_rest = default, tree_stack[-1][1][1].copy()
-                    else:
-                        walk_new_sym, walk_new_rest = tree_stack[-1][1][1][elem.tag]
+                        log.debug("Pushed to use default for `{0}'"
+                                  .format(elem.tag))
+                        previous = tree_stack[-1][1][1].copy()
+                        tree_stack[-1][1][1].clear()
+                        tree_stack[-1][1][1][elem.tag] = (default, previous)
+                    walk_new_sym, walk_new_rest = tree_stack[-1][1][1][elem.tag]
                     default = walk_default  # for the rest under first/root
-                    walk_new_sym = preprocess(walk_new_sym, elem.tag, tree_stack[-1][1][0])
+                    walk_new_sym = preprocess(walk_new_sym, elem.tag,
+                                              tree_stack[-1][1][0])
                     tree_stack[-1][1][1][elem.tag] = (walk_new_sym, walk_new_rest)
                     tree_stack.append((elem.tag, (walk_new_sym, walk_new_rest), OrderedDict()))
                     if walk_new_rest is {}:
