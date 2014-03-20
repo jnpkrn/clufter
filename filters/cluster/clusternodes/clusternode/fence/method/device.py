@@ -1,24 +1,20 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
-ccs_obfuscate_credentials = '''\
-    <xsl:copy>
-        <xsl:copy-of select="@*"/>
-        <xsl:for-each select="@*">
-            <xsl:if test="contains(concat(
-                '|login',
-                '|'), concat('|', name(), '|'))">
-                <xsl:attribute name="{name()}">SECRET-LOGIN</xsl:attribute>
-            </xsl:if>
-            <xsl:if test="contains(concat(
-                '|community',
-                '|passwd',
-                '|snmp_priv_passwd',
-                '|'), concat('|', name(), '|'))">
-                <xsl:attribute name="{name()}">SECRET-PASSWORD</xsl:attribute>
-            </xsl:if>
-        </xsl:for-each>
-    </xsl:copy>
-'''
+from logging import getLogger
+log = getLogger(__name__)
+
+# XXX a bit dirty DRY approach
+from os.path import dirname, exists, join
+use = reduce(lambda a, b: dirname(a), xrange(5), __file__)
+use = join(use, 'fencedevices', 'fencedevice')
+use = use + '.py' if exists(use + '.py') else join(use, '__init__.py')
+myglobals = {}
+try:
+    execfile(use, myglobals)
+except IOError:
+    log.error("Unable to refer to `{0}' file".format(use))
+else:
+    ccs_obfuscate_credentials = myglobals['ccs_obfuscate_credentials']

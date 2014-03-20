@@ -1,11 +1,11 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
 ccs_obfuscate_credentials = '''\
     <xsl:copy>
-        <xsl:copy-of select="@*"/>
+        <xsl:apply-templates select="@*"/>
         <xsl:for-each select="@*[contains(concat(
                 '|passwd',
                 '|snmp_priv_passwd',
@@ -17,5 +17,6 @@ ccs_obfuscate_credentials = '''\
                 '|'), concat('|', name(), '|'))]">
                 <xsl:attribute name="{name()}">SECRET-LOGIN</xsl:attribute>
         </xsl:for-each>
+        <xsl:apply-templates/>
     </xsl:copy>
 '''
