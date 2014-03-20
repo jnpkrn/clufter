@@ -97,7 +97,8 @@ COOCCURENCE ::= COOCURENCE(RESOURCE1, RESOURCE2, NONE)
               | COOCURENCE(RESOURCE1, RESOURCE2, SCORE),
                 SCORE in {..., -1, 0, 1, ...}, 0 ~ NONE
 
-COOCCURENCE(RESOURCE1, RESOURCE2, NONE)     ... no any occurence relationship
+COOCCURENCE(RESOURCE1, RESOURCE2, NONE)     ... not any occurence relationship
+                                                (default)
 COOCCURENCE(RESOURCE1, RESOURCE2, POSITIVE) ... positive occurence
                                                 relationship (flat model)
 COOCCURENCE(RESOURCE1, RESOURCE2, NEGATIVE) ... negative occurence
@@ -159,7 +160,7 @@ STICKY ::= STICKY(RESOURCE, FALSE)
          | STICKY(RESOURCE, TRUE)
          | STICKY(RESOURCE, STICKINESS) in {0, 1, 2, ...}, 0 ~ FALSE
 
-STICKY(RESOURCE, FALSE)      ... unsticky/cruising resource
+STICKY(RESOURCE, FALSE)      ... unsticky/cruising resource (default)
 STICKY(RESOURCE, TRUE)       ... sticky resource (flat model)
 STICKY(RESOURCE, STICKINESS) ... sticky resource (prioritized model)
 
@@ -208,7 +209,7 @@ Node-exclusiveness resource property (optionally with priority-based preemption)
 EXCLUSIVE ::= EXCLUSIVE(RESOURCE, FALSE)
             | EXCLUSIVE(RESOURCE, TRUE)
             | EXCLUSIVE(RESOURCE, PRIORITY), PRIORITY in {0, 1, ...}, 0 ~ FALSE
-. EXCLUSIVE(RESOURCE, FALSE)    ... non-exclusive resource
+. EXCLUSIVE(RESOURCE, FALSE)    ... non-exclusive resource (default)
 . EXCLUSIVE(RESOURCE, TRUE)     ... exclusive (flat model)
 . EXCLUSIVE(RESOURCE, PRIORITY) ... exclusive (prioritized pre-emptive model)
 
