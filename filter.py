@@ -37,7 +37,7 @@ _TOP_LEVEL_XSL = (
     'variable',
     'output',
     'template',
-    'strip-space'
+    'strip-space',
 )
 TOP_LEVEL_XSL = ["{{{0}}}{1}".format(XSL_NS, e) for e in _TOP_LEVEL_XSL]
 
@@ -108,14 +108,25 @@ def tag_log(s, elem):
 
 
 class XMLFilter(Filter, MetaPlugin):
+
+    xslt_identity = '''\
+    <xsl:template match="{0}@*|{0}node()" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()"/>
+       </xsl:copy>
+    </xsl:template>'''
+
     @staticmethod
-    def _traverse(in_fmt, walk, walk_default=None, et=None,
+    def _traverse(in_fmt, walk, et=None,
+                  walk_default_first=None, walk_default=None,
                   preprocess=lambda s, n, r: s, proceed=lambda *x: x,
                   postprocess=lambda x: x[0] if len(x) == 1 else x):
         """Generic traverse through XML as per symbols within schema tree"""
         tree_stack = [('', (None, walk), OrderedDict())]
+        default = walk_default_first
+        default = default if default is not None else walk_default
         skip_until = []
-        if walk_default is None:
+        if default is None:
             skip_until = [('start', tag) for tag in walk]
         et = et or in_fmt('etree')
 
@@ -129,12 +140,13 @@ class XMLFilter(Filter, MetaPlugin):
             if event == 'start':
                 # going down
                 log.debug(tag_log("Moving downwards: {0} ({1})", elem))
-                if elem.tag in tree_stack[-1][1][1] or walk_default is not None:
+                if elem.tag in tree_stack[-1][1][1] or default is not None:
                     if elem.tag not in tree_stack[-1][1][1]:
                         log.debug("Not")
-                        walk_new_sym, walk_new_rest = walk_default, tree_stack[-1][1][1].copy()
+                        walk_new_sym, walk_new_rest = default, tree_stack[-1][1][1].copy()
                     else:
                         walk_new_sym, walk_new_rest = tree_stack[-1][1][1][elem.tag]
+                    default = walk_default  # for the rest under first/root
                     walk_new_sym = preprocess(walk_new_sym, elem.tag, tree_stack[-1][1][0])
                     tree_stack[-1][1][1][elem.tag] = (walk_new_sym, walk_new_rest)
                     tree_stack.append((elem.tag, (walk_new_sym, walk_new_rest), OrderedDict()))
