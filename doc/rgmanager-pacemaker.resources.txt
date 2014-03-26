@@ -43,7 +43,7 @@ descending precedence priority, like this:
 . OR           ... disjunction
 . exists       ... existential quantifier (predicate logic)
 . for all      ... universal quantifier (predicate logic)
-. ->           ... implication
+. ->           ... implication (--> as "maps to" in function signature context)
 
 There are also following sets assumed:
 
@@ -54,9 +54,9 @@ RESOURCES   ... set of all resources/services
 
 and these functions:
 
-RUNNABLE: NODES -> RESOURCES
+RUNNABLE: NODES --> RESOURCES
 ... all resources that can run on given node
-SCORE:    RESOURCES x NODES -> {0, 1, ...}
+SCORE:    RESOURCES x NODES --> {0, 1, ...}
 ... order of preference for given resource to run on given node (without
     contribution of preference implied by the examined property)
 
