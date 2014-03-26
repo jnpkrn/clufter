@@ -9,6 +9,7 @@ A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
 
+
 Intro
 =====
 
@@ -24,17 +25,19 @@ the property variants (basically holds or doesn't, but can be more
 convoluted), and for each variants, the LTL model and R+P specifics
 are provided.
 
+
 Outline
 -------
 
 Resource-resource interaction properites, PROPERTY(RESOURCE1, RESOURCE2):
 - ORDERING, COOCCURENCE
-Absolute resource-node assignment properties, PROPERTY(RESOURCE, NODE):
-- AFFINITY
 Relative resource-node assignment properties, PROPERTY(RESOURCE):
 - STICKY, EXCLUSIVE
+Explicit resource-node assignment properties, PROPERTY(RESOURCE, NODE):
+- AFFINITY
 Other resource properties, PROPERTY(RESOURCE):
 - MANAGED
+
 
 Prerequisities
 --------------
@@ -90,12 +93,14 @@ exists A1, A2 in NODES: A1 != A2, B in RESOURCES:
 [given unique resource is expected to run on atmost a single node,
  we don't consider Pacemaker's clones here at all]
 
+
 Notes
 -----
 
 - discreteness of the events in the LTL models is chosen quite deliberately,
   per common sense and "best fit", for the sake of simplicity
   (author is by no means expert in this field)
+
 
 
 Resource-resource interaction properites
@@ -106,6 +111,7 @@ implying modification of the behavior of cluster wrt. resource-resource
 pair:
 
 PROPERTY(RESOURCE1, RESOURCE2) -> ALTER((RESOURCE1, RESOURCE2))
+
 
 Ordering (time-based interaction dependence of the resources/their states)
 --------------------------------------------------------------------------
@@ -247,94 +253,6 @@ P:
      # pcs constraint colocation set RESOURCE2 RESOURCE1 setoptions score=SCORE
 
 
-Explicit resource-node(s) assignment property
-=============================================
-
-Generally a relation expressed by a predicate PROPERTY(RESOURCE, NODE),
-implying modification of the behavior of cluster wrt. resource-node
-pair:
-
-PROPERTY(RESOURCE, NODE) -> ALTER((RESOURCE, NODE))
-
-Resource-node affinity
-----------------------
-
-AFFINITY ::= AFFINITY(RESOURCE, NODE, NONE)
-           | AFFINITY(RESOURCE, NODE, FALSE)
-           | AFFINITY(RESOURCE, NODE, TRUE)
-           | AFFINITY(RESOURCE, NODE, WEIGHT), WEIGHT in {..., -1, 0, 1, ...},
-                                               0~NONE, -INF~FALSE, +INF~TRUE
-. AFFINITY(RESOURCE, NODE, NONE)   ... no special affinity (default)
-. AFFINITY(RESOURCE, NODE, FALSE)  ... anti-affinity (the node cannot run)
-. AFFINITY(RESOURCE, NODE, TRUE)   ... node forms a set of executive nodes
-. AFFINITY(RESOURCE, NODE, WEIGHT) ... prioritized model
-
-[1. model of no resource-node affinity]
-P: driven by location constraint (if at all as this is a default)
-   - pcs: AFFINITY(RESOURCE, NODE, NONE)
-     # pcs constraint location RESOURCE prefers NODE= (??? to remove it as such)
-     # pcs constraint location RESOURCE prefers NODE=0
-     # pcs contraint location add SOMEID RESOURCE NODE 0
-
-[2. model of antagonist (negative) resource-node affinity]
-AN in NODES^2\{}
-B in RESOURCES
-for all A in AN: AFFINITY(B, A, FALSE)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-X a -> X ~b
-
-R: driven by by failover domain for resource group
-   - nodes NODES\AN form selected failover domain, which has to be restricted
-     to prevent slipping onto any node in AN
-
-P: driven by location constraint
-   - pcs/crm_resource: AFFINITY(RESOURCE, NODE, FALSE)
-     # pcs constraint location RESOURCE avoids NODE
-     # pcs constraint location RESOURCE avoids NODE=INFINITY
-     # pcs constraint location RESOURCE prefers NODE=-INFINITY (???)
-     # pcs contraint location add SOMEID RESOURCE NODE -INFINITY
-     # crm_resource --ban --resource RESOUCE --host HOST ...
-
-[3. model of (positive) resource-node affinity]
-AN in NODES^2\{}
-B in intersection( { RUNNABLE(A) | A in AN } )
-for all A in AN: AFFINITY(B, A, TRUE)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-X a -> X b
-
-R: driven by by failover domain for resource group
-   - nodes AN form selected failover domain
-
-P: driven by location constraint
-   - pcs: AFFINITY(RESOURCE, NODE, TRUE)
-     # pcs constraint location RESOURCE prefers NODE
-     # pcs constraint location RESOURCE prefers NODE=INFINITY
-     # pcs constraint location RESOURCE avoids NODE=-INFINITY (???)
-     # pcs contraint location add SOMEID RESOURCE NODE INFINITY
-
-[4. model of resource-node affinity with priorities]
-AN in NODES^2\{}
-B in intersection( { RUNNABLE(A) | A in AN } )
-for all A in AN: AFFINITY(B, A, WEIGHT(B,A) )
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-X a AND c -> X d  [when not sticky, resource will run on the node
-                   this resource has greatest affinity to]
-. a ... RUNNING(A', B)
-. b ... A' in AN
-. c ... STICKY(B, FALSE)  <-- see below
-. d ... A' in {A'' | A'' in AN: WEIGHT(B, A'') == max({WEIGHT(B, A''')
-                                                       | A''' in AN})}
-
-R: driven by by failover domain for resource group
-   - nodes AN (subset with positive WEIGHT) form selected failover domain,
-     which has to be ordered, each failoverdomain prioritized as per
-     respective WEIGHTs
-
-P: driven by location constraint
-   - pcs: AFFINITY(RESOURCE, NODE, WEIGHT)
-     # pcs constraint location RESOURCE {prefers|avoids} NODE=WEIGHT
-     # pcs contraint location add SOMEID RESOURCE NODE WEIGHT
-
 
 Relative resource-node assignment properties
 ============================================
@@ -344,6 +262,7 @@ implying modification of the behavior of cluster wrt. the node
 running RESOURCE:
 
 PROPERTY(RESOURCE) AND RUNNING(NODE, RESOURCE) -> ALTER(NODE)
+
 
 Resource stickiness property (not moving back to preferred location)
 --------------------------------------------------------------------
@@ -492,8 +411,101 @@ P: driven by utilization constraint
    - pcs: does not support utilization yet (TODO?)
 
 
+
+Explicit resource-node(s) assignment property
+=============================================
+
+Generally a relation expressed by a predicate PROPERTY(RESOURCE, NODE),
+implying modification of the behavior of cluster wrt. resource-node
+pair:
+
+PROPERTY(RESOURCE, NODE) -> ALTER((RESOURCE, NODE))
+
+
+Resource-node affinity
+----------------------
+
+AFFINITY ::= AFFINITY(RESOURCE, NODE, NONE)
+           | AFFINITY(RESOURCE, NODE, FALSE)
+           | AFFINITY(RESOURCE, NODE, TRUE)
+           | AFFINITY(RESOURCE, NODE, WEIGHT), WEIGHT in {..., -1, 0, 1, ...},
+                                               0~NONE, -INF~FALSE, +INF~TRUE
+. AFFINITY(RESOURCE, NODE, NONE)   ... no special affinity (default)
+. AFFINITY(RESOURCE, NODE, FALSE)  ... anti-affinity (the node cannot run)
+. AFFINITY(RESOURCE, NODE, TRUE)   ... node forms a set of executive nodes
+. AFFINITY(RESOURCE, NODE, WEIGHT) ... prioritized model
+
+[1. model of no resource-node affinity]
+P: driven by location constraint (if at all as this is a default)
+   - pcs: AFFINITY(RESOURCE, NODE, NONE)
+     # pcs constraint location RESOURCE prefers NODE= (??? to remove it as such)
+     # pcs constraint location RESOURCE prefers NODE=0
+     # pcs contraint location add SOMEID RESOURCE NODE 0
+
+[2. model of antagonist (negative) resource-node affinity]
+AN in NODES^2\{}
+B in RESOURCES
+for all A in AN: AFFINITY(B, A, FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+X a -> X ~b
+
+R: driven by by failover domain for resource group
+   - nodes NODES\AN form selected failover domain, which has to be restricted
+     to prevent slipping onto any node in AN
+
+P: driven by location constraint
+   - pcs/crm_resource: AFFINITY(RESOURCE, NODE, FALSE)
+     # pcs constraint location RESOURCE avoids NODE
+     # pcs constraint location RESOURCE avoids NODE=INFINITY
+     # pcs constraint location RESOURCE prefers NODE=-INFINITY (???)
+     # pcs contraint location add SOMEID RESOURCE NODE -INFINITY
+     # crm_resource --ban --resource RESOUCE --host HOST ...
+
+[3. model of (positive) resource-node affinity]
+AN in NODES^2\{}
+B in intersection( { RUNNABLE(A) | A in AN } )
+for all A in AN: AFFINITY(B, A, TRUE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+X a -> X b
+
+R: driven by by failover domain for resource group
+   - nodes AN form selected failover domain
+
+P: driven by location constraint
+   - pcs: AFFINITY(RESOURCE, NODE, TRUE)
+     # pcs constraint location RESOURCE prefers NODE
+     # pcs constraint location RESOURCE prefers NODE=INFINITY
+     # pcs constraint location RESOURCE avoids NODE=-INFINITY (???)
+     # pcs contraint location add SOMEID RESOURCE NODE INFINITY
+
+[4. model of resource-node affinity with priorities]
+AN in NODES^2\{}
+B in intersection( { RUNNABLE(A) | A in AN } )
+for all A in AN: AFFINITY(B, A, WEIGHT(B,A) )
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+X a AND c -> X d  [when not sticky, resource will run on the node
+                   this resource has greatest affinity to]
+. a ... RUNNING(A', B)
+. b ... A' in AN
+. c ... STICKY(B, FALSE)  <-- see above
+. d ... A' in {A'' | A'' in AN: WEIGHT(B, A'') == max({WEIGHT(B, A''')
+                                                       | A''' in AN})}
+
+R: driven by by failover domain for resource group
+   - nodes AN (subset with positive WEIGHT) form selected failover domain,
+     which has to be ordered, each failoverdomain prioritized as per
+     respective WEIGHTs
+
+P: driven by location constraint
+   - pcs: AFFINITY(RESOURCE, NODE, WEIGHT)
+     # pcs constraint location RESOURCE {prefers|avoids} NODE=WEIGHT
+     # pcs contraint location add SOMEID RESOURCE NODE WEIGHT
+
+
+
 Other resource properties
 =========================
+
 
 Is-managed resource property
 ----------------------------
@@ -521,6 +533,7 @@ P: via is-managed meta-attribute
    - pcs: MANAGED(RESOURCE, TRUE)
      # pcs resource unmanage RESOURCE
      # pcs resource meta RESOURCE is-managed=false
+
 
 
 References
