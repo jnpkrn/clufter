@@ -33,8 +33,8 @@ descending precedence priority, like this:
 
 . a-z          ... booleans representing satisfaction of the connected claim
 . ()           ... braces (changing evaluation order of enclosed expression)
-. union        ... set union
-. intersection ... set intersection
+. union        ... set union, written as a function for 3+ sets
+. intersection ... set intersection, written as a function for 3+ sets
 . \            ... set difference
 . in           ... set's item selector
 .  ~           ... negation
@@ -61,6 +61,10 @@ SCORE:    RESOURCES x NODES --> {0, 1, ...}
     contribution of preference implied by the examined property)
 ALTER(ARGS)
 ... alteration of the cluster behavior wrt. arguments
+intersection, union
+... see above
+max
+... given set of values, return maximum
 
 and these predicates:
 
@@ -216,6 +220,85 @@ implying modification of the behavior of cluster wrt. resource-node
 pair:
 
 PROPERTY(RESOURCE, NODE) -> ALTER((RESOURCE, NODE))
+
+Resource-node affinity
+----------------------
+
+AFFINITY ::= AFFINITY(RESOURCE, NODE, NONE)
+           | AFFINITY(RESOURCE, NODE, FALSE)
+           | AFFINITY(RESOURCE, NODE, TRUE)
+           | AFFINITY(RESOURCE, NODE, WEIGHT), WEIGHT in {..., -1, 0, 1, ...},
+                                               0~NONE, -INF~FALSE, +INF~TRUE
+. AFFINITY(RESOURCE, NODE, NONE)   ... no special affinity (default)
+. AFFINITY(RESOURCE, NODE, FALSE)  ... anti-affinity (the node cannot run)
+. AFFINITY(RESOURCE, NODE, TRUE)   ... node forms a set of executive nodes
+. AFFINITY(RESOURCE, NODE, WEIGHT) ... prioritized model
+
+[1. model of no resource-node affinity]
+P: driven by location constraint (if at all as this is a default)
+   - pcs: AFFINITY(RESOURCE, NODE, NONE)
+     # pcs constraint location RESOURCE prefers NODE= (??? to remove it as such)
+     # pcs constraint location RESOURCE prefers NODE=0
+     # pcs contraint location add SOMEID RESOURCE NODE 0
+
+[2. model of antagonist (negative) resource-node affinity]
+AN in NODES^2\{}
+B in RESOURCES
+for all A in AN: AFFINITY(B, A, FALSE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+X a -> X ~b
+
+R: driven by by failover domain for resource group
+   - nodes NODES\AN form selected failover domain, which has to be restricted
+     to prevent slipping onto any node in AN
+
+P: driven by location constraint
+   - pcs/crm_resource: AFFINITY(RESOURCE, NODE, FALSE)
+     # pcs constraint location RESOURCE avoids NODE
+     # pcs constraint location RESOURCE avoids NODE=INFINITY
+     # pcs constraint location RESOURCE prefers NODE=-INFINITY (???)
+     # pcs contraint location add SOMEID RESOURCE NODE -INFINITY
+     # crm_resource --ban --resource RESOUCE --host HOST ...
+
+[3. model of (positive) resource-node affinity]
+AN in NODES^2\{}
+B in intersection( { RUNNABLE(A) | A in AN } )
+for all A in AN: AFFINITY(B, A, TRUE)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+X a -> X b
+
+R: driven by by failover domain for resource group
+   - nodes AN form selected failover domain
+
+P: driven by location constraint
+   - pcs: AFFINITY(RESOURCE, NODE, TRUE)
+     # pcs constraint location RESOURCE prefers NODE
+     # pcs constraint location RESOURCE prefers NODE=INFINITY
+     # pcs constraint location RESOURCE avoids NODE=-INFINITY (???)
+     # pcs contraint location add SOMEID RESOURCE NODE INFINITY
+
+[4. model of resource-node affinity with priorities]
+AN in NODES^2\{}
+B in intersection( { RUNNABLE(A) | A in AN } )
+for all A in AN: AFFINITY(B, A, WEIGHT(B,A) )
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+X a AND c -> X d  [when not sticky, resource will run on the node
+                   this resource has greatest affinity to]
+. a ... RUNNING(A', B)
+. b ... A' in AN
+. c ... STICKY(B, FALSE)  <-- see below
+. d ... A' in {A'' | A'' in AN: WEIGHT(B, A'') == max({WEIGHT(B, A''')
+                                                       | A''' in AN})}
+
+R: driven by by failover domain for resource group
+   - nodes AN (subset with positive WEIGHT) form selected failover domain,
+     which has to be ordered, each failoverdomain prioritized as per
+     respective WEIGHTs
+
+P: driven by location constraint
+   - pcs: AFFINITY(RESOURCE, NODE, WEIGHT)
+     # pcs constraint location RESOURCE {prefers|avoids} NODE=WEIGHT
+     # pcs contraint location add SOMEID RESOURCE NODE WEIGHT
 
 
 Relative resource-node assignment properties
