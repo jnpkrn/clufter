@@ -137,33 +137,33 @@ ORDERING ::= ORDERING(RESOURCE1, RESOURCE2, NONE)
                                              the lifetimes are not
                                              correlated???)
 
-A1, A2 in NODES
-B in RUNNABLE(A1), C in RUNNABLE(A2)
+assumed variables (+ constraints) to be combined with proper preconditions:
+. A1, A2 in NODES
+. B in RUNNABLE(A1), C in RUNNABLE(A2)
 
-[2. weak ordering]
-ORDERING(B, C, WEAK)
+propositional variables:
+. a ... RUNNING(A1, B)
+. b ... RUNNING(A2, C)
+. c ... intention RUNNING(A1, B)
+. d ... intention RUNNING(A2, C)
+
+ORDERING(B, C, WEAK)  [2. weak ordering]
 ~~~~~~~~~~~~~~~~~~~~
 ~a AND ~b AND c AND d -> (X a OR TRUE) AND X X b  [start: B, then C]
 a AND b AND ~c AND ~d -> X ~b AND X X ~a          [stop:  C, then B]
 
-[3. strong ordering]
-ORDERING(B, C, STRONG)
+ORDERING(B, C, STRONG)  [3. strong ordering]
 ~~~~~~~~~~~~~~~~~~~~~~
 ~a AND ~b AND c AND d -> X a AND X X b    [see weak ordering]
 ~a AND ~b AND d -> ~a AND ~b AND c AND d  [stronger, follows as per previous???]
 a AND b AND ~c AND ~d -> X ~b AND X X ~a  [see weak ordering]
 a AND b AND ~c -> a AND b AND ~c AND ~d   [stronger, follows as per previous]
 
-[4. asymmetric ordering]
-ORDERING(B, C, ASYMMETRIC)
+ORDERING(B, C, ASYMMETRIC)  [4. asymmetric ordering]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~a AND ~b AND c AND d -> X a AND X X b    [see weak ordering]
 ~a AND ~b AND d -> ~a AND ~b AND c AND d  [stronger, follows as per previous???]
 
-. a ... RUNNING(A1, B)
-. b ... RUNNING(A2, C)
-. c ... intention RUNNING(A1, B)
-. d ... intention RUNNING(A2, C)
 
 R:
 XXX implicit and explicit ordering
@@ -191,67 +191,68 @@ COOCCURENCE ::= COOCURENCE(RESOURCE1, RESOURCE2, NONE)
 note: COOCCURENCE relation between RESOURCE1 and RESOURCE2 is not symmetric,
       RESOURCE1 is "dependent", RESOURCE2 is "leader"
 
+assumed variables (+ constraints) to be combined with proper preconditions:
+. A1, A2 in NODES
+. B, C in RUNNABLE(A1) intersection RUNNABLE(A2)
 
-[1. no cooccurence]
-P:
-   - pcs: COOCCURENCE(RESOURCE1, RESOURCE2, NONE)
-     # pcs constraint colocation add RESOURCE1 with RESOURCE2 0
+propositional variables:
+. a ... RUNNING(A1, B)
+. b ... RUNNING(A2, C)
+. c ... A1 == A2
+. d ... RUNNING(A2, B)
 
-[2. possitive cooccurence]
-A1, A2 in NODES
-B, C in RUNNABLE(A1) intersection RUNNABLE(A2)
-COOCCURENCE(B, C, POSITIVE)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+R: driven by various arrangements
+
+P: driven by `colocation` constraint (or `group` arrangement)
+
+COOCCURENCE(B/RESOURCE1, C/RESOURCE2, NONE)  [1. no cooccurence]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+R: default
+
+P: default, no need for that, otherwise specifying `score` as `0`
+   # pcs constraint colocation add B/RESOURCE1 with C/RESOURCE2 0
+
+COOCCURENCE(B/RESOURCE1, C/RESOURCE2, POSITIVE)  [2. possitive cooccurence]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 a AND b -> c  [basic positive cooccurence condition]
 X b -> X d    ["dependent" follows its "leader"]
-. a ... RUNNING(A1, B)
-. b ... RUNNING(A2, C)
-. c ... A1 == A2
-. d ... RUNNING(A2, B)
 
 R: driven by putting set of sequentially dependent resources hierarchically
-   (subsequent nesting) into service/resource group
-   - __independent_subtree must not be used
+   (subsequent nesting) into service/vm
+   - `__independent_subtree` must not be used
 
-P: driven by (a) colocation constraint or (b) using group
-   (which implies also ordering)
-   - re (a): using INFINITY as value
-   - (a) pcs: COOCCURENCE(RESOURCE1, RESOURCE2, POSITIVE)
-     # pcs constraint colocation add RESOURCE1 with RESOURCE2
-     # pcs constraint colocation add RESOURCE1 with RESOURCE2 INFINITY
-     # pcs constraint colocation set RESOURCE2 RESOURCE1
-   - (b) pcs: COOCCURENCE(RESOURCE1, RESOURCE2, POSITIVE)
-              AND ORDERING(RESOURCE1, RESOURCE2, POSITIVE)
-     # pcs resource group add SOMENAME RESOURCE2 RESOURCE1
+P: driven by (a) `colocation` constraint, specifying `INFINITY`,
+   or (b) using `group` (which implies also `order` constraint)
+   - (a)
+     # pcs constraint colocation add B/RESOURCE1 with C/RESOURCE2
+     # pcs constraint colocation add B/RESOURCE1 with C/RESOURCE2 INFINITY
+     # pcs constraint colocation set C/RESOURCE2 B/RESOURCE1
+   - (b)
+     # pcs resource group add SOMENAME C/RESOURCE2 B/RESOURCE1
 
-[3. negative cooccurence]
-A1, A2 in NODES
-B, C in RUNNABLE(A1) intersection RUNNABLE(A2)
-COOCCURENCE(B, C, NEGATIVE)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+COOCCURENCE(B/RESOURCE1, C/RESOURCE2, NEGATIVE)  [3. negative cooccurence]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 a AND b -> ~c  [basic negative cooccurence condition]
 X b -> X ~d    ["dependent" escapes its "leader"]
-. a ... RUNNING(A1, B)
-. b ... RUNNING(A2, C)
-. c ... A1 == A2
-. d ... RUNNING(A2, B)
 
 R: driven/emulated solely by disjunct failover domains
-   - XXX and possibly with follow_service.sl in central_processing mode
+   - XXX and possibly with `follow_service.sl` in `central_processing` mode
 
-P: driven by colocation constraint
+P: driven by `colocation` constraint, specifying `-INFINITY`
    - using -INFINITY as value
-   - pcs: COOCCURENCE(RESOURCE1, RESOURCE2, NEGATIVE)
-     # pcs constraint colocation add RESOURCE1 with RESOURCE2 -INFINITY
-     # pcs constraint colocation set RESOURCE2 RESOURCE1 setoptions score=-INFINITY
+   # pcs constraint colocation add B/RESOURCE1 with C/RESOURCE2 -INFINITY
+   # pcs constraint colocation set C/RESOURCE2 B/RESOURCE1 setoptions score=-INFINITY
 
-[4. score-based/advisory occurence]
+COOCURENCE(B/RESOURCE1, C/RESOURCE2, SCORE)  [4. score-based/advisory occurence]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 TBD
 
-P:
-   - pcs: COOCCURENCE(RESOURCE1, RESOURCE2, SCORE)
-     # pcs constraint colocation add RESOURCE1 with RESOURCE2 SCORE
-     # pcs constraint colocation set RESOURCE2 RESOURCE1 setoptions score=SCORE
+R: XXX not supported unless a way to emulate this using `central_processing`
+  (?) or sharing the same `ordered` failover domain (?)
+
+P: driven by `colocation` constraint, specifying `SCORE` (value)
+   # pcs constraint colocation add B/RESOURCE1 with c/RESOURCE2 SCORE
+   # pcs constraint colocation set C/RESOURCE2 B/RESOURCE1 setoptions score=SCORE
 
 
 
@@ -277,50 +278,50 @@ STICKY ::= STICKY(RESOURCE, FALSE)
 . STICKY(RESOURCE, TRUE)       ... sticky resource (flat model)
 . STICKY(RESOURCE, STICKINESS) ... sticky resource (prioritized model)
 
-A1, A2 in NODES
-B in RUNNABLE(A1) AND B in RUNNABLE(A2)
-SCORE(B, A1) < SCORE(B, A2)
+assumed variables (+ constraints) to be combined with proper preconditions:
+. A1, A2 in NODES
+. B in RUNNABLE(A1) AND B in RUNNABLE(A2)
+. SCORE(B, A1) < SCORE(B, A2)
 
-[1. model of unsticky/cruising resource]
-STICKY(RESOURCE, FALSE)
-~~~~~~~~~~~~~~~~~~~~~~~
-a AND b -> X c
-
-[2. model of sticky resource]
-STICKY(RESOURCE, TRUE)
-~~~~~~~~~~~~~~~~~~~~~~
-a AND b -> X a
+propositional variables:
 . a ... RUNNING(A1, B)
 . b ... ACTIVE(A2)
 . c ... RUNNING(A2, B) resource X running (relocation if A1 != A2)
 
-[3. model of sticky resource with priorities]
-STICKY(RESOURCE, STICKINESS)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+R: driven by `/cluster/rm/failoverdomains/failoverdomain/@nofailback`
+   - note: only applies to service/vm (not primitive resources)
+P: driven by `stickiness` parameter
+   - group is a sum of stickiness values of underlying resources
+
+
+STICKY(B/RESOURCE, FALSE)  [1. model of unsticky/cruising resource]
+~~~~~~~~~~~~~~~~~~~~~~~~~
+a AND b -> X c
+
+R: default, no need for that, otherwise specifying `@nofailback` as `0`
+
+P: default, no need for that, otherwise specifying `stickiness` as `0`
+   # pcs resource meta B/RESOURCE stickiness=
+   # pcs resource meta B/RESOURCE stickiness=0
+
+STICKY(B/RESOURCE, TRUE)  [2. model of sticky resource]
+~~~~~~~~~~~~~~~~~~~~~~~~
+a AND b -> X a
+
+R: driven by specifying `@nofailback` as positive number
+
+P: driven by specifying `stickiness` as `INFINITY`
+   # pcs resource meta B/RESOURCE stickiness=INFINITY
+
+STICKY(B/RESOURCE, STICKINESS)  [3. model of sticky resource with priorities]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 TBD
 
-R: driven by /cluster/rm/failoverdomains/failoverdomain/@nofailback
-   - note: only applies to service/vm (not primitive resources)
-   - 1. unsticky resource model
-     - default (@nofailback=0)
-   - 2. sticky resource model
-     - when @nofailback is a positive number
-   - 3. XXX not supported unless a way to emulate this
-        using ordered failover domains(?)
+R: XXX not supported unless a way to emulate this using ordered failover
+   domains(?)
 
-P: driven by stickiness parameter
-   - 1. unsticky resource model
-     - default (stickiness = 0)
-   - 2.,3. sticky resource model (with priorities)
-     - when stickiness specified as positive number
-     - group is a sum of stickiness values of underlying resources
-   - pcs: STICKY(RESOURCE, FALSE)
-     # pcs resource meta RESOURCE stickiness=
-     # pcs resource meta RESOURCE stickiness=0
-   - pcs: STICKY(RESOURCE, TRUE)
-     # pcs resource meta RESOURCE stickiness=INFINITY
-   - pcs: STICKY(RESOURCE, STICKINESS)
-     # pcs resource meta RESOURCE stickiness=STICKINESS
+P: driven by specifying `stickiness` as `STICKINESS` (value)
+   # pcs resource meta B/RESOURCE stickiness=STICKINESS
 
 
 Node-exclusiveness resource property (optionally with priority-based preemption)
@@ -333,9 +334,16 @@ EXCLUSIVE ::= EXCLUSIVE(RESOURCE, FALSE)
 . EXCLUSIVE(RESOURCE, TRUE)     ... exclusive (flat model)
 . EXCLUSIVE(RESOURCE, PRIORITY) ... exclusive (prioritized pre-emptive model)
 
+assumed variables (+ constraints) to be combined with proper preconditions:
+. A in NODES
+. B, C in RUNNABLE(A)
+. I, J in {0, 1, ...}: I > J
+
+R: driven by `/cluster/rm/<service>/@exclusive`
+   - note: only applies to service/vm (not primitive resources)
+P: driven by `utilization` constraint
+
 [1. model of non-node-exclusive/co-occurence-positive resource, based on 2.]
-A in NODES
-B in RUNNABLE(A)
 for all B' in RUNNABLE(A): EXCLUSIVE(B', FALSE) [implies EXCLUSIVE(B, FALSE)]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~(a OR b) OR ~(~a -> ~b R ~a AND ~b -> ~a R ~b)
@@ -349,9 +357,13 @@ for all B' in RUNNABLE(A): EXCLUSIVE(B', FALSE) [implies EXCLUSIVE(B, FALSE)]
 . a ... RUNNING(A, B)
 . b ... exists B' in 2^RUNNABLE(A)\{}: RUNNING(A, B')
 
+R: default (`@exclusive` = 0)
+
+P: default (no such purposefully full utilization of node resources
+            specified)
+   - pcs: does not support utilization yet (TODO?)
+
 [2. flat model of node-exclusive/co-occurence-less resource, no preemption]
-A in NODES
-B in RUNNABLE(A)
 EXCLUSIVE(B, TRUE)
 ~~~~~~~~~~~~~~~~~~
 ~(a OR b) OR (~a -> ~b R ~a) AND (~b -> ~a R ~b)  [mutual exclusion]
@@ -360,13 +372,18 @@ EXCLUSIVE(B, TRUE)
         (assuming valid state, i.e., exclusiveness property
          would be recursively satisfied also within YS)
 
+R: driven by the arrangement:
+   - not `central_processing mode` and `@exclusive` != 0
+
+P: driven by the arrangement:
+   - resources (presumably uniformly, but broken down to utilization
+     of comprising primitives) require full utilization of what
+     resources (presumably uniformly) each node provides
+
 [3. model of prioritized pre-emptive node-exclusive resource]
-A in NODES
-B, C in RUNNABLE(A)
-I, J in {0, 1, ...}: I > J
 EXCLUSIVE(B, I)
 EXCLUSIVE(C, J)
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 ~(a OR c) OR (~a -> ~c R ~a) AND (~c -> ~a R ~c),  [mutual exclusion]
 (b AND X a) -> (X ~b)                              [exlusivness priority wins]
 . a ... RUNNING(A, B)
@@ -378,30 +395,16 @@ EXCLUSIVE(C, J)
         (assuming valid state, i.e., exclusiveness property
          would be recursively satisfied also within YS)
 
-R: driven by /cluster/rm/<service>/@exclusive
-   - note: only applies to service/vm (not primitive resources)
-   - 1. no node-exclusiveness model
-     - default (@exclusive = 0)
-   - 2. flat model
-     - by default (not in central_processing mode)
-   - 3. pre-emptive model
-     - only in central_processing mode
-     - https://access.redhat.com/site/node/47037
-     - also see https://bugzilla.redhat.com/show_bug.cgi?id=744052#c4
-       (also relevant to Pacemaker)
-     - exclusive resource with value of the respective parameter specifying
-       priority in the inverse sence (1 is highest, XXX or 0?)
+R: driven by the arrangement:
+   - only in `central_processing mode`
+   - https://access.redhat.com/site/node/47037
+   - also see https://bugzilla.redhat.com/show_bug.cgi?id=744052#c4
+     (also relevant to Pacemaker)
+   - exclusive resource with value of the respective parameter specifying
+     priority in the inverse sense (1 is highest, XXX or 0?)
 
-P: driven by utilization constraint
-   - 1. no node-exclusiveness model
-     - default (no such purposefully full utilization of node resources
-       specified)
-   - 2. flat model
-     - resources (presumably uniformly, but broken down to utilization
-       of comprising primitives) require full utilization of what
-       resources (presumably uniformly) each node provides
-   - 3. pre-emptive model
-     - 1. + prioritization defined by the means of priority per primitive,
+P: driven by the arrangement:
+   - see 1. + prioritization defined by the means of priority per primitive,
      - https://access.redhat.com/site/solutions/65542
    - for 2., 3.:
      - however modelling "exclusive resource cannot be started on node,
@@ -409,7 +412,6 @@ P: driven by utilization constraint
        to impossible (XXX or in a intrusive way, like setting default
        utilization + priority for those resources not overriding
        these defaults)?
-   - pcs: does not support utilization yet (TODO?)
 
 
 
@@ -436,71 +438,106 @@ AFFINITY ::= AFFINITY(RESOURCE, NODE, NONE)
 . AFFINITY(RESOURCE, NODE, TRUE)   ... node forms a set of executive nodes
 . AFFINITY(RESOURCE, NODE, WEIGHT) ... prioritized model
 
-[1. model of no resource-node affinity]
-P: driven by location constraint (if at all as this is a default)
-   - pcs: AFFINITY(RESOURCE, NODE, NONE)
-     # pcs constraint location RESOURCE prefers NODE= (??? to remove it as such)
-     # pcs constraint location RESOURCE prefers NODE=0
-     # pcs contraint location add SOMEID RESOURCE NODE 0
+assumed variables (+ constraints) to be combined with proper preconditions:
+. AN in NODES^2\{}
+. B in intersection( { RUNNABLE(A) | A in AN } )
 
-[2. model of antagonist (negative) resource-node affinity]
-AN in NODES^2\{}
-B in RESOURCES
-for all A in AN: AFFINITY(B, A, FALSE)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-X a -> X ~b
-
-R: driven by by failover domain for resource group
-   - nodes NODES\AN form selected failover domain, which has to be restricted
-     to prevent slipping onto any node in AN
-
-P: driven by location constraint
-   - pcs/crm_resource: AFFINITY(RESOURCE, NODE, FALSE)
-     # pcs constraint location RESOURCE avoids NODE
-     # pcs constraint location RESOURCE avoids NODE=INFINITY
-     # pcs constraint location RESOURCE prefers NODE=-INFINITY (???)
-     # pcs contraint location add SOMEID RESOURCE NODE -INFINITY
-     # crm_resource --ban --resource RESOUCE --host HOST ...
-
-[3. model of (positive) resource-node affinity]
-AN in NODES^2\{}
-B in intersection( { RUNNABLE(A) | A in AN } )
-for all A in AN: AFFINITY(B, A, TRUE)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-X a -> X b
-
-R: driven by by failover domain for resource group
-   - nodes AN form selected failover domain
-
-P: driven by location constraint
-   - pcs: AFFINITY(RESOURCE, NODE, TRUE)
-     # pcs constraint location RESOURCE prefers NODE
-     # pcs constraint location RESOURCE prefers NODE=INFINITY
-     # pcs constraint location RESOURCE avoids NODE=-INFINITY (???)
-     # pcs contraint location add SOMEID RESOURCE NODE INFINITY
-
-[4. model of resource-node affinity with priorities]
-AN in NODES^2\{}
-B in intersection( { RUNNABLE(A) | A in AN } )
-for all A in AN: AFFINITY(B, A, WEIGHT(B,A) )
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-X a AND c -> X d  [when not sticky, resource will run on the node
-                   this resource has greatest affinity to]
+propositional variables:
 . a ... RUNNING(A', B)
 . b ... A' in AN
 . c ... STICKY(B, FALSE)  <-- see above
 . d ... A' in {A'' | A'' in AN: WEIGHT(B, A'') == max({WEIGHT(B, A''')
                                                        | A''' in AN})}
 
-R: driven by by failover domain for resource group
-   - nodes AN (subset with positive WEIGHT) form selected failover domain,
-     which has to be ordered, each failoverdomain prioritized as per
-     respective WEIGHTs
+R: driven by the failoved domains arrangement for given service/vm
+   - XXX check that RGManager indeed behaves like Pacemaker's
+     `symmetric-cluster`
+P: driven by `location` constraint
+   - only default `symmetric-cluster` is considered
 
-P: driven by location constraint
-   - pcs: AFFINITY(RESOURCE, NODE, WEIGHT)
-     # pcs constraint location RESOURCE {prefers|avoids} NODE=WEIGHT
-     # pcs contraint location add SOMEID RESOURCE NODE WEIGHT
+exists A in AN: AFFINITY(B, A, NONE)  [1. no resource-node affinity]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+R: driven by general arrangement patterns (possibilites with "NONE"):
+   - if for all A in AN: AFFINITY(B, A, NONE):
+     - nodes AN form attached failover domain, and this is either not `ordered`
+       or with the same `priority` for ordering
+     - alternatively, service/vm B has no failoverdomain explicitly attached
+   - else if for all A in AN: AFFINITY(B, A, NONE) OR AFFINITY(B, A, TRUE):
+     - nodes AN for which A in AN: AFFINITY(B, A, TRUE) form attached failover
+       domain, and this is not `restricted` (to allow those "NONE" nodes to
+       be ever used)
+     - or nodes AN form attached failover domain, and it is `ordered` with
+       two levels of priorities (for TRUE higher, for NONE lower)
+   - else if for all A in AN: AFFINITY(B, A, NONE) OR AFFINITY(B, A, FALSE):
+     - nodes AN for which A in AN: AFFINITY(B, A, NONE) form attached failover
+       domain, and this is either not `ordered` or with the same priority for
+       ordering, and has to be `restricted` to avoid slipping nodes
+       A in AN: AFFINITY(B, A, FALSE)
+   - else if for all A in AN: AFFINITY(B, A, NONE) OR AFFINITY(B, A, FALSE)
+                              OR AFFINITY(B, A, TRUE):
+     - intersection of the previous two cases
+   - else if for all A in AN: AFFINITY(B, A, NONE) OR AFFINITY(B, A, WEIGHT),
+     -INFINITY < WEIGHT < INFINITY:
+     - either any WEIGHT < 0 becomes truncated to 0 (hence dropping losing
+       part of the configuration), or if such one present, the whole range
+       is rescaled to 0 < WEIGHT < INFINITY/numeric equivalent
+       and those member nodes having no affinity in this case have
+       lowest priority (hence highest `priority` value)
+     - either way, leads to AN forming attached failover domain, and it has
+       to be `ordered` with priorities as per previous point
+   - else?
+
+P: default, no need for that, otherwise specifying `score` as `0`
+   # pcs constraint location B prefers A= (??? to remove it as such)
+   # pcs constraint location B prefers A=0
+   # pcs contraint location add SOMEID B A 0
+
+exists A in AN: AFFINITY(B, A, FALSE)  [2. antagonist resource-node affinity]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+X a -> X ~b
+
+R: driven by this arrangement:
+   - if for all A in AN: AFFINITY(B, A, FALSE):
+     - nodes NODES\AN form attached failover domain, which has to
+       be `restricted` to prevent slipping onto any node in AN
+   - else:
+     - combine using patterns as in 1.
+
+P: by specifying (directly or indirectly) `score` as `-INFINITY`
+   # pcs constraint location B avoids A
+   # pcs constraint location B avoids A=INFINITY
+   # pcs constraint location B prefers A=-INFINITY (???)
+   # pcs contraint location add SOMEID B A -INFINITY
+   # crm_resource --ban --resource B --host A ...
+
+exists A in AN: AFFINITY(B, A, TRUE)  [3. (positive) resource-node affinity]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+X a -> X b
+
+R: driven by this arrangement:
+   - if for all A in AN: AFFINITY(B, A, TRUE):
+     - nodes AN form selected failover domain
+   - else:
+     - combine using patterns as in 1.
+
+P: by specifying (directly or indirectly) `score` as `INFINITY`
+   # pcs constraint location B prefers A
+   # pcs constraint location B prefers A=INFINITY
+   # pcs constraint location B avoids A=-INFINITY (???)
+   # pcs contraint location add SOMEID B A INFINITY
+
+[4. model of resource-node affinity with priorities]
+for all A in AN: AFFINITY(B, A, -INFINITY < WEIGHT(B,A) < INFINITY)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+X a AND c -> X d  [when not sticky, resource will run on the node
+                   this resource has greatest affinity to]
+
+R: driven by this arrangement:
+   - see the respective pattern at 1.
+
+P: by specifying `score` as WEIGHT
+   # pcs constraint location B {prefers|avoids} A=WEIGHT(B,A)
+   # pcs constraint location add SOMEID B A WEIGHT(B,A)
 
 
 
@@ -519,21 +556,28 @@ MANAGED ::= MANAGED(RESOURCE, TRUE)
 
 R: except for static un-managing of everything (RGManager avoidance),
    can only be driven by run-time modification using clusvcadm
-   (or at least it is close)
-   - RGManager avoidance in cluster.conf: /cluster/rm/@disabled=1
-   - clusvcadm: MANAGED(RESOURCE, TRUE)
-     # clusvcadm -U RESOURCE  <-- whole "service" only
-   - clusvcadm: MANAGED(RESOURCE, FALSE)
-     # clusvcadm -Z RESOURCE  <-- whole "service" only
+   (or at least it is close???)
 
-P: via is-managed meta-attribute
-   - pcs: MANAGED(RESOURCE, TRUE)  <-- default, no need for that
-     # pcs resource manage RESOURCE
-     # pcs resource meta RESOURCE is-managed=
-     # pcs resource meta RESOURCE is-managed=true
-   - pcs: MANAGED(RESOURCE, TRUE)
-     # pcs resource unmanage RESOURCE
-     # pcs resource meta RESOURCE is-managed=false
+P: via `is-managed` meta-attribute
+
+MANAGED(RESOURCE, TRUE)  [1. resource is managed]
+~~~~~~~~~~~~~~~~~~~~~~~
+
+R: # clusvcadm -U RESOURCE  <-- whole service/vm only
+
+P: default, no need for that, otherwise specifying `is-managed` as `true`
+   # pcs resource manage RESOURCE
+   # pcs resource meta RESOURCE is-managed=
+   # pcs resource meta RESOURCE is-managed=true
+
+MANAGED(RESOURCE, FALSE)  [2. resource is not managed]
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+R: - RGManager avoidance in cluster.conf: `/cluster/rm/@disabled=1`
+   # clusvcadm -Z RESOURCE  <-- whole "service" only
+
+P: # pcs resource unmanage RESOURCE
+   # pcs resource meta RESOURCE is-managed=false
 
 
 
