@@ -38,6 +38,7 @@ Explicit resource-node assignment properties, PROPERTY(RESOURCE, NODE):
 Other resource properties, PROPERTY(RESOURCE):
 - MANAGED
 
+# XXX: service ref=... + single node failover domains vs. clone
 
 Prerequisities
 --------------
