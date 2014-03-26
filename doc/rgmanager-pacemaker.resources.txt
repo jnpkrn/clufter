@@ -184,6 +184,12 @@ COOCCURENCE ::= COOCURENCE(RESOURCE1, RESOURCE2, NONE)
 note: COOCCURENCE relation between RESOURCE1 and RESOURCE2 is not symmetric,
       RESOURCE1 is "dependent", RESOURCE2 is "leader"
 
+
+[1. no cooccurence]
+P:
+   - pcs: COOCCURENCE(RESOURCE1, RESOURCE2, NONE)
+     # pcs constraint colocation add RESOURCE1 with RESOURCE2 0
+
 [2. possitive cooccurence]
 A1, A2 in NODES
 B, C in RUNNABLE(A1) intersection RUNNABLE(A2)
@@ -200,8 +206,16 @@ R: driven by putting set of sequentially dependent resources hierarchically
    (subsequent nesting) into service/resource group
    - __independent_subtree must not be used
 
-P: driven by colocation constraint
-   - using INFINITY as value
+P: driven by (a) colocation constraint or (b) using group
+   (which implies also ordering)
+   - re (a): using INFINITY as value
+   - (a) pcs: COOCCURENCE(RESOURCE1, RESOURCE2, POSITIVE)
+     # pcs constraint colocation add RESOURCE1 with RESOURCE2
+     # pcs constraint colocation add RESOURCE1 with RESOURCE2 INFINITY
+     # pcs constraint colocation set RESOURCE2 RESOURCE1
+   - (b) pcs: COOCCURENCE(RESOURCE1, RESOURCE2, POSITIVE)
+              AND ORDERING(RESOURCE1, RESOURCE2, POSITIVE)
+     # pcs resource group add SOMENAME RESOURCE2 RESOURCE1
 
 [3. negative cooccurence]
 A1, A2 in NODES
@@ -220,9 +234,18 @@ R: driven/emulated solely by disjunct failover domains
 
 P: driven by colocation constraint
    - using -INFINITY as value
+   - pcs: COOCCURENCE(RESOURCE1, RESOURCE2, NEGATIVE)
+     # pcs constraint colocation add RESOURCE1 with RESOURCE2 -INFINITY
+     # pcs constraint colocation set RESOURCE2 RESOURCE1 setoptions score=-INFINITY
 
 [4. score-based/advisory occurence]
 TBD
+
+P:
+   - pcs: COOCCURENCE(RESOURCE1, RESOURCE2, SCORE)
+     # pcs constraint colocation add RESOURCE1 with RESOURCE2 SCORE
+     # pcs constraint colocation set RESOURCE2 RESOURCE1 setoptions score=SCORE
+
 
 Explicit resource-node(s) assignment property
 =============================================
@@ -371,6 +394,13 @@ P: driven by stickiness parameter
    - 2.,3. sticky resource model (with priorities)
      - when stickiness specified as positive number
      - group is a sum of stickiness values of underlying resources
+   - pcs: STICKY(RESOURCE, FALSE)
+     # pcs resource meta RESOURCE stickiness=
+     # pcs resource meta RESOURCE stickiness=0
+   - pcs: STICKY(RESOURCE, TRUE)
+     # pcs resource meta RESOURCE stickiness=INFINITY
+   - pcs: STICKY(RESOURCE, STICKINESS)
+     # pcs resource meta RESOURCE stickiness=STICKINESS
 
 
 Node-exclusiveness resource property (optionally with priority-based preemption)
@@ -459,6 +489,7 @@ P: driven by utilization constraint
        to impossible (XXX or in a intrusive way, like setting default
        utilization + priority for those resources not overriding
        these defaults)?
+   - pcs: does not support utilization yet (TODO?)
 
 
 Other resource properties
@@ -473,9 +504,23 @@ MANAGED ::= MANAGED(RESOURCE, TRUE)
 . MANAGED(RESOURCE, TRUE)  ... resource is managed (default assumption)
 . MANAGED(RESOURCE, FALSE) ... resource is not managed
 
-R: XXX driven by clusvcadm -Z/-U (or at least it is close)
+R: except for static un-managing of everything (RGManager avoidance),
+   can only be driven by run-time modification using clusvcadm
+   (or at least it is close)
+   - RGManager avoidance in cluster.conf: /cluster/rm/@disabled=1
+   - clusvcadm: MANAGED(RESOURCE, TRUE)
+     # clusvcadm -U RESOURCE  <-- whole "service" only
+   - clusvcadm: MANAGED(RESOURCE, FALSE)
+     # clusvcadm -Z RESOURCE  <-- whole "service" only
 
 P: via is-managed meta-attribute
+   - pcs: MANAGED(RESOURCE, TRUE)  <-- default, no need for that
+     # pcs resource manage RESOURCE
+     # pcs resource meta RESOURCE is-managed=
+     # pcs resource meta RESOURCE is-managed=true
+   - pcs: MANAGED(RESOURCE, TRUE)
+     # pcs resource unmanage RESOURCE
+     # pcs resource meta RESOURCE is-managed=false
 
 
 References
