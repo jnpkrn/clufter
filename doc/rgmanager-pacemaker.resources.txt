@@ -59,6 +59,8 @@ RUNNABLE: NODES --> RESOURCES
 SCORE:    RESOURCES x NODES --> {0, 1, ...}
 ... order of preference for given resource to run on given node (without
     contribution of preference implied by the examined property)
+ALTER(ARGS)
+... alteration of the cluster behavior wrt. arguments
 
 and these predicates:
 
@@ -83,13 +85,20 @@ Notes
 Resource-resource interaction properites
 ========================================
 
-Ordering
---------
+Generally a relation expressed by a predicate PROPERTY(RESOURCE1, RESOURCE2),
+implying modification of the behavior of cluster wrt. resource-resource
+pair:
+
+PROPERTY(RESOURCE1, RESOURCE2) -> ALTER((RESOURCE1, RESOURCE2))
+
+Ordering (time-based interaction dependence of the resources/their states)
+--------------------------------------------------------------------------
 
 TBD
 
-Cooccurence
------------
+
+Cooccurence (location-based interaction dependence of the resources)
+--------------------------------------------------------------------
 
 COOCCURENCE ::= COOCURENCE(RESOURCE1, RESOURCE2, NONE)
               | COOCURENCE(RESOURCE1, RESOURCE2, POSITIVE)
@@ -150,9 +159,24 @@ P: driven by colocation constraint
 [4. score-based/advisory occurence]
 TBD
 
+Explicit resource-node(s) assignment property
+=============================================
 
-Resource-node assignment properties
-===================================
+Generally a relation expressed by a predicate PROPERTY(RESOURCE, NODE),
+implying modification of the behavior of cluster wrt. resource-node
+pair:
+
+PROPERTY(RESOURCE, NODE) -> ALTER((RESOURCE, NODE))
+
+
+Relative resource-node assignment properties
+============================================
+
+Generally a relation expressed by a predicate PROPERTY(RESOURCE),
+implying modification of the behavior of cluster wrt. the node
+running RESOURCE:
+
+PROPERTY(RESOURCE) AND RUNNING(NODE, RESOURCE) -> ALTER(NODE)
 
 Resource stickiness property (not moving back to preferred location)
 --------------------------------------------------------------------
