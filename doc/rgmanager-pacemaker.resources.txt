@@ -147,10 +147,20 @@ propositional variables:
 . c ... intention RUNNING(A1, B)
 . d ... intention RUNNING(A2, C)
 
+R: driven by
+   XXX implicit and explicit ordering
+
+P: driven by `order` constraint (or `group` arrangement)
+
 ORDERING(B, C, WEAK)  [2. weak ordering]
 ~~~~~~~~~~~~~~~~~~~~
 ~a AND ~b AND c AND d -> (X a OR TRUE) AND X X b  [start: B, then C]
 a AND b AND ~c AND ~d -> X ~b AND X X ~a          [stop:  C, then B]
+
+R: TBD
+
+P: driven by specifying `score` as `0`
+   # pcs constraint order B then C score=0
 
 ORDERING(B, C, STRONG)  [3. strong ordering]
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -159,14 +169,26 @@ ORDERING(B, C, STRONG)  [3. strong ordering]
 a AND b AND ~c AND ~d -> X ~b AND X X ~a  [see weak ordering]
 a AND b AND ~c -> a AND b AND ~c AND ~d   [stronger, follows as per previous]
 
+R: TBD
+
+P: driven by omitting `score` (or specifying it as non-zero)
+   or (b) using `group` (which implies also `colocation` constraint)
+   - (a)
+     # pcs constraint order B then C
+     # pcs constraint order B then C score=1
+     # XXX pcs constraint order set B C
+   - (b)
+     # XXX pcs resource group add SOMENAME C/RESOURCE2 B/RESOURCE1
+
 ORDERING(B, C, ASYMMETRIC)  [4. asymmetric ordering]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~a AND ~b AND c AND d -> X a AND X X b    [see weak ordering]
 ~a AND ~b AND d -> ~a AND ~b AND c AND d  [stronger, follows as per previous???]
 
+R: TBD
 
-R:
-XXX implicit and explicit ordering
+P: driven by specifying `symmetrical` as `true`
+   # pcs constraint order B then C symmetrical=true
 
 
 Cooccurence (location-based interaction dependence of the resources)
