@@ -94,7 +94,56 @@ PROPERTY(RESOURCE1, RESOURCE2) -> ALTER((RESOURCE1, RESOURCE2))
 Ordering (time-based interaction dependence of the resources/their states)
 --------------------------------------------------------------------------
 
-TBD
+ORDERING ::= ORDERING(RESOURCE1, RESOURCE2, NONE)
+           | ORDERING(RESOURCE1, RESOURCE2, WEAK)
+           | ORDERING(RESOURCE1, RESOURCE2, STRONG)
+           | ORDERING(RESOURCE1, RESOURCE2, ASYMMETRIC)
+
+. ORDERING(RESOURCE1, RESOURCE2, NONE)   ... no time-based dependency
+                                             of the states
+. ORDERING(RESOURCE1, RESOURCE2, WEAK)   ... start of 2nd preceeded by start
+                                             of 1st (stop viceversa/LIFO),
+                                             but only when both events happen
+                                             at the same time
+. ORDERING(RESOURCE1, RESOURCE2, STRONG) ... runtime of 2nd won't exceed
+                                             runtime of 1st
+. ORDERING(RESOURCE1, RESOURCE2, ASYMMETRIC)
+                                         ... runtime of 2nd won't exceed
+                                             runtime of 1st (as STRONG) only
+                                             at the start phase (XXX then
+                                             the lifetimes are not
+                                             correlated???)
+
+A1, A2 in NODES
+B in RUNNABLE(A1), C in RUNNABLE(A2)
+
+[2. weak ordering]
+ORDERING(B, C, WEAK)
+~~~~~~~~~~~~~~~~~~~~
+~a AND ~b AND c AND d -> (X a OR TRUE) AND X X b  [start: B, then C]
+a AND b AND ~c AND ~d -> X ~b AND X X ~a          [stop:  C, then B]
+
+[3. strong ordering]
+ORDERING(B, C, STRONG)
+~~~~~~~~~~~~~~~~~~~~~~
+~a AND ~b AND c AND d -> X a AND X X b    [see weak ordering]
+~a AND ~b AND d -> ~a AND ~b AND c AND d  [stronger, follows as per previous???]
+a AND b AND ~c AND ~d -> X ~b AND X X ~a  [see weak ordering]
+a AND b AND ~c -> a AND b AND ~c AND ~d   [stronger, follows as per previous]
+
+[4. asymmetric ordering]
+ORDERING(B, C, ASYMMETRIC)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+~a AND ~b AND c AND d -> X a AND X X b    [see weak ordering]
+~a AND ~b AND d -> ~a AND ~b AND c AND d  [stronger, follows as per previous???]
+
+. a ... RUNNING(A1, B)
+. b ... RUNNING(A2, C)
+. c ... intention RUNNING(A1, B)
+. d ... intention RUNNING(A2, C)
+
+R:
+XXX implicit and explicit ordering
 
 
 Cooccurence (location-based interaction dependence of the resources)
