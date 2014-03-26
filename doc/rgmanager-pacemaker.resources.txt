@@ -312,3 +312,4 @@ References
 ==========
 
 [1] http://en.wikipedia.org/wiki/Linear_temporal_logic
+: vim: set ft=rst:  <-- not exactly, but better than nothing
