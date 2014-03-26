@@ -24,6 +24,18 @@ the property variants (basically holds or doesn't, but can be more
 convoluted), and for each variants, the LTL model and R+P specifics
 are provided.
 
+Outline
+-------
+
+Resource-resource interaction properites, PROPERTY(RESOURCE1, RESOURCE2):
+- ORDERING, COOCCURENCE
+Absolute resource-node assignment properties, PROPERTY(RESOURCE, NODE):
+- AFFINITY
+Relative resource-node assignment properties, PROPERTY(RESOURCE):
+- STICKY, EXCLUSIVE
+Other resource properties, PROPERTY(RESOURCE):
+- MANAGED
+
 Prerequisities
 --------------
 
