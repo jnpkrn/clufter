@@ -5,14 +5,14 @@
 
 ccs2flatironxml = ccs2needlexml = '''\
     <xsl:copy>
-    <xsl:copy-of select="@*[
-        contains(concat(
-            '|ringnumber',
-            '|bindnetaddr',
-            '|broadcast',
-            '|mcastaddr',
-            '|mcastport',
-            '|ttl',
-            '|'), concat('|', name(), '|'))]" />
+        <xsl:copy-of select="@*[
+            contains(concat(
+                '|ringnumber',
+                '|bindnetaddr',
+                '|broadcast',
+                '|mcastaddr',
+                '|mcastport',
+                '|ttl',
+                '|'), concat('|', name(), '|'))]" />
     </xsl:copy>
 '''
