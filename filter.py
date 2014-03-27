@@ -188,6 +188,7 @@ class XMLFilter(Filter, MetaPlugin):
         If callable is observed instead of XSLT snippet, keep it untouched.
         Used by `proceed_xslt` and `get_template` methods (hence class-wide).
         """
+        # in top-down manner
         if isinstance(sym, tuple):
             return sym  # already proceeded
         if isinstance(sym, basestring):
