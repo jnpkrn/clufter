@@ -27,6 +27,48 @@ are provided.
 Outline
 -------
 
+Other cluster properties, PROPERTY(CLUSTER)
+. FUNCTION
+
+
+
+Other cluster properties
+========================
+
+Is-functioning cluster property
+-------------------------------
+
+FUNCTION(CLUSTER) ::= FUNCTION(CLUSTER, TRUE)
+                    | FUNCTION(CLUSTER, FALSE)
+. FUNCTION(CLUSTER, TRUE)  ... is functioning
+. FUNCTION(CLUSTER, FALSE) ... is not
+
+notes
+. it is assumed cluster stack keeps running in both cases(!)
+. see also 02/resource: MANAGED
+
+R: driven by RGManager allowance/disallowance in cluster.conf
+   - `/cluster/rm/@disabled`
+
+P: driven by `stop-all-resources` (?)
+
+FUNCTION(CLUSTER, TRUE)  [1. is functioning]
+~~~~~~~~~~~~~~~~~~~~~~~
+
+R: `@disabled` either not specified or `0`
+
+P: default, no need for that, otherwise specifying `stop-all-resources`
+   as `false`
+   # pcs property set stop-all-resources=
+   # pcs property set stop-all-resources=false
+
+FUNCTION(CLUSTER, FALSE)  [2. is not functioning]
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+R: `@disabled` specified as `1` (nonzero?)
+
+P: driven by specifying `stop-all-resources` as `true`
+   # pcs property set stop-all-resources=true
 
 
 References
