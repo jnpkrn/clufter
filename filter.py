@@ -182,7 +182,7 @@ class XMLFilter(Filter, MetaPlugin):
         return postprocess(ret)
 
     @staticmethod
-    def _xslt_preprocess(sym, name, parent_sym=None):
+    def _xslt_preprocess(sym, name, parent=None):
         """Preprocessing of schema tree XSLT snippets to real (sub)templates
 
         If callable is observed instead of XSLT snippet, keep it untouched.
@@ -203,19 +203,19 @@ class XMLFilter(Filter, MetaPlugin):
             hooks = OrderedDict()
             toplevel = []
 
-            #if len(ret) and parent_sym:
+            #if len(ret) and parent:
             #    top = filter(lambda x: x.tag in TOP_LEVEL_XSL, ret)
             #    for e in top:
             #        toplevel.append(e)
             #        ret.remove(e)
 
-            if parent_sym and isinstance(parent_sym[0], etree._Element):
-                top = filter(lambda x: x.tag in TOP_LEVEL_XSL, parent_sym[0])
+            if parent and isinstance(parent[0], etree._Element):
+                top = filter(lambda x: x.tag in TOP_LEVEL_XSL, parent[0])
                 for e in top:
                     #print "at", sym, "appending", etree.tostring(e)
                     ret.append(deepcopy(e))
                 #for e in toplevel:
-                #    parent_sym[0].append(e)
+                #    parent[0].append(e)
 
             log.debug("walking {0}".format(etree.tostring(ret)))
             for event, elem in etree.iterwalk(ret, events=('start', )):
