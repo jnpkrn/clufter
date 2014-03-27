@@ -120,15 +120,6 @@ ccs2ccs_pcmk = '''\
     </cluster>
 '''
 
-ccs_obfuscate_credentials = '''\
-    <xsl:template match="*">
-        <xsl:copy>
-            <xsl:copy-of select="@*"/>
-            <clufter:descent/>
-       </xsl:copy>
-    </xsl:template>
-'''
-
 # check http://stackoverflow.com/questions/4509662/how-to-generate-unique-string
 # XXX device/@port for: fence_pcmk, fence_rhevm, fence_virsh, fence_{virt,xvm},
 #                       fence_vmware{,_soap} (?)
