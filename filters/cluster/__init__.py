@@ -130,73 +130,95 @@ ccs_obfuscate_credentials = '''\
 '''
 
 # check http://stackoverflow.com/questions/4509662/how-to-generate-unique-string
-# TODO comments on top-level not supported
-# device/@port for fence_pcmk
+# XXX device/@port for: fence_pcmk, fence_rhevm, fence_virsh, fence_{virt,xvm},
+#                       fence_vmware{,_soap} (?)
+# XXX cluster/@alias (not el6)
 ccs_obfuscate_identifiers = '''\
-    <xsl:template match="@*|node()">
-        <xsl:copy>
-            <xsl:apply-templates select="@*|node()"/>
-            <!--clufter:descent/-->
-       </xsl:copy>
-    </xsl:template>
+    <clufter:descent-mix preserve-rest="true"/>
+
+    <!-- CLUSTER-NAME -->
 
     <xsl:template match="cluster/@name">
         <xsl:attribute name="{name()}">
-            <xsl:value-of select="'CLUSTER'"/>
+            <xsl:value-of select="'CLUSTER-NAME'"/>
         </xsl:attribute>
     </xsl:template>
 
-    <xsl:variable name="ClusterNode" select="cluster/clusternodes/clusternode[@name]"/>
-    <xsl:template match="cluster/clusternodes/clusternode/@name
-                        |cluster/clusternodes/clusternode/fence/method/device/@nodename
-                        |cluster/clusternodes/clusternode/fence/method/device/@port
-                        |cluster/rm/failoverdomains/failoverdomain/failoverdomainnode/@name">
-        <xsl:variable name="attr_name" select="."/>
+    <!-- CLUSTER-NODE -->
+
+    <!-- hostnames are treated in case-insensitive manner... -->
+    <xsl:variable name="AlphaUpper"
+                  select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
+    <xsl:variable name="AlphaLower"
+                  select="'abcdefghijklmnopqrstuvwxyz'"/>
+
+    <xsl:variable name="ClusterNode"
+                  select="cluster/clusternodes/clusternode[@name]"/>
+    <xsl:template match="
+        cluster/clusternodes/clusternode/@name
+        |cluster/clusternodes/clusternode/fence/method/device/@nodename
+        |cluster/clusternodes/clusternode/fence/method/device/@port
+        |cluster/rm/failoverdomains/failoverdomain/failoverdomainnode/@name">
+        <xsl:variable name="ClusterNodeMatch"
+                      select="$ClusterNode[
+                                  translate(@name, $AlphaUpper, $AlphaLower)
+                                  =
+                                  translate(current(), $AlphaUpper, $AlphaLower)
+                              ][1]"/>
         <xsl:attribute name="{name()}">
-            <xsl:value-of select="concat('CLUSTER-NODE-UNDEF-', generate-id(.))"/>
+            <xsl:choose>
+                <xsl:when test="$ClusterNodeMatch">
+                    <!-- 1+ match(es) found -->
+                    <xsl:value-of select="concat(
+                        'CLUSTER-NODE-',
+                        count($ClusterNodeMatch/preceding-sibling::*) + 1
+                    )"/>
+                </xsl:when>
+                <xsl:when test="name() = 'port'">
+                    <!-- conservative approach with @port -->
+                    <xsl:value-of select="."/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <!-- probably refential integrity error -->
+                    <xsl:value-of select="concat(
+                        'CLUSTER-NODE-UNDEF-',
+                        generate-id()
+                    )"/>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:attribute>
-        <xsl:attribute name="{name()}">
-            <xsl:for-each select="$ClusterNode">
-                <xsl:if test="@name = $attr_name">
-                    <xsl:value-of select="concat('CLUSTER-NODE-', position())"/>
-                </xsl:if>
-            </xsl:for-each>
-        </xsl:attribute>
-        <xsl:apply-templates select="@*|node()"/>
     </xsl:template>
 
-    <xsl:variable name="FenceDevice" select="cluster/fencedevices/fencedevice[@name]"/>
-    <xsl:template match="cluster/fencedevices/fencedevice/@name
-                        |cluster/clusternodes/clusternode/fence/method/device/@name">
-        <xsl:variable name="attr_name" select="."/>
-        <xsl:attribute name="{name()}">
-            <xsl:value-of select="concat('FENCE-DEVICE-UNDEF-', generate-id(.))"/>
-        </xsl:attribute>
-        <xsl:attribute name="{name()}">
-            <xsl:for-each select="$FenceDevice">
-                <xsl:if test="@name = $attr_name">
-                    <xsl:value-of select="concat('FENCE-DEVICE-', position())"/>
-                </xsl:if>
-            </xsl:for-each>
-        </xsl:attribute>
-        <xsl:apply-templates select="@*|node()"/>
-    </xsl:template>
+    <!-- FENCE-DEVICE -->
 
-    <xsl:variable name="FailoverDomain" select="cluster/rm/failoverdomains/failoverdomain[@name]"/>
-    <xsl:template match="cluster/rm/failoverdomains/failoverdomain/@name
-                        |cluster/rm/service/@domain
-                        |cluster/rm/vm/@domain">
-        <xsl:variable name="attr_name" select="."/>
+    <xsl:variable name="FenceDevice"
+                  select="cluster/fencedevices/fencedevice[@name]"/>
+    <xsl:template match="
+        cluster/fencedevices/fencedevice/@name
+        |cluster/clusternodes/clusternode/fence/method/device/@name">
+        <xsl:variable name="FenceDeviceMatch"
+                      select="$FenceDevice[
+                                  @name
+                                  =
+                                  current()
+                              ][1]"/>
         <xsl:attribute name="{name()}">
-            <xsl:value-of select="concat('FAILOVER-DOMAIN-UNDEF-', generate-id(.))"/>
+            <xsl:choose>
+                <xsl:when test="$FenceDeviceMatch">
+                    <!-- 1+ match(es) found -->
+                    <xsl:value-of select="concat(
+                        'FENCE-DEVICE-',
+                        count($FenceDeviceMatch/preceding-sibling::*) + 1
+                    )"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <!-- probably refential integrity error -->
+                    <xsl:value-of select="concat(
+                        'FENCE-DEVICE-UNDEF-',
+                        generate-id()
+                    )"/>
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:attribute>
-        <xsl:attribute name="{name()}">
-            <xsl:for-each select="$FailoverDomain">
-                <xsl:if test="@name = $attr_name">
-                    <xsl:value-of select="concat('FAILOVER-DOMAIN-', position())"/>
-                </xsl:if>
-            </xsl:for-each>
-        </xsl:attribute>
-        <xsl:apply-templates select="@*|node()"/>
     </xsl:template>
 '''
