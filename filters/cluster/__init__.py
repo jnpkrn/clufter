@@ -51,7 +51,7 @@ ccs2needlexml = '''\
     <!-- cluster=current ~ corosync -->
     <corosync>
 
-        <!-- clusternodes ~ nodelist</xsl:comment -->
+        <!-- clusternodes ~ nodelist -->
         <clufter:descent at="clusternodes"/>
 
         <!-- cman ~ quorum -->
