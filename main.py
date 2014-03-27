@@ -191,8 +191,8 @@ def run(argv=None, *args):
                      " skipping those backed by default values otherwise"
                      " requiring specification then allowed by syntactic"
                      " sugar: all can be passed as a single, first,"
-                     " ::-delimited argument."
-                     "  Magic files: `-', `@DIGIT'."
+                     " ::-delimited argument;"
+                     " magic files: `-', `@DIGIT+'."
                      "  All available commands listed as `{0} --list'."
                      .format(prog_simple))
     #try:
