@@ -1,4 +1,4 @@
-CLUSTERED RESOURCE PROPERTIES IN THE LIGHT OF RGMANAGER-PACEMAKER CONVERSION
+IN THE LIGHT OF RGMANAGER-PACEMAKER CONVERSION: 02/CLUSTERED RESOURCE PROPERTIES
 
 Copyright 2014 Red Hat, Inc., Jan Pokorný <jpokorny @at@ Red Hat .dot. com>
 Permission is granted to copy, distribute and/or modify this document
@@ -9,9 +9,8 @@ A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
 
-
-Intro
-=====
+Preface
+=======
 
 This document elaborates on how selected resource relationship properties
 (denoting the run-time behavior) formalized by the means of LTL logic maps
@@ -39,68 +38,6 @@ Other resource properties, PROPERTY(RESOURCE):
 - MANAGED
 
 # XXX: service ref=... + single node failover domains vs. clone
-
-Prerequisities
---------------
-
-Optionally, basic knowledge of LTL logic [1].
-The meaning of symbols used (mind the ASCII range) goes, ordered by
-descending precedence priority, like this:
-
-. a-z          ... booleans representing satisfaction of the connected claim
-. ()           ... braces (changing evaluation order of enclosed expression)
-. union        ... set union, written as a function for 3+ sets
-. intersection ... set intersection, written as a function for 3+ sets
-. \            ... set difference
-. in           ... set's item selector
-.  ~           ... negation
-. X,G,F,U,R    ... temporal operators (LTL)
-. AND          ... conjuction
-. OR           ... disjunction
-. exists       ... existential quantifier (predicate logic)
-. for all      ... universal quantifier (predicate logic)
-. ->           ... implication (--> as "maps to" in function signature context)
-
-There are also following sets assumed:
-
-{}          ... empty set
-2^Z         ... potential set of a set denoted with Z
-NODES       ... set of all nodes
-RESOURCES   ... set of all resources/services
-
-and these functions:
-
-RUNNABLE: NODES --> RESOURCES
-... all resources that can run on given node
-SCORE:    RESOURCES x NODES --> {0, 1, ...}
-... order of preference for given resource to run on given node (without
-    contribution of preference implied by the examined property)
-ALTER(ARGS)
-... alteration of the cluster behavior wrt. arguments
-intersection, union
-... see above
-max
-... given set of values, return maximum
-
-and these predicates:
-
-ACTIVE(A)     ... node A is active cluster member
-RUNNING(A, B) ... node A runs resource B (assumes B in RUNNABLE(A))
-
-and this oxymoron:
-
-exists A1, A2 in NODES: A1 != A2, B in RESOURCES:
-  RUNNING(A1, B) AND RUNNING(A1, B)
-[given unique resource is expected to run on atmost a single node,
- we don't consider Pacemaker's clones here at all]
-
-
-Notes
------
-
-- discreteness of the events in the LTL models is chosen quite deliberately,
-  per common sense and "best fit", for the sake of simplicity
-  (author is by no means expert in this field)
 
 
 
@@ -606,5 +543,4 @@ P: # pcs resource unmanage RESOURCE
 References
 ==========
 
-[1] http://en.wikipedia.org/wiki/Linear_temporal_logic
 : vim: set ft=rst:  <-- not exactly, but better than nothing

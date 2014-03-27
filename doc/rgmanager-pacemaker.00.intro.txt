@@ -1,0 +1,80 @@
+IN THE LIGHT OF RGMANAGER-PACEMAKER CONVERSION: 00/INTRO
+
+Copyright 2014 Red Hat, Inc., Jan Pokorný <jpokorny @at@ Red Hat .dot. com>
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3
+or any later version published by the Free Software Foundation;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled "GNU
+Free Documentation License".
+
+
+Prerequisities and conventions
+==============================
+
+Optionally, basic knowledge of LTL logic [1].
+The meaning of symbols used (mind the ASCII range) goes, ordered by
+descending precedence priority, like this:
+
+. a-z          ... booleans representing satisfaction of the connected claim
+. ()           ... braces (changing evaluation order of enclosed expression)
+. union        ... set union, written as a function for 3+ sets
+. intersection ... set intersection, written as a function for 3+ sets
+. \            ... set difference
+. in           ... set's item selector
+.  ~           ... negation
+. X,G,F,U,R    ... temporal operators (LTL)
+. AND          ... conjuction
+. OR           ... disjunction
+. exists       ... existential quantifier (predicate logic)
+. for all      ... universal quantifier (predicate logic)
+. ->           ... implication (--> as "maps to" in function signature context)
+
+There are also following sets assumed:
+
+{}          ... empty set
+2^Z         ... potential set of a set denoted with Z
+NODES       ... set of all nodes
+RESOURCES   ... set of all resources/services
+
+and these functions:
+
+RUNNABLE: NODES --> RESOURCES
+... all resources that can run on given node
+SCORE:    RESOURCES x NODES --> {0, 1, ...}
+... order of preference for given resource to run on given node (without
+    contribution of preference implied by the examined property)
+ALTER(ARGS)
+... alteration of the cluster behavior wrt. arguments
+intersection, union
+... see above
+max
+... given set of values, return maximum
+
+and these predicates:
+
+ACTIVE(A)     ... node A is active cluster member
+RUNNING(A, B) ... node A runs resource B (assumes B in RUNNABLE(A))
+
+and this oxymoron:
+
+exists A1, A2 in NODES: A1 != A2, B in RESOURCES:
+  RUNNING(A1, B) AND RUNNING(A1, B)
+[given unique resource is expected to run on atmost a single node,
+ we don't consider Pacemaker's clones here at all]
+
+
+Notes
+-----
+
+- discreteness of the events in the LTL models is chosen quite deliberately,
+  per common sense and "best fit", for the sake of simplicity
+  (author is by no means expert in this field)
+
+
+
+References
+==========
+
+[1] http://en.wikipedia.org/wiki/Linear_temporal_logic
+: vim: set ft=rst:  <-- not exactly, but better than nothing
