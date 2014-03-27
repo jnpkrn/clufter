@@ -19,6 +19,17 @@ def ccs_obfuscate(cmd_ctxt,
     Either obfuscation pass can be suppressed by skip parameter, by
     default they are performed both in row.
 
+    Following conventions are used for substituted ids/credentials:
+    1. identifiers used for crosslinking (referential integrity)
+       ought to be converted in a way not violating this integrity
+    2. identifiers clearly out of referential integrity (i.e.,
+       arbitrary value unrelated to the rest of the XML tree)
+       ought to be substituted with strings starting with 'REL-'
+    3. credentials ought to be substituted with strings starting
+       with 'SECRET-'
+    4. overall, any affected item should be substituted with
+       capitalized string to visually emphasize the substitution
+
     Options:
         input   input CMAN-based cluster configuration file
         output  output file with obfuscated credentials/identifiers
