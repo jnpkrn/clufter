@@ -187,8 +187,8 @@ ORDERING(B, C, ASYMMETRIC)  [4. asymmetric ordering]
 
 R: TBD
 
-P: driven by specifying `symmetrical` as `true`
-   # pcs constraint order B then C symmetrical=true
+P: driven by specifying `symmetrical` as `false` (default is `true`)
+   # pcs constraint order B then C symmetrical=false
 
 
 Cooccurence (location-based interaction dependence of the resources)
