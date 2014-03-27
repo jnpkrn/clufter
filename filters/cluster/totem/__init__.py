@@ -19,6 +19,10 @@ ccs2flatironxml = ccs2needlexml = '''\
             '|token',
             '|token_retransmits_before_loss_const',
             '|window_size',
-            '|'), concat('|', name(), '|'))]" />
+            '|'), concat('|', name(), '|'))]"/>
+    <!-- XXX bz1078343 -->
+    <!-- xsl:if test="not(@token)">
+        <xsl:attribute name="token">10000</xsl:attribute>
+    </xsl:if -->
     <clufter:descent at="interface"/>
 '''
