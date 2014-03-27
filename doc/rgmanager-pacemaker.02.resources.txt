@@ -590,12 +590,15 @@ Is-managed resource property
 
 MANAGED ::= MANAGED(RESOURCE, TRUE)
           | MANAGED(RESOURCE, FALSE)
+. MANAGED(RESOURCE, TRUE)   ... resource is managed (default assumption)
+. MANAGED(RESOURCE, FALSE)  ... resource is not managed
 
-. MANAGED(RESOURCE, TRUE)  ... resource is managed (default assumption)
-. MANAGED(RESOURCE, FALSE) ... resource is not managed
+notes
+. see also 01/cluster: FUNCTION
 
 R: except for static un-managing of everything (RGManager avoidance),
-   can only be driven by run-time modification using clusvcadm
+   can be partially driven by `/cluster/rm/(service|vm)/@autostart`
+   and/or run-time modification using `clusvcadm`
    (or at least it is close???)
 
 P: via `is-managed` meta-attribute
@@ -603,7 +606,10 @@ P: via `is-managed` meta-attribute
 MANAGED(RESOURCE, TRUE)  [1. resource is managed]
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-R: # clusvcadm -U RESOURCE  <-- whole service/vm only
+R: (partially) driven by specifying `@autostart` as non-zero
+   (has to be sequence of digits for sure, though!)
+   - default, no need for that
+   # clusvcadm -U RESOURCE  <-- whole service/vm only
 
 P: default, no need for that, otherwise specifying `is-managed` as `true`
    # pcs resource manage RESOURCE
@@ -613,8 +619,8 @@ P: default, no need for that, otherwise specifying `is-managed` as `true`
 MANAGED(RESOURCE, FALSE)  [2. resource is not managed]
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-R: - RGManager avoidance in cluster.conf: `/cluster/rm/@disabled=1`
-   # clusvcadm -Z RESOURCE  <-- whole "service" only
+R: (partially?) driven by specifying `@autostart` as `0` (or `no`)
+   # clusvcadm -Z RESOURCE  <-- whole service/vm only
 
 P: # pcs resource unmanage RESOURCE
    # pcs resource meta RESOURCE is-managed=false
