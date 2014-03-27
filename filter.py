@@ -204,21 +204,8 @@ class XMLFilter(Filter, MetaPlugin):
             hooks = OrderedDict()
             toplevel = []
 
-            #if len(ret) and parent:
-            #    top = filter(lambda x: x.tag in TOP_LEVEL_XSL, ret)
-            #    for e in top:
-            #        toplevel.append(e)
-            #        ret.remove(e)
-
-            if parent and isinstance(parent[0], etree._Element):
-                top = filter(lambda x: x.tag in TOP_LEVEL_XSL, parent[0])
-                for e in top:
-                    #print "at", sym, "appending", etree.tostring(e)
-                    ret.append(deepcopy(e))
-                #for e in toplevel:
-                #    parent[0].append(e)
-
             log.debug("walking {0}".format(etree.tostring(ret)))
+            will_mix = 0  # whether any descent-mix observed
             for event, elem in etree.iterwalk(ret, events=('start', )):
                 # XXX xpath/specific tag filter
                 # register each recurse point at the tag required
@@ -229,7 +216,8 @@ class XMLFilter(Filter, MetaPlugin):
                 #if elem is ret:
                 #    continue
                 log.debug("Got {0}".format(elem.tag))
-                if elem.tag == '{{{0}}}descent'.format(CLUFTER_NS):
+                if elem.tag in ('{{{0}}}descent'.format(CLUFTER_NS),
+                                '{{{0}}}descent-mix'.format(CLUFTER_NS)):
                     up = elem
                     walk = []
                     while up != ret:
@@ -238,14 +226,47 @@ class XMLFilter(Filter, MetaPlugin):
                     #walk = reversed(tuple(walk))  # XXX reversed, dangerous?
                     walk.reverse()
                     walk = tuple(walk)
+                    mix = elem.tag == '{{{0}}}descent-mix'.format(CLUFTER_NS)
+                    mix += mix and \
+                            elem.attrib.get('preserve-rest', "false") == "true"
+                    will_mix = max(will_mix, mix)
                     at = elem.attrib.get('at', '*')
-                    prev = hooks.setdefault(at, walk)
-                    if prev is not walk:
+                    # XXX can be a|b|c
+                    prev = hooks.setdefault(at, (walk, mix))
+                    if prev != (walk, mix):
                         raise FilterError(None, "Ambigous match for `{0}'"
                                           " tag ({1} vs {2})".format(at, walk, prev))
 
+            # do_mix decides whether the current sub-template will be
+            # be applied and the result attached (0), or just merged
+            # to the parent template (1 if not preserve-rest required,
+            # 2 otherwise)
+            do_mix = parent[1].get(name, parent[1].get('*'))[1] \
+                     if parent else 0
+            if do_mix and do_mix < will_mix:
+                raise RuntimeError("Parent does not want preserve-rest while"
+                                   " children wants to")
+            elif do_mix > 1 and will_mix:
+                do_mix = 1
+
+            #if len(ret) and parent:
+            #    top = filter(lambda x: x.tag in TOP_LEVEL_XSL, ret)
+            #    for e in top:
+            #        toplevel.append(e)
+            #        ret.remove(e)
+
+            # note that when do_mix, nested top_levels are actually propagated
+            # back, which is the inverse of what we are doing here
+            if parent and isinstance(parent[0], etree._Element) and not do_mix:
+                top = filter(lambda x: x.tag in TOP_LEVEL_XSL, parent[0])
+                for e in top:
+                    #print "at", sym, "appending", etree.tostring(e)
+                    ret.append(deepcopy(e))
+                #for e in toplevel:
+                #    parent[0].append(e)
+
             log.debug("hooks {0}".format(hooks))
-            return (ret, hooks)
+            return (ret, hooks, do_mix)
         elif callable(sym):
             return sym
         else:
@@ -264,10 +285,11 @@ class XMLFilter(Filter, MetaPlugin):
                 return do_proceed(transformer, elem, children)
             return transformer(elem, children)
 
-        def do_proceed(xslt, elem, children):
-            # in bottom-up manner
-            snippet = deepcopy(xslt[0])  # in-situ template manipulation
-            hooks = xslt[1]
+        def _merge_previous(snippet, hooks, elem, children):
+            # snippet, an original preprocessed "piece of template puzzle",
+            # has some of its subelements substituted as per hooks that
+            # together with elem traversal and children dict decides which
+            # parts (of previously proceeded symbols) will be grabbed
             scheduled = OrderedDict()  # XXX to keep the law and order
             for _, c_elem in etree.iterwalk(elem, events=('start',)):
                 if c_elem is elem:
@@ -276,67 +298,118 @@ class XMLFilter(Filter, MetaPlugin):
                     c_up = c_elem
                     while not c_up.tag in hooks and c_up.getparent() != elem:
                         c_up = c_up.getparent()
+                    target_tag = c_up.tag if c_up.tag in hooks else '*'
                     if c_up.tag in hooks or '*' in hooks:
-                        target_tag = c_up.tag if c_up.tag in hooks else '*'
                         l = scheduled.setdefault(hooks[target_tag], [])
                         l.append(children[c_elem].getroot())
-            for index_history, substitutes in scheduled.iteritems():
-                #inserted = False
+
+            for (index_history, mix), substitutes in scheduled.iteritems():
                 tag = reduce(lambda x, y: x[y], index_history, snippet)
                 parent = tag.getparent()
-                #index = parent.index(tag)
+                index = parent.index(tag)
 
                 for s in substitutes:
                     #assert s.tag == "{{{0}}}snippet".format(CLUFTER_NS)
+                    log.debug("before extension: {0}".format(etree.tostring(s)))
                     if s.tag == "{{{0}}}snippet".format(CLUFTER_NS):
                         # only single root "detached" supported (first == last)
                         dst = parent
                         dst.attrib.update(dict(s.attrib))
-                        dst.extend(s)
+                        #dst[index:index] = s
+                        tag.extend(s)
+                    elif mix:
+                        tag.extend(s)
                     else:
-                        parent.append(s)
+                        # required by obfuscate
+                        tag.append(s)
+                    log.debug("as extended contains: {0}".format(etree.tostring(tag)))
 
-            cl = snippet.xpath("//clufter:descent",
+            cl = snippet.xpath("//clufter:descent|//clufter:descent-mix",
                                  namespaces={'clufter': CLUFTER_NS})
-            if len(cl):
-                log.info("Not all tags from clufter namespace used")
-                # remove these remnants so cleanup_namespaces works well
-                for e in cl:
-                    e.getparent().remove(e)
+            # remove these remnants so cleanup_namespaces works well
+            for e in cl:
+                parent = e.getparent()
+                index = parent.index(e)
+                parent[index:index] = e.getchildren()
+                e.getparent().remove(e)
 
-            # xslt
+        def do_proceed(xslt, elem, children):
+            # in bottom-up manner
+
+            hooks, do_mix = xslt[1:]
+            # something already "mixed", shortcut, if first "mix" copy+clear
+            if not xslt[0]:
+                assert do_mix
+                return xslt[0].getroottree()
+
+            snippet = deepcopy(xslt[0])  # for in-situ template manipulation
+
+            if do_mix:
+                xslt[0].clear()  # if we mix, it is only once
+
+            _merge_previous(snippet, hooks, elem, children)
+
+            # XSLT to either be performed (do_mix == 0) or remembered (>0)
             xslt_root = etree.Element('{{{0}}}stylesheet'.format(XSL_NS),
                                       version="1.0")
-            top = filter(lambda x: x.tag in TOP_LEVEL_XSL, snippet)
-            for e in top:
-                #print "e", etree.tostring(e)
+            # move top-level items directly to the stylesheet being built
+            if do_mix:
+                xslt_root.text = snippet.text
+            for e in filter(lambda x: x.tag in TOP_LEVEL_XSL
+                                   or x.tag is etree.Comment, snippet):
                 xslt_root.append(e)
+
+            # if something still remains, we assume it is "template"
             if len(snippet):
-                log.debug("snippet {0}".format(etree.tostring(snippet)))
+                log.debug("snippet0: {0}, {1}, {2}".format(do_mix, elem.tag, etree.tostring(snippet)))
+                #if not filter(lambda x: x.tag in TOP_LEVEL_XSL, snippet):
                 template = etree.Element('{{{0}}}template'.format(XSL_NS),
                                          match=elem.tag)
-                template.append(snippet) # XXX was extend
+                template.extend(snippet)
+                log.debug("template1: {0}".format(etree.tostring(template)))
+                #snippet.append(template)
+                ##else:
+                ##    template = snippet
+                # ^ XXX was extend
                 xslt_root.append(template)
                 #print "ee", etree.tostring(xslt_root)
+
+            # append "identities" to preserve application
+            # XXX needs clarification
+            if do_mix == 1:
+                template = etree.XML(cls.xslt_identity.format(elem.tag + '/'))
+            elif elem.getparent() is None:
+            #elif elem.getparent() is None and not do_mix:
+                template = etree.XML(cls.xslt_identity.format(''))
+                xslt_root.append(template)
+
             #else:
             #    # we dont't apply if there is nothing local and not at root
             #    print "zdrham", elem.tag
             #    return elem
 
-            elem = etree.ElementTree(elem)  # XXX not getroottree?
-            log.debug("Applying {0}, {1}".format(type(elem), etree.tostring(elem)))
-            log.debug("Applying on {0}".format(etree.tostring(xslt_root)))
-            #ret = elem.xslt(xslt_root)
-            xslt = etree.XSLT(xslt_root)
-            ret = xslt(elem)
-            #etree.cleanup_namespaces(ret)
-
+            if do_mix:
+                # "mix/carry" case in which we postpone this XSLT execution
+                # (presumably non-local) by enquing it to the parent's turn
+                #ret = xslt_root.getroot()
+                ret = etree.ElementTree(xslt_root)
+            else:
+                # "eager" case in which we perform the (presumably local)
+                # XSLT execution immediately
+                elem = etree.ElementTree(elem)  # XXX not getroottree?
+                log.debug("Applying {0}, {1}".format(type(elem), etree.tostring(elem)))
+                log.debug("Applying on {0}".format(etree.tostring(xslt_root)))
+                #ret = elem.xslt(xslt_root)
+                xslt = etree.XSLT(xslt_root)
+                ret = xslt(elem)
+                log.debug("With result {0}".format(etree.tostring(ret)))
+                #etree.cleanup_namespaces(ret)
             return ret
 
         def postprocess(ret):
+            #log.debug("Applying postprocess onto {0}".format(etree.tostring(ret)))
             assert len(ret) == 1
             ret = ret[0]
-            log.debug("Applying postprocess onto {0}".format(etree.tostring(ret)))
             if ret.getroot().tag == "{{{0}}}snippet".format(CLUFTER_NS):
                 ret = ret.getroot()[0]
             # XXX: ugly solution to get rid of the unneeded namespace
@@ -349,6 +422,7 @@ class XMLFilter(Filter, MetaPlugin):
                            postprocess=postprocess, sparse=True)
         return cls.proceed(in_obj, **kwargs)
 
+    # XXX missing descent-mix
     @classmethod
     def _xslt_template(cls, walk):
         """Generate (try to) complete XSLT template from the sparse snippets"""
@@ -420,8 +494,8 @@ class XMLFilter(Filter, MetaPlugin):
     @classmethod
     def proceed_xslt_filter(cls, in_obj, **kwargs):
         """Push-button to be called from the filter itself (with walk_default)"""
-        # identity transform
-        kwargs['walk_default'] = ""
+        # XXX identity transform
+        kwargs['walk_default_first'] = '<clufter:descent-mix preserve-rest="true"/>'
         return cls.proceed_xslt(in_obj, **kwargs)
 
     @classmethod
