@@ -503,6 +503,87 @@ P: by specifying `score` as WEIGHT
 Other resource properties
 =========================
 
+Recovery policy resource property
+---------------------------------
+
+RECOVERY ::= RECOVERY(RESOURCE, RESTART-ONLY)
+           | RECOVERY(RESOURCE, RESTART-UNTIL1, MAX-RESTARTS)
+           | RECOVERY(RESOURCE, RESTART-UNTIL2, MAX-RESTARTS, EXPIRE-TIME)
+           | RECOVERY(RESOURCE, RELOCATE)
+           | RECOVERY(RESOURCE, DISABLE)
+. RECOVERY(RESOURCE, RESTART)  ... "attempt to restart in place", unlimited
+. RECOVERY(RESOURCE, RESTART-UNTIL1, MAX-RESTARTS)
+                               ... ditto, but after MAX-RESTARTS attempts
+                                   (for the whole period of resource-node
+                                   assignment) attempt to relocate
+. RECOVERY(RESOURCE, RESTART-UNTIL2, MAX-RESTARTS, EXPIRE-TIME)
+                               ... ditto, but after MAX-RESTARTS attempts
+                                   accumulated within EXPIRE-TIME windows,
+                                   attempt to relocate
+. RECOVERY(RESOURCE, RELOCATE) ... move to another node
+. RECOVERY(RESOURCE, DISABLE)  ... do not attempt anything, stop
+
+R: driven by `/cluster/rm/(service|vm)/@recovery`
+
+P: driven by OCF RA return code and/or `migration-threshold`
+
+RECOVERY(RESOURCE, RESTART-ONLY)  [1. restart in place, unlimited]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+R: default, no need for that, otherwise specifying `@recovery` as `restart`
+   (and not specifying none of `@max_restarts`, `@restart_expire_time`,
+   or keeping `@max_restarts` at zero!)
+
+P: default, no need for that, otherwise specifying `migration-threshold`
+   as `INFINITY` (or zero?; can be overriden by OCF RA return code, anyway?)
+
+RECOVERY(RESOURCE, RESTART-UNTIL1, MAX-RESTARTS)  [2. restart + absolute limit]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+R: driven by specifying `@max_restarts` as `MAX-RESTARTS` (value, non-positive
+   number boils down to case 1.)
+   - and, optionally, specifying `@recovery` as `restart` (or not at all!)
+
+P: driven by specifying `migration-threshold` as `MAX-RESTARTS` (value,
+   presumably non-negative, `INFINITY` or zero? boil down to case 1.)
+   (but can be overriden by OCF RA return code, anyway?)
+
+[3. restart + relative limit for number of restarts/period]
+RECOVERY(RESOURCE, RESTART-UNTIL2, MAX-RESTARTS, EXPIRE-TIME)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+R: driven by specifying `@max_restarts` as `MAX-RESTARTS` (value, non-positive
+   number boils down to case 1.) and `@restart_expire_time`
+   as `EXPIRE-TIME` (value, negative after expansion boils down to the
+   case 1., zero to case 2.)
+   - and, optionally, specifying `@recovery` as `restart` (or not at all!)
+
+P: driven by specifying `migration-threshold` as `MAX-RESTARTS` (value,
+   presumably non-negative, `INFINITY` or zero? boil down to case 1.) and
+   `failure-timeout` as `EXPIRE-TIME`  (value, presumably positive, zero
+   boils down to case 2.)
+   (but can be overriden by OCF RA return code, anyway?)
+
+RECOVERY(RESOURCE, RELOCATE)  [4. move to another node]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+R: driven by specifying `@recovery` as `relocate`
+
+P: driven by specifying `migration-threshold` as negative number(?)
+   (regardless of `failure-timeout`)
+   (but can be overriden by OCF RA return code, anyway?)
+
+RECOVERY(RESOURCE, DISABLE)  [5. no more attempt]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+R: driven by specifying `@recovery` as `disable`
+
+P: can only be achieved in case of AFFINITY(RESOURCE, NODE, FALSE)
+   for all nodes except one and specifying `migration-threshold`
+   as `1` because upon single failure, remaining
+   AFFINITY(RESOURCE, NODE, FALSE) rule for yet-enabled NODE will
+   be added, effectively preventing RESOURCE to run anywhere
+
 
 Is-managed resource property
 ----------------------------
