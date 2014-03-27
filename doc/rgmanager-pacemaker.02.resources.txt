@@ -28,14 +28,17 @@ are provided.
 Outline
 -------
 
-Resource-resource interaction properites, PROPERTY(RESOURCE1, RESOURCE2):
-- ORDERING, COOCCURENCE
-Relative resource-node assignment properties, PROPERTY(RESOURCE):
-- STICKY, EXCLUSIVE
-Explicit resource-node assignment properties, PROPERTY(RESOURCE, NODE):
-- AFFINITY
-Other resource properties, PROPERTY(RESOURCE):
-- MANAGED
+Resource-resource interaction properites, PROPERTY(RESOURCE1, RESOURCE2)
+. ORDERING
+. COOCCURENCE
+Relative resource-node assignment properties, PROPERTY(RESOURCE)
+. STICKY
+. EXCLUSIVE
+Explicit resource-node assignment properties, PROPERTY(RESOURCE, NODE)
+. AFFINITY
+Other resource properties, PROPERTY(RESOURCE)
+. RECOVERY
+. MANAGED
 
 # XXX: service ref=... + single node failover domains vs. clone
 
@@ -58,7 +61,6 @@ ORDERING ::= ORDERING(RESOURCE1, RESOURCE2, NONE)
            | ORDERING(RESOURCE1, RESOURCE2, WEAK)
            | ORDERING(RESOURCE1, RESOURCE2, STRONG)
            | ORDERING(RESOURCE1, RESOURCE2, ASYMMETRIC)
-
 . ORDERING(RESOURCE1, RESOURCE2, NONE)   ... no time-based dependency
                                              of the states
 . ORDERING(RESOURCE1, RESOURCE2, WEAK)   ... start of 2nd preceeded by start
@@ -137,7 +139,6 @@ COOCCURENCE ::= COOCURENCE(RESOURCE1, RESOURCE2, NONE)
               | COOCURENCE(RESOURCE1, RESOURCE2, SCORE),
                 SCORE in {..., -1, 0, 1, ...}, 0~NONE, -INF~NEGATIVE,
                                                +INF~POSITIVE
-
 . COOCCURENCE(RESOURCE1, RESOURCE2, NONE)     ... not any occurence
                                                   relationship (default)
 . COOCCURENCE(RESOURCE1, RESOURCE2, POSITIVE) ... positive occurence
@@ -232,7 +233,6 @@ STICKY ::= STICKY(RESOURCE, FALSE)
          | STICKY(RESOURCE, TRUE)
          | STICKY(RESOURCE, STICKINESS), STICKINESS in {0, 1, 2, ...},
                                          0~FALSE
-
 . STICKY(RESOURCE, FALSE)      ... unsticky/cruising resource (default)
 . STICKY(RESOURCE, TRUE)       ... sticky resource (flat model)
 . STICKY(RESOURCE, STICKINESS) ... sticky resource (prioritized model)
