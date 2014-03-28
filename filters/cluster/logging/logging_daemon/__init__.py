@@ -4,7 +4,7 @@
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
 cccs2flatironxml = ccs2needlexml = '''\
-    <xsl:for-each select="self::node()[@name='corosync' and @subsys]">
+    <xsl:if test="@name='corosync' and @subsys">
         <logger_subsys>
             <xsl:copy-of select="@*[
                 contains(concat(
@@ -16,7 +16,9 @@ cccs2flatironxml = ccs2needlexml = '''\
                     '|syslog_priority',
                     '|to_logfile',
                     '|to_syslog',
-                    '|'), concat('|', name(), '|'))]" />
+                    '|'), concat('|', name(), '|')
+                )
+            ]"/>
         </logger_subsys>
-    </xsl:for-each>
+    </xsl:if>
 '''

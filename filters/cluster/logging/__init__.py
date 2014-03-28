@@ -5,6 +5,18 @@
 
 ccs2flatironxml = ccs2needlexml = '''\
     <logging>
+        <xsl:copy-of select="@*[
+            contains(concat(
+                '|debug',
+                '|logfile',
+                '|logfile_priority',
+                '|syslog_facility',
+                '|syslog_priority',
+                '|to_logfile',
+                '|to_syslog',
+                '|'), concat('|', name(), '|')
+            )
+        ]"/>
         <!-- XXX: the latter match (if any) should overwrite the former -->
         <clufter:descent at="logging_daemon"/>
     </logging>
