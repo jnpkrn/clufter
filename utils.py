@@ -168,17 +168,25 @@ longopt_letters_reprio = \
 # extrapolate optparse.make_option to specifically-encoded "plural"
 make_options = lambda opt_decl: [make_option(*a, **kw) for a, kw in opt_decl]
 
-def func_defaults_varnames(func, skip=0):
+def func_defaults_varnames(func, skip=0, fix_generator_tail=True):
     """Using introspection, get arg defaults (dict) + all arg names (tuple)
 
     Parameters:
-        skipfirst   how many initial arguments to skip
+        skip                how many initial arguments to skip
+        fix_generator_tail  see http://stackoverflow.com/questions/9631777
+                            https://mail.python.org/pipermail/python-list/
+                                    2013-November/661304.html
     """
     # XXX assert len(func_varnames) - skip >= len(func.func_defaults)
     func_varnames = func.func_code.co_varnames[skip:]
+    fix = None
+    for i in xrange(len(func_varnames) if fix_generator_tail else 0, 0, -1):
+        if func_varnames[i - 1][0] not in "_.":
+            break
+        fix -= 1
     func_defaults = dict(zip(
-        func_varnames[-len(func.func_defaults):],
-        func.func_defaults
+        func_varnames[-len(func.func_defaults) + skip - 1:fix],
+        func.func_defaults[skip:fix]
     ))
     return func_defaults, func_varnames
 
