@@ -39,4 +39,38 @@ ccs_obfuscate_identifiers = '''\
             </xsl:choose>
         </xsl:attribute>
     </xsl:template>
+
+    <!-- SERVICE -->
+
+    <xsl:variable name="Service"
+                  select="//rm/service[@name or @ref]"/>
+    <xsl:template match="
+        //rm/service/@name
+        |//rm/service/@ref
+        |//rm/resource/@name">
+        <xsl:variable name="ServiceMatch"
+                      select="$Service[
+                                  @name and @name = current()
+                                  or
+                                  @ref and @ref = current()
+                              ][1]"/>
+        <xsl:attribute name="{name()}">
+            <xsl:choose>
+                <xsl:when test="$ServiceMatch">
+                    <!-- 1+ match(es) found -->
+                    <xsl:value-of select="concat(
+                        'SERVICE-',
+                        count($ServiceMatch/preceding-sibling::service) + 1
+                    )"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <!-- unused service or refential integrity error -->
+                    <xsl:value-of select="concat(
+                        'SERVICE-UNUSED-',
+                        generate-id()
+                    )"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:attribute>
+    </xsl:template>
 '''
