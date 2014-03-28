@@ -26,7 +26,7 @@ ccs_obfuscate_identifiers = '''\
                     <!-- 1+ match(es) found -->
                     <xsl:value-of select="concat(
                         'FAILOVER-DOMAIN-',
-                        count($FailoverDomainMatch/preceding-sibling::*) + 1
+                        count($FailoverDomainMatch/preceding-sibling::failoverdomain) + 1
                     )"/>
                 </xsl:when>
                 <xsl:otherwise>

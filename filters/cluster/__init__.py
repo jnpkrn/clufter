@@ -162,7 +162,7 @@ ccs_obfuscate_identifiers = '''\
                     <!-- 1+ match(es) found -->
                     <xsl:value-of select="concat(
                         'CLUSTER-NODE-',
-                        count($ClusterNodeMatch/preceding-sibling::*) + 1
+                        count($ClusterNodeMatch/preceding-sibling::clusternode) + 1
                     )"/>
                 </xsl:when>
                 <xsl:when test="name() = 'port'">
@@ -199,7 +199,7 @@ ccs_obfuscate_identifiers = '''\
                     <!-- 1+ match(es) found -->
                     <xsl:value-of select="concat(
                         'FENCE-DEVICE-',
-                        count($FenceDeviceMatch/preceding-sibling::*) + 1
+                        count($FenceDeviceMatch/preceding-sibling::fencedevice) + 1
                     )"/>
                 </xsl:when>
                 <xsl:otherwise>
