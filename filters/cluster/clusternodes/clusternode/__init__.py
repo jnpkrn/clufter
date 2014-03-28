@@ -4,7 +4,13 @@
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
 ccs2needlexml = '''\
-    <node id="{@nodeid}" ring0_addr="{@name}"/>
+    <node id="{@nodeid}" ring0_addr="{@name}">
+        <xsl:if test="@votes">
+            <xsl:attribute name="quorum_votes">
+                <xsl:value-of select="@votes"/>
+            </xsl:attribute>
+        </xsl:if>
+    </node>
 '''
 
 ccs2ccs_pcmk = '''\
