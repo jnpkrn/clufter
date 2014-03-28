@@ -18,7 +18,7 @@ Python-wise:
 - lxml (python-lxml)
 
 general:
-- Python 2
+- Python 2, 2.7 preferred, 2.6 with https://pypi.python.org/pypi/ordereddict
 - ccs_flatten from pacemaker/extra/rgmanager:
   ./configure --with-cman=1 && pushd extra/rgmanager && make; popd
 

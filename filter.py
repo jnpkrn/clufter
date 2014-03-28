@@ -8,7 +8,10 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 import logging
 from os.path import dirname, join
 from copy import deepcopy
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 
 from lxml import etree
 
