@@ -4,10 +4,34 @@
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
 ccs2needlexml = '''\
-    <node id="{@nodeid}" ring0_addr="{@name}">
-        <xsl:if test="@votes">
-            <xsl:attribute name="quorum_votes">
-                <xsl:value-of select="@votes"/>
+    <node>
+        <xsl:for-each select="@*">
+            <xsl:variable name="attr_name">
+                <xsl:choose>
+                    <!-- @nodeid -> @id -->
+                    <xsl:when test="name() = 'nodeid'">
+                        <xsl:value-of select="'id'"/>
+                    </xsl:when>
+                    <!-- @name -> @ring0_addr -->
+                    <xsl:when test="name() = 'name'">
+                        <xsl:value-of select="'ring0_addr'"/>
+                    </xsl:when>
+                    <!-- @votes -> @quorum_votes -->
+                    <xsl:when test="name() = 'votes'">
+                        <xsl:value-of select="'quorum_votes'"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="''"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+            <xsl:attribute name="{$attr_name}">
+                <xsl:value-of select="."/>
+            </xsl:attribute>
+        </xsl:for-each>
+        <xsl:if test="altname/@name">
+            <xsl:attribute name="ring1_addr">
+                <xsl:value-of select="altname/@name"/>
             </xsl:attribute>
         </xsl:if>
     </node>
