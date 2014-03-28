@@ -192,6 +192,9 @@ def func_defaults_varnames(func, skip=0, fix_generator_tail=True):
         func_varnames[-len(func.func_defaults) + skip - 1:fix],
         func.func_defaults[skip:fix]
     ))
+
+    if fix:
+        return func_defaults, func_varnames[:fix]
     return func_defaults, func_varnames
 
 
