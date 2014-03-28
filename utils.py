@@ -7,6 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import os
 import sys
+from contextlib import contextmanager
 from optparse import make_option
 from subprocess import Popen
 
@@ -215,3 +216,14 @@ class hybridproperty(property):
 
     def __get__(self, this, owner):
         return self.fget.__get__(None, this if this else owner)()
+
+
+@contextmanager
+def file_scan(*files):
+    """Run through the files, turning @DIGIT+ magic ones into fileobjs"""
+    magic_fds = {}
+    for fn in (f for f in files if f.rstrip('0123456789') == '@'):
+        if fn not in magic_fds:
+            magic_fds[fn] = os.fdopen(int(fn[1:]), 'ab')
+    yield (magic_fds.get(f, f) for f in files)
+    map(lambda f: f.close(), magic_fds.itervalues())

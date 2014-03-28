@@ -188,17 +188,24 @@ class SimpleFormat(Format, MetaPlugin):
                 return f.read()
 
     @Format.producing('file')
-    def get_file(self, protocol, filename):
-        if filename == '-' or filename.rstrip('0123456789') == '@':
-            if filename == '-':
+    def get_file(self, protocol, outfile):
+        if hasattr(outfile, 'write'):
+            # assume fileobj out of our control, do not close
+            outfile.write(self('bytestring'))
+            return outfile.name
+
+        assert isinstance(outfile, basestring)
+        if outfile == '-' or outfile.rstrip('0123456789') == '@':
+            if outfile == '-':
                 stdout.write(self('bytestring'))
             else:
-                with fdopen(int(filename[1:]), 'ab') as f:
+                log.warning("@DIGIT+ in get_file deprecated, use `file_scan'")
+                with fdopen(int(outfile[1:]), 'ab') as f:
                     f.write(self('bytestring'))
         else:
-            with file(filename, 'wb') as f:
+            with file(outfile, 'wb') as f:
                 f.write(self('bytestring'))
-        return filename
+        return outfile
 
 
 class CompositeFormat(Format, MetaPlugin):
