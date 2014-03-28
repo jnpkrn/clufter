@@ -1,2 +1,2 @@
-ccs-obfuscate:
-- result not pretty printed with --skip=creds
+Python 2.6/el6.5
+- debug output doesn't work
