@@ -179,11 +179,15 @@ def func_defaults_varnames(func, skip=0, fix_generator_tail=True):
     """
     # XXX assert len(func_varnames) - skip >= len(func.func_defaults)
     func_varnames = func.func_code.co_varnames[skip:]
-    fix = None
+
+    # look at tail possibly spoiled with implicit generator's stuff ala "_[1]"
+    fix = 0
     for i in xrange(len(func_varnames) if fix_generator_tail else 0, 0, -1):
         if func_varnames[i - 1][0] not in "_.":
             break
         fix -= 1
+    fix = fix or None
+
     func_defaults = dict(zip(
         func_varnames[-len(func.func_defaults) + skip - 1:fix],
         func.func_defaults[skip:fix]
