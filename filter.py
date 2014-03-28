@@ -365,7 +365,10 @@ class XMLFilter(Filter, MetaPlugin):
                 #if not filter(lambda x: x.tag in TOP_LEVEL_XSL, snippet):
                 template = etree.Element('{{{0}}}template'.format(XSL_NS),
                                          match=elem.tag)
-                template.extend(snippet)
+                if do_mix:
+                    template.extend(snippet)
+                else:
+                    template.append(snippet)
                 log.debug("template1: {0}".format(etree.tostring(template)))
                 #snippet.append(template)
                 ##else:
