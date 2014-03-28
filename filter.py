@@ -338,7 +338,7 @@ class XMLFilter(Filter, MetaPlugin):
 
             hooks, do_mix = xslt[1:]
             # something already "mixed", shortcut, if first "mix" copy+clear
-            if not xslt[0]:
+            if not len(xslt[0]):
                 assert do_mix
                 return xslt[0].getroottree()
 
