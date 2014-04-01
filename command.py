@@ -368,16 +368,16 @@ class Command(object):
         for v in fnc_varnames:
             default = fnc_defaults.get(v, None)
             opt = getattr(opts, v, default)
-            if opt:
-                if opt != default:
-                    kwargs[v] = opt
+            if opt != default:
+                kwargs[v] = opt
                 continue
             while args:
                 cur = args.pop()
                 if cur != '':
                     kwargs[v] = cur
-                    continue
-            raise CommandError(self, "missing ex-/im-plicit `{0}' value", v)
+                    break
+            if opt is None and v not in kwargs:
+                raise CommandError(self, "missing ex-/implicit `{0}' value", v)
         cmd_ctxt = cmd_ctxt or CommandContext()
         cmd_ctxt.ensure_filters(apply_intercalate(self._filter_chain))
         cmd_ctxt['filter_chain_analysis'] = self.filter_chain_analysis
