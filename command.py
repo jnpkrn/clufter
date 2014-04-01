@@ -311,18 +311,6 @@ class Command(object):
                 # not INFILTER in either mode (nor output already precomputed?)
                 log.debug("Run `{0}' filter with `{1}' io decl. as DOWNFILTER"
                           .format(flt.__class__.__name__, io_decl))
-                # turning @DIGIT+ magic files into fileobjs (needs global view)
-                fd = SimpleFormat.io_decl_fd(io_decl)
-                if fd is not None:
-                    if fd not in magic_fds:
-                        try:
-                            magic_fds[fd] = fdopen(fd, 'ab')
-                        except (OSError, IOError):
-                            # keep untouched
-                            pass
-                    log.debug("before: {0}".format(io_decl))
-                    io_decl = args2sgpl(io_decl[0], magic_fds[fd], *io_decl[2:])
-                    log.debug("after: {0}".format(io_decl))
                 inputs = map(lambda x: cmd_ctxt.filter(x.__class__.__name__)['out'],
                              filter_backtrack[flt])
                 notyet, ok = bifilter(lambda x:
@@ -338,6 +326,18 @@ class Command(object):
                     worklist.extend(reversed(tuple((ny, None)
                                              for ny in notyet)))
                     continue
+
+                # turning @DIGIT+ magic files into fileobjs (needs global view)
+                fd = SimpleFormat.io_decl_fd(io_decl)
+                if fd is not None:
+                    if fd not in magic_fds:
+                        try:
+                            magic_fds[fd] = fdopen(fd, 'ab')
+                        except (OSError, IOError):
+                            # keep untouched
+                            pass
+                    io_decl = args2sgpl(io_decl[0], magic_fds[fd], *io_decl[2:])
+
                 assert all(inputs)
                 in_obj = flt.in_format.as_instance(*inputs)
             if not flt_ctxt['out'] or flt not in terminals:
