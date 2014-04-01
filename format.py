@@ -200,7 +200,7 @@ class SimpleFormat(Format, MetaPlugin):
             if outfile == '-':
                 stdout.write(self('bytestring'))
             else:
-                warn("@DIGIT+ in get_file deprecated, use `file_scan'",
+                warn("@DIGIT+ in get_file deprecated, implicit handling fail?",
                      DeprecationWarning)
                 with fdopen(int(outfile[1:]), 'ab') as f:
                     f.write(self('bytestring'))
@@ -208,6 +208,14 @@ class SimpleFormat(Format, MetaPlugin):
             with file(outfile, 'wb') as f:
                 f.write(self('bytestring'))
         return outfile
+
+    @staticmethod
+    def io_decl_fd(io_decl):
+        """Return file descriptor (int) if conforms to "magic file" or None"""
+        if tuplist(io_decl) and len(io_decl) >= 2 and io_decl[0] == 'file':
+            if io_decl[1].rstrip('0123456789') == '@':
+                return int(io_decl[1][1:])
+        return None
 
 
 class CompositeFormat(Format, MetaPlugin):

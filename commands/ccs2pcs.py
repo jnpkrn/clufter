@@ -6,7 +6,6 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..command import Command, CommandAlias
-from ..utils import file_scan
 
 
 @Command.deco(('ccs2ccsflat',
@@ -36,17 +35,16 @@ def ccs2pcs_flatiron(cmd_ctxt,
     """
     #cmd_ctxt.filter()['validate'] = not nocheck
     #cmd_ctxt.filter('ccs2ccsflat')['validate'] = not nocheck
-    with file_scan(ccs_pcmk, cib, coro) as (ccs_pcmk, cib, coro):
-        yield (
-            ('file', input),
+    return (
+        ('file', input),
+        (
+            ('file', ccs_pcmk),
+            ('file', cib),
             (
-                ('file', ccs_pcmk),
-                ('file', cib),
-                (
-                    ('file', coro),
-                )
+                ('file', coro),
             )
         )
+    )
 
 
 @Command.deco(('ccs2ccsflat',
@@ -72,16 +70,15 @@ def ccs2pcs_needle(cmd_ctxt,
     """
     #cmd_ctxt.filter()['validate'] = not nocheck
     #cmd_ctxt.filter('ccs2ccsflat')['validate'] = not nocheck
-    with file_scan(cib, coro) as (cib, coro):
-        yield (
-            ('file', input),
+    return (
+        ('file', input),
+        (
+            ('file', cib),
             (
-                ('file', cib),
-                (
-                    ('file', coro),
-                )
+                ('file', coro),
             )
         )
+    )
 
 
 @CommandAlias.deco

@@ -8,12 +8,14 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 import logging
 from itertools import izip_longest
 from optparse import SUPPRESS_HELP
+from os import fdopen
 from platform import system, linux_distribution
 
 from .command_context import CommandContext
 from .error import ClufterError, \
                    EC
 from .filter import Filter
+from .format import SimpleFormat
 from .plugin_registry import PluginRegistry
 from .utils import any2iter, \
                    args2sgpl, \
@@ -288,6 +290,7 @@ class Command(object):
 
         terminal_chain = cls._iochain_check_terminals(io_chain, terminal_chain)
 
+        magic_fds = {}
         input_cache = cmd_ctxt.setdefault('input_cache', {})
         worklist = list(reversed(tailshake(terminal_chain,
                                            partitioner=lambda x:
@@ -308,6 +311,18 @@ class Command(object):
                 # not INFILTER in either mode (nor output already precomputed?)
                 log.debug("Run `{0}' filter with `{1}' io decl. as DOWNFILTER"
                           .format(flt.__class__.__name__, io_decl))
+                # turning @DIGIT+ magic files into fileobjs (needs global view)
+                fd = SimpleFormat.io_decl_fd(io_decl)
+                if fd is not None:
+                    if fd not in magic_fds:
+                        try:
+                            magic_fds[fd] = fdopen(fd, 'ab')
+                        except (OSError, IOError):
+                            # keep untouched
+                            pass
+                    log.debug("before: {0}".format(io_decl))
+                    io_decl = args2sgpl(io_decl[0], magic_fds[fd], *io_decl[2:])
+                    log.debug("after: {0}".format(io_decl))
                 inputs = map(lambda x: cmd_ctxt.filter(x.__class__.__name__)['out'],
                              filter_backtrack[flt])
                 notyet, ok = bifilter(lambda x:
@@ -335,6 +350,8 @@ class Command(object):
                       .format(flt.__class__.__name__, io_decl))
             # XXX following could be stored somewhere, but rather pointless
             flt_ctxt['out'](*io_decl)
+
+        map(lambda f: f.close(), magic_fds.itervalues())  # close "magic" fds
         return EC.EXIT_SUCCESS  # XXX some better decision?
 
     def __call__(self, opts, args=None, cmd_ctxt=None):
