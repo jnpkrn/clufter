@@ -366,17 +366,18 @@ class Command(object):
                 args = args[0].split('::') + args[1:]
             args.reverse()  # we will be poping from the end
         for v in fnc_varnames:
-            opt = getattr(opts, v, None)
-            if opt is not None and opt != fnc_defaults.get(v, None):
-                kwargs[v] = getattr(opts, v)
+            default = fnc_defaults.get(v, None)
+            opt = getattr(opts, v, default)
+            if opt:
+                if opt != default:
+                    kwargs[v] = opt
                 continue
-            if args:
+            while args:
                 cur = args.pop()
                 if cur != '':
                     kwargs[v] = cur
                     continue
-            if getattr(opts, v, None) != fnc_defaults.get(v, None):
-                raise CommandError(self, "missing value for `{0}'", v)
+            raise CommandError(self, "missing ex-/im-plicit `{0}' value", v)
         cmd_ctxt = cmd_ctxt or CommandContext()
         cmd_ctxt.ensure_filters(apply_intercalate(self._filter_chain))
         cmd_ctxt['filter_chain_analysis'] = self.filter_chain_analysis
