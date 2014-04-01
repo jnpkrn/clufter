@@ -244,8 +244,11 @@ class XMLFilter(Filter, MetaPlugin):
             # be applied and the result attached (0), or just merged
             # to the parent template (1 if not preserve-rest required,
             # 2 otherwise)
-            do_mix = parent[1].get(name, parent[1].get('*'))[1] \
+            do_mix = parent[1].get(name, parent[1].get('*', (None, None)))[1] \
                      if parent else 0
+            if do_mix is None:
+                raise RuntimeError("Parent does not expect `{0}' nor wildcard"
+                                   .format(name))
             if do_mix and do_mix < will_mix:
                 raise RuntimeError("Parent does not want preserve-rest while"
                                    " children wants to")
