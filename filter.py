@@ -428,7 +428,7 @@ class XMLFilter(Filter, MetaPlugin):
             return ret
 
         kwargs.update(preprocess=cls._xslt_preprocess, proceed=proceed,
-                           postprocess=postprocess, sparse=True)
+                      postprocess=postprocess, sparse=True)
         return cls.proceed(in_obj, **kwargs)
 
     # XXX missing descent-mix
