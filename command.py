@@ -18,19 +18,19 @@ from .plugin_registry import PluginRegistry
 from .utils import any2iter, \
                    args2sgpl, \
                    args2tuple, \
-                   apply_aggregation_preserving_depth, \
-                   apply_intercalate, \
-                   apply_loose_zip_preserving_depth, \
-                   bifilter, \
                    cli_decor, \
                    func_defaults_varnames, \
                    head_tail, \
                    hybridproperty, \
                    longopt_letters_reprio, \
                    selfaware, \
-                   tuplist, \
-                   tailshake, \
-                   zip_empty
+                   tuplist
+from .utils_func import apply_aggregation_preserving_depth, \
+                        apply_intercalate, \
+                        apply_loose_zip_preserving_depth, \
+                        bifilter, \
+                        tailshake, \
+                        zip_empty
 
 log = logging.getLogger(__name__)
 

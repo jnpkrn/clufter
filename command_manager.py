@@ -12,11 +12,11 @@ from .command import commands, CommandAlias
 from .error import ClufterError, ClufterPlainError, \
                    EC
 from .plugin_registry import PluginManager
-from .utils import apply_preserving_depth, \
-                   apply_aggregation_preserving_depth, \
-                   apply_intercalate, \
-                   bifilter, \
-                   make_options
+from .utils import make_options
+from .utils_func import apply_preserving_depth, \
+                        apply_aggregation_preserving_depth, \
+                        apply_intercalate, \
+                        bifilter
 
 log = logging.getLogger(__name__)
 

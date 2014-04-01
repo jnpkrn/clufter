@@ -7,7 +7,8 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from os.path import basename
 
-from .utils import args2sgpl, bifilter, cli_undecor
+from .utils import args2sgpl, cli_undecor
+from .utils_func import bifilter
 
 
 class Completion(object):

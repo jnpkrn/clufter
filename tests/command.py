@@ -22,9 +22,8 @@ from clufter.formats.ccs import ccs, ccsflat
 from clufter.formats.coro import coroxml
 from clufter.formats.pcs import pcs
 
-from clufter.utils import apply_preserving_depth, \
-                          apply_aggregation_preserving_depth, \
-                          head_tail
+from clufter.utils_func import apply_preserving_depth, \
+                               apply_aggregation_preserving_depth
 
 
 class ChainResolve(unittest.TestCase):

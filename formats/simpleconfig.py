@@ -6,7 +6,8 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..format import SimpleFormat
-from ..utils import apply_aggregation_preserving_depth, tuplist
+from ..utils import tuplist
+from ..utils_func import apply_aggregation_preserving_depth
 
 
 class simpleconfig(SimpleFormat):

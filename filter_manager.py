@@ -9,12 +9,12 @@ import logging
 
 from .error import ClufterError
 from .filter import filters
-from .format import CompositeFormat, Format
+from .format import CompositeFormat
 from .plugin_registry import PluginManager
-from .utils import apply_preserving_depth, \
-                   apply_aggregation_preserving_depth, \
-                   apply_intercalate, \
-                   tuplist
+from .utils import tuplist
+from .utils_func import apply_preserving_depth, \
+                        apply_aggregation_preserving_depth, \
+                        apply_intercalate
 
 log = logging.getLogger(__name__)
 
