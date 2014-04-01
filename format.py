@@ -8,11 +8,12 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 # TODO: NamedTuple for tree_stack
 
 import imp
-import logging
 from copy import deepcopy
+from logging import getLogger
 from os import extsep, fdopen, walk
 from os.path import commonprefix, splitext, basename
 from sys import modules, stdout
+from warnings import warn
 
 from lxml import etree
 
@@ -20,7 +21,7 @@ from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
 from .utils import args2tuple, classproperty, mutable, tuplist
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 MAX_DEPTH = 1000
 
 
@@ -199,7 +200,8 @@ class SimpleFormat(Format, MetaPlugin):
             if outfile == '-':
                 stdout.write(self('bytestring'))
             else:
-                log.warning("@DIGIT+ in get_file deprecated, use `file_scan'")
+                warn("@DIGIT+ in get_file deprecated, use `file_scan'",
+                     DeprecationWarning)
                 with fdopen(int(outfile[1:]), 'ab') as f:
                     f.write(self('bytestring'))
         else:
