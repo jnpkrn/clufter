@@ -9,7 +9,7 @@ from ..command import Command
 
 
 @Command.deco(('ccs-obfuscate-credentials',
-                    'ccs-obfuscate-identifiers'))
+                  ('ccs-obfuscate-identifiers')))
 def ccs_obfuscate(cmd_ctxt,
                   input="/etc/cluster/cluster.conf",
                   output="./cluster.conf",

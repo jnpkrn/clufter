@@ -9,10 +9,10 @@ from ..command import Command, CommandAlias
 
 
 @Command.deco(('ccs2ccsflat',
-                    'ccs2ccs-pcmk',
-                    'ccsflat2pcs',
-                    ('ccs2flatironxml',
-                          'xml2simpleconfig')))
+                  ('ccs2ccs-pcmk'),
+                  ('ccsflat2pcs'),
+                  ('ccs2flatironxml',
+                      ('xml2simpleconfig'))))
 def ccs2pcs_flatiron(cmd_ctxt,
                      input="/etc/cluster/cluster.conf",
                      ccs_pcmk="./cluster.conf",
@@ -48,9 +48,9 @@ def ccs2pcs_flatiron(cmd_ctxt,
 
 
 @Command.deco(('ccs2ccsflat',
-                    'ccsflat2pcs',
-                    ('ccs2needlexml',
-                          'xml2simpleconfig')))
+                  ('ccsflat2pcs'),
+                  ('ccs2needlexml',
+                      ('xml2simpleconfig'))))
 def ccs2pcs_needle(cmd_ctxt,
                    input="/etc/cluster/cluster.conf",
                    cib="./cib.xml",
