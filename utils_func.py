@@ -44,7 +44,7 @@ bifilter = \
 
 # Given the partitioning function, do the recursive refinement in a way
 # the parts reaching the bottom line in more steps are continually "shaked"
-# towards the end (with stable the relative order, though).
+# towards the end (with a stable relative order, though).
 # Default partitioning function just distinguishes between tuples/lists
 # and other values (presumably scalars) so when passed a tuple/list encoding
 # a graph (tree/forest) in a DFS manner using unrestricted nesting, it will
