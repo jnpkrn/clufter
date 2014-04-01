@@ -480,7 +480,7 @@ class XMLFilter(Filter, MetaPlugin):
                         parent[parent.index(tag)] = e
                         ret[-1].append(snippet)
                 # in parallel: 2?
-                for target_tag, index_history in hooks.iteritems():
+                for target_tag, (index_history, mix) in hooks.iteritems():
                     tag = reduce(lambda x, y: x[y], index_history, snippet)
                     l = scheduled_subst.setdefault(target_tag, [])
                     l.append(tag)
