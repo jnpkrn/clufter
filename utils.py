@@ -100,24 +100,22 @@ def func_defaults_varnames(func, skip=0, fix_generator_tail=True):
                             https://mail.python.org/pipermail/python-list/
                                     2013-November/661304.html
     """
-    # XXX assert len(func_varnames) - skip >= len(func.func_defaults)
-    func_varnames = func.func_code.co_varnames[skip:]
+    func_varnames = func.func_code.co_varnames
+    assert len(func_varnames) - skip >= len(func.func_defaults)
 
     # look at tail possibly spoiled with implicit generator's stuff ala "_[1]"
     fix = 0
-    for i in xrange(len(func_varnames) if fix_generator_tail else 0, 0, -1):
+    for i in xrange(len(func_varnames) if fix_generator_tail else 0, skip, -1):
         if func_varnames[i - 1][0] not in "_.":
             break
         fix -= 1
-    fix = fix or None
 
+    func_varnames = func_varnames[skip:fix or None]
     func_defaults = dict(zip(
-        func_varnames[-len(func.func_defaults) + skip - 1:fix],
-        func.func_defaults[skip:fix]
+        func_varnames,
+        func.func_defaults[-len(func_varnames):]  # "fix" auto-accommodated
     ))
 
-    if fix:
-        return func_defaults, func_varnames[:fix]
     return func_defaults, func_varnames
 
 
