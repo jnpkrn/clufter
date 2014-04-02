@@ -38,7 +38,7 @@ class Default(FilterManagerTestCase):
             self.assertTrue(cls.name in filters)
             # CHECK it's class matches the class of natively imported one
             #       during this test-run (not generally due to "restart")
-            self.assertIs(cls, type(filters[cls.name]))
+            self.assertTrue(cls is type(filters[cls.name]))
 
     def test_run_ccs2ccsflat(self):
         testfile = join(dirname(__file__), 'empty.conf')
@@ -78,7 +78,7 @@ class CompositeFormatIO(FilterManagerTestCase):
         # CHECK resulting objects are not identical (separate processing)
         # NOTE there could be heuristic to capture duplicated work, but such
         #      filter is phony anyway
-        self.assertIsNot(*out_objs)
+        self.assertTrue(out_objs[0] is not out_objs[1])
         # externalize outputs
         results = out_objs(('composite', ('bytestring', 'bytestring')))
         # XXX print results
