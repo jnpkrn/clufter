@@ -4,6 +4,12 @@
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+ccs2ccs_pcmk = '''\
+    <!-- see bz#723925 -->
+    <xsl:comment> avoid accidental start of rgmanager </xsl:comment>
+    <rm disabled="1"/>
+'''
+
 ccs_obfuscate_identifiers = '''\
 
     <!-- FAILOVER-DOMAIN -->

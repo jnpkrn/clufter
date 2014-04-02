@@ -4,37 +4,12 @@
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-# XXX XML could be generated in a function with cases for flatiron/needle
 # yield corosync v.1/flatiron configuration compatible with el6.{5,...}
 ccs2flatironxml = '''\
     <!-- cluster=current ~ corosync -->
     <corosync>
 
-        <!-- logging ~ logging -->
-        <clufter:descent at="logging"/>
-
-        <!-- totem (pieces from cluster=current and cman) ~ totem -->
-        <totem version="2">
-            <xsl:if test="cman/@transport">
-                <xsl:choose>
-                    <xsl:when test="cman/@transport[
-                        contains(concat(
-                            '|udp',
-                            '|udpu',
-                            '|'), concat('|', ., '|'))]">
-                        <xsl:copy-of select="cman/@transport"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:message>
-                            <xsl:value-of select="concat('Unsupported value for `transport&quot; dropped: ', .)"/>
-                        </xsl:message>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:if>
-            <clufter:descent at="totem"/>
-        </totem>
-
-        <!-- include Pacemaker plugin -->
+        <!-- just include Pacemaker plugin, rest is kept in cluster.conf -->
         <service name="pacemaker"
                  ver="1"/>
 
@@ -103,21 +78,14 @@ ccsflat2pcs = '''\
 '''
 
 ccs2ccs_pcmk = '''\
-    <cluster config_version="{@config_version + 1}"
-             name="{@name}">
+    <clufter:descent-mix preserve-rest="true"/>
 
-        <clufter:descent at="clusternodes"/>
-
-        <fencedevices>
-            <fencedevice agent="fence_pcmk"
-                         name="pcmk-redirect"/>
-        </fencedevices>
-
-        <!-- see bz#723925 -->
-        <xsl:comment> avoid accidental start of rgmanager </xsl:comment>
-        <rm disabled="1"/>
-
-    </cluster>
+    <!-- CLUSTER config version bump -->
+    <xsl:template match="cluster/@config_version">
+        <xsl:attribute name="{name()}">
+            <xsl:value-of select="string(. + 1)"/>
+        </xsl:attribute>
+    </xsl:template>
 '''
 
 # check http://stackoverflow.com/questions/4509662/how-to-generate-unique-string

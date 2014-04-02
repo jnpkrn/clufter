@@ -3,7 +3,7 @@
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
-ccs2flatironxml = ccs2needlexml = '''\
+ccs2needlexml = '''\
     <logging>
         <xsl:copy-of select="@*[
             contains(concat(
