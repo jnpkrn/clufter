@@ -411,6 +411,9 @@ class XMLFilter(Filter, MetaPlugin):
                 #ret = elem.xslt(xslt_root)
                 xslt = etree.XSLT(xslt_root)
                 ret = xslt(elem)
+                # following seems to carefully preserve space (depending on
+                # xsl:output)
+                #ret = etree.fromstring(str(xslt(elem))).getroottree()
                 log.debug("With result {0}".format(etree.tostring(ret)))
                 #etree.cleanup_namespaces(ret)
             return ret
