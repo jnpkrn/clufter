@@ -4,10 +4,13 @@
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+# avoid accidental start of rgmanager, see bz#723925;
+# only rm tag already present as only then there is a chance
+# of having RGManager + service set to start on boot
 ccs2ccs_pcmk = '''\
-    <!-- see bz#723925 -->
-    <xsl:comment> avoid accidental start of rgmanager </xsl:comment>
-    <rm disabled="1"/>
+    <xsl:copy>
+        <xsl:attribute name="disabled">1</xsl:attribute>
+    </xsl:copy>
 '''
 
 ccs_obfuscate_identifiers = '''\

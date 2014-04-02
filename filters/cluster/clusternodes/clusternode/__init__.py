@@ -38,7 +38,7 @@ ccs2needlexml = '''\
 '''
 
 ccs2ccs_pcmk = '''\
-    <clusternode>
+    <xsl:copy>
         <xsl:copy-of select="@*|altname"/>
         <!-- "unfence" section disappears, "fence" one enforced below -->
         <fence>
@@ -46,5 +46,5 @@ ccs2ccs_pcmk = '''\
                 <device name="pcmk-redirect" port="{@name}"/>
             </method>
         </fence>
-    </clusternode>
+    </xsl:copy>
 '''

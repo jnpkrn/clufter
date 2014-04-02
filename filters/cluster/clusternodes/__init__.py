@@ -9,8 +9,3 @@ ccs2needlexml = '''\
     </nodelist>
 '''
 
-ccs2ccs_pcmk = '''\
-    <clusternodes>
-        <clufter:descent at="clusternode"/>
-    </clusternodes>
-'''
