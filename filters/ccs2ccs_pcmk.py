@@ -10,4 +10,6 @@ from clufter.filter import XMLFilter
 
 @XMLFilter.deco('ccs', 'ccs')
 def ccs2ccs_pcmk(flt_ctxt, in_obj):
+    # could be static output, but stay with XSLT in case we want to move sth.
+    # from cluster.conf to corosync.conf already (used to be a case)
     return ('etree', flt_ctxt.proceed_xslt_filter(in_obj, raw=flt_ctxt['raw']))
