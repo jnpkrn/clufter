@@ -152,7 +152,11 @@ def run(argv=None, *args):
             return ec
 
     logging.basicConfig(level=opts.loglevel)  # what if not the first use?
-    logging.captureWarnings(True)
+    try:
+        # only 2.7+ (despite not documented this way)
+        logging.captureWarnings(True)
+    except AttributeError:
+        pass
     cm = CommandManager(FilterManager(FormatManager()))
     if not opts.help and (opts.list or opts.completion or not args):
         cmds = cm.pretty_cmds(ind=' ' * parser.formatter.indent_increment,
