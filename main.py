@@ -151,7 +151,8 @@ def run(argv=None, *args):
             print '\n'.join((version_text(), '-- \nPython runtime:', version))
             return ec
 
-    logging.basicConfig(level=opts.loglevel)  # what if not the first use?
+    # XXX what if not the first use?
+    logging.basicConfig(level=logging.getLevelName(opts.loglevel))
     try:
         # only 2.7+ (despite not documented this way)
         logging.captureWarnings(True)
