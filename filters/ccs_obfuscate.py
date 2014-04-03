@@ -6,11 +6,9 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from clufter.filter import XMLFilter
-#from lxml import etree
 
 
 def _ccs_obfuscate(flt_ctxt, in_obj):
-    #print etree.tostring(in_obj('etree').xslt(flt.get_template(in_obj)))
     if flt_ctxt['skip']:
         res = in_obj('etree')
     else:
