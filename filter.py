@@ -282,7 +282,10 @@ class XMLFilter(Filter, MetaPlugin):
 
     @classmethod
     def proceed_xslt(cls, in_obj, **kwargs):
-        """Apply iteratively XSLT snippets as per the schema tree (walk)"""
+        """Apply iteratively XSLT snippets as per the schema tree (walk)
+
+        You should likely use `proceed_xslt_filter` wrapper instead.
+        """
         # XXX postprocess: omitted as standard defines the only root element
 
         def proceed(transformer, elem, children):

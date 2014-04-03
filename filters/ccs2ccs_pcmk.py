@@ -6,9 +6,8 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from clufter.filter import XMLFilter
-#from lxml import etree
 
 
 @XMLFilter.deco('ccs', 'ccs')
 def ccs2ccs_pcmk(flt_ctxt, in_obj):
-    return ('etree', flt_ctxt.proceed_xslt(in_obj))
+    return ('etree', flt_ctxt.proceed_xslt_filter(in_obj))
