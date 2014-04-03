@@ -509,9 +509,17 @@ class XMLFilter(Filter, MetaPlugin):
     @classmethod
     def proceed_xslt_filter(cls, in_obj, **kwargs):
         """Push-button to be called from the filter itself (with walk_default)"""
-        # XXX identity transform
-        kwargs['walk_default_first'] = '<clufter:descent-mix preserve-rest="true"/>'
-        return cls.proceed_xslt(in_obj, **kwargs)
+        raw = kwargs.pop('raw', False)
+        kwargs.setdefault('walk_default_first',
+                          '<clufter:descent-mix preserve-rest="true"/>')
+        ret = cls.proceed_xslt(in_obj, **kwargs)
+        if not raw:
+            # <http://lxml.de/FAQ.html#
+            #  why-doesn-t-the-pretty-print-option-reformat-my-xml-output>
+            # XXX we could use a single shared un-blanking parser around
+            parser = etree.XMLParser(remove_blank_text=True)
+            ret = etree.fromstring(etree.tostring(ret), parser)
+        return ret
 
     @classmethod
     def get_template(cls, in_obj, root_dir=DEFAULT_ROOT_DIR, **kwargs):
