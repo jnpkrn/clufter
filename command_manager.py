@@ -121,7 +121,10 @@ class CommandManager(PluginManager):
                 ))
                 print parser.format_customized_help(usage=usage)
                 return ec
-            logging.getLogger().setLevel(opts.loglevel)
+
+            rootlog = logging.getLogger()
+            rootlog.setLevel(logging.getLevelName(opts.loglevel))
+
             log.debug("Running command `{0}';  opts={1}, args={2}"
                       .format(cmd, opts.__dict__, args))
             ec = command(opts, args)
