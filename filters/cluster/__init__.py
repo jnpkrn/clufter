@@ -61,17 +61,52 @@ ccs2needlexml = '''\
 '''
 
 ccsflat2pcs = '''\
-    <cib validate-with="pacemaker-1.1" admin_epoch="1" epoch="1" num_updates="0" have-quorum="1">
+    <cib validate-with="pacemaker-1.2"
+         admin_epoch="1"
+         epoch="1"
+         num_updates="0"
+
+         update-client="clufter">
         <configuration>
             <crm_config>
                 <!-- cluster_property_set id="cib-bootstrap-options">
                   <nvpair id="startup-fencing" name="startup-fencing" value="true"/>
+
+                  <- this is default, but should be set to false when no fence devices present ->
                   <nvpair id="stonith-enabled" name="stonith-enabled" value="true"/>
+
+                  <- this is moved to crm_attribute -type rsc_defaults -attr-name is-managed -attr-value false ->
                   <nvpair id="default-resource-stickiness" name="default-resource-stickiness" value="INFINITY"/>
                 </cluster_property_set -->
             </crm_config>
             <clufter:descent at="clusternodes"/>
-            <clufter:descent at="rm"/>
+            <resources>
+
+                <!-- fencing -->
+                <clufter:descent at="fencedevice"/>
+                <xsl:for-each select="clusternodes/clusternode/fence/method/device">
+                    <xsl:variable name="NodeName"
+                                  select="../../../@name"/>
+                    <xsl:variable name="Prefix"
+                                  select="concat('FENCEINST-', @name, '-NODE-', $NodeName)"/>
+                    <primitive id="{$Prefix}"
+                               template="{concat('FENCEDEV-TMPL-', @name)}">
+                        <instance_attributes id="{concat($Prefix, '-ATTRS')}">
+                        <xsl:for-each select="@*[name() != 'name' and name() != 'port']">
+                            <nvpair id="{concat($Prefix, '-ATTRS-', name())}"
+                                    name="{name()}"
+                                    value="{.}"/>
+                        </xsl:for-each>
+                            <nvpair id="{concat($Prefix, '-ATTRS-', 'pcmk_host_list')}"
+                                    name="{name()}"
+                                    value="{$NodeName}"/>
+                        </instance_attributes>
+                    </primitive>
+                </xsl:for-each>
+
+                <!-- resources (TBD) -->
+
+            </resources>
         </configuration>
         <status/>
     </cib>

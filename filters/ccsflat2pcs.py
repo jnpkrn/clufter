@@ -5,9 +5,9 @@
 """ccsflat2pcs filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from clufter.filter import Filter
+from clufter.filter import XMLFilter
 
 
-@Filter.deco('ccsflat', 'pcs')
+@XMLFilter.deco('ccsflat', 'pcs')
 def ccsflat2pcs(flt_ctxt, in_obj):
-    return ('bytestring', "Real result soon (WIP)")
+    return ('etree', flt_ctxt.proceed_xslt_filter(in_obj))

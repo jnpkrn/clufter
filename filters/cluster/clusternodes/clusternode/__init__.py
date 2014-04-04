@@ -48,3 +48,10 @@ ccs2ccs_pcmk = '''\
         </fence>
     </xsl:copy>
 '''
+
+ccsflat2pcs = '''\
+    <node id="{concat('NODE-', @name)}"
+          uname="{@name}"
+          type="member"
+          />
+'''
