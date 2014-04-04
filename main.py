@@ -40,6 +40,12 @@ opts_common = (
                            logging.DEBUG-logging.NOTSET)),
         help="set loglevel to specified value [%default out of %choices]"
     )),
+    (('--logfile', ), dict(
+        action='store',
+        dest='logfile',
+        default='',
+        help="log to specified file instead of stderr"
+    )),
     (('-d', '--debug'), dict(
         action='store_const',
         dest='loglevel',
@@ -152,7 +158,8 @@ def run(argv=None, *args):
             return ec
 
     # XXX what if not the first use?
-    logging.basicConfig(level=logging.getLevelName(opts.loglevel))
+    logging.basicConfig(level=logging.getLevelName(opts.loglevel),
+                        filename=opts.logfile)
     try:
         # only 2.7+ (despite not documented this way)
         logging.captureWarnings(True)

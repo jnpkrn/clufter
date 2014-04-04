@@ -6,6 +6,8 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
+from os.path import samefile
+from sys import stderr
 from textwrap import wrap
 
 from .command import commands, CommandAlias
@@ -123,6 +125,17 @@ class CommandManager(PluginManager):
                 return ec
 
             rootlog = logging.getLogger()
+            last_hdlr = rootlog.handlers.pop()
+            if isinstance(last_hdlr, logging.FileHandler if opts.logfile
+                                     else logging.StreamHandler) \
+              and (samefile(opts.logfile, last_hdlr.baseFilename)
+                   if opts.logfile else last_hdlr.stream is stderr):
+                hdlr = last_hdlr
+            else:
+                hdlr = logging.FileHandler(opts.logfile) if opts.logfile \
+                       else logging.StreamHandler()
+                hdlr.setFormatter(last_hdlr.formatter)
+            rootlog.addHandler(hdlr)
             rootlog.setLevel(logging.getLevelName(opts.loglevel))
 
             log.debug("Running command `{0}';  opts={1}, args={2}"
