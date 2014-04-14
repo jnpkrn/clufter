@@ -82,8 +82,15 @@ ccsflat2pcs = '''\
             <clufter:descent at="clusternodes"/>
             <resources>
 
-                <!-- fencing -->
+                <!--
+                    fencing/stonith configuration
+                  -->
+
+                <!-- device-wide parameters -> resource templates -->
                 <clufter:descent at="fencedevice"/>
+
+                <!-- per-node parameters -> resource primitives referencing
+                     templates; above-zero score to restore semantic priority -->
                 <xsl:for-each select="clusternodes/clusternode/fence/method/device">
                     <xsl:variable name="NodeName"
                                   select="../../../@name"/>
@@ -91,7 +98,7 @@ ccsflat2pcs = '''\
                                   select="concat('FENCEINST-', @name, '-NODE-', $NodeName)"/>
                     <primitive id="{$Prefix}"
                                template="{concat('FENCEDEV-TMPL-', @name)}">
-                        <instance_attributes id="{concat($Prefix, '-ATTRS')}">
+                        <instance_attributes id="{concat($Prefix, '-ATTRS')}" score="1">
                         <xsl:for-each select="@*[name() != 'name' and name() != 'port']">
                             <nvpair id="{concat($Prefix, '-ATTRS-', name())}"
                                     name="{name()}"
