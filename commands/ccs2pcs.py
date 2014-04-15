@@ -10,7 +10,8 @@ from ..command import Command, CommandAlias
 
 @Command.deco(('ccs2ccsflat',
                   ('ccs2ccs-pcmk'),
-                  ('ccsflat2pcs'),
+                  ('ccsflat2pcs',
+                      ('pcs2simplepcs')),
                   ('ccs2flatironxml',
                       ('xml2simpleconfig'))))
 def ccs2pcs_flatiron(cmd_ctxt,
@@ -41,7 +42,9 @@ def ccs2pcs_flatiron(cmd_ctxt,
         ('file', input),
         (
             ('file', ccs_pcmk),
-            ('file', cib),
+            (
+                ('file', cib),
+            ),
             (
                 ('file', coro),
             )
@@ -50,7 +53,8 @@ def ccs2pcs_flatiron(cmd_ctxt,
 
 
 @Command.deco(('ccs2ccsflat',
-                  ('ccsflat2pcs'),
+                  ('ccsflat2pcs',
+                      ('pcs2simplepcs')),
                   ('ccs2needlexml',
                       ('xml2simpleconfig'))))
 def ccs2pcs_needle(cmd_ctxt,
@@ -77,7 +81,9 @@ def ccs2pcs_needle(cmd_ctxt,
     return (
         ('file', input),
         (
-            ('file', cib),
+            (
+                ('file', cib),
+            ),
             (
                 ('file', coro),
             )
