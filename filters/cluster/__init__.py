@@ -97,7 +97,7 @@ ccsflat2pcs = '''\
                     <xsl:variable name="Prefix"
                                   select="concat('FENCEINST-', @name, '-NODE-', $NodeName)"/>
                     <primitive id="{$Prefix}"
-                               template="{concat('FENCEDEV-TMPL-', @name)}">
+                               template="{concat('FENCEDEV-', @name)}">
                         <instance_attributes id="{concat($Prefix, '-ATTRS')}" score="1">
                         <xsl:for-each select="@*[name() != 'name' and name() != 'port']">
                             <nvpair id="{concat($Prefix, '-ATTRS-', name())}"
