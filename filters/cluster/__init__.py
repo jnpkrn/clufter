@@ -83,14 +83,17 @@ flatccs2pcs = '''\
             <resources>
 
                 <!--
-                    fencing/stonith configuration
-                  -->
+                    FENCING/STONITH CONFIGURATION
+                 -->
 
-                <!-- device-wide parameters -> resource templates -->
+                <xsl:comment> fencing/stonith </xsl:comment>
+
+                <!-- device-wide (fencedev) parameters -> resource templates -->
                 <clufter:descent at="fencedevice"/>
 
-                <!-- per-node parameters -> resource primitives referencing
-                     templates; above-zero score to restore semantic priority -->
+                <!-- per-node (fenceinst) parameters -> resource primitives
+                                                        referencing templates;
+                     above-zero score to restore semantic priority -->
                 <xsl:for-each select="clusternodes/clusternode/fence/method/device">
                     <xsl:variable name="NodeName"
                                   select="../../../@name"/>
@@ -120,7 +123,12 @@ flatccs2pcs = '''\
                     </primitive>
                 </xsl:for-each>
 
-                <!-- resources (TBD) -->
+
+                <!--
+                    RESOURCES+ARRANGEMENT CONFIGURATION
+                 -->
+
+                <xsl:comment> resources+arrangement </xsl:comment>
 
             </resources>
         </configuration>
