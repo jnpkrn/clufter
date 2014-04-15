@@ -8,9 +8,9 @@ ccsflat2pcs = '''\
               class="stonith"
               type="{@agent}">
         <xsl:variable name='FenceDevName' select="@name"/>
-        <instance_attributes id="{concat('FENCEDEV-TMPL-', @name, '-ATTRS')}">
+        <instance_attributes id="{concat('FENCEDEV-', @name, '-ATTRS')}">
         <xsl:for-each select="@*[name() != 'agent' and name() != 'name']">
-            <nvpair id="{concat('FENCEDEV-TMPL-', $FenceDevName, '-ATTRS-', name())}"
+            <nvpair id="{concat('FENCEDEV-', $FenceDevName, '-ATTRS-', name())}"
                     name="{name()}"
                     value="{.}"/>
         </xsl:for-each>
