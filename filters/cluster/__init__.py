@@ -107,32 +107,49 @@ flatccs2pcs = '''\
                                                         referencing templates;
                      above-zero score to restore semantic priority -->
                 <xsl:for-each select="clusternodes/clusternode/fence/method/device">
+                    <xsl:variable name="Node"
+                                  select="../../.."/>
                     <xsl:variable name="NodeName"
-                                  select="../../../@name"/>
-                    <xsl:variable name="Prefix"
-                                  select="concat('FENCEINST-', @name, '-NODE-', $NodeName)"/>
-                    <primitive id="{$Prefix}"
-                               template="{concat('FENCEDEV-', @name)}">
-                        <instance_attributes id="{concat($Prefix, '-ATTRS')}" score="1">
-                        <xsl:for-each select="@*[name() != 'name' and name() != 'port']">
-                            <nvpair id="{concat($Prefix, '-ATTRS-', name())}"
-                                    name="{name()}"
-                                    value="{.}"/>
-                        </xsl:for-each>
-                        <xsl:choose>
-                        <xsl:when test="@port">
-                            <nvpair id="{concat($Prefix, '-ATTRS-', 'pcmk_host_map')}"
-                                    name="pcmk_host_map"
-                                    value="{concat($NodeName, ':', @port)}"/>
+                                  select="$Node/@name"/>
+                    <xsl:choose>
+                        <!-- prevent emitting duplicate primitives -->
+                        <xsl:when test="generate-id(
+                                            $Node/fence/method/device[
+                                                @name = current()/@name
+                                                and
+                                                @port = current()/@port
+                                            ]
+                                        ) = generate-id()">
+                            <xsl:variable name="Prefix">
+                                <xsl:value-of select="concat('FENCEINST-', @name, '-NODE-', $NodeName)"/>
+                                <xsl:if test="@port">
+                                    <xsl:value-of select="concat('-', @port)"/>
+                                </xsl:if>
+                            </xsl:variable>
+                            <primitive id="{$Prefix}"
+                                    template="{concat('FENCEDEV-', @name)}">
+                                <instance_attributes id="{concat($Prefix, '-ATTRS')}" score="1">
+                                <xsl:for-each select="@*[name() != 'name' and name() != 'port']">
+                                    <nvpair id="{concat($Prefix, '-ATTRS-', name())}"
+                                            name="{name()}"
+                                            value="{.}"/>
+                                </xsl:for-each>
+                                <xsl:choose>
+                                <xsl:when test="@port">
+                                    <nvpair id="{concat($Prefix, '-ATTRS-', 'pcmk_host_map')}"
+                                            name="pcmk_host_map"
+                                            value="{concat($NodeName, ':', @port)}"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <nvpair id="{concat($Prefix, '-ATTRS-', 'pcmk_host_list')}"
+                                            name="pcmk_host_list"
+                                            value="{$NodeName}"/>
+                                </xsl:otherwise>
+                                </xsl:choose>
+                                </instance_attributes>
+                            </primitive>
                         </xsl:when>
-                        <xsl:otherwise>
-                            <nvpair id="{concat($Prefix, '-ATTRS-', 'pcmk_host_list')}"
-                                    name="pcmk_host_list"
-                                    value="{$NodeName}"/>
-                        </xsl:otherwise>
-                        </xsl:choose>
-                        </instance_attributes>
-                    </primitive>
+                    </xsl:choose>
                 </xsl:for-each>
 
 
