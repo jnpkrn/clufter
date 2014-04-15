@@ -9,7 +9,7 @@ ccs2needlexml = '''\
     </nodelist>
 '''
 
-ccsflat2pcs = '''\
+flatccs2pcs = '''\
     <nodes>
         <clufter:descent at="clusternode"/>
     </nodes>

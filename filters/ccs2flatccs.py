@@ -2,7 +2,7 @@
 # Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
-"""ccs2ccsflat filter"""
+"""ccs2flatccs filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from os.path import pardir
@@ -17,8 +17,8 @@ log = logging.getLogger(__name__)
 CCS_FLATTEN = which('ccs_flatten', pardir) or ''
 
 
-@Filter.deco('ccs', 'ccsflat')
-def ccs2ccsflat(flt_ctxt, in_obj, verify=False):
+@Filter.deco('ccs', 'flatccs')
+def ccs2flatccs(flt_ctxt, in_obj, verify=False):
     self = flt_ctxt.ctxt_wrapped
     # XXX currently ccs_flatten does not handle stdin (tempfile.mkstemp?)
     if verify:

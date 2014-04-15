@@ -14,11 +14,11 @@ import _bootstrap  # known W402, required
 
 from clufter.command import Command, CommandError
 
-from clufter.filters.ccs2ccsflat import ccs2ccsflat
-from clufter.filters.ccsflat2pcs import ccsflat2pcs
+from clufter.filters.ccs2flatccs import ccs2flatccs
+from clufter.filters.flatccs2pcs import flatccs2pcs
 from clufter.filters.ccs2coro import ccs2needlexml
 
-from clufter.formats.ccs import ccs, ccsflat
+from clufter.formats.ccs import ccs, flatccs
 from clufter.formats.coro import coroxml
 from clufter.formats.pcs import pcs
 
@@ -30,16 +30,16 @@ class ChainResolve(unittest.TestCase):
     def testShapeAndProtocolMatch(self):
         from tempfile import mktemp
         filters = dict(
-            ccs2ccsflat=ccs2ccsflat(ccs, ccsflat),
-            ccsflat2pcs=ccsflat2pcs(ccsflat, pcs),
+            ccs2flatccs=ccs2flatccs(ccs, flatccs),
+            flatccs2pcs=flatccs2pcs(flatccs, pcs),
             ccs2coroxml=ccs2needlexml(ccs, coroxml),
         )
         testfile = join(dirname(__file__), 'empty.conf')
         testoutput = mktemp(prefix='out', suffix='.conf',
                             dir=join(dirname(__file__), 'tmp'))
 
-        @Command.deco(('ccs2ccsflat',
-                          ('ccsflat2pcs'),
+        @Command.deco(('ccs2flatccs',
+                          ('flatccs2pcs'),
                           ('ccs2coroxml')))
         def cmd_chain_match_01(cmd_ctxt,
                                input=testfile,
@@ -52,7 +52,7 @@ class ChainResolve(unittest.TestCase):
                     ('file', coro)
                 )
             )
-        @Command.deco(('ccs2ccsflat'))
+        @Command.deco(('ccs2flatccs'))
         def cmd_chain_match_02(cmd_ctxt,
                                input=testfile,
                                output=testoutput,
@@ -61,7 +61,7 @@ class ChainResolve(unittest.TestCase):
                 ('file', input),
                 ('file', output)
             )
-        @Command.deco(('ccs2ccsflat'))
+        @Command.deco(('ccs2flatccs'))
         def cmd_chain_nonmatch_01(cmd_ctxt,
                                   input=testfile,
                                   output=testoutput,
@@ -73,8 +73,8 @@ class ChainResolve(unittest.TestCase):
                     ('file', coro)
                 )
             )
-        @Command.deco(('ccs2ccsflat',
-                          ('ccsflat2pcs'),
+        @Command.deco(('ccs2flatccs',
+                          ('flatccs2pcs'),
                           ('ccs2coroxml'),
                           ('ccs2coroxml')))
         def cmd_chain_nonmatch_02(cmd_ctxt,
@@ -89,8 +89,8 @@ class ChainResolve(unittest.TestCase):
                 )
             )
         # malformed protocol name
-        @Command.deco(('ccs2ccsflat',
-                          ('ccsflat2pcs'),
+        @Command.deco(('ccs2flatccs',
+                          ('flatccs2pcs'),
                           ('ccs2coroxml')))
         def cmd_chain_nonmatch_03(cmd_ctxt,
                                   input=testfile,

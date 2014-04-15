@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Cluster configuration system (ccs) format"""
@@ -17,7 +17,7 @@ class ccs(XML):
     root = 'cluster'
 
 
-class ccsflat(ccs):
+class flatccs(ccs):
     """Cman-based cluster stack configuration (cluster.conf)
 
     Sometimes (ehm, exclusively by me) called Cluster Configuration System Flat.

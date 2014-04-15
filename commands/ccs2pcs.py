@@ -8,9 +8,9 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from ..command import Command, CommandAlias
 
 
-@Command.deco(('ccs2ccsflat',
+@Command.deco(('ccs2flatccs',
                   ('ccs2ccs-pcmk'),
-                  ('ccsflat2pcs',
+                  ('flatccs2pcs',
                       ('pcs2simplepcs')),
                   ('ccs2flatironxml',
                       ('xml2simpleconfig'))))
@@ -52,8 +52,8 @@ def ccs2pcs_flatiron(cmd_ctxt,
     )
 
 
-@Command.deco(('ccs2ccsflat',
-                  ('ccsflat2pcs',
+@Command.deco(('ccs2flatccs',
+                  ('flatccs2pcs',
                       ('pcs2simplepcs')),
                   ('ccs2needlexml',
                       ('xml2simpleconfig'))))
