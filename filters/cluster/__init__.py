@@ -4,6 +4,18 @@
 # Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+# XXX a bit dirty approach
+from os.path import basename, dirname, exists, join
+use = reduce(lambda a, b: dirname(a), xrange(3), __file__)
+myglobals = {}
+try:
+    execfile(join(use, '__init__.py'), myglobals)
+except IOError:
+    self_id = basename(use)
+else:
+    self_id = "{0} {1}".format(basename(use), myglobals['version'])
+
+
 # yield corosync v.1/flatiron configuration compatible with el6.{5,...}
 ccs2flatironxml = '''\
     <!-- cluster=current ~ corosync -->
@@ -66,7 +78,7 @@ flatccs2pcs = '''\
          epoch="1"
          num_updates="0"
 
-         update-client="clufter">
+         update-client="%(self_id)s">
         <configuration>
             <crm_config>
                 <!-- cluster_property_set id="cib-bootstrap-options">
@@ -134,7 +146,7 @@ flatccs2pcs = '''\
         </configuration>
         <status/>
     </cib>
-'''
+''' % dict(self_id=self_id)
 
 ccs2ccs_pcmk = '''\
     <clufter:descent-mix preserve-rest="true"/>
