@@ -104,9 +104,18 @@ ccsflat2pcs = '''\
                                     name="{name()}"
                                     value="{.}"/>
                         </xsl:for-each>
+                        <xsl:choose>
+                        <xsl:when test="@port">
+                            <nvpair id="{concat($Prefix, '-ATTRS-', 'pcmk_host_map')}"
+                                    name="pcmk_host_map"
+                                    value="{concat($NodeName, ':', @port)}"/>
+                        </xsl:when>
+                        <xsl:otherwise>
                             <nvpair id="{concat($Prefix, '-ATTRS-', 'pcmk_host_list')}"
-                                    name="{name()}"
+                                    name="pcmk_host_list"
                                     value="{$NodeName}"/>
+                        </xsl:otherwise>
+                        </xsl:choose>
                         </instance_attributes>
                     </primitive>
                 </xsl:for-each>
