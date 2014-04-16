@@ -33,14 +33,17 @@ def ccs_obfuscate(cmd_ctxt,
     Options:
         input   input CMAN-based cluster configuration file
         output  output file with obfuscated credentials/identifiers
-        skip    which pass to skip (none/ids/creds)
+        skip    pass to skip (none/ids/creds), neater than --noop
     """
     try:
         skip = ('creds', 'ids').index(skip.lower()) + 1
     except ValueError:
         skip = 0
-    cmd_ctxt.filter('ccs-obfuscate-credentials')['skip'] = skip == 1
-    cmd_ctxt.filter('ccs-obfuscate-identifiers')['skip'] = skip == 2
+    if skip == 1:
+        cmd_ctxt['filter_noop'].append('ccs-obfuscate-credentials')
+    if skip == 2:
+        cmd_ctxt['filter_noop'].append('ccs-obfuscate-identifiers')
+
     return (
         ('file', input),
         (

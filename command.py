@@ -165,13 +165,40 @@ class Command(object):
             self._fnc_defaults_varnames = func_defaults_varnames(fnc, skip=1)
         return self._fnc_defaults_varnames
 
-    @classmethod
-    def _figure_parser_desc_opts(cls, fnc_defaults, fnc_varnames):
+    def _figure_parser_opt_noop(self, options, shortopts):
+        # add option to NOOPize some filters (those with in_format=out_format)
+        choices = []
+        for f in apply_intercalate(self.filter_chain):
+            if issubclass(f.in_format.__class__, f.out_format.__class__):
+                choices.append(f.__class__.name)
+        optname_used = "noop"
+        short_aliases = shortopts.setdefault(optname_used[0], [])
+        assert optname_used not in \
+               (options[i][0][0] for i in short_aliases)
+        log.debug("choices: {0}".format(choices))
+        opt = dict(
+            action='append',
+            choices=choices,
+            default=[],
+            help="debug only: NOOPize filter (2+: repeat) [none out of %choices]"
+        )
+        options.append([["--" + optname_used], opt])
+
+    def _figure_parser_opt_unofficial(self, options, fnc_varnames):
+        # unofficial/unsupported ones
+        for var in fnc_varnames:
+            optname_used = cli_decor(var)
+            short_aliases = shortopts.setdefault(optname_used[0], [])
+            assert optname_used not in \
+                   (options[i][0][0] for i in short_aliases)
+            options.append([["--" + optname_used], dict(help=SUPPRESS_HELP)])
+
+    def _figure_parser_desc_opts(self, fnc_defaults, fnc_varnames):
         readopts, shortopts, options = False, {}, []
         description = []
         fnc_varnames = set(fnc_varnames)
 
-        for line in cls.__doc__.splitlines():
+        for line in self.__doc__.splitlines():
             line = line.lstrip()
             if readopts:
                 if not line:
@@ -181,13 +208,15 @@ class Command(object):
                 if not all((optname, optdesc)) or optname not in fnc_varnames:
                     log.debug("Bad option line: {0}".format(line))
                 else:
-                    log.debug("Command `{0}', found option `{1}'".format(
-                        cls.name, optname
+                    optname_used = cli_decor(optname)
+                    log.debug("Command `{0}', found option `{1}' ({2})".format(
+                        self.__class__.name, optname_used, optname
                     ))
                     fnc_varnames.remove(optname)
-                    short_aliases = shortopts.setdefault(optname[0], [])
-                    assert optname not in short_aliases
-                    short_aliases.append(len(options))
+                    short_aliases = shortopts.setdefault(optname_used[0], [])
+                    assert optname_used not in \
+                           (options[i][0][0] for i in short_aliases)
+                    short_aliases.append(len(options))  # as an index
                     opt = {}
                     opt['help'] = optdesc[0].strip()
                     if optname in fnc_defaults:  # default if known
@@ -200,7 +229,7 @@ class Command(object):
                         else:
                             opt['help'] += " [%default]"
                         opt['default'] = default
-                    options.append([["--" + cli_decor(optname)], opt])
+                    options.append([["--" + optname_used], opt])
             elif line.lower().startswith('options:'):
                 readopts = True
             else:
@@ -218,9 +247,8 @@ class Command(object):
                     break
                 options[alias][0].append(use)
 
-        # unofficial/unsupported ones
-        for var in fnc_varnames:
-            options.append([[var], dict(help=SUPPRESS_HELP)])
+        self._figure_parser_opt_noop(options, shortopts)
+        self._figure_parser_opt_unofficial(options, fnc_varnames)
 
         description = description[:-1] if not description[-1] else description
         description = '\n'.join(description)
@@ -342,7 +370,11 @@ class Command(object):
                 in_obj = flt.in_format.as_instance(*inputs)
             if not flt_ctxt['out'] or flt not in terminals:
                 if not flt_ctxt['out']:
-                    flt_ctxt['out'] = flt(in_obj, flt_ctxt)
+                    if flt.__class__.name in cmd_ctxt['filter_noop']:
+                        ret = in_obj
+                    else:
+                        ret = flt(in_obj, flt_ctxt)
+                    flt_ctxt['out'] = ret
                 if flt not in terminals or not filter_backtrack[flt]:
                     continue
             # output time!  (INFILTER terminal listed twice in io_chain)
@@ -381,6 +413,7 @@ class Command(object):
         cmd_ctxt = cmd_ctxt or CommandContext()
         cmd_ctxt.ensure_filters(apply_intercalate(self._filter_chain))
         cmd_ctxt['filter_chain_analysis'] = self.filter_chain_analysis
+        cmd_ctxt['filter_noop'] = getattr(opts, 'noop', [])
         io_driver = any2iter(self._fnc(cmd_ctxt, **kwargs))
         io_handler = (self._iochain_proceed, lambda c, ec=EC.EXIT_SUCCESS: ec)
         io_driver_map = izip_longest(io_driver, io_handler)

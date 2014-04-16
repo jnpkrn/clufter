@@ -9,11 +9,7 @@ from clufter.filter import XMLFilter
 
 
 def _ccs_obfuscate(flt_ctxt, in_obj):
-    if flt_ctxt['skip']:
-        res = in_obj('etree')
-    else:
-        res = flt_ctxt.proceed_xslt_filter(in_obj)
-    return ('etree', res)
+    return ('etree', flt_ctxt.proceed_xslt_filter(in_obj))
 
 
 @XMLFilter.deco('ccs', 'ccs')
