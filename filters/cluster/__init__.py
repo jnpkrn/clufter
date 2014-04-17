@@ -135,6 +135,8 @@ flatccs2pcs = '''\
                                             value="{.}"/>
                                 </xsl:for-each>
                                 <xsl:choose>
+                                <!-- both below lead to pcmk_host_check = static-list,
+                                     nothing more needed -->
                                 <xsl:when test="@port">
                                     <nvpair id="{concat($Prefix, '-ATTRS-', 'pcmk_host_map')}"
                                             name="pcmk_host_map"
