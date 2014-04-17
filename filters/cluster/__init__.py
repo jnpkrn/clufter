@@ -98,7 +98,7 @@ flatccs2pcs = '''\
                     FENCING/STONITH CONFIGURATION
                  -->
 
-                <xsl:comment> fencing/stonith </xsl:comment>
+                <xsl:comment> fencing/stonith (+ possibly topology below) </xsl:comment>
 
                 <!-- device-wide (fencedev) parameters -> resource templates -->
                 <clufter:descent at="fencedevice"/>
@@ -162,6 +162,42 @@ flatccs2pcs = '''\
                 <xsl:comment> resources+arrangement </xsl:comment>
 
             </resources>
+
+            <!--
+                FENCING TOPOLOGY
+             -->
+
+            <fencing-topology>
+            <xsl:for-each select="clusternodes/clusternode[
+                                      count(fence/method) &gt; 1
+                                      or
+                                      fence/method[
+                                          count(device) &gt; 1
+                                      ]
+                                  ]">
+                    <xsl:variable name="NodeName"
+                                  select="./@name"/>
+                    <xsl:for-each select="fence/method">
+                        <xsl:variable name="Method"
+                                      select="."/>
+                        <xsl:variable name="Index"
+                                      select="string(position())"/>
+                        <fencing-level id="{concat('FENCING-', $NodeName, '-', $Index, '-', @name)}"
+                                       target="{concat('NODE-', $NodeName)}"
+                                       index="{$Index}">
+                            <xsl:attribute name="devices">
+                                <xsl:for-each select="device">
+                                    <xsl:if test="position() != 1">
+                                        <xsl:value-of select="','"/>
+                                    </xsl:if>
+                                    <xsl:value-of select="@name"/>
+                                </xsl:for-each>
+                            </xsl:attribute>
+                        </fencing-level>
+                    </xsl:for-each>
+            </xsl:for-each>
+            </fencing-topology>
+
         </configuration>
         <status/>
     </cib>
