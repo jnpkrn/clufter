@@ -22,7 +22,7 @@
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include <string.h>
-#include <xmlconf.h>
+#include "xmlconf.h"
 
 static xmlDocPtr conf_doc = NULL;
 static const char *conffile = "/etc/cluster/cluster.conf";

@@ -24,15 +24,14 @@
 #include <libxml/xpath.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <list.h>
 #include <sys/wait.h>
-#include <resgroup.h>
 #include <libgen.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <reslist.h>
-#include <assert.h>
-#include <xmlconf.h>
+#include "list.h"
+#include "resgroup.h"
+#include "reslist.h"
+#include "xmlconf.h"
 
 /* XXX from resrules.c */
 int store_childtype(resource_child_t ** childp, char *name, int start,

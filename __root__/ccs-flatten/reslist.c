@@ -21,13 +21,12 @@
 #include <libxml/xpath.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <resgroup.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <list.h>
-#include <libgen.h>
-#include <reslist.h>
-#include <xmlconf.h>
+#include "list.h"
+#include "reslist.h"
+#include "resgroup.h"
+#include "xmlconf.h"
 
 void
 res_build_name(char *buf, size_t buflen, resource_t * res)

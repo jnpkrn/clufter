@@ -21,13 +21,13 @@
 #include <libxml/xpath.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <resgroup.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <list.h>
-#include <reslist.h>
-#include <xmlconf.h>
 #include <libgen.h>
+#include "list.h"
+#include "resgroup.h"
+#include "reslist.h"
+#include "xmlconf.h"
 
 #define shift() {++argv; --argc;}
 
