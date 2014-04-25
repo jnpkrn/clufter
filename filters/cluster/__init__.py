@@ -203,6 +203,42 @@ flatccs2pcs = '''\
     </cib>
 ''' % dict(self_id=self_id)
 
+ccs_revitalize = '''\
+    <clufter:descent-mix preserve-rest="true"/>
+
+    <!--
+        FENCING/STONITH CONFIGURATION
+        see also: fencedevices/fencedevice
+     -->
+
+    <xsl:template match="cluster/clusternodes/clusternode/fence/method/device
+                         |cluster/clusternodes/clusternode/unfence/device">
+        <xsl:variable name="FenceInst" select="."/>
+        <xsl:copy>
+            <xsl:for-each select="@*">
+                <xsl:choose>
+                    <!-- xvm: domain -> port -->
+                    <xsl:when test="name() = 'domain'
+                                    and
+                                    /cluster/fencedevices/fencedevice[
+                                        @name = $FenceInst/@name
+                                        and
+                                        @agent = 'fence_xvm'
+                                    ]">
+                        <xsl:attribute name='port'>
+                            <xsl:value-of select="."/>
+                        </xsl:attribute>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:copy/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each>
+            <xsl:apply-templates select="*"/>
+        </xsl:copy>
+    </xsl:template>
+'''
+
 ccs2ccs_pcmk = '''\
     <clufter:descent-mix preserve-rest="true"/>
 

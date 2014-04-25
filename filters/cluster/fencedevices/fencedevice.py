@@ -35,3 +35,18 @@ ccs_obfuscate_credentials = '''\
         <xsl:apply-templates/>
     </xsl:copy>
 '''
+
+ccs_revitalize = '''\
+    <!-- xvm: domain -> port -->
+    <xsl:template match="fencedevice[@agent = 'xvm']">
+        <xsl:copy>
+            <xsl:apply-templates select="@*"/>
+            <xsl:for-each select="@domain">
+                <xsl:attribute name="port">
+                    <xsl:value-of select="."/>
+                </xsl:attribute>
+            </xsl:for-each>
+            <xsl:apply-templates/>
+        </xsl:copy>
+    </xsl:template>
+'''
