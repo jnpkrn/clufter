@@ -5,7 +5,7 @@
 """ccs2flatccs filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from os.path import pardir
+from os.path import curdir
 from subprocess import PIPE
 import logging
 
@@ -14,7 +14,7 @@ from clufter.utils import which, OneoffWrappedStdinPopen
 
 log = logging.getLogger(__name__)
 # XXX
-CCS_FLATTEN = which('ccs_flatten', pardir) or ''
+CCS_FLATTEN = which('ccs_flatten', curdir) or ''
 
 
 @Filter.deco('ccs', 'flatccs')
