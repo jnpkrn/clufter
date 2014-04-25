@@ -21,13 +21,10 @@
 */
 #include <libxml/parser.h>
 #include <libxml/xmlmemory.h>
-#include <libxml/xpath.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <sys/wait.h>
 #include <libgen.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include "list.h"
 #include "resgroup.h"
 #include "reslist.h"
