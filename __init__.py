@@ -2,7 +2,7 @@
 version = '0.1'
 copyright = """\
 Copyright 2014 Red Hat, Inc.
-Licensed under GPLv2
+Licensed under GPLv2+
 """.rstrip()
 # XXX eventually there should be precise plugin authorship tracking
 author = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com> and plugin authors"

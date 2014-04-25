@@ -1,7 +1,7 @@
 #!/bin/sh
 # Copyright 2013 Red Hat, Inc.                                                
 # Part of clufter project                                                     
-# Licensed under GPLv2 (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+# Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
 # Specific tests can be specified as per [1], e.g.:
 #    tests.filter.XMLTraverse.testXSLTTemplate
