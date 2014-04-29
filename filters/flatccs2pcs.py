@@ -8,6 +8,8 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from clufter.filter import XMLFilter
 
 
-@XMLFilter.deco('flatccs', 'pcs')
+@XMLFilter.deco('ccs', 'pcs')
 def flatccs2pcs(flt_ctxt, in_obj):
+    # XXX temporary hack with plain ccs;
+    # check that it is indeed flatccs, by exploring flt_ctxt?
     return ('etree', flt_ctxt.proceed_xslt_filter(in_obj))
