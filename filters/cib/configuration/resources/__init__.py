@@ -40,10 +40,13 @@ pcs2simplepcs = '''\
         <xsl:choose>
             <!-- when we can actually do any kind of simplification/grouping,
                  i.e., when fencedev:fenceinst 1:1, or 1:N and no fenceinst
-                 specify instance parameter other than port (if any) -->
+                 specify instance parameter other than port (if any)
+                 or no instance attributes specified per fencedev -->
             <xsl:when test="count($Primitives) = 1
                             or
-                            count($Primitives) = count($GroupablePrimitives)">
+                            count($Primitives) = count($GroupablePrimitives)
+                            or
+                            count($Template/instance_attributes/*) = 0">
                 <xsl:copy>
                     <xsl:copy-of select="$Template/@*"/>
                     <xsl:for-each select="($Primitives|$Template)/*">
