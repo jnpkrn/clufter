@@ -112,12 +112,16 @@ flatccs2pcs = '''\
                     <xsl:variable name="NodeName"
                                   select="$Node/@name"/>
                     <xsl:choose>
-                        <!-- prevent emitting duplicate primitives -->
+                        <!-- prevent emitting duplicate (id) primitives -->
                         <xsl:when test="generate-id(
                                             $Node/fence/method/device[
                                                 @name = current()/@name
                                                 and
-                                                @port = current()/@port
+                                                (
+                                                    not(@port)
+                                                    or
+                                                    @port = current()/@port
+                                                )
                                             ]
                                         ) = generate-id()">
                             <xsl:variable name="Prefix">
@@ -127,7 +131,7 @@ flatccs2pcs = '''\
                                 </xsl:if>
                             </xsl:variable>
                             <primitive id="{$Prefix}"
-                                    template="{concat('FENCEDEV-', @name)}">
+                                       template="{concat('FENCEDEV-', @name)}">
                                 <instance_attributes id="{concat($Prefix, '-ATTRS')}" score="1">
                                 <xsl:for-each select="@*[name() != 'name' and name() != 'port']">
                                     <nvpair id="{concat($Prefix, '-ATTRS-', name())}"
