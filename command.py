@@ -107,9 +107,12 @@ class Command(object):
                                      and len(filter_chain) > 1 \
                                      else (None, filter_chain)
         for i in filter_chain:
+            if not i:
+                continue
             i, i_tail = head_tail(i)
+            # bt denotes filters feeding this one
             bt = filter_backtrack.setdefault(i, {})
-            if new or not (bt or i_tail):
+            if new or not (bt or i_tail):  # preorder
                 # new for UPFILTERs, which are also terminals (input ones)
                 terminal_chain.append(i)
             if pass_through:
@@ -143,7 +146,11 @@ class Command(object):
                 # preparing a new list here for callee to fill) so it can
                 # move it to the right position afterwards
                 analysis_acc['terminal_chain'].append([])  # not terminal_chain
-                me((i, ) + i_tail, analysis_acc)
+                if not new:
+                    me((i, ) + ((head_tail(*i_tail), ), ), analysis_acc)
+                else:
+                    me((i, ) + i_tail, analysis_acc)
+                # postorder
                 terminal_chain.append(analysis_acc['terminal_chain'].pop())
             elif new:
                 # yes, terminal UPFILTER is tracked twice as terminal (I/O)
