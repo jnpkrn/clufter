@@ -221,13 +221,17 @@ ccs_revitalize = '''\
         <xsl:copy>
             <xsl:for-each select="@*">
                 <xsl:choose>
-                    <!-- xvm: domain -> port -->
+                    <!-- virt/xvm: domain -> port -->
                     <xsl:when test="name() = 'domain'
                                     and
                                     /cluster/fencedevices/fencedevice[
                                         @name = $FenceInst/@name
                                         and
-                                        @agent = 'fence_xvm'
+                                        (
+                                            @agent = 'fence_virt'
+                                            or
+                                            @agent = 'fence_xvm'
+                                        )
                                     ]">
                         <xsl:attribute name='port'>
                             <xsl:value-of select="."/>
