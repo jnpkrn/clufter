@@ -1,0 +1,120 @@
+<?xml version="1.0" ?>
+<resource-agent name="oracledb" version="rgmanager 2.0">
+    <version>1.0</version>
+
+    <longdesc lang="en">
+	Oracle 10g/11g Failover Instance
+    </longdesc>
+    <shortdesc lang="en">
+	Oracle 10g/11g Failover Instance
+    </shortdesc>
+
+    <parameters>
+        <parameter name="name" primary="1">
+	    <longdesc lang="en">
+		Instance name (SID) of oracle instance
+	    </longdesc>
+            <shortdesc lang="en">
+		Oracle SID
+            </shortdesc>
+	    <content type="string"/>
+        </parameter>
+
+        <parameter name="listener_name" unique="1">
+	    <longdesc lang="en">
+		Oracle Listener Instance Name.  If you have multiple 
+		instances of Oracle running, it may be necessary to 
+		have multiple listeners on the same machine with
+		different names.
+	    </longdesc>
+            <shortdesc lang="en">
+		Oracle Listener Instance Name
+            </shortdesc>
+	    <content type="string"/>
+        </parameter>
+
+        <parameter name="user" required="1">
+	    <longdesc lang="en">
+		Oracle user name.  This is the user name of the Oracle
+		user which the Oracle AS instance runs as.
+	    </longdesc>
+            <shortdesc lang="en">
+		Oracle User Name
+            </shortdesc>
+	    <content type="string"/>
+        </parameter>
+
+        <parameter name="home" required="1">
+	    <longdesc lang="en">
+		This is the Oracle (application, not user) home directory.
+		This is configured when you install Oracle.
+	    </longdesc>
+            <shortdesc lang="en">
+		Oracle Home Directory
+            </shortdesc>
+	    <content type="string"/>
+        </parameter>
+
+        <parameter name="type" required="0">
+	    <longdesc lang="en">
+		This is the Oracle installation type:
+		base - Database Instance and Listener only
+		base-11g - Oracle11g Database Instance and Listener Only
+		base-em (or 10g) - Database, Listener, Enterprise Manager,
+				   and iSQL*Plus
+		base-em-11g - Database, Listener, Enterprise Manager dbconsole
+		ias (or 10g-ias) - Internet Application Server (Infrastructure)
+	    </longdesc>
+            <shortdesc lang="en">
+		Oracle Installation Type
+            </shortdesc>
+	    <content type="string"/>
+        </parameter>
+
+        <parameter name="vhost" required="0" unique="1">
+	    <longdesc lang="en">
+	        Virtual Hostname matching the installation hostname of
+		Oracle 10g.  Note that during the start/stop of an oracledb
+		resource, your hostname will temporarily be changed to
+		this hostname.  As such, it is recommended that oracledb
+		resources be instanced as part of an exclusive service only.
+	    </longdesc>
+            <shortdesc lang="en">
+		Virtual Hostname
+            </shortdesc>
+	    <content type="string"/>
+        </parameter>
+
+        <parameter name="tns_admin" required="0" unique="1">
+	    <longdesc lang="en">
+			Full path to the directory that contains the Oracle
+        listener tnsnames.ora configuration file.  The shell
+        variable TNS_ADMIN is set to the value provided.
+	    </longdesc>
+            <shortdesc lang="en">
+		Full path to the directory containing tnsnames.ora
+            </shortdesc>
+	    <content type="string"/>
+        </parameter>
+    </parameters>
+
+    <actions>
+        <action name="start" timeout="900"/>
+	<action name="stop" timeout="90"/>
+        <action name="recover" timeout="990"/>
+
+	<!-- Checks to see if it's mounted in the right place -->
+	<action name="status" timeout="10"/>
+	<action name="monitor" timeout="10"/>
+
+	<action name="status" depth="10" timeout="30" interval="30"/>
+	<action name="monitor" depth="10" timeout="30" interval="30"/>
+
+	<action name="meta-data" timeout="5"/>
+	<action name="validate-all" timeout="5"/>
+    </actions>
+
+    <special tag="rgmanager">
+	<attributes maxinstances="1"/>
+    </special>
+</resource-agent>

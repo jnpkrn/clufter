@@ -1,0 +1,128 @@
+<?xml version="1.0" ?>
+<!DOCTYPE resource-agent SYSTEM "ra-api-1-modified.dtd">
+<resource-agent version="rgmanager 2.0" name="ip">
+    <version>1.0</version>
+
+    <longdesc lang="en">
+        This is an IP address.  Both IPv4 and IPv6 addresses are supported,
+        as well as NIC link monitoring for each IP address.
+    </longdesc>
+    <shortdesc lang="en">
+        This is an IP address.
+    </shortdesc>
+
+    <parameters>
+        <parameter name="address" unique="1" primary="1">
+            <longdesc lang="en">
+                IPv4 or IPv6 address to use as a virtual IP
+                resource.  It may be followed by a slash and a decimal
+                number that encodes the network prefix length.
+            </longdesc>
+
+            <shortdesc lang="en">
+                IP Address
+            </shortdesc>
+
+	    <content type="string"/>
+        </parameter>
+
+        <parameter name="family">
+            <longdesc lang="en">
+                IPv4 or IPv6 address protocol family.
+            </longdesc>
+
+            <shortdesc lang="en">
+                Family
+            </shortdesc>
+
+            <!--
+            <val>auto</val>
+            <val>inet</val>
+            <val>inet6</val>
+            -->
+            <content type="string"/>
+        </parameter>
+
+        <parameter name="monitor_link">
+            <longdesc lang="en">
+                Enabling this causes the status check to fail if
+                the link on the NIC to which this IP address is
+                bound is not present.
+            </longdesc>
+            <shortdesc lang="en">
+                Monitor NIC Link
+            </shortdesc>
+            <content type="boolean" default="1"/>
+        </parameter>
+
+	<parameter name="nfslock" inherit="service%nfslock">
+	    <longdesc lang="en">
+	        If set and unmounting the file system fails, the node will
+		try to kill lockd and issue reclaims across all remaining
+		network interface cards.
+	    </longdesc>
+	    <shortdesc lang="en">
+	        Enable NFS lock workarounds
+	    </shortdesc>
+	    <content type="boolean"/>
+	</parameter>
+
+	<parameter name="sleeptime">
+	    <longdesc lang="en">
+		Amount of time to sleep after removing an IP address.
+		Value is specified in seconds. Default value is 10.
+	    </longdesc>
+	    <shortdesc lang="en">
+		Amount of time (seconds) to sleep.
+	    </shortdesc>
+	    <content type="string"/>
+	</parameter>
+
+	<parameter name="disable_rdisc">
+	    <longdesc lang="en">
+	        Disable updating of routing using RDISC protocol and
+	        preserve static routes.
+	    </longdesc>
+	    <shortdesc lang="en">
+	        Disable updating of routing using RDISC protocol
+	    </shortdesc>
+	    <content type="boolean"/>
+	</parameter>
+
+	<parameter name="prefer_interface">
+	    <longdesc lang="en">
+	        The network interface to which the IP address should be added. The interface must already be configured and active. This parameter should be used only when at least two active interfaces have IP addresses on the same subnet and it is desired to have the IP address added to a particular interface.
+	    </longdesc>
+	    <shortdesc lang="en">
+	        Network interface
+	    </shortdesc>
+	    <content type="string"/>
+	</parameter>
+    </parameters>
+
+    <actions>
+        <action name="start" timeout="20"/>
+        <action name="stop" timeout="20"/>
+	<!-- No recover action.  If the IP address is not useable, then
+	     resources may or may not depend on it.  If it's been 
+	     deconfigured, resources using it are in a bad state. -->
+
+	<!-- Checks to see if the IP is up and (optionally) the link is
+	     working -->
+        <action name="status" interval="20" timeout="10"/>
+        <action name="monitor" interval="20" timeout="10"/>
+
+	<!-- Checks to see if we can ping the IP address locally -->
+        <action name="status" depth="10" interval="60" timeout="20"/>
+        <action name="monitor" depth="10" interval="60" timeout="20"/>
+
+        <action name="meta-data" timeout="20"/>
+        <action name="validate-all" timeout="20"/>
+    </actions>
+
+    <special tag="rgmanager">
+	<attributes maxinstances="1"/>
+	<child type="nfsclient" forbid="1"/>
+	<child type="nfsexport" forbid="1"/>
+    </special>
+</resource-agent>

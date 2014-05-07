@@ -1,0 +1,81 @@
+<?xml version="1.0" ?>
+<!DOCTYPE resource-agent SYSTEM "ra-api-1-modified.dtd">
+<resource-agent name="nfsserver" version="rgmanager 2.0">
+    <version>1.0</version>
+
+    <longdesc lang="en">
+        This defines an NFS server resource.  The NFS server
+	resource is useful for exporting NFSv4 file systems
+	to clients.  Because of the way NFSv4 works, only
+	one NFSv4 resource may exist on a server at a
+	time.  Additionally, it is not possible to use
+	the nfsserver resource when also using local instances
+	of NFS on each cluster node.
+    </longdesc>
+
+    <shortdesc lang="en">
+        This defines an NFS server resource.
+    </shortdesc>
+
+    <parameters>
+        <parameter name="name" primary="1">
+            <longdesc lang="en">
+                Descriptive name for this server.  Generally, only
+                one server is ever defined per service.
+            </longdesc>
+            <shortdesc lang="en">
+                Name
+            </shortdesc>
+	    <content type="string"/>
+        </parameter>
+
+        <parameter name="path" inherit="mountpoint">
+            <longdesc lang="en">
+	        This is the path you intend to export.  Usually, this is
+		left blank, and the mountpoint of the parent file system
+		is used.  This path is passed to nfsclient resources as
+		the export path when exportfs is called.
+            </longdesc>
+            <shortdesc lang="en">
+	    	This is the path you intend to export.
+            </shortdesc>
+	    <content type="string"/>
+        </parameter>
+
+        <parameter name="nfspath">
+            <longdesc lang="en">
+	        This is the path containing shared NFS information which
+		is used for NFS recovery after a failover.  This
+		is relative to the export path, and defaults to
+		".clumanager/nfs".
+            </longdesc>
+            <shortdesc lang="en">
+	        This is the path containing shared NFS recovery
+		information, relative to the path parameter.
+            </shortdesc>
+	    <content type="string" default=".clumanager/nfs"/>
+        </parameter>
+
+    </parameters>
+
+    <actions>
+        <action name="start" timeout="5"/>
+	<action name="stop" timeout="5"/>
+	<action name="recover" timeout="5"/>
+
+	<action name="status" timeout="5" interval="30"/>
+	<action name="monitor" timeout="5" interval="30"/>
+
+	<action name="meta-data" timeout="5"/>
+	<action name="validate-all" timeout="30"/>
+    </actions>
+
+    <special tag="rgmanager">
+    	<attributes maxinstances="1"/>
+	<child type="nfsexport" forbid="1"/>
+	<child type="nfsserver" forbid="1"/>
+	<child type="nfsclient" start="1" stop="2"/>
+	<child type="ip" start="2" stop="1"/>
+    </special>
+
+</resource-agent>
