@@ -3,11 +3,12 @@
 TARGET  = ccs_flatten
 OBJS    = flatten.o reslist.o resrules.o restree.o xmlconf.o
 CFLAGS  += -Wall
-#CFLAGS  += -g -ggdb
+ifdef DEBUG
+	CFLAGS  += -g -ggdb
+endif
 
 RAWMETADATA_EXT = metadata
 RA_DIR          ?= /usr/share/cluster
-
 ifneq (nocman,0)
 	CFLAGS  += -DRAWMETADATA_EXT=\"${RAWMETADATA_EXT}\"
 endif
