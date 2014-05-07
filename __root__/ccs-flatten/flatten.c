@@ -108,7 +108,7 @@ replace_resource(xmlNodePtr rm, char *restype, char *primattr, char *ident, xmlN
 }
 
 static int
-flatten(int argc, char **argv, xmlDocPtr * doc)
+flatten(int argc, char **argv)
 {
     xmlDocPtr d = NULL;
     xmlNode *n = NULL, *rm = NULL, *new_rb = NULL;
@@ -142,7 +142,6 @@ flatten(int argc, char **argv, xmlDocPtr * doc)
 
     /* allow fallback to rawmetadata, but not the other way around */
     do {
-	fprintf(stderr, "%s\n", rawmetadata ? "raw":"noraw");
         load_resource_rules(agentpath, &rulelist, rawmetadata);
         if (rulelist)
             break;
@@ -200,11 +199,6 @@ flatten(int argc, char **argv, xmlDocPtr * doc)
         fclose(f);
 
   out:
-    if (ret < 0) {
-        xmlFreeDoc(d);
-    } else {
-        *doc = d;
-    }
     conf_close();
     destroy_resource_tree(&tree);
     destroy_resources(&reslist);
@@ -232,7 +226,6 @@ main(int argc, char **argv)
 {
     char *arg0 = basename(argv[0]);
     int ret = 0;
-    xmlDocPtr doc = NULL;
 
     if (argc < 2) {
         usage(arg0, 1);
@@ -247,10 +240,8 @@ main(int argc, char **argv)
     xmlKeepBlanksDefault(0);
 
     shift();
-    ret = flatten(argc, argv, &doc);
+    ret = flatten(argc, argv);
 
-    //if (doc)
-    //xmlFreeDoc(doc);
     xmlCleanupParser();
     return ret;
 }

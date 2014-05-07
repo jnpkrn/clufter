@@ -938,7 +938,7 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
         /* 1st cond: 8+ items symloop (if 8 <= SYMLOOP_MAX) or readlink fail */
         if (i >= 8 || !(dir = opendir(dirname(*path1))))
             return -1;
-	rpath = *path1;
+        rpath = *path1;
     }
 
     xmlInitParser();
@@ -966,6 +966,12 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
                 continue;
             }
         }
+
+#ifdef RAWMETADATA_EXT
+        /* when only raw metadata accepted */
+        if (rawmetadata && (!dot || strcmp(dot + 1, RAWMETADATA_EXT)))
+            continue;
+#endif
 
         snprintf(path, sizeof(path), "%s/%s", rpath, de->d_name);
 
