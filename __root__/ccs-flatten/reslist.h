@@ -158,7 +158,7 @@ int store_action(resource_act_t ** actsp, char *name, int depth, int timeout, in
 /*
    Load/kill resource rule sets
  */
-int load_resource_rules(const char *rpath, resource_rule_t ** rules);
+int load_resource_rules(const char *rpath, resource_rule_t ** rules, int rawmetadata);
 void destroy_resource_rules(resource_rule_t ** rules);
 
 /*

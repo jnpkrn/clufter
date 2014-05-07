@@ -1,5 +1,5 @@
 /*
-  Copyright Red Hat, Inc. 2004-2010
+  Copyright 2014 Red Hat, Inc.
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -27,6 +27,8 @@
 #include <ctype.h>
 #include <dirent.h>
 #include <libgen.h>
+#include <limits.h>
+#include <stddef.h>
 #include <sys/wait.h>
 #include "list.h"
 #include "resgroup.h"
@@ -794,10 +796,13 @@ read_resource_agent_metadata(char *filename)
 
    @param filename      File name to load rules from
    @param rules         Rule list to add new rules to
-   @return              0
+   @param rawmetadata   Flag whether to read "raw metadata"
+                        (ignored unless compiled with RAWMETADATA_EXT)
+   @return              0 or -1
  */
 static int
-load_resource_rulefile(char *filename, resource_rule_t ** rules)
+load_resource_rulefile(char *filename, resource_rule_t ** rules,
+                       int rawmetadata)
 {
     resource_rule_t *rr = NULL;
     xmlDocPtr doc = NULL;
@@ -806,9 +811,17 @@ load_resource_rulefile(char *filename, resource_rule_t ** rules)
     char *type;
     char base[256];
 
-    doc = read_resource_agent_metadata(filename);
-    if (!doc)
-        return 0;
+    if (!rawmetadata)
+        doc = read_resource_agent_metadata(filename);
+#ifdef RAWMETADATA_EXT
+    else
+        doc = xmlParseFile(filename);
+#endif
+
+    if (!doc) {
+        fprintf(stderr, "Error: metadata extraction: %s\n", filename);
+        return -1;
+    }
     ctx = xmlXPathNewContext(doc);
 
     do {
@@ -887,22 +900,46 @@ load_resource_rulefile(char *filename, resource_rule_t ** rules)
    directory.
 
    @param rules         Rule list to create/add to
+   @param rawmetadata   Flag whether to read "raw metadata"
+                        (ignored unless compiled with RAWMETADATA_EXT)
    @return              0 on success, -1 on failure.  Sucess does not
                         imply any rules have been found; only that no
                         errors were encountered.
   */
 int
-load_resource_rules(const char *rpath, resource_rule_t ** rules)
+load_resource_rules(const char *rpath, resource_rule_t ** rules,
+                    int rawmetadata)
 {
     DIR *dir;
     struct dirent *de;
-    char *fn, *dot;
-    char path[2048];
+    char *fn, *dot, path[2048];
+    typedef char pathT[PATH_MAX];
+    pathT pathbuf1 = "/proc/self/exe", pathbuf2 = "";
+    pathT *path1 = &pathbuf1, *path2 = &pathbuf2;
     struct stat st_buf;
+    int i;
 
     dir = opendir(rpath);
-    if (!dir)
-        return -1;
+    if (!dir) {
+        /* convenient fallback for local/test deployment */
+        for (i = 0; i < 8; i++) {
+            errno = 0;
+            if (readlink(*path1, *path2, sizeof(*path2)/sizeof(**path2))
+                == -1) {
+                if (errno != EINVAL)
+                    i = INT_MAX - errno;
+                break;
+            }
+            /* swap */
+            path1 = (pathT *) ((ptrdiff_t)path1 ^ (ptrdiff_t)path2);
+            path2 = (pathT *) ((ptrdiff_t)path2 ^ (ptrdiff_t)path1);
+            path1 = (pathT *) ((ptrdiff_t)path1 ^ (ptrdiff_t)path2);
+        }
+        /* 1st cond: 8+ items symloop (if 8 <= SYMLOOP_MAX) or readlink fail */
+        if (i >= 8 || !(dir = opendir(dirname(*path1))))
+            return -1;
+	rpath = *path1;
+    }
 
     xmlInitParser();
     while ((de = readdir(dir))) {
@@ -938,10 +975,9 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules)
         if (S_ISDIR(st_buf.st_mode))
             continue;
 
-        if (st_buf.st_mode & (S_IXUSR | S_IXOTH | S_IXGRP)) {
-            //printf("Loading resource rule from %s\n", path);
-            load_resource_rulefile(path, rules);
-        }
+
+        if ((rawmetadata) ? 1 : st_buf.st_mode & (S_IXUSR | S_IXOTH | S_IXGRP))
+            load_resource_rulefile(path, rules, rawmetadata);
     }
 
     closedir(dir);

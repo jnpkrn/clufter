@@ -1,5 +1,5 @@
 /*
-  Copyright Red Hat, Inc. 2004-2006
+  Copyright 2014 Red Hat, Inc.
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -116,19 +116,21 @@ flatten(int argc, char **argv, xmlDocPtr * doc)
     resource_t *reslist = NULL, *curres;
     resource_node_t *tree = NULL, *rn;
     FILE *f = stdout;
-    int ret = 0;
+    int rawmetadata = 0, ret = 0;
 
     conf_setconfig(argv[0]);
-    if (conf_open() < 0) {
-        xmlFree(new_rb);
+    if (conf_open() < 0)
         goto out;
-    }
 
     while (argc >= 2) {
         shift();
         if (!strcmp(argv[0], "-r")) {
             if (!new_rb)
                 new_rb = xmlNewNode(NULL, (xmlChar *) "rm");
+#ifdef RAWMETADATA_EXT
+        } else if (!strcmp(argv[0], "-m")) {
+            rawmetadata = 1;
+#endif
         } else {
             if (f == stdout)
                 f = fopen(argv[0], "w+");
@@ -138,11 +140,19 @@ flatten(int argc, char **argv, xmlDocPtr * doc)
     d = conf_get_doc();
     rm = get_rm_node(d);
 
-    load_resource_rules(agentpath, &rulelist);
+    /* allow fallback to rawmetadata, but not the other way around */
+    do {
+	fprintf(stderr, "%s\n", rawmetadata ? "raw":"noraw");
+        load_resource_rules(agentpath, &rulelist, rawmetadata);
+        if (rulelist)
+            break;
+        rawmetadata = !rawmetadata;
+    } while (rawmetadata);
     if (!rulelist) {
         fprintf(stderr, "No resource rules available\n");
         goto out;
     }
+
     load_resources(&reslist, &rulelist);
     build_resource_tree(&tree, &rulelist, &reslist);
     if (!tree) {
@@ -206,7 +216,14 @@ flatten(int argc, char **argv, xmlDocPtr * doc)
 static void
 usage(const char *arg0, int ret)
 {
-    fprintf(stderr, "usage: %s <input.conf> [output.conf] [-r]\n", arg0);
+#ifdef RAWMETADATA_EXT
+    fprintf(stderr, "usage: %s <input.conf> [-m] [-r] [output.conf] \n\n", arg0);
+    fprintf(stderr, "-m\tskip evaluation of RA executables, immediately use *.%s"
+                    " files\n", RAWMETADATA_EXT);
+#else
+    fprintf(stderr, "usage: %s <input.conf> [-r] [output.conf] \n\n", arg0);
+#endif
+    fprintf(stderr, "-r\t?\n");
     exit(ret);
 }
 
