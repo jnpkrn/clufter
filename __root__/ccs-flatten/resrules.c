@@ -856,11 +856,6 @@ load_resource_rulefile(char *filename, resource_rule_t ** rules,
         _get_rule_flag(doc, ctx, base, rr, "init_on_add", RF_INIT);
         _get_rule_flag(doc, ctx, base, rr, "destroy_on_delete", RF_DESTROY);
         rr->rr_agent = strdup(filename);
-#ifdef RAWMETADATA_EXT
-        if (rawmetadata)
-            /* strip off the extra metadata extension */
-            *strrchr(rr->rr_agent, '.') = '\0';
-#endif
 
         /*
            Second, add the children fields
@@ -985,6 +980,7 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
 
         if (S_ISDIR(st_buf.st_mode))
             continue;
+
 
         if ((rawmetadata) ? 1 : st_buf.st_mode & (S_IXUSR | S_IXOTH | S_IXGRP))
             load_resource_rulefile(path, rules, rawmetadata);
