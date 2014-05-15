@@ -165,6 +165,8 @@ flatccs2pcs = '''\
 
                 <xsl:comment> resources+arrangement </xsl:comment>
 
+                <clufter:descent at="rm"/>
+
             </resources>
 
             <!--

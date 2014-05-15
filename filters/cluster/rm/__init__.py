@@ -83,3 +83,31 @@ ccs_obfuscate_identifiers = '''\
         </xsl:attribute>
     </xsl:template>
 '''
+
+flatccs2pcs = '''\
+    <xsl:for-each select="*[not(contains(concat(
+                              '|failoverdomains',
+                              '|events',
+                              '|resources',
+                              '|resource-defaults',
+                              '|'), concat('|', name(), '|')))]">
+        <xsl:variable name="Prefix"
+                      select="concat('RESOURCE-', name(), '-',
+                                     @name, @address
+                              )"/>
+        <primitive class="ocf"
+                   provider="heartbeat"
+                   id="{$Prefix}">
+            <xsl:choose>
+
+                <!-- XXX -->
+
+                <xsl:otherwise>
+                    <xsl:message terminate="no">
+                        <value-of select="concat('unhandled resource: ', name())"/>
+                    </xsl:message>
+                </xsl:otherwise>
+            </xsl:choose>
+        </primitive>
+    </xsl:for-each>
+'''
