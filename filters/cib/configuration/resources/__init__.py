@@ -63,6 +63,9 @@ pcs2simplepcs = '''\
                             <xsl:when test="generate-id(..) = generate-id($Primitives)
                                             and name() = 'instance_attributes'">
                                 <xsl:copy>
+                                    <xsl:attribute name="id">
+                                        <xsl:value-of select="concat($Template/@id, '-ATTRS')"/>
+                                    </xsl:attribute>
                                     <xsl:copy-of select="$Template/*[
                                                              name() = name(current())
                                                          ]/*"/>
