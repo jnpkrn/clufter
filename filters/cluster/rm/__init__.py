@@ -100,7 +100,9 @@ flatccs2pcs = '''\
                    id="{$Prefix}">
             <xsl:choose>
 
-                <!-- XXX -->
+                <!-- the nested snippets should be guarded with
+                     xsl:when name="foo" -->
+                <clufter:descent-mix at="*"/>
 
                 <xsl:otherwise>
                     <xsl:message terminate="no">
