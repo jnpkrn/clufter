@@ -42,7 +42,13 @@ _TOP_LEVEL_XSL = (
     'template',
     'strip-space',
 )
-TOP_LEVEL_XSL = ["{{{0}}}{1}".format(XSL_NS, e) for e in _TOP_LEVEL_XSL]
+
+# requires context implying "weak, not a strong/standalone expression"
+_IMPLIED_TOP_LEVEL_XSL = (
+    'when',
+)
+TOP_LEVEL_XSL = ["{{{0}}}{1}".format(XSL_NS, e) for e in
+                 _TOP_LEVEL_XSL + _IMPLIED_TOP_LEVEL_XSL]
 
 
 class FilterError(ClufterError):
