@@ -1,0 +1,21 @@
+COMMON ID FORMATS WITHIN GENERATED CIB
+======================================
+
+Mostly for internal reference and consistency (sometimes
+also "blind trust", considered internal thing anyway)
+
+/cib/configuration/nodes:
+        NODE-${name}
+
+/cib/configuration/resources [fencing/stonith]:
+        FENCEDEV-${name}
+        FENCEINST-${name}
+        +
+        FENCEXXX-${name}-ATTRS
+        FENCEXXX-${name}-ATTRS-${attr}
+
+/cib/configuration/resources [non-stonith resources]:
+        RESOURCE-${name}
+        +
+        RESOURCE-${name}-ATTRS
+        RESOURCE-${name}-ATTRS-${attr}
