@@ -12,7 +12,8 @@ from os.path import abspath, dirname, join, splitext
 from contextlib import contextmanager
 from sys import modules
 
-from .utils import classproperty, cli_decor, hybridproperty
+from .utils import classproperty, hybridproperty
+from .utils_prog import cli_decor
 
 log = logging.getLogger(__name__)
 

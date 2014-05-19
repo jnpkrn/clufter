@@ -10,7 +10,7 @@ from subprocess import PIPE
 import logging
 
 from clufter.filter import Filter, FilterError
-from clufter.utils import which, OneoffWrappedStdinPopen
+from clufter.utils_prog import OneoffWrappedStdinPopen, which
 
 log = logging.getLogger(__name__)
 # XXX

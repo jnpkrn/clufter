@@ -18,7 +18,7 @@ from .completion import Completion
 from .error import EC
 from .format_manager import FormatManager
 from .filter_manager import FilterManager
-from .utils import make_options
+from .utils_prog import make_options
 
 
 def parser_callback_help(option, opt_str, value, parser):

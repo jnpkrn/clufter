@@ -6,19 +6,17 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
-from os.path import samefile
-from sys import stderr
 from textwrap import wrap
 
 from .command import commands, CommandAlias
 from .error import ClufterError, ClufterPlainError, \
                    EC
 from .plugin_registry import PluginManager
-from .utils import make_options
 from .utils_func import apply_preserving_depth, \
                         apply_aggregation_preserving_depth, \
                         apply_intercalate, \
                         bifilter
+from .utils_prog import make_options
 
 log = logging.getLogger(__name__)
 

@@ -20,11 +20,9 @@ from .plugin_registry import PluginRegistry
 from .utils import any2iter, \
                    args2sgpl, \
                    args2tuple, \
-                   cli_decor, \
                    func_defaults_varnames, \
                    head_tail, \
                    hybridproperty, \
-                   longopt_letters_reprio, \
                    selfaware, \
                    tuplist
 from .utils_func import apply_aggregation_preserving_depth, \
@@ -33,6 +31,8 @@ from .utils_func import apply_aggregation_preserving_depth, \
                         bifilter, \
                         tailshake, \
                         zip_empty
+from .utils_prog import cli_decor, \
+                        longopt_letters_reprio
 
 log = logging.getLogger(__name__)
 

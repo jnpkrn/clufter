@@ -17,10 +17,10 @@ from lxml import etree
 
 from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
-from .utils import cli_undecor, \
-                   head_tail, \
+from .utils import head_tail, \
                    hybridproperty, \
                    filtervarspop
+from .utils_prog import cli_undecor
 from .command_context import CommandContext
 
 log = logging.getLogger(__name__)
