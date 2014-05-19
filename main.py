@@ -36,8 +36,8 @@ opts_common = (
         default=logging.getLevelName(logging.WARNING),
         type="choice",
         choices=map(logging.getLevelName,
-                    xrange(logging.NOTSET, logging.CRITICAL+1,
-                           logging.DEBUG-logging.NOTSET)),
+                    xrange(logging.NOTSET, logging.CRITICAL + 1,
+                           logging.DEBUG - logging.NOTSET)),
         help="set loglevel to specified value [%default out of %choices]"
     )),
     (('--logfile', ), dict(
