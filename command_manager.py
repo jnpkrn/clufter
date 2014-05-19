@@ -16,7 +16,7 @@ from .utils_func import apply_preserving_depth, \
                         apply_aggregation_preserving_depth, \
                         apply_intercalate, \
                         bifilter
-from .utils_prog import make_options
+from .utils_prog import make_options, set_logging
 
 log = logging.getLogger(__name__)
 
@@ -122,20 +122,7 @@ class CommandManager(PluginManager):
                 print parser.format_customized_help(usage=usage)
                 return ec
 
-            rootlog = logging.getLogger()
-            last_hdlr = rootlog.handlers.pop()
-            if isinstance(last_hdlr, logging.FileHandler if opts.logfile
-                                     else logging.StreamHandler) \
-              and (samefile(opts.logfile, last_hdlr.baseFilename)
-                   if opts.logfile else last_hdlr.stream is stderr):
-                hdlr = last_hdlr
-            else:
-                hdlr = logging.FileHandler(opts.logfile) if opts.logfile \
-                       else logging.StreamHandler()
-                hdlr.setFormatter(last_hdlr.formatter)
-            rootlog.addHandler(hdlr)
-            rootlog.setLevel(logging.getLevelName(opts.loglevel))
-
+            set_logging(opts)
             log.debug("Running command `{0}';  opts={1}, args={2}"
                       .format(cmd, opts.__dict__, args))
             ec = command(opts, args)

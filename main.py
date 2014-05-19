@@ -18,7 +18,7 @@ from .completion import Completion
 from .error import EC
 from .format_manager import FormatManager
 from .filter_manager import FilterManager
-from .utils_prog import make_options
+from .utils_prog import make_options, set_logging
 
 
 def parser_callback_help(option, opt_str, value, parser):
@@ -157,14 +157,14 @@ def run(argv=None, *args):
             print '\n'.join((version_text(), '-- \nPython runtime:', version))
             return ec
 
-    # XXX what if not the first use?
-    logging.basicConfig(level=logging.getLevelName(opts.loglevel),
-                        filename=opts.logfile)
+    logging.basicConfig()
     try:
         # only 2.7+ (despite not documented this way)
         logging.captureWarnings(True)
     except AttributeError:
         pass
+    set_logging(opts)
+
     cm = CommandManager(FilterManager(FormatManager()))
     if not opts.help and (opts.list or opts.completion or not args):
         cmds = cm.pretty_cmds(ind=' ' * parser.formatter.indent_increment,

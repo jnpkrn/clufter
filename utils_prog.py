@@ -42,6 +42,23 @@ longopt_letters_reprio = \
 make_options = lambda opt_decl: [make_option(*a, **kw) for a, kw in opt_decl]
 
 
+def set_logging(opts):
+    """Apply logging options as per `opts' to the live logging configuration"""
+    rootlog = logging.getLogger()
+    last_hdlr = rootlog.handlers.pop()
+    if isinstance(last_hdlr, logging.FileHandler if opts.logfile
+                             else logging.StreamHandler) \
+      and (path.samefile(opts.logfile, last_hdlr.baseFilename)
+           if opts.logfile else last_hdlr.stream is stderr):
+        hdlr = last_hdlr
+    else:
+        hdlr = logging.FileHandler(opts.logfile) if opts.logfile \
+               else logging.StreamHandler()
+        hdlr.setFormatter(last_hdlr.formatter)
+    rootlog.addHandler(hdlr)
+    rootlog.setLevel(logging.getLevelName(opts.loglevel))
+
+
 class OneoffWrappedStdinPopen(object):
     """Singleton to watch for atmost one use of stdin in Popen context"""
     def __init__(self):
