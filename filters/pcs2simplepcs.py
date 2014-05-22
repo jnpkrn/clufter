@@ -10,4 +10,4 @@ from clufter.filter import XMLFilter
 
 @XMLFilter.deco('pcs', 'pcs')
 def pcs2simplepcs(flt_ctxt, in_obj):
-    return ('etree', flt_ctxt.proceed_xslt_filter(in_obj))
+    return ('etree', flt_ctxt.ctxt_proceed_xslt(in_obj))

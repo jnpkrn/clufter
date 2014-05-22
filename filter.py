@@ -513,7 +513,7 @@ class XMLFilter(Filter, MetaPlugin):
         return cls._traverse(in_obj, walk, **d)
 
     @classmethod
-    def proceed_xslt_filter(cls, in_obj, **kwargs):
+    def filter_proceed_xslt(cls, in_obj, **kwargs):
         """Push-button to be called from the filter itself (with walk_default)"""
         raw = kwargs.pop('raw', False)
         kwargs.setdefault('walk_default_first',
@@ -526,6 +526,14 @@ class XMLFilter(Filter, MetaPlugin):
             parser = etree.XMLParser(remove_blank_text=True)
             ret = etree.fromstring(etree.tostring(ret), parser)
         return ret
+
+    @classmethod
+    def ctxt_proceed_xslt(cls, ctxt, in_obj, **kwargs):
+        """The same as `filter_proceed_xslt`, context-aware"""
+        common = 'raw',
+        k = dict((i, ctxt[i]) for i in common if ctxt[i] is not None, **kwargs)
+        return cls.filter_proceed_xslt(in_obj, **k)
+
 
     @classmethod
     def get_template(cls, in_obj, root_dir=DEFAULT_ROOT_DIR, **kwargs):
