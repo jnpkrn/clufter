@@ -43,6 +43,18 @@ relationships:
       (consisting of atomic ones)
 
 
+Command context
+---------------
+
+This is a declared set of keys that should always be present and are
+intended for public use:
+
+- system:         lowercased system specifier (e.g., linux)
+- system_extra:   tuple of string values with details about the system
+                  (depending on ``system'', distro name, release, codename,
+                  etc.; e.g. ``('fedora', '20', 'heisenbug')'' for ``linux'')
+
+
 Low-level Terms
 ---------------
 

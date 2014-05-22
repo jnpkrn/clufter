@@ -10,6 +10,7 @@ from optparse import OptionParser, \
                      OptionGroup, \
                      IndentedHelpFormatter
 from os.path import basename
+from platform import system, linux_distribution
 from sys import version
 
 from . import version_text, description_text
@@ -19,6 +20,11 @@ from .error import EC
 from .format_manager import FormatManager
 from .filter_manager import FilterManager
 from .utils_prog import make_options, set_logging
+
+
+_system = system()
+_system_extra = linux_distribution(full_distribution_name=0) \
+                if _system == 'Linux' else ()
 
 
 def parser_callback_help(option, opt_str, value, parser):
@@ -46,13 +52,23 @@ opts_common = (
         default='',
         help="log to specified file instead of stderr"
     )),
+    # TODO other logging related stuff (file, ...)
     (('-d', '--debug'), dict(
         action='store_const',
         dest='loglevel',
         const='DEBUG',
         help="shortcut for --loglevel=DEBUG"
     )),
-    # TODO other logging related stuff (file, ...)
+    (('--sys', ), dict(
+        action='store',
+        default=_system,
+        help="override autodetected system [%default]"
+    )),
+    (('--dist', ), dict(
+        action='store',
+        default=','.join(_system_extra),
+        help="override autodetected distro if sys==Linux [%default]"
+    )),
 )
 
 opts_main = (
@@ -165,7 +181,7 @@ def run(argv=None, *args):
         pass
     set_logging(opts)
 
-    cm = CommandManager(FilterManager(FormatManager()))
+    cm = CommandManager(FilterManager(FormatManager()), opts.sys, opts.dist)
     if not opts.help and (opts.list or opts.completion or not args):
         cmds = cm.pretty_cmds(ind=' ' * parser.formatter.indent_increment,
                               linesep_width=2,

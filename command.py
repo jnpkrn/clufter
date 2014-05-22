@@ -9,7 +9,6 @@ import logging
 from itertools import izip_longest
 from optparse import SUPPRESS_HELP
 from os import fdopen
-from platform import system, linux_distribution
 
 from .command_context import CommandContext
 from .error import ClufterError, \
@@ -417,10 +416,13 @@ class Command(object):
                     break
             if opt is None and v not in kwargs:
                 raise CommandError(self, "missing ex-/implicit `{0}' value", v)
-        cmd_ctxt = cmd_ctxt or CommandContext()
+        cmd_ctxt = cmd_ctxt or CommandContext({
+            'filter_chain_analysis': self.filter_chain_analysis,
+            'filter_noop':           getattr(opts, 'noop', ()),
+            'system':                getattr(opts, 'sys', ''),
+            'system_extra':          getattr(opts, 'dist', '').split(','),
+        })
         cmd_ctxt.ensure_filters(apply_intercalate(self._filter_chain))
-        cmd_ctxt['filter_chain_analysis'] = self.filter_chain_analysis
-        cmd_ctxt['filter_noop'] = getattr(opts, 'noop', [])
         io_driver = any2iter(self._fnc(cmd_ctxt, **kwargs))
         io_handler = (self._iochain_proceed, lambda c, ec=EC.EXIT_SUCCESS: ec)
         io_driver_map = izip_longest(io_driver, io_handler)
@@ -539,10 +541,6 @@ class CommandAlias(object):
     """Way to define either static or dynamic command alias"""
     __metaclass__ = commands
 
-    _system = system()
-    _system_extra = linux_distribution(full_distribution_name=0) \
-                    if _system == 'Linux' else ()
-
     @classmethod
     def deco(outer_cls, decl):
         if not hasattr(decl, '__call__'):
@@ -552,9 +550,10 @@ class CommandAlias(object):
             fnc = decl
         log.debug("CommandAlias: deco for {0}".format(fnc))
 
-        def new(cls, cmds):
+        def new(cls, cmds, system='', system_extra=''):
             # XXX really pass mutable cmds dict?
-            use_obj = fnc(cmds, outer_cls._system, outer_cls._system_extra)
+            use_obj = fnc(cmds, system.lower(),
+                                tuple(system_extra.lower().split(',')))
             if not isinstance(use_obj, Command):
                 assert isinstance(use_obj, basestring)
                 use_obj = cmds[use_obj]

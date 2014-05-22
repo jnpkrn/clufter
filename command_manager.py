@@ -35,15 +35,15 @@ class CommandManager(PluginManager):
     """Class responsible for commands routing to filters or other actions"""
     _default_registry = commands
 
-    def _init_handle_plugins(self, commands, flt_mgr):
+    def _init_handle_plugins(self, commands, flt_mgr, *args):
         log.debug("Commands before resolving: {0}".format(commands))
-        self._commands = self._resolve(flt_mgr.filters, commands)
+        self._commands = self._resolve(flt_mgr.filters, commands, *args)
 
     def __iter__(self):
         return self._commands.itervalues()
 
     @staticmethod
-    def _resolve(filters, commands):
+    def _resolve(filters, commands, system='', system_extra=''):
         # name -> (cmd obj if not alias or resolvable name)
         aliases = []
         for cmd_name, cmd_cls in commands.items():
@@ -74,7 +74,7 @@ class CommandManager(PluginManager):
             except KeyError:
                 continue
             assert issubclass(alias_singleton, CommandAlias)
-            resolved = alias_singleton(commands)
+            resolved = alias_singleton(commands, system, system_extra)
             if resolved is None or resolved not in inverse_commands:
                 if resolved:
                     log.warning("Resolve at `{0}' alias: target unrecognized"
