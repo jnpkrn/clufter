@@ -79,8 +79,8 @@ class CommandContext(CommandContextBase):
                     ret = obj.__getattribute__(name)
                     if callable(ret):
                         ret = \
-                            lambda this, *args, **kwargs: \
-                                ret(this, this, *args, **kwargs)
+                            lambda *args, **kwargs: \
+                                obj.__getattribute__(name)(self, *args, **kwargs)
                 else:
                     try:
                         ret = super(wrapped, self).__getattribute__(name)
