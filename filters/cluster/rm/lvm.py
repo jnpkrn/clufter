@@ -4,14 +4,17 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+from clufter.utils_cib import ResourceSpec
+
 
 flatccs2pcs = '''\
     <!--
         LVM ~ lvm
      -->
     <xsl:when test="name() = 'lvm'">
-        <xsl:attribute name='type'>LVM</xsl:attribute>
-
+''' + \
+        ResourceSpec('ocf:heartbeat:LVM').xsl_attrs \
++ '''
         <!-- SHOW-STOPPERS -->
         <xsl:if test="@lv_name">
             <xsl:message terminate="true"

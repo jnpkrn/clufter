@@ -95,9 +95,7 @@ flatccs2pcs = '''\
                       select="concat('RESOURCE-', name(), '-',
                                      @name, @address
                               )"/>
-        <primitive class="ocf"
-                   provider="heartbeat"
-                   id="{$Prefix}">
+        <primitive id="{$Prefix}">
             <xsl:choose>
 
                 <!-- the nested snippets should be guarded with

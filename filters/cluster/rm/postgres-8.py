@@ -4,14 +4,17 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+from clufter.utils_cib import ResourceSpec
+
 
 flatccs2pcs = '''\
     <!--
         pgsql ~ postgres-8
      -->
     <xsl:when test="name() = 'postgres-8'">
-        <xsl:attribute name='type'>pgsql</xsl:attribute>
-
+''' + \
+        ResourceSpec('ocf:heartbeat:pgsql').xsl_attrs \
++ '''
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
             <!-- config ~ config_file -->

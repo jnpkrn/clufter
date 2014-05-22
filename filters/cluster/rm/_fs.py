@@ -4,10 +4,12 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-
 # XXX: normally, there would be fs.py containing this common implementation
 #      and {cluster,net}.py referring to it, but due to the way it is used
 #      in the parent, current approach seems better
+
+from clufter.utils_cib import ResourceSpec
+
 
 ccsflat2pcs = '''\
     <!--
@@ -39,8 +41,9 @@ ccsflat2pcs = '''\
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-        <xsl:attribute name='type'>Filesystem</xsl:attribute>
-
+''' + \
+        ResourceSpec('ocf:heartbeat:Filesystem').xsl_attrs \
++ '''
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
             <!-- device ~ device -->

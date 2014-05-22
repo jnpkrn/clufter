@@ -4,14 +4,17 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+from clufter.utils_cib import ResourceSpec
+
 
 flatccs2pcs = '''\
     <!--
         apache ~ apache
      -->
     <xsl:when test="name() = 'apache'">
-        <xsl:attribute name='type'>apache</xsl:attribute>
-
+''' + \
+        ResourceSpec('ocf:heartbeat:apache').xsl_attrs \
++ '''
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
             <!-- configfile ~ config_file (if present) -->

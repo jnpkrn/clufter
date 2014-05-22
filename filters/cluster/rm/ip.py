@@ -4,6 +4,8 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+from clufter.utils_cib import ResourceSpec
+
 
 flatccs2pcs = '''\
     <!--
@@ -12,8 +14,9 @@ flatccs2pcs = '''\
     <xsl:when test="name() = 'ip'">
         <xsl:variable name="IpAddress"
                       select="substring-before(@address, '/')"/>
-        <xsl:attribute name='type'>IPaddr2</xsl:attribute>
-
+''' + \
+        ResourceSpec('ocf:heartbeat:IPaddr2').xsl_attrs \
++ '''
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
             <!-- ip (+ cidr_netmask) ~ address -->
