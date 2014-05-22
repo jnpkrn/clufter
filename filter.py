@@ -19,7 +19,8 @@ from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
 from .utils import head_tail, \
                    hybridproperty, \
-                   filtervarspop
+                   filtervarspop, \
+                   squote
 from .utils_prog import cli_undecor
 from .command_context import CommandContext
 
@@ -32,15 +33,16 @@ XSL_NS = 'http://www.w3.org/1999/XSL/Transform'
 
 # XXX: consult standard/books
 _TOP_LEVEL_XSL = (
+    'attribute-set',
     'import',
     'include',
     'key',
     'namespace-alias',
-    'attribute-set',
-    'variable',
     'output',
-    'template',
+    'param',
     'strip-space',
+    'template',
+    'variable',
 )
 
 # requires context implying "weak, not a strong/standalone expression"
@@ -516,8 +518,17 @@ class XMLFilter(Filter, MetaPlugin):
     def filter_proceed_xslt(cls, in_obj, **kwargs):
         """Push-button to be called from the filter itself (with walk_default)"""
         raw = kwargs.pop('raw', False)
-        kwargs.setdefault('walk_default_first',
-                          '<clufter:descent-mix preserve-rest="true"/>')
+        def_first, system = '', kwargs.pop('system', '')
+        def_first += ('<xsl:param name="system" select="{0}"/>'
+                      .format(squote(system)))
+        if system:
+            # guarantee at least 3 extra params, so they can be relied upon
+            for i, val in loose_zip(kwargs.pop('system_extra', ()), range(1,4)):
+                val = val if val is not zip_empty else ''
+                def_first += ('<xsl:param name="system_{0}" select="{1}"/>'
+                              .format(squote(i), squote(val)))
+        def_first += '<clufter:descent-mix preserve-rest="true"/>'
+        kwargs.setdefault('walk_default_first', def_first)
         ret = cls.proceed_xslt(in_obj, **kwargs)
         if not raw:
             # <http://lxml.de/FAQ.html#
@@ -530,7 +541,7 @@ class XMLFilter(Filter, MetaPlugin):
     @classmethod
     def ctxt_proceed_xslt(cls, ctxt, in_obj, **kwargs):
         """The same as `filter_proceed_xslt`, context-aware"""
-        common = 'raw',
+        common = 'raw', 'system', 'system_extra'
         k = dict((i, ctxt[i]) for i in common if ctxt[i] is not None, **kwargs)
         return cls.filter_proceed_xslt(in_obj, **k)
 

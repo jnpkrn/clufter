@@ -54,6 +54,13 @@ intended for public use:
                   (depending on ``system'', distro name, release, codename,
                   etc.; e.g. ``('fedora', '20', 'heisenbug')'' for ``linux'')
 
+Furthermore, some parts of this implicit context are opened up to implicit
+XSLT processing of XMLFilter as parameters:
+
+- system       -> system
+- system_extra -> system_1, system_2, system_3 ...
+                  (3 are guaranteed to always exist)
+
 
 Low-level Terms
 ---------------
