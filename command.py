@@ -190,7 +190,7 @@ class Command(object):
         )
         options.append([["--" + optname_used], opt])
 
-    def _figure_parser_opt_unofficial(self, options, fnc_varnames):
+    def _figure_parser_opt_unofficial(self, options, shortopts, fnc_varnames):
         # unofficial/unsupported ones
         for var in fnc_varnames:
             optname_used = cli_decor(var)
@@ -254,7 +254,7 @@ class Command(object):
                 options[alias][0].append(use)
 
         self._figure_parser_opt_noop(options, shortopts)
-        self._figure_parser_opt_unofficial(options, fnc_varnames)
+        self._figure_parser_opt_unofficial(options, shortopts, fnc_varnames)
 
         description = description[:-1] if not description[-1] else description
         description = '\n'.join(description)
