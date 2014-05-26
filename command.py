@@ -397,25 +397,40 @@ class Command(object):
         ec = EC.EXIT_SUCCESS
         fnc_defaults, fnc_varnames = self._figure_fnc_defaults_varnames()
         kwargs = {}
-        if args:
-            if '::' in args[0]:
-                # desugaring, which is useful mainly if non-contiguous sequence
-                # of value-based options need to be specified
-                args = args[0].split('::') + args[1:]
-            args.reverse()  # we will be poping from the end
+        # desugaring, which is useful mainly if non-contiguous sequence
+        # of value-based options need to be specified
+        args = [None if not a else a for a in args[0].split('::')] + args[1:] \
+               if args else []
+        args.reverse()  # we will be poping from the end
         for v in fnc_varnames:
             default = fnc_defaults.get(v, None)
             opt = getattr(opts, v, default)
-            if opt != default:
+            if opt != default and type(opt) == type(default):
                 kwargs[v] = opt
                 continue
-            while args:
+            elif not isinstance(opt, (basestring, type(None))):
+                log.warning("`{0}' command: skipping attempt to pair argument"
+                            " to non-string `{1}' option (specify whole option"
+                            " instead)".format(self.__class__.name, v))
+                continue
+            try:
                 cur = args.pop()
-                if cur != '':
-                    kwargs[v] = cur
-                    break
-            if opt is None and v not in kwargs:
+                while cur == '':  # deliberately skip (implicit) empty string
+                    cur = args.pop()
+                if cur is not None:  # incl. case of explicit empty string
+                    kwargs[v] = cur.replace("''","") if len(cur) == 2 else cur
+                    continue
+                raise IndexError  # "required arg not provided" for sugar spec
+            except IndexError:
+                if opt is not None:
+                    continue
                 raise CommandError(self, "missing ex-/implicit `{0}' value", v)
+        if args:
+            log.warning("`{0}' command: unconsumed arguments: {1}"
+                        .format(self.__class__.name, ', '.join("`" + a + "'"
+                                                               for a in args)))
+        log.debug("Running command `{0}';  args={1}, kwargs={2}"
+                  .format(self.__class__.name, args, kwargs))
         cmd_ctxt = cmd_ctxt or CommandContext({
             'filter_chain_analysis': self.filter_chain_analysis,
             'filter_noop':           getattr(opts, 'noop', ()),
