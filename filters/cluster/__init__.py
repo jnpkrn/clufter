@@ -16,18 +16,6 @@ else:
     self_id = "{0} {1}".format(basename(use), myglobals['version'])
 
 
-# yield corosync v.1/flatiron configuration compatible with el6.{5,...}
-ccs2flatironxml = '''\
-    <!-- cluster=current ~ corosync -->
-    <corosync>
-
-        <!-- just include Pacemaker plugin, rest is kept in cluster.conf -->
-        <service name="pacemaker"
-                 ver="1"/>
-
-    </corosync>
-'''
-
 # yield corosync v.2/needle configuration compatible with el7
 # diff to ccs2flatironxml (note that "corosync" is used as pseudoroot):
 # - specify pseudoroot/totem/@cluster_name

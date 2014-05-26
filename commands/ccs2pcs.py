@@ -12,14 +12,11 @@ from ..command import Command, CommandAlias
                   ('ccs2ccs-pcmk'),
                   ('ccs-revitalize',
                       ('flatccs2pcs',
-                          ('pcs2simplepcs'))),
-                  ('ccs2flatironxml',
-                      ('xml2simpleconfig'))))
+                          ('pcs2simplepcs')))))
 def ccs2pcs_flatiron(cmd_ctxt,
                      input="/etc/cluster/cluster.conf",
                      ccs_pcmk="./cluster.conf",
                      cib="./cib.xml",
-                     coro="./corosync.conf",
                      nocheck=False,
                      raw=False):
     """CMAN -> Pacemaker-based cluster config. (corosync v1)
@@ -27,13 +24,12 @@ def ccs2pcs_flatiron(cmd_ctxt,
     More specifically, the output is suitable for Pacemaker integrated
     with Corosync ver. 1 (Flatiron) as present, e.g., in el6.{5, ..},
     and consists of Pacemaker pass-through CMAN configuration (~cluster.conf)
-    along with Pacemaker (~cib.xml) and corosync ones (~corosync.conf).
+    along with Pacemaker (~cib.xml) one.
 
     Options:
         input     input CMAN-based cluster configuration file
         ccs_pcmk  output Pacemaker pass-through CMAN configuration
         cib       output Pacemaker-based cluster configuration file
-        coro      output Corosync v1 configuration file
         nocheck   do not validate any step (even if self-checks present)
         raw       do not ensure pretty-printed output where applicable
     """
@@ -47,9 +43,6 @@ def ccs2pcs_flatiron(cmd_ctxt,
                 (
                     ('file', cib),
                 ),
-            ),
-            (
-                ('file', coro),
             )
         )
     )
