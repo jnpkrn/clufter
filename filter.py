@@ -289,7 +289,7 @@ class XMLFilter(Filter, MetaPlugin):
             return None
 
     @classmethod
-    def proceed_xslt(cls, in_obj, **kwargs):
+    def proceed_xslt(cls, in_obj, xslt_atom_hook=lambda ret, err: ret, **kws):
         """Apply iteratively XSLT snippets as per the schema tree (walk)
 
         You should likely use `proceed_xslt_filter` wrapper instead.
@@ -299,7 +299,7 @@ class XMLFilter(Filter, MetaPlugin):
         def proceed(transformer, elem, children):
             if not callable(transformer):
                 # expect (xslt, hooks)
-                return do_proceed(transformer, elem, children)
+                return xslt_atom_hook(*do_proceed(transformer, elem, children))
             return transformer(elem, children)
 
         def _merge_previous(snippet, hooks, elem, children):
@@ -354,10 +354,11 @@ class XMLFilter(Filter, MetaPlugin):
             # in bottom-up manner
 
             hooks, do_mix = xslt[1:]
+            error_log = ()
             # something already "mixed", shortcut, if first "mix" copy+clear
             if not len(xslt[0]):
                 assert do_mix
-                return xslt[0].getroottree()
+                return xslt[0].getroottree(), error_log
 
             snippet = deepcopy(xslt[0])  # for in-situ template manipulation
 
@@ -422,12 +423,13 @@ class XMLFilter(Filter, MetaPlugin):
                 #ret = elem.xslt(xslt_root)
                 xslt = etree.XSLT(xslt_root)
                 ret = xslt(elem)
+                error_log = xslt.error_log
                 # following seems to carefully preserve space (depending on
                 # xsl:output)
                 #ret = etree.fromstring(str(xslt(elem))).getroottree()
                 log.debug("With result {0}".format(etree.tostring(ret)))
                 #etree.cleanup_namespaces(ret)
-            return ret
+            return ret, error_log
 
         def postprocess(ret):
             #log.debug("Applying postprocess onto {0}".format(etree.tostring(ret)))
@@ -441,9 +443,9 @@ class XMLFilter(Filter, MetaPlugin):
             etree.cleanup_namespaces(ret)
             return ret
 
-        kwargs.update(preprocess=cls._xslt_preprocess, proceed=proceed,
-                      postprocess=postprocess, sparse=True)
-        return cls.proceed(in_obj, **kwargs)
+        kws.update(preprocess=cls._xslt_preprocess, proceed=proceed,
+                   postprocess=postprocess, sparse=True)
+        return cls.proceed(in_obj, **kws)
 
     # XXX missing descent-mix
     @classmethod
