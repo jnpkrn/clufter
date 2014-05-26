@@ -421,6 +421,7 @@ class Command(object):
             'filter_noop':           getattr(opts, 'noop', ()),
             'system':                getattr(opts, 'sys', ''),
             'system_extra':          getattr(opts, 'dist', '').split(','),
+            'quiet':                 getattr(opts, 'quiet', False),
         })
         cmd_ctxt.ensure_filters(apply_intercalate(self._filter_chain))
         io_driver = any2iter(self._fnc(cmd_ctxt, **kwargs))

@@ -536,6 +536,7 @@ class XMLFilter(Filter, MetaPlugin):
     @classmethod
     def filter_proceed_xslt(cls, in_obj, **kwargs):
         """Push-button to be called from the filter itself (with walk_default)"""
+        quiet = kwargs.pop('quiet', False)
         raw = kwargs.pop('raw', False)
         def_first, system = '', kwargs.pop('system', '')
         def_first += ('<xsl:param name="system" select="{0}"/>'
@@ -548,7 +549,7 @@ class XMLFilter(Filter, MetaPlugin):
                               .format(squote(i), squote(val)))
         def_first += '<clufter:descent-mix preserve-rest="true"/>'
         kwargs.setdefault('walk_default_first', def_first)
-        kwargs['xslt_atom_hook'] = cls._xslt_get_atom_hook()
+        kwargs['xslt_atom_hook'] = cls._xslt_get_atom_hook(quiet)
 
         ret = cls.proceed_xslt(in_obj, **kwargs)
         if not raw:

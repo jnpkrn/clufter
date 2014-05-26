@@ -36,6 +36,10 @@ def parser_callback_help(option, opt_str, value, parser):
     setattr(parser.values, 'help', val)
 
 opts_common = (
+    (('-q', '--quiet', ), dict(
+        action='store_true',
+        help="refrain from unnecesary messages (usually on stderr)"
+    )),
     (('--loglevel', ), dict(
         action='store',
         dest='loglevel',
