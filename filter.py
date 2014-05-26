@@ -6,8 +6,9 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
-from os.path import dirname, join
 from copy import deepcopy
+from os.path import dirname, join
+from sys import stderr
 try:
     from collections import OrderedDict
 except ImportError:
@@ -191,6 +192,22 @@ class XMLFilter(Filter, MetaPlugin):
         # XXX can be [] in case of not finding anything, should we emit error?
         #     addendum: sometimes comments (top-level only?) will cause this
         return postprocess(ret)
+
+    @classmethod
+    def _xslt_get_atom_hook(cls, quiet):
+        if quiet:
+            return (lambda ret, error_log:
+                        cls._xslt_atom_hook(ret, error_log, True))
+        else:
+            return cls._xslt_atom_hook
+
+    @staticmethod
+    def _xslt_atom_hook(ret, error_log, quiet=False):
+        # XXX could be even interactive
+        for entry in error_log:
+            if entry.type != 0 or not quiet:
+                print >>stderr, "XSLT: {0}".format(entry.message)
+        return ret
 
     @staticmethod
     def _xslt_preprocess(sym, name, parent=None):
@@ -531,6 +548,8 @@ class XMLFilter(Filter, MetaPlugin):
                               .format(squote(i), squote(val)))
         def_first += '<clufter:descent-mix preserve-rest="true"/>'
         kwargs.setdefault('walk_default_first', def_first)
+        kwargs['xslt_atom_hook'] = cls._xslt_get_atom_hook()
+
         ret = cls.proceed_xslt(in_obj, **kwargs)
         if not raw:
             # <http://lxml.de/FAQ.html#
