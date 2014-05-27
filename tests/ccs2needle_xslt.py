@@ -16,9 +16,10 @@ import _bootstrap  # known W402, required
 from clufter.formats.ccs import ccs
 from clufter.formats.coro import coroxml
 from clufter.filter import XMLFilter
+from clufter.utils_prog import dirname_x
 
-#WALK_DIR = join(dirname(dirname(__file__)), 'filters', 'cluster')
-WALK_DIR = join(dirname(dirname(__file__)), 'filters')
+#WALK_DIR = join(dirname_x(__file__, 2), 'filters', 'cluster')
+WALK_DIR = join(dirname_x(__file__, 2), 'filters')
 
 
 class Ccs2NeedleXsltViewOnly(unittest.TestCase):

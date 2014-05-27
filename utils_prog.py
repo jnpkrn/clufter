@@ -95,3 +95,5 @@ def which(name, *where):
             return check
     else:
         return None
+
+dirname_x = lambda p, c=1: reduce(lambda x, y: path.dirname(x), xrange(c), p)
