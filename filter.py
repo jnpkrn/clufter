@@ -20,15 +20,15 @@ from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
 from .utils import head_tail, hybridproperty, filtervarspop
 from .utils_prog import cli_undecor
-from .utils_xml import squote
+from .utils_xml import NAMESPACES, squote, xslt_identity
 from .command_context import CommandContext
 
 log = logging.getLogger(__name__)
 
 DEFAULT_ROOT_DIR = join(dirname(__file__), 'filters')
 
-CLUFTER_NS = 'http://people.redhat.com/jpokorny/ns/clufter'
-XSL_NS = 'http://www.w3.org/1999/XSL/Transform'
+CLUFTER_NS = NAMESPACES['clufter']
+XSL_NS = NAMESPACES['xsl']
 
 # XXX: consult standard/books
 _TOP_LEVEL_XSL = (
@@ -118,14 +118,7 @@ def tag_log(s, elem):
 
 
 class XMLFilter(Filter, MetaPlugin):
-
-    xslt_identity = '''\
-    <xsl:template match="{0}@*|{0}node()" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-        <xsl:copy>
-            <xsl:apply-templates select="@*|node()"/>
-       </xsl:copy>
-    </xsl:template>'''
-
+    """Base for XML/XSLT traversal filters"""
     @staticmethod
     def _traverse(in_fmt, walk, et=None,
                   walk_default_first=None, walk_default=None,
@@ -413,10 +406,10 @@ class XMLFilter(Filter, MetaPlugin):
             # append "identities" to preserve application
             # XXX needs clarification
             if do_mix == 1:
-                template = etree.XML(cls.xslt_identity.format(elem.tag + '/'))
+                template = etree.XML(xslt_identity.format(elem.tag + '/'))
             elif elem.getparent() is None:
             #elif elem.getparent() is None and not do_mix:
-                template = etree.XML(cls.xslt_identity.format(''))
+                template = etree.XML(xslt_identity.format(''))
                 xslt_root.append(template)
 
             #else:

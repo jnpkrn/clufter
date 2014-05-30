@@ -13,8 +13,18 @@ from .utils import selfaware
 
 
 NAMESPACES = {
-    'rng': 'http://relaxng.org/ns/structure/1.0'
+    'clufter': 'http://people.redhat.com/jpokorny/ns/clufter',
+    'rng':     'http://relaxng.org/ns/structure/1.0',
+    'xsl':     'http://www.w3.org/1999/XSL/Transform',
 }
+
+xslt_identity = '''\
+    <xsl:template match="{0}@*|{0}node()"
+                  xmlns:xsl="''' + NAMESPACES['xsl'] + '''">
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()"/>
+       </xsl:copy>
+    </xsl:template>'''
 
 
 class UtilsXmlError(ClufterPlainError):
