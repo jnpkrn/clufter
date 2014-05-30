@@ -1,0 +1,3650 @@
+<?xml version="1.0"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0">
+  <start>
+    <ref name="cib"/>
+  </start>
+  <define name="cib">
+    <element name="cib" ns="">
+      <group>
+        <attribute name="validate-with" ns="">
+          <choice>
+            <value type="token" datatypeLibrary="" ns="">none</value>
+            <value type="token" datatypeLibrary="" ns="">pacemaker-0.6</value>
+            <value type="token" datatypeLibrary="" ns="">transitional-0.6</value>
+            <value type="token" datatypeLibrary="" ns="">pacemaker-0.7</value>
+            <value type="token" datatypeLibrary="" ns="">pacemaker-1.0</value>
+            <value type="token" datatypeLibrary="" ns="">pacemaker-1.1</value>
+            <value type="token" datatypeLibrary="" ns="">pacemaker-1.2</value>
+          </choice>
+        </attribute>
+        <attribute name="admin_epoch" ns="">
+          <data type="nonNegativeInteger" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <attribute name="epoch" ns="">
+          <data type="nonNegativeInteger" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <attribute name="num_updates" ns="">
+          <data type="nonNegativeInteger" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="crm_feature_set" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="remote-tls-port" ns="">
+            <data type="nonNegativeInteger" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="remote-clear-port" ns="">
+            <data type="nonNegativeInteger" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="have-quorum" ns="">
+            <data type="boolean" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="dc-uuid" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="cib-last-written" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="no-quorum-panic" ns="">
+            <data type="boolean" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="update-origin" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="update-client" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="update-user" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <ref name="configuration"/>
+        <ref name="status"/>
+      </group>
+    </element>
+  </define>
+  <define name="configuration">
+    <element name="configuration" ns="">
+      <interleave>
+        <ref name="crm_config"/>
+        <optional>
+          <ref name="rsc_defaults"/>
+        </optional>
+        <optional>
+          <ref name="op_defaults"/>
+        </optional>
+        <ref name="nodes"/>
+        <ref name="resources"/>
+        <ref name="constraints"/>
+        <optional>
+          <ref name="acls"/>
+        </optional>
+        <optional>
+          <ref name="fencing-topology"/>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+  <define name="status">
+    <element name="status" ns="">
+      <oneOrMore>
+        <choice>
+          <attribute>
+            <anyName/>
+            <text/>
+          </attribute>
+          <ref name="_1"/>
+          <text/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="crm_config">
+    <element name="crm_config" ns="">
+      <zeroOrMore>
+        <ref name="cluster_property_set"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="rsc_defaults">
+    <element name="rsc_defaults" ns="">
+      <zeroOrMore>
+        <ref name="meta_attributes"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="op_defaults">
+    <element name="op_defaults" ns="">
+      <zeroOrMore>
+        <ref name="meta_attributes_2"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="nodes">
+    <element name="nodes" ns="">
+      <zeroOrMore>
+        <ref name="node"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="resources">
+    <element name="resources" ns="">
+      <zeroOrMore>
+        <choice>
+          <ref name="primitive"/>
+          <ref name="template"/>
+          <ref name="group"/>
+          <ref name="clone"/>
+          <ref name="master"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="constraints">
+    <element name="constraints" ns="">
+      <zeroOrMore>
+        <choice>
+          <ref name="rsc_location"/>
+          <ref name="rsc_colocation"/>
+          <ref name="rsc_order"/>
+          <ref name="rsc_ticket"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="acls">
+    <element name="acls" ns="">
+      <zeroOrMore>
+        <choice>
+          <ref name="acl_user"/>
+          <ref name="acl_role"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="fencing-topology">
+    <element name="fencing-topology" ns="">
+      <zeroOrMore>
+        <ref name="fencing-level"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="_1">
+    <element>
+      <anyName/>
+      <oneOrMore>
+        <choice>
+          <attribute>
+            <anyName/>
+            <text/>
+          </attribute>
+          <ref name="_1"/>
+          <text/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="cluster_property_set">
+    <element name="cluster_property_set" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score" ns="">
+                <choice>
+                  <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                  <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="meta_attributes">
+    <element name="meta_attributes" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule_2"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score" ns="">
+                <choice>
+                  <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                  <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="meta_attributes_2">
+    <element name="meta_attributes" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule_3"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score" ns="">
+                <choice>
+                  <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                  <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="node">
+    <element name="node" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <text/>
+        </attribute>
+        <attribute name="uname" ns="">
+          <text/>
+        </attribute>
+        <optional>
+          <attribute name="type" ns="">
+            <choice>
+              <value type="token" datatypeLibrary="" ns="">normal</value>
+              <value type="token" datatypeLibrary="" ns="">member</value>
+              <value type="token" datatypeLibrary="" ns="">ping</value>
+            </choice>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="description" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="score" ns="">
+            <choice>
+              <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+              <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+              <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+              <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+            </choice>
+          </attribute>
+        </optional>
+        <zeroOrMore>
+          <choice>
+            <ref name="instance_attributes"/>
+            <ref name="utilization"/>
+          </choice>
+        </zeroOrMore>
+      </group>
+    </element>
+  </define>
+  <define name="primitive">
+    <element name="primitive" ns="">
+      <interleave>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <group>
+            <choice>
+              <group>
+                <attribute name="class" ns="">
+                  <value type="token" datatypeLibrary="" ns="">ocf</value>
+                </attribute>
+                <attribute name="provider" ns="">
+                  <text/>
+                </attribute>
+              </group>
+              <attribute name="class" ns="">
+                <choice>
+                  <value type="token" datatypeLibrary="" ns="">lsb</value>
+                  <value type="token" datatypeLibrary="" ns="">heartbeat</value>
+                  <value type="token" datatypeLibrary="" ns="">stonith</value>
+                  <value type="token" datatypeLibrary="" ns="">upstart</value>
+                  <value type="token" datatypeLibrary="" ns="">service</value>
+                  <value type="token" datatypeLibrary="" ns="">systemd</value>
+                  <value type="token" datatypeLibrary="" ns="">nagios</value>
+                </choice>
+              </attribute>
+            </choice>
+            <attribute name="type" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <attribute name="template" ns="">
+            <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+        </choice>
+        <optional>
+          <attribute name="description" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <zeroOrMore>
+          <choice>
+            <ref name="meta_attributes_3"/>
+            <ref name="instance_attributes_2"/>
+          </choice>
+        </zeroOrMore>
+        <optional>
+          <ref name="operations"/>
+        </optional>
+        <zeroOrMore>
+          <ref name="utilization_2"/>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+  <define name="template">
+    <element name="template" ns="">
+      <interleave>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <group>
+            <attribute name="class" ns="">
+              <value type="token" datatypeLibrary="" ns="">ocf</value>
+            </attribute>
+            <attribute name="provider" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <attribute name="class" ns="">
+            <choice>
+              <value type="token" datatypeLibrary="" ns="">lsb</value>
+              <value type="token" datatypeLibrary="" ns="">heartbeat</value>
+              <value type="token" datatypeLibrary="" ns="">stonith</value>
+              <value type="token" datatypeLibrary="" ns="">upstart</value>
+            </choice>
+          </attribute>
+        </choice>
+        <attribute name="type" ns="">
+          <text/>
+        </attribute>
+        <optional>
+          <attribute name="description" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <zeroOrMore>
+          <choice>
+            <ref name="meta_attributes_3"/>
+            <ref name="instance_attributes_2"/>
+          </choice>
+        </zeroOrMore>
+        <optional>
+          <ref name="operations"/>
+        </optional>
+        <zeroOrMore>
+          <ref name="utilization_3"/>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+  <define name="group">
+    <element name="group" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="description" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <interleave>
+          <zeroOrMore>
+            <choice>
+              <ref name="meta_attributes_3"/>
+              <ref name="instance_attributes_2"/>
+            </choice>
+          </zeroOrMore>
+          <oneOrMore>
+            <ref name="primitive"/>
+          </oneOrMore>
+        </interleave>
+      </group>
+    </element>
+  </define>
+  <define name="clone">
+    <element name="clone" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="description" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <interleave>
+          <zeroOrMore>
+            <choice>
+              <ref name="meta_attributes_3"/>
+              <ref name="instance_attributes_2"/>
+            </choice>
+          </zeroOrMore>
+          <choice>
+            <ref name="primitive"/>
+            <ref name="group"/>
+          </choice>
+        </interleave>
+      </group>
+    </element>
+  </define>
+  <define name="master">
+    <element name="master" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="description" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <interleave>
+          <zeroOrMore>
+            <choice>
+              <ref name="meta_attributes_3"/>
+              <ref name="instance_attributes_2"/>
+            </choice>
+          </zeroOrMore>
+          <choice>
+            <ref name="primitive"/>
+            <ref name="group"/>
+          </choice>
+        </interleave>
+      </group>
+    </element>
+  </define>
+  <define name="rsc_location">
+    <element name="rsc_location" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <attribute name="rsc" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="role" ns="">
+            <choice>
+              <value type="token" datatypeLibrary="" ns="">Stopped</value>
+              <value type="token" datatypeLibrary="" ns="">Started</value>
+              <value type="token" datatypeLibrary="" ns="">Master</value>
+              <value type="token" datatypeLibrary="" ns="">Slave</value>
+            </choice>
+          </attribute>
+        </optional>
+        <choice>
+          <group>
+            <attribute name="score" ns="">
+              <choice>
+                <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="node" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <oneOrMore>
+            <ref name="rule_4"/>
+          </oneOrMore>
+        </choice>
+        <optional>
+          <ref name="lifetime"/>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="rsc_colocation">
+    <element name="rsc_colocation" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <choice>
+            <attribute name="score" ns="">
+              <choice>
+                <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute" ns="">
+              <text/>
+            </attribute>
+            <attribute name="score-attribute-mangle" ns="">
+              <text/>
+            </attribute>
+          </choice>
+        </optional>
+        <optional>
+          <ref name="lifetime"/>
+        </optional>
+        <choice>
+          <oneOrMore>
+            <ref name="resource_set"/>
+          </oneOrMore>
+          <group>
+            <attribute name="rsc" ns="">
+              <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+            </attribute>
+            <attribute name="with-rsc" ns="">
+              <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+            </attribute>
+            <optional>
+              <attribute name="node-attribute" ns="">
+                <text/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="rsc-role" ns="">
+                <choice>
+                  <value type="token" datatypeLibrary="" ns="">Stopped</value>
+                  <value type="token" datatypeLibrary="" ns="">Started</value>
+                  <value type="token" datatypeLibrary="" ns="">Master</value>
+                  <value type="token" datatypeLibrary="" ns="">Slave</value>
+                </choice>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="with-rsc-role" ns="">
+                <choice>
+                  <value type="token" datatypeLibrary="" ns="">Stopped</value>
+                  <value type="token" datatypeLibrary="" ns="">Started</value>
+                  <value type="token" datatypeLibrary="" ns="">Master</value>
+                  <value type="token" datatypeLibrary="" ns="">Slave</value>
+                </choice>
+              </attribute>
+            </optional>
+          </group>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="rsc_order">
+    <element name="rsc_order" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <ref name="lifetime"/>
+        </optional>
+        <optional>
+          <attribute name="symmetrical" ns="">
+            <data type="boolean" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+        </optional>
+        <optional>
+          <choice>
+            <attribute name="score" ns="">
+              <choice>
+                <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="kind" ns="">
+              <choice>
+                <value type="token" datatypeLibrary="" ns="">Optional</value>
+                <value type="token" datatypeLibrary="" ns="">Mandatory</value>
+                <value type="token" datatypeLibrary="" ns="">Serialize</value>
+              </choice>
+            </attribute>
+          </choice>
+        </optional>
+        <choice>
+          <oneOrMore>
+            <ref name="resource_set"/>
+          </oneOrMore>
+          <group>
+            <attribute name="first" ns="">
+              <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+            </attribute>
+            <attribute name="then" ns="">
+              <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+            </attribute>
+            <optional>
+              <attribute name="first-action" ns="">
+                <choice>
+                  <value type="token" datatypeLibrary="" ns="">start</value>
+                  <value type="token" datatypeLibrary="" ns="">promote</value>
+                  <value type="token" datatypeLibrary="" ns="">demote</value>
+                  <value type="token" datatypeLibrary="" ns="">stop</value>
+                </choice>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="then-action" ns="">
+                <choice>
+                  <value type="token" datatypeLibrary="" ns="">start</value>
+                  <value type="token" datatypeLibrary="" ns="">promote</value>
+                  <value type="token" datatypeLibrary="" ns="">demote</value>
+                  <value type="token" datatypeLibrary="" ns="">stop</value>
+                </choice>
+              </attribute>
+            </optional>
+          </group>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="rsc_ticket">
+    <element name="rsc_ticket" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <oneOrMore>
+            <ref name="resource_set"/>
+          </oneOrMore>
+          <group>
+            <attribute name="rsc" ns="">
+              <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+            </attribute>
+            <optional>
+              <attribute name="rsc-role" ns="">
+                <choice>
+                  <value type="token" datatypeLibrary="" ns="">Stopped</value>
+                  <value type="token" datatypeLibrary="" ns="">Started</value>
+                  <value type="token" datatypeLibrary="" ns="">Master</value>
+                  <value type="token" datatypeLibrary="" ns="">Slave</value>
+                </choice>
+              </attribute>
+            </optional>
+          </group>
+        </choice>
+        <attribute name="ticket" ns="">
+          <text/>
+        </attribute>
+        <optional>
+          <attribute name="loss-policy" ns="">
+            <choice>
+              <value type="token" datatypeLibrary="" ns="">stop</value>
+              <value type="token" datatypeLibrary="" ns="">demote</value>
+              <value type="token" datatypeLibrary="" ns="">fence</value>
+              <value type="token" datatypeLibrary="" ns="">freeze</value>
+            </choice>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="acl_user">
+    <element name="acl_user" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <zeroOrMore>
+            <ref name="role_ref"/>
+          </zeroOrMore>
+          <zeroOrMore>
+            <choice>
+              <ref name="read"/>
+              <ref name="write"/>
+              <ref name="deny"/>
+            </choice>
+          </zeroOrMore>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="acl_role">
+    <element name="acl_role" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <zeroOrMore>
+          <choice>
+            <ref name="read"/>
+            <ref name="write"/>
+            <ref name="deny"/>
+          </choice>
+        </zeroOrMore>
+      </group>
+    </element>
+  </define>
+  <define name="fencing-level">
+    <element name="fencing-level" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <attribute name="target" ns="">
+          <text/>
+        </attribute>
+        <attribute name="index" ns="">
+          <data type="positiveInteger" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <attribute name="devices" ns="">
+          <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+            <param name="pattern">([a-zA-Z0-9_\.\-]+)(,[a-zA-Z0-9_\.\-]+)*</param>
+          </data>
+        </attribute>
+      </group>
+    </element>
+  </define>
+  <define name="rule">
+    <element name="rule" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <choice>
+            <attribute name="score" ns="">
+              <choice>
+                <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute" ns="">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op" ns="">
+              <choice>
+                <value type="token" datatypeLibrary="" ns="">or</value>
+                <value type="token" datatypeLibrary="" ns="">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role" ns="">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression"/>
+              <ref name="rule"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="nvpair">
+    <element name="nvpair" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <attribute name="name" ns="">
+          <text/>
+        </attribute>
+        <optional>
+          <attribute name="value" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="rule_2">
+    <element name="rule" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <choice>
+            <attribute name="score" ns="">
+              <choice>
+                <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute" ns="">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op" ns="">
+              <choice>
+                <value type="token" datatypeLibrary="" ns="">or</value>
+                <value type="token" datatypeLibrary="" ns="">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role" ns="">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression_2"/>
+              <ref name="rule_2"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="rule_3">
+    <element name="rule" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <choice>
+            <attribute name="score" ns="">
+              <choice>
+                <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute" ns="">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op" ns="">
+              <choice>
+                <value type="token" datatypeLibrary="" ns="">or</value>
+                <value type="token" datatypeLibrary="" ns="">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role" ns="">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression_3"/>
+              <ref name="rule_3"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="instance_attributes">
+    <element name="instance_attributes" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule_5"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score" ns="">
+                <choice>
+                  <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                  <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="utilization">
+    <element name="utilization" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule_6"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score" ns="">
+                <choice>
+                  <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                  <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="meta_attributes_3">
+    <element name="meta_attributes" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule_7"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score" ns="">
+                <choice>
+                  <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                  <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="instance_attributes_2">
+    <element name="instance_attributes" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule_8"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score" ns="">
+                <choice>
+                  <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                  <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="operations">
+    <element name="operations" ns="">
+      <group>
+        <optional>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="id-ref" ns="">
+            <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+        </optional>
+        <zeroOrMore>
+          <ref name="op"/>
+        </zeroOrMore>
+      </group>
+    </element>
+  </define>
+  <define name="utilization_2">
+    <element name="utilization" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule_9"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score" ns="">
+                <choice>
+                  <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                  <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="utilization_3">
+    <element name="utilization" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule_10"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score" ns="">
+                <choice>
+                  <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                  <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                  <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="rule_4">
+    <element name="rule" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <choice>
+            <attribute name="score" ns="">
+              <choice>
+                <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute" ns="">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op" ns="">
+              <choice>
+                <value type="token" datatypeLibrary="" ns="">or</value>
+                <value type="token" datatypeLibrary="" ns="">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role" ns="">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression_4"/>
+              <ref name="rule_4"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="lifetime">
+    <element name="lifetime" ns="">
+      <oneOrMore>
+        <ref name="rule_11"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="resource_set">
+    <element name="resource_set" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <optional>
+            <attribute name="sequential" ns="">
+              <data type="boolean" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="require-all" ns="">
+              <data type="boolean" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="action" ns="">
+              <choice>
+                <value type="token" datatypeLibrary="" ns="">start</value>
+                <value type="token" datatypeLibrary="" ns="">promote</value>
+                <value type="token" datatypeLibrary="" ns="">demote</value>
+                <value type="token" datatypeLibrary="" ns="">stop</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role" ns="">
+              <choice>
+                <value type="token" datatypeLibrary="" ns="">Stopped</value>
+                <value type="token" datatypeLibrary="" ns="">Started</value>
+                <value type="token" datatypeLibrary="" ns="">Master</value>
+                <value type="token" datatypeLibrary="" ns="">Slave</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="score" ns="">
+              <choice>
+                <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+              </choice>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <ref name="resource_ref"/>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="role_ref">
+    <element name="role_ref" ns="">
+      <attribute name="id" ns="">
+        <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+      </attribute>
+    </element>
+  </define>
+  <define name="read">
+    <element name="read" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <attribute name="tag" ns="">
+            <text/>
+          </attribute>
+          <attribute name="ref" ns="">
+            <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <group>
+            <attribute name="tag" ns="">
+              <text/>
+            </attribute>
+            <attribute name="ref" ns="">
+              <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+            </attribute>
+          </group>
+          <attribute name="xpath" ns="">
+            <text/>
+          </attribute>
+        </choice>
+        <optional>
+          <attribute name="attribute" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="write">
+    <element name="write" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <attribute name="tag" ns="">
+            <text/>
+          </attribute>
+          <attribute name="ref" ns="">
+            <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <group>
+            <attribute name="tag" ns="">
+              <text/>
+            </attribute>
+            <attribute name="ref" ns="">
+              <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+            </attribute>
+          </group>
+          <attribute name="xpath" ns="">
+            <text/>
+          </attribute>
+        </choice>
+        <optional>
+          <attribute name="attribute" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="deny">
+    <element name="deny" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <attribute name="tag" ns="">
+            <text/>
+          </attribute>
+          <attribute name="ref" ns="">
+            <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <group>
+            <attribute name="tag" ns="">
+              <text/>
+            </attribute>
+            <attribute name="ref" ns="">
+              <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+            </attribute>
+          </group>
+          <attribute name="xpath" ns="">
+            <text/>
+          </attribute>
+        </choice>
+        <optional>
+          <attribute name="attribute" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="expression">
+    <element name="expression" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <attribute name="attribute" ns="">
+          <text/>
+        </attribute>
+        <attribute name="operation" ns="">
+          <choice>
+            <value type="token" datatypeLibrary="" ns="">lt</value>
+            <value type="token" datatypeLibrary="" ns="">gt</value>
+            <value type="token" datatypeLibrary="" ns="">lte</value>
+            <value type="token" datatypeLibrary="" ns="">gte</value>
+            <value type="token" datatypeLibrary="" ns="">eq</value>
+            <value type="token" datatypeLibrary="" ns="">ne</value>
+            <value type="token" datatypeLibrary="" ns="">defined</value>
+            <value type="token" datatypeLibrary="" ns="">not_defined</value>
+          </choice>
+        </attribute>
+        <optional>
+          <attribute name="value" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="type" ns="">
+            <choice>
+              <value type="token" datatypeLibrary="" ns="">string</value>
+              <value type="token" datatypeLibrary="" ns="">number</value>
+              <value type="token" datatypeLibrary="" ns="">version</value>
+            </choice>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="date_expression">
+    <element name="date_expression" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">in_range</value>
+            </attribute>
+            <choice>
+              <group>
+                <optional>
+                  <attribute name="start" ns="">
+                    <text/>
+                  </attribute>
+                </optional>
+                <attribute name="end" ns="">
+                  <text/>
+                </attribute>
+              </group>
+              <group>
+                <attribute name="start" ns="">
+                  <text/>
+                </attribute>
+                <ref name="duration"/>
+              </group>
+            </choice>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">gt</value>
+            </attribute>
+            <attribute name="start" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">lt</value>
+            </attribute>
+            <attribute name="end" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">date_spec</value>
+            </attribute>
+            <ref name="date_spec"/>
+          </group>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="date_expression_2">
+    <element name="date_expression" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">in_range</value>
+            </attribute>
+            <choice>
+              <group>
+                <optional>
+                  <attribute name="start" ns="">
+                    <text/>
+                  </attribute>
+                </optional>
+                <attribute name="end" ns="">
+                  <text/>
+                </attribute>
+              </group>
+              <group>
+                <attribute name="start" ns="">
+                  <text/>
+                </attribute>
+                <ref name="duration_2"/>
+              </group>
+            </choice>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">gt</value>
+            </attribute>
+            <attribute name="start" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">lt</value>
+            </attribute>
+            <attribute name="end" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">date_spec</value>
+            </attribute>
+            <ref name="date_spec_2"/>
+          </group>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="date_expression_3">
+    <element name="date_expression" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">in_range</value>
+            </attribute>
+            <choice>
+              <group>
+                <optional>
+                  <attribute name="start" ns="">
+                    <text/>
+                  </attribute>
+                </optional>
+                <attribute name="end" ns="">
+                  <text/>
+                </attribute>
+              </group>
+              <group>
+                <attribute name="start" ns="">
+                  <text/>
+                </attribute>
+                <ref name="duration_3"/>
+              </group>
+            </choice>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">gt</value>
+            </attribute>
+            <attribute name="start" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">lt</value>
+            </attribute>
+            <attribute name="end" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">date_spec</value>
+            </attribute>
+            <ref name="date_spec_3"/>
+          </group>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="rule_5">
+    <element name="rule" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <choice>
+            <attribute name="score" ns="">
+              <choice>
+                <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute" ns="">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op" ns="">
+              <choice>
+                <value type="token" datatypeLibrary="" ns="">or</value>
+                <value type="token" datatypeLibrary="" ns="">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role" ns="">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression_5"/>
+              <ref name="rule_5"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="rule_6">
+    <element name="rule" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <choice>
+            <attribute name="score" ns="">
+              <choice>
+                <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute" ns="">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op" ns="">
+              <choice>
+                <value type="token" datatypeLibrary="" ns="">or</value>
+                <value type="token" datatypeLibrary="" ns="">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role" ns="">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression_6"/>
+              <ref name="rule_6"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="rule_7">
+    <element name="rule" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <choice>
+            <attribute name="score" ns="">
+              <choice>
+                <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute" ns="">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op" ns="">
+              <choice>
+                <value type="token" datatypeLibrary="" ns="">or</value>
+                <value type="token" datatypeLibrary="" ns="">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role" ns="">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression_7"/>
+              <ref name="rule_7"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="rule_8">
+    <element name="rule" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <choice>
+            <attribute name="score" ns="">
+              <choice>
+                <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute" ns="">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op" ns="">
+              <choice>
+                <value type="token" datatypeLibrary="" ns="">or</value>
+                <value type="token" datatypeLibrary="" ns="">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role" ns="">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression_8"/>
+              <ref name="rule_8"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="op">
+    <element name="op" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <attribute name="name" ns="">
+          <text/>
+        </attribute>
+        <attribute name="interval" ns="">
+          <text/>
+        </attribute>
+        <optional>
+          <attribute name="description" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <choice>
+            <attribute name="start-delay" ns="">
+              <text/>
+            </attribute>
+            <attribute name="interval-origin" ns="">
+              <text/>
+            </attribute>
+          </choice>
+        </optional>
+        <optional>
+          <attribute name="timeout" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="enabled" ns="">
+            <data type="boolean" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="record-pending" ns="">
+            <data type="boolean" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="role" ns="">
+            <choice>
+              <value type="token" datatypeLibrary="" ns="">Stopped</value>
+              <value type="token" datatypeLibrary="" ns="">Started</value>
+              <value type="token" datatypeLibrary="" ns="">Slave</value>
+              <value type="token" datatypeLibrary="" ns="">Master</value>
+            </choice>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="requires" ns="">
+            <choice>
+              <value type="token" datatypeLibrary="" ns="">nothing</value>
+              <value type="token" datatypeLibrary="" ns="">quorum</value>
+              <value type="token" datatypeLibrary="" ns="">fencing</value>
+            </choice>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="on-fail" ns="">
+            <choice>
+              <value type="token" datatypeLibrary="" ns="">ignore</value>
+              <value type="token" datatypeLibrary="" ns="">block</value>
+              <value type="token" datatypeLibrary="" ns="">stop</value>
+              <value type="token" datatypeLibrary="" ns="">restart</value>
+              <value type="token" datatypeLibrary="" ns="">standby</value>
+              <value type="token" datatypeLibrary="" ns="">fence</value>
+              <value type="token" datatypeLibrary="" ns="">restart-container</value>
+            </choice>
+          </attribute>
+        </optional>
+        <zeroOrMore>
+          <choice>
+            <ref name="meta_attributes_3"/>
+            <ref name="instance_attributes_2"/>
+          </choice>
+        </zeroOrMore>
+      </group>
+    </element>
+  </define>
+  <define name="rule_9">
+    <element name="rule" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <choice>
+            <attribute name="score" ns="">
+              <choice>
+                <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute" ns="">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op" ns="">
+              <choice>
+                <value type="token" datatypeLibrary="" ns="">or</value>
+                <value type="token" datatypeLibrary="" ns="">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role" ns="">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression_9"/>
+              <ref name="rule_9"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="rule_10">
+    <element name="rule" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <choice>
+            <attribute name="score" ns="">
+              <choice>
+                <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute" ns="">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op" ns="">
+              <choice>
+                <value type="token" datatypeLibrary="" ns="">or</value>
+                <value type="token" datatypeLibrary="" ns="">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role" ns="">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression_10"/>
+              <ref name="rule_10"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="date_expression_4">
+    <element name="date_expression" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">in_range</value>
+            </attribute>
+            <choice>
+              <group>
+                <optional>
+                  <attribute name="start" ns="">
+                    <text/>
+                  </attribute>
+                </optional>
+                <attribute name="end" ns="">
+                  <text/>
+                </attribute>
+              </group>
+              <group>
+                <attribute name="start" ns="">
+                  <text/>
+                </attribute>
+                <ref name="duration_4"/>
+              </group>
+            </choice>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">gt</value>
+            </attribute>
+            <attribute name="start" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">lt</value>
+            </attribute>
+            <attribute name="end" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">date_spec</value>
+            </attribute>
+            <ref name="date_spec_4"/>
+          </group>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="rule_11">
+    <element name="rule" ns="">
+      <choice>
+        <attribute name="id-ref" ns="">
+          <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <group>
+          <attribute name="id" ns="">
+            <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+          </attribute>
+          <choice>
+            <attribute name="score" ns="">
+              <choice>
+                <data type="integer" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+                <value type="token" datatypeLibrary="" ns="">INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">+INFINITY</value>
+                <value type="token" datatypeLibrary="" ns="">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute" ns="">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op" ns="">
+              <choice>
+                <value type="token" datatypeLibrary="" ns="">or</value>
+                <value type="token" datatypeLibrary="" ns="">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role" ns="">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression_11"/>
+              <ref name="rule_11"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="resource_ref">
+    <element name="resource_ref" ns="">
+      <attribute name="id" ns="">
+        <data type="IDREF" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+      </attribute>
+    </element>
+  </define>
+  <define name="duration">
+    <element name="duration" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="date_spec">
+    <element name="date_spec" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="duration_2">
+    <element name="duration" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="date_spec_2">
+    <element name="date_spec" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="duration_3">
+    <element name="duration" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="date_spec_3">
+    <element name="date_spec" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="date_expression_5">
+    <element name="date_expression" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">in_range</value>
+            </attribute>
+            <choice>
+              <group>
+                <optional>
+                  <attribute name="start" ns="">
+                    <text/>
+                  </attribute>
+                </optional>
+                <attribute name="end" ns="">
+                  <text/>
+                </attribute>
+              </group>
+              <group>
+                <attribute name="start" ns="">
+                  <text/>
+                </attribute>
+                <ref name="duration_5"/>
+              </group>
+            </choice>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">gt</value>
+            </attribute>
+            <attribute name="start" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">lt</value>
+            </attribute>
+            <attribute name="end" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">date_spec</value>
+            </attribute>
+            <ref name="date_spec_5"/>
+          </group>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="date_expression_6">
+    <element name="date_expression" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">in_range</value>
+            </attribute>
+            <choice>
+              <group>
+                <optional>
+                  <attribute name="start" ns="">
+                    <text/>
+                  </attribute>
+                </optional>
+                <attribute name="end" ns="">
+                  <text/>
+                </attribute>
+              </group>
+              <group>
+                <attribute name="start" ns="">
+                  <text/>
+                </attribute>
+                <ref name="duration_6"/>
+              </group>
+            </choice>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">gt</value>
+            </attribute>
+            <attribute name="start" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">lt</value>
+            </attribute>
+            <attribute name="end" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">date_spec</value>
+            </attribute>
+            <ref name="date_spec_6"/>
+          </group>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="date_expression_7">
+    <element name="date_expression" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">in_range</value>
+            </attribute>
+            <choice>
+              <group>
+                <optional>
+                  <attribute name="start" ns="">
+                    <text/>
+                  </attribute>
+                </optional>
+                <attribute name="end" ns="">
+                  <text/>
+                </attribute>
+              </group>
+              <group>
+                <attribute name="start" ns="">
+                  <text/>
+                </attribute>
+                <ref name="duration_7"/>
+              </group>
+            </choice>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">gt</value>
+            </attribute>
+            <attribute name="start" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">lt</value>
+            </attribute>
+            <attribute name="end" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">date_spec</value>
+            </attribute>
+            <ref name="date_spec_7"/>
+          </group>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="date_expression_8">
+    <element name="date_expression" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">in_range</value>
+            </attribute>
+            <choice>
+              <group>
+                <optional>
+                  <attribute name="start" ns="">
+                    <text/>
+                  </attribute>
+                </optional>
+                <attribute name="end" ns="">
+                  <text/>
+                </attribute>
+              </group>
+              <group>
+                <attribute name="start" ns="">
+                  <text/>
+                </attribute>
+                <ref name="duration_8"/>
+              </group>
+            </choice>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">gt</value>
+            </attribute>
+            <attribute name="start" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">lt</value>
+            </attribute>
+            <attribute name="end" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">date_spec</value>
+            </attribute>
+            <ref name="date_spec_8"/>
+          </group>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="date_expression_9">
+    <element name="date_expression" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">in_range</value>
+            </attribute>
+            <choice>
+              <group>
+                <optional>
+                  <attribute name="start" ns="">
+                    <text/>
+                  </attribute>
+                </optional>
+                <attribute name="end" ns="">
+                  <text/>
+                </attribute>
+              </group>
+              <group>
+                <attribute name="start" ns="">
+                  <text/>
+                </attribute>
+                <ref name="duration_9"/>
+              </group>
+            </choice>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">gt</value>
+            </attribute>
+            <attribute name="start" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">lt</value>
+            </attribute>
+            <attribute name="end" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">date_spec</value>
+            </attribute>
+            <ref name="date_spec_9"/>
+          </group>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="date_expression_10">
+    <element name="date_expression" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">in_range</value>
+            </attribute>
+            <choice>
+              <group>
+                <optional>
+                  <attribute name="start" ns="">
+                    <text/>
+                  </attribute>
+                </optional>
+                <attribute name="end" ns="">
+                  <text/>
+                </attribute>
+              </group>
+              <group>
+                <attribute name="start" ns="">
+                  <text/>
+                </attribute>
+                <ref name="duration_10"/>
+              </group>
+            </choice>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">gt</value>
+            </attribute>
+            <attribute name="start" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">lt</value>
+            </attribute>
+            <attribute name="end" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">date_spec</value>
+            </attribute>
+            <ref name="date_spec_10"/>
+          </group>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="duration_4">
+    <element name="duration" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="date_spec_4">
+    <element name="date_spec" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="date_expression_11">
+    <element name="date_expression" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <choice>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">in_range</value>
+            </attribute>
+            <choice>
+              <group>
+                <optional>
+                  <attribute name="start" ns="">
+                    <text/>
+                  </attribute>
+                </optional>
+                <attribute name="end" ns="">
+                  <text/>
+                </attribute>
+              </group>
+              <group>
+                <attribute name="start" ns="">
+                  <text/>
+                </attribute>
+                <ref name="duration_11"/>
+              </group>
+            </choice>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">gt</value>
+            </attribute>
+            <attribute name="start" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">lt</value>
+            </attribute>
+            <attribute name="end" ns="">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation" ns="">
+              <value type="token" datatypeLibrary="" ns="">date_spec</value>
+            </attribute>
+            <ref name="date_spec_11"/>
+          </group>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="duration_5">
+    <element name="duration" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="date_spec_5">
+    <element name="date_spec" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="duration_6">
+    <element name="duration" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="date_spec_6">
+    <element name="date_spec" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="duration_7">
+    <element name="duration" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="date_spec_7">
+    <element name="date_spec" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="duration_8">
+    <element name="duration" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="date_spec_8">
+    <element name="date_spec" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="duration_9">
+    <element name="duration" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="date_spec_9">
+    <element name="date_spec" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="duration_10">
+    <element name="duration" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="date_spec_10">
+    <element name="date_spec" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="duration_11">
+    <element name="duration" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="date_spec_11">
+    <element name="date_spec" ns="">
+      <group>
+        <attribute name="id" ns="">
+          <data type="ID" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+        </attribute>
+        <optional>
+          <attribute name="hours" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears" ns="">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon" ns="">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+</grammar>

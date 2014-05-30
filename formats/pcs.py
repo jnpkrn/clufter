@@ -16,5 +16,5 @@ class pcs(XML):
     # XML
     root = 'cib'
     validator_specs = {
-        'etree': ''  # XXX no RNG schema handy yet
+        'etree': 'pacemaker-1.2.rng'
     }
