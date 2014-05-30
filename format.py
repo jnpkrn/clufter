@@ -19,7 +19,10 @@ from lxml import etree
 
 from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
-from .utils import args2tuple, classproperty, mutable, tuplist
+from .utils import arg2wrapped, args2tuple, args2unwrapped, \
+                   classproperty, \
+                   mutable, \
+                   tuplist
 
 log = getLogger(__name__)
 MAX_DEPTH = 1000
@@ -143,17 +146,13 @@ class Format(object):
             def deco_args(self, protocol, *args, **kwargs):
                 protect_safe = kwargs.pop('protect_safe', False)
                 try:
-                    produced = self._representations[protocol]
+                    # stored -> computed norm.: detuple if len == 1
+                    produced = args2unwrapped(*self._representations[protocol])
                 except KeyError:
                     produced = meth(self, protocol, *args, **kwargs)
                     # computed -> stored normalization
-                    if not isinstance(produced, tuple) or len(produced) == 1:
-                        produced = (produced, )
-                    self._representations[protocol] = produced
+                    self._representations[protocol] = *arg2wrapped(produced)
 
-                # stored -> computed normalization: detuple if len == 1
-                if isinstance(produced, tuple) and len(produced) == 1:
-                    produced = produced[0]
                 if protect and not protect_safe and not mutable(produced):
                     log.debug("{0}:{1}:Forced deepcopy of `{2}' instance"
                               .format(self.__class__.name, meth.__name__,
