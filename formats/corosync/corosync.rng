@@ -964,7 +964,7 @@ in *nodelist* section before deployment.</a:documentation>
 the configuration file.  Currently the only valid value for this
 option is '2'.</a:documentation>
           
-          <data type="boolean"/>
+          <data type="positiveInteger"/>
         </attribute>
         <optional>
           <attribute name="vsftype" a:defaultValue="ykd">
