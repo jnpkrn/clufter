@@ -11,7 +11,7 @@ import imp
 from copy import deepcopy
 from logging import getLogger
 from os import extsep, fdopen, walk
-from os.path import commonprefix, splitext, basename
+from os.path import basename, commonprefix, join, splitext
 from sys import modules, stdout
 from warnings import warn
 
@@ -35,15 +35,30 @@ class FormatError(ClufterError):
 class formats(PluginRegistry):
     """Format registry (to be used as a metaclass for formats)"""
     def __init__(cls, name, bases, attrs):
-        cls._protocols = {}
+        cls._protocols, cls._validators = {}, {}
         # protocols merge: top-down through inheritance
         for base in reversed(cls.__bases__):
-            if hasattr(base, '_protocols'):
-                cls._protocols.update(base._protocols)
+            cls._protocols.update(getattr(base, '_protocols', {}))
+            cls._validators.update(getattr(base, '_validators', {}))
         # updated with locally defined proto's (marked by `producing` wrapper)
+        specs = attrs.get('validator_specs', {})
+
         for attr, obj in attrs.iteritems():
-            if hasattr(obj, '_protocol'):
-                cls._protocols.update({obj._protocol: obj})
+            try:
+                protocol = obj._protocol
+                delattr(obj, '_protocol')
+                cls._protocols[protocol] = obj
+                cls._validators[protocol] = obj._validator, None
+                delattr(obj, '_validator')
+            except AttributeError:
+                pass
+
+        for protocol in cls._protocols:
+            newspec = specs.get(protocol, None)
+            validator, spec = cls._validators.get(protocol, (None, ''))
+            newspec = newspec if newspec is not None else spec
+            if validator:
+                cls._validators[protocol] = validator, newspec
 
 
 class Format(object):
@@ -94,6 +109,12 @@ class Format(object):
             protocol = self.native_protocol
 
         assert protocol in self._protocols
+        validator = self._validators.get(protocol, (None, ''))
+        if validator[0] and validator[1]:
+            ret, entries = validator[0](self, *args, spec=validator[1])
+            if entries:
+                raise FormatError(self,
+                                  "Validation: {0}".format(', '.join(entries)))
         prev = self._representations.setdefault(protocol, args)
         assert prev is args
 
@@ -105,9 +126,17 @@ class Format(object):
         assert protocol in self._protocols
         return self._protocols[protocol](self, protocol, *args, **kwargs)
 
-    def __init__(self, protocol, *args):
+    def __init__(self, protocol, *args, **kwargs):
         """Format constructor, i.e., object = concrete internal data"""
         self._representations = {}
+        validator_specs = kwargs.pop('validator_specs', {})
+        default = validator_specs.setdefault('', None)  # None ~ don't track
+        for p in self._validators.iterkeys():
+            spec = validator_specs.get(p, default)
+            if spec is None:
+                continue
+            self._validators[p] = (self._validators[p][0], spec)
+        # XXX self._dict = kwargs
         self.swallow(protocol, *args)
 
     @classmethod
@@ -138,7 +167,7 @@ class Format(object):
         return self._representations.copy()
 
     @staticmethod
-    def producing(protocol, chained=False, protect=False):
+    def producing(protocol, chained=False, protect=False, validator=None):
         """Decorator for externalizing method understood by the `Format` magic
 
         As a bonus: caching of representations."""
@@ -176,6 +205,8 @@ class Format(object):
 
             deco_args.__name__, deco_args.__doc__ = meth.__name__, meth.__doc__
             deco_args._protocol = protocol  # mark for later recognition
+            if validator:
+                deco_args._validator = validator
             return deco_args
         return deco_meth
 
