@@ -134,10 +134,6 @@ class Format(object):
         """Mapping of `protocol: initializing_data`"""
         return self._representations.copy()
 
-    ####
-
-    native_protocol = 'to-be-defined-in-subclasses'
-
     @staticmethod
     def producing(protocol, protect=False):
         """Decorator for externalizing method understood by the `Format` magic
@@ -169,6 +165,13 @@ class Format(object):
             deco_args._protocol = protocol  # mark for later recognition
             return deco_args
         return deco_meth
+
+    ####
+
+    @classproperty
+    def native_protocol(self):
+        """Native protocol"""
+        raise AttributeError
 
 
 class SimpleFormat(Format, MetaPlugin):
@@ -299,12 +302,7 @@ class XML(SimpleFormat):
     @classproperty
     def root(self):
         """Root tag of the XML document"""
-        raise ValueError  # NotImplemented
-
-    @classproperty
-    def rng_schema(self):
-        """Relax-ng schema for validation document"""
-        return None
+        raise AttributeError  # NotImplemented
 
     @staticmethod
     def _walk_schema_step_up(tree_stack):
