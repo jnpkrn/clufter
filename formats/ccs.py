@@ -15,6 +15,9 @@ class ccs(XML):
     """
     # XML
     root = 'cluster'
+    validator_specs = {
+        'etree': ''  # XXX no RNG schema handy yet
+    }
 
 
 class flatccs(ccs):

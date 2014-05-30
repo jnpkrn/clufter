@@ -15,3 +15,6 @@ class coroxml(XML):
     """
     # XMLFormat
     root = 'corosync'
+    validator_specs = {
+        'etree': ''  # XXX no RNG schema handy yet
+    }

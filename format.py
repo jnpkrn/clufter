@@ -9,9 +9,10 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import imp
 from copy import deepcopy
+from glob import glob
 from logging import getLogger
 from os import extsep, fdopen, walk
-from os.path import basename, commonprefix, join, splitext
+from os.path import basename, commonprefix, dirname, exists, join, sep, splitext
 from sys import modules, stdout
 from warnings import warn
 
@@ -23,6 +24,7 @@ from .utils import arg2wrapped, args2tuple, args2unwrapped, \
                    classproperty, \
                    mutable, \
                    tuplist
+from .utils_xml import rng_pivot
 
 log = getLogger(__name__)
 MAX_DEPTH = 1000
@@ -464,7 +466,55 @@ class XML(SimpleFormat):
     ###
 
     native_protocol = 'etree'
+    validator_specs = {
+        'etree': '*'  # grab whatever you'll find (with backtrack)
+    }
 
+    @classmethod
+    def etree_rng_validator(cls, et, spec=validator_specs['etree'], start=None):
+        # XXX holds its private cache under cls._validation_cache
+        assert spec
+        if not sep in spec:
+            spec = join(dirname(__file__), 'formats', cls.root, spec)
+        if any(filter(lambda c: c in spec, '?*')):
+            globbed = glob(spec)
+            spec = globbed or spec
+        elif exists(spec):
+            spec = args2tuple(spec)
+        if not tuplist(spec):
+            return et, ("Cannot validate, no matching spec: `{0}'"
+                        .format(spec), )
+        fatal = []
+        for s in reversed(sorted(spec)):
+            fatal[:] = []
+            try:
+                schema = cls._validation_cache.get(s, None)
+            except AttributeError:
+                setattr(cls, '_validation_cache', {})
+                schema = None
+            if schema is None:
+                try:
+                    cls._validation_cache[s] = schema = etree.RelaxNG(file=s)
+                except etree.RelaxNGError:
+                    log.warning("Problem processing RNG file `{0}'".format(s))
+                    continue
+            if start is not None:
+                schema = rng_pivot(deepcopy(schema), start)
+            try:
+                schema.assertValid(et)
+            except etree.DocumentInvalid:
+                log.warning("Invalid as per RNG file `{0}'".format(s))
+                for entry in schema.error_log:
+                    fatal.append(entry.message)
+            else:
+                break
+        else:
+            log.warning("None of the validation attempts succeeded with"
+                        " validator spec `{0}' ".format(spec))
+
+        return et, fatal
+
+    etree_validator = etree_rng_validator
 
     @SimpleFormat.producing('bytestring', chained=True)
     def get_bytestring(self, protocol):
@@ -472,6 +522,7 @@ class XML(SimpleFormat):
         return etree.tostring(self('etree', protect_safe=True),
                               pretty_print=True)
 
-    @SimpleFormat.producing('etree', protect=True)
+    @SimpleFormat.producing('etree', protect=True,
+                            validator=etree_validator.__func__)
     def get_etree(self, protocol):
         return etree.fromstring(self('bytestring')).getroottree()
