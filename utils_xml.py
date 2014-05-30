@@ -21,6 +21,11 @@ class UtilsXmlError(ClufterPlainError):
     pass
 
 
+def squote(s):
+    """Simple quote"""
+    return "'" + s + "'"
+
+
 @selfaware
 def rng_pivot(me, et, tag):
     """Given Relax NG grammar etree as `et`, change start tag (in situ!)"""

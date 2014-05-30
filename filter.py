@@ -18,11 +18,9 @@ from lxml import etree
 
 from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
-from .utils import head_tail, \
-                   hybridproperty, \
-                   filtervarspop, \
-                   squote
+from .utils import head_tail, hybridproperty, filtervarspop
 from .utils_prog import cli_undecor
+from .utils_xml import squote
 from .command_context import CommandContext
 
 log = logging.getLogger(__name__)

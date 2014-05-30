@@ -97,10 +97,3 @@ class hybridproperty(property):
 
     def __get__(self, this, owner):
         return self.fget.__get__(None, this if this else owner)()
-
-
-# xml-related
-
-def squote(s):
-    """Simple quote"""
-    return "'" + s + "'"
