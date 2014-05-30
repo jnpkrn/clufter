@@ -138,20 +138,34 @@ class Format(object):
         return self._representations.copy()
 
     @staticmethod
-    def producing(protocol, protect=False):
+    def producing(protocol, chained=False, protect=False):
         """Decorator for externalizing method understood by the `Format` magic
 
         As a bonus: caching of representations."""
         def deco_meth(meth):
             def deco_args(self, protocol, *args, **kwargs):
+                # XXX enforce nochain for this interative processing?
                 protect_safe = kwargs.pop('protect_safe', False)
                 try:
                     # stored -> computed norm.: detuple if len == 1
                     produced = args2unwrapped(*self._representations[protocol])
                 except KeyError:
-                    produced = meth(self, protocol, *args, **kwargs)
-                    # computed -> stored normalization
-                    self._representations[protocol] = *arg2wrapped(produced)
+                    produced = None
+                    worklist = [type(self)]
+                    this_m = self._protocols[protocol]
+                    while worklist:
+                        t = worklist.pop()
+                        that_m = t._protocols[protocol]
+                        if that_m is this_m and chained:
+                            worklist.extend(b for b in t.__bases__ if formats is
+                                            getattr(b, '__metaclass__', None))
+                            continue
+                        if that_m is not this_m:
+                            produced = that_m(self, protocol, *args, **kwargs)
+                        if produced is None:
+                            produced = meth(self, protocol, *args, **kwargs)
+                            # computed -> stored normalization
+                            self.swallow(protocol, *arg2wrapped(produced))
 
                 if protect and not protect_safe and not mutable(produced):
                     log.debug("{0}:{1}:Forced deepcopy of `{2}' instance"
@@ -420,13 +434,10 @@ class XML(SimpleFormat):
 
     native_protocol = 'etree'
 
-    @SimpleFormat.producing('bytestring')
-    def get_bytestring(self, protocol):
-        ret = super(XML, self).get_bytestring(self)
-        if ret is not None:
-            return ret
 
-        # fallback
+    @SimpleFormat.producing('bytestring', chained=True)
+    def get_bytestring(self, protocol):
+        # chained fallback
         return etree.tostring(self('etree', protect_safe=True),
                               pretty_print=True)
 
