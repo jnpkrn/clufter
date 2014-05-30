@@ -1,5 +1,6 @@
 *.o
 *.py[co]
+*.un~
 ccs_flatten
 !/.gitignore
 !/tests/XMLFormat-walk/
