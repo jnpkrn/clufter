@@ -8,6 +8,6 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from clufter.filter import XMLFilter
 
 
-@XMLFilter.deco('ccs', 'coroxml')
+@XMLFilter.deco('ccs', 'coroxml-needle')
 def ccs2needlexml(flt_ctxt, in_obj):
     return ('etree', flt_ctxt.ctxt_proceed_xslt(in_obj))
