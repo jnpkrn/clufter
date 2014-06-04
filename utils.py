@@ -7,7 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 
 # inspired by http://stackoverflow.com/a/4374075
-mutable = lambda x: isinstance(x, (basestring, int, long, bool, float, tuple))
+immutable = lambda x: isinstance(x, (basestring, int, long, bool, float, tuple))
 
 tuplist = lambda x: isinstance(x, (tuple, list))
 # turn args into tuple unless single tuplist arg

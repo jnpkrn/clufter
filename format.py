@@ -22,7 +22,7 @@ from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
 from .utils import arg2wrapped, args2tuple, args2unwrapped, \
                    classproperty, \
-                   mutable, \
+                   immutable, \
                    tuplist
 from .utils_xml import rng_pivot
 
@@ -198,7 +198,7 @@ class Format(object):
                             # computed -> stored normalization
                             self.swallow(protocol, *arg2wrapped(produced))
 
-                if protect and not protect_safe and not mutable(produced):
+                if protect and not protect_safe and not immutable(produced):
                     log.debug("{0}:{1}:Forced deepcopy of `{2}' instance"
                               .format(self.__class__.name, meth.__name__,
                                       type(produced).__name__))
