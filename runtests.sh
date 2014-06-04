@@ -45,7 +45,7 @@ while [ $# -gt 0 ]; do
     esac
     shift
 done
-if [ -z ${ACC} ]; then
+if [ -z "${ACC}" ]; then
     ACC=" discover -s tests -p '*.py'"
     if [ "$VERBOSE" -eq 1 ]; then
         ACC+=" --verbose"
