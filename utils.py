@@ -41,29 +41,18 @@ filtervarspop = \
 # function introspection related
 #
 
-def func_defaults_varnames(func, skip=0, fix_generator_tail=True):
+def func_defaults_varnames(func, skip=0):
     """Using introspection, get arg defaults (dict) + all arg names (tuple)
 
     Parameters:
         skip                how many initial arguments to skip
-        fix_generator_tail  see http://stackoverflow.com/questions/9631777
-                            https://mail.python.org/pipermail/python-list/
-                                    2013-November/661304.html
     """
-    func_varnames = func.func_code.co_varnames
-    assert len(func_varnames) - skip >= len(func.func_defaults)
+    code = func.func_code
+    func_varnames = code.co_varnames[skip:code.co_argcount]
 
-    # look at tail possibly spoiled with implicit generator's stuff ala "_[1]"
-    fix = 0
-    for i in xrange(len(func_varnames) if fix_generator_tail else 0, skip, -1):
-        if func_varnames[i - 1][0] not in "_.":
-            break
-        fix -= 1
-
-    func_varnames = func_varnames[skip:fix or None]
     func_defaults = dict(zip(
-        func_varnames,
-        func.func_defaults[-len(func_varnames):]  # "fix" auto-accommodated
+        reversed(func_varnames),
+        reversed(func.func_defaults)
     ))
 
     return func_defaults, func_varnames

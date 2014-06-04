@@ -15,6 +15,7 @@ from clufter.utils import func_defaults_varnames
 class FuncDefaultsVarnames(TestCase):
     """Test utils.func_defaults_varnames"""
     def _fnc(a, bar="ni"):
+        z = 42  # previously errorneously included into varnames
         pass
 
     def _gen(a, bar="ni"):
@@ -22,9 +23,9 @@ class FuncDefaultsVarnames(TestCase):
 
     def test_std_func(self):
         defaults, varnames = func_defaults_varnames(self._fnc)
-        self.assertTrue("ni" in defaults.values())
         self.assertTrue('a' in varnames)
         self.assertTrue('bar' in varnames)
+        self.assertTrue(defaults['bar'] == "ni")
         self.assertEquals(len(varnames), 2)
 
     def test_std_func_skip(self):
