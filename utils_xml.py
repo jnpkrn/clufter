@@ -48,6 +48,8 @@ def nselem(ns, tag, **kwargs):
 rng_get_start = etree.ETXPath("/{0}/{1}"
                               .format(namespaced('rng', 'grammar'),
                                       namespaced('rng', 'start')))
+xmltag_get_localname = lambda tag: etree.QName(tag).localname
+xmltag_get_namespace = lambda tag: etree.QName(tag).namespace
 
 RNG_ELEMENT = ("/{0}//{1}".format(namespaced('rng', 'grammar'),
                                   namespaced('rng', 'element'))
@@ -59,6 +61,7 @@ RNG_ELEMENT = ("/{0}//{1}".format(namespaced('rng', 'grammar'),
 def rng_pivot(me, et, tag):
     """Given Relax NG grammar etree as `et`, change start tag (in situ!)"""
     start = rng_get_start(et)
+    localname = xmltag_get_localname(tag)
     if len(start) != 1:
         raise UtilsXmlError("Cannot change start if grammar's `start' is"
                             " not contained exactly once ({0} times)"
@@ -67,11 +70,11 @@ def rng_pivot(me, et, tag):
     if len(target) != 1:
         raise UtilsXmlError("Cannot change start if the start element `{0}'"
                             " is not contained exactly once ({1} times)"
-                            .format(tag, len(target)))
+                            .format(localname, len(target)))
     start, target = start[0], target[0]
     parent_start, parent_target = start.getparent(), target.getparent()
     index_target = parent_target.index(target)
-    label = me.__name__ + '_' + tag
+    label = me.__name__ + '_' + localname
 
     # target's content place directly under /grammar wrapped with new define...
     new_define = nselem('rng', 'define', name=label)
