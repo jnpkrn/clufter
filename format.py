@@ -499,7 +499,8 @@ class XML(SimpleFormat):
                     log.warning("Problem processing RNG file `{0}'".format(s))
                     continue
             if start is not None:
-                schema = rng_pivot(deepcopy(schema), start)
+                schema = deepcopy(schema)
+                rng_pivot(schema, start)
             try:
                 schema.assertValid(et)
             except etree.DocumentInvalid:

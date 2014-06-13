@@ -59,7 +59,19 @@ RNG_ELEMENT = ("/{0}//{1}".format(namespaced('rng', 'grammar'),
 
 @selfaware
 def rng_pivot(me, et, tag):
-    """Given Relax NG grammar etree as `et`, change start tag (in situ!)"""
+    """Given Relax NG grammar etree as `et`, change start tag (in situ!)
+
+    Use copy.deepcopy or so to (somewhat) preserve the original.
+
+    Returns the live reference to the target element, i.e.,
+
+        at_start = rng_pivot(et, tag)
+
+    is equivalent to
+
+        rng_pivot(et, tag)
+        at_start = rng_get_start(et)[0]
+    """
     start = rng_get_start(et)
     localname = xmltag_get_localname(tag)
     if len(start) != 1:
@@ -90,4 +102,4 @@ def rng_pivot(me, et, tag):
     start.clear()
     start.append(start_ref)
 
-    return et
+    return target

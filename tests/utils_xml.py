@@ -22,12 +22,12 @@ class TestRngPivot(unittest.TestCase):
         p = join(dirname(__file__), 'corosync.rng')
         with open(p) as f:
             et = etree.parse(f)
-        ret = rng_pivot(et, 'logging')
+        rng_pivot(et, 'logging')
         p = join(dirname(__file__), 'corosync.rng.exp')
         if False:  # to regenerate the expected file (manual review)
             with open(p, 'w') as f:
-                f.write(etree.tostring(ret))
+                f.write(etree.tostring(et))
         else:
             with open(p) as f:
                 expected = f.read()
-            self.assertTrue(etree.tostring(ret) == expected)
+            self.assertTrue(etree.tostring(et) == expected)
