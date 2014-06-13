@@ -20,7 +20,7 @@ from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
 from .utils import head_tail, hybridproperty, filtervarspop
 from .utils_prog import cli_undecor
-from .utils_xml import NAMESPACES, squote, xslt_identity
+from .utils_xml import NAMESPACES, namespaced, nselem, squote, xslt_identity
 from .command_context import CommandContext
 
 log = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ _TOP_LEVEL_XSL = (
 _IMPLIED_TOP_LEVEL_XSL = (
     'when',
 )
-TOP_LEVEL_XSL = ["{{{0}}}{1}".format(XSL_NS, e) for e in
+TOP_LEVEL_XSL = [namespaced(XSL_NS, e) for e in
                  _TOP_LEVEL_XSL + _IMPLIED_TOP_LEVEL_XSL]
 
 
@@ -235,8 +235,8 @@ class XMLFilter(Filter, MetaPlugin):
                 #if elem is ret:
                 #    continue
                 log.debug("Got {0}".format(elem.tag))
-                if elem.tag in ('{{{0}}}descent'.format(CLUFTER_NS),
-                                '{{{0}}}descent-mix'.format(CLUFTER_NS)):
+                if elem.tag in (namespaced(CLUFTER_NS, t) for t
+                                in ('descent', 'descent-mix')):
                     up = elem
                     walk = []
                     while up != ret:
@@ -245,7 +245,7 @@ class XMLFilter(Filter, MetaPlugin):
                     #walk = reversed(tuple(walk))  # XXX reversed, dangerous?
                     walk.reverse()
                     walk = tuple(walk)
-                    mix = elem.tag == '{{{0}}}descent-mix'.format(CLUFTER_NS)
+                    mix = elem.tag == namespaced(CLUFTER_NS, 'descent-mix')
                     mix += mix and \
                             elem.attrib.get('preserve-rest', "false") == "true"
                     will_mix = max(will_mix, mix)
@@ -334,9 +334,9 @@ class XMLFilter(Filter, MetaPlugin):
                 index = parent.index(tag)
 
                 for s in substitutes:
-                    #assert s.tag == "{{{0}}}snippet".format(CLUFTER_NS)
+                    #assert s.tag == namespaced(CLUFTER_NS, 'snippet')
                     log.debug("before extension: {0}".format(etree.tostring(s)))
-                    if s.tag == "{{{0}}}snippet".format(CLUFTER_NS):
+                    if s.tag == namespaced(CLUFTER_NS, 'snippet'):
                         # only single root "detached" supported (first == last)
                         dst = parent
                         dst.attrib.update(dict(s.attrib))
@@ -376,8 +376,7 @@ class XMLFilter(Filter, MetaPlugin):
             _merge_previous(snippet, hooks, elem, children)
 
             # XSLT to either be performed (do_mix == 0) or remembered (>0)
-            xslt_root = etree.Element('{{{0}}}stylesheet'.format(XSL_NS),
-                                      version="1.0")
+            xslt_root = nselem(XSL_NS, 'stylesheet', version="1.0")
             # move top-level items directly to the stylesheet being built
             if do_mix:
                 xslt_root.text = snippet.text
@@ -389,8 +388,7 @@ class XMLFilter(Filter, MetaPlugin):
             if len(snippet):
                 log.debug("snippet0: {0}, {1}, {2}".format(do_mix, elem.tag, etree.tostring(snippet)))
                 #if not filter(lambda x: x.tag in TOP_LEVEL_XSL, snippet):
-                template = etree.Element('{{{0}}}template'.format(XSL_NS),
-                                         match=elem.tag)
+                template = nselem(XSL_NS, 'template', match=elem.tag)
                 if do_mix:
                     template.extend(snippet)
                 else:
@@ -443,7 +441,7 @@ class XMLFilter(Filter, MetaPlugin):
             #log.debug("Applying postprocess onto {0}".format(etree.tostring(ret)))
             assert len(ret) == 1
             ret = ret[0]
-            if ret.getroot().tag == "{{{0}}}snippet".format(CLUFTER_NS):
+            if ret.getroot().tag == namespaced(CLUFTER_NS, 'snippet'):
                 ret = ret.getroot()[0]
             # XXX: ugly solution to get rid of the unneeded namespace
             # (cleanup_namespaces did not work here)
@@ -479,13 +477,12 @@ class XMLFilter(Filter, MetaPlugin):
 
                 snippet = deepcopy(transformer[0])  # in-situ manipulation
 
-                xslt_root = etree.Element('{{{0}}}stylesheet'.format(XSL_NS),
-                                          version="1.0")
+                xslt_root = nselem(XSL_NS, 'stylesheet', version="1.0")
                 top = filter(lambda x: x.tag in TOP_LEVEL_XSL, snippet)
                 for e in top:
                     xslt_root.append(e)
                 if len(snippet):
-                    snippet.tag = '{{{0}}}template'.format(XSL_NS)
+                    snippet.tag = namespaced(XSL_NS, 'template')
                     snippet.attrib['match'] = key
                     xslt_root.append(snippet)
 
@@ -498,8 +495,8 @@ class XMLFilter(Filter, MetaPlugin):
                 # in parallel: 1?
                 if key in scheduled_subst:
                     for tag in scheduled_subst.pop(key):
-                        e = etree.Element('{http://www.w3.org/1999/XSL/Transform}apply-templates',
-                                          select=".//{0}".format(key))
+                        e = nselem(XSL_NS, 'apply-templates',
+                                   select=".//{0}".format(key))
                         parent = tag.getparent()
                         parent[parent.index(tag)] = e
                         ret[-1].append(snippet)

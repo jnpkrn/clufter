@@ -36,16 +36,34 @@ def squote(s):
     return "'" + s + "'"
 
 
+def namespaced(ns, ident):
+    """Return `ident` in Clark's notation denoting `ns` namespace"""
+    ret = "{{{0}}}{1}".format(NAMESPACES.get(ns, ns), ident)
+    return ret
+
+
+def nselem(ns, tag, **kwargs):
+    return etree.Element(namespaced(ns, tag), **kwargs)
+
+rng_get_start = etree.ETXPath("/{0}/{1}"
+                              .format(namespaced('rng', 'grammar'),
+                                      namespaced('rng', 'start')))
+
+RNG_ELEMENT = ("/{0}//{1}".format(namespaced('rng', 'grammar'),
+                                  namespaced('rng', 'element'))
+               .replace('{', '{{').replace('}', '}}')
+               + "[@name = '{0}']")
+
+
 @selfaware
 def rng_pivot(me, et, tag):
     """Given Relax NG grammar etree as `et`, change start tag (in situ!)"""
-    start = et.xpath("/rng:grammar/rng:start", namespaces=NAMESPACES)
+    start = rng_get_start(et)
     if len(start) != 1:
         raise UtilsXmlError("Cannot change start if grammar's `start' is"
                             " not contained exactly once ({0} times)"
                             .format(len(start)))
-    target = et.xpath("//rng:element[@name = '{0}']".format(tag),
-                      namespaces=NAMESPACES)
+    target = etree.ETXPath(RNG_ELEMENT.format(tag))(et)
     if len(target) != 1:
         raise UtilsXmlError("Cannot change start if the start element `{0}'"
                             " is not contained exactly once ({1} times)"
@@ -56,16 +74,16 @@ def rng_pivot(me, et, tag):
     label = me.__name__ + '_' + tag
 
     # target's content place directly under /grammar wrapped with new define...
-    new_define = etree.Element('define', name=label)
+    new_define = nselem('rng', 'define', name=label)
     new_define.append(target)
     parent_start.append(new_define)
 
     # ... while the original occurrence substituted in-situ with the reference
-    new_ref = etree.Element('ref', name=label)
+    new_ref = nselem('rng', 'ref', name=label)
     parent_target.insert(index_target, new_ref)
 
     # ... and finally /grammar/start pointed anew to refer to the new label
-    start_ref = deepcopy(new_ref)
+    start_ref = nselem('rng', 'ref', name=label)
     start.clear()
     start.append(start_ref)
 
