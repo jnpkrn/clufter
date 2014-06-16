@@ -42,8 +42,20 @@ relationships:
     - 'composite' denotes multi-channel interchange format
       (consisting of atomic ones)
 
+
 Command
 -------
+
+Figuring out the options/arguments for use to enter at the command line
+is heavily based on introspection of the function being decorated by
+`Command.deco`.  The explanation for the help screen is supposed to
+be encoded directly in the respective docstring as per the existing
+samples.  For DRY, you can also defer to another function (to be called
+before the body of the main command-driving one, likewise being passed
+command context and the appropriate keyword arguments of all originally
+passed at the function entry) defining the common arguments at the tail
++ utilizing them if suitable: this function is passed as `_common` (see
+`commands.ccs2pcs.ccs2pcs_needle`  +`filters.XMLFilter.command_common`).
 
 
 Filter
