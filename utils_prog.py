@@ -38,7 +38,7 @@ cli_undecor = lambda x: x.replace('-', '_')
 # XXX could eventually also resort to using upper-case chars
 longopt_letters_reprio = \
     lambda longopt: \
-        (lambda lo: \
+        (lambda lo:
             lo[0] + ''.join(sorted(lo[1:],
                                    key=lambda x: int(x.lower() in 'aeiouy')))
         )(filter(lambda c: c.isalpha(), longopt))
@@ -89,20 +89,20 @@ OneoffWrappedStdinPopen = OneoffWrappedStdinPopen()
 def which(name, single='', *paths, **redefine_check):
     """Mimic `which' UNIX utility
 
-    Both `single` and `paths` denotes paths to be tried for `name`
-    lookup, which includes positive result of `check` keyword argument,
-    filtering function (by default, a simple test if file exists).
+    Both `single` and `paths` denotes paths to be tried for `name` lookup,
+    which includes a decision from the perspective of a filter function given
+    by `check` keyword argument (default: a test if the file exists at all).
 
-    What is special about `single` is that it can be defined either
+    What is special about `single` is that it can be defined as either
     plain one-path string, PATH-like-separated list of paths, or
     an iterable.  It is decomposed into a list of paths and then
-    `paths` items are appended.
+    `paths` items appended.
 
     Apparently, when `name` is provided as an absolute path, only
     the `check` (i.e., no lookup) phase is performed.
 
     If nothing matching the criteria is found, `None` is returned,
-    complete nominal path corresponding to `name` and `check` otherwise.
+    nominal path as per `name` (and `check` for that matter) otherwise.
 
     Empty string instructs code to use environment's PATH instead.
     """
@@ -145,6 +145,7 @@ def defer_common(me, fnc, skip=0):
         fnc_varnames = list(fnc_varnames)
         fnc_varnames.remove('_common')  # but we could rely on last argument
         fnc_varnames = tuple(fnc_varnames) + common_varnames
+
         def wrapfnc(cmd_ctxt, **kwargs):
             common(cmd_ctxt, **filterdict_pop(kwargs, common_varnames))
             kwargs.pop('_common', None)
