@@ -31,7 +31,8 @@ from .utils_func import apply_aggregation_preserving_depth, \
                         tailshake, \
                         zip_empty
 from .utils_prog import cli_decor, \
-                        longopt_letters_reprio
+                        longopt_letters_reprio, \
+                        defer_common
 
 log = logging.getLogger(__name__)
 
@@ -66,7 +67,6 @@ class Command(object):
         # commands being instantiated initially, while presumably only one
         # of them will be run later on
         self._desc_opts = None
-        self._fnc_defaults_varnames = None
         self._filter_chain_analysis = None  # will be dict
 
     #
@@ -163,6 +163,7 @@ class Command(object):
 
     def _figure_fnc_defaults_varnames(self):
         """Dissect self._fnc to arg defaults (dict) + all arg names (tuple)"""
+        # XXX deprecated, _fnc_defaults_varnames set on the "birth" of class
         try:
             fnc = self._fnc
         except:
@@ -541,11 +542,13 @@ class Command(object):
         def deco_fnc(fnc):
             log.debug("Command: deco for {0}"
                       .format(fnc))
+            fnc_defaults, fnc_varnames, wrapped = defer_common(fnc, skip=1)
             attrs = {
-                '__module__': fnc.__module__,
-                '__doc__': fnc.__doc__,
+                '__module__': fnc.__module__,  # original
+                '__doc__': wrapped.__doc__,
                 '_filter_chain': args2sgpl(filter_chain),
-                '_fnc': staticmethod(fnc),
+                '_fnc': staticmethod(wrapped),
+                '_fnc_defaults_varnames': (fnc_defaults, fnc_varnames),
             }
             # optimization: shorten type() -> new() -> probe
             ret = cls.probe(fnc.__name__, (cls, ), attrs)

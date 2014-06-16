@@ -12,6 +12,7 @@ from subprocess import Popen
 from sys import stderr, stdin
 
 from .error import ClufterError
+from .utils import filterdict_pop, func_defaults_varnames, selfaware
 
 
 #
@@ -97,3 +98,24 @@ def which(name, *where):
         return None
 
 dirname_x = lambda p, c=1: reduce(lambda x, y: path.dirname(x), xrange(c), p)
+
+
+@selfaware
+def defer_common(me, fnc, skip=0):
+    """Use when you have a func with common initial kwargs consumption"""
+    fnc_defaults, fnc_varnames = func_defaults_varnames(fnc, skip=skip)
+    common = fnc_defaults.pop('_common', None)
+    if not common:
+        wrapfnc = fnc
+    else:
+        common_defaults, common_varnames, common = me(common, skip=skip)
+        fnc_defaults.update(common_defaults)
+        fnc_varnames = list(fnc_varnames)
+        fnc_varnames.remove('_common')  # but we could rely on last argument
+        fnc_varnames = tuple(fnc_varnames) + common_varnames
+        def wrapfnc(cmd_ctxt, **kwargs):
+            common(cmd_ctxt, **filterdict_pop(kwargs, common_varnames))
+            kwargs.pop('_common', None)
+            return fnc(cmd_ctxt, **kwargs)
+        wrapfnc.__doc__ = fnc.__doc__ + common.__doc__
+    return fnc_defaults, fnc_varnames, wrapfnc

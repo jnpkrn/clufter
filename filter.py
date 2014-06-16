@@ -120,6 +120,20 @@ def tag_log(s, elem):
 class XMLFilter(Filter, MetaPlugin):
     """Base for XML/XSLT traversal filters"""
     @staticmethod
+    def command_common(cmd_ctxt,
+                       nocheck=False,
+                       raw=False):
+        """\
+            nocheck   do not validate any step (even if self-checks present)
+            raw       do not care about pretty-printed output
+        """
+        flt_ctxt = cmd_ctxt.filter()
+        flt_ctxt.update(
+            raw=raw,
+            validate=not nocheck
+        )
+
+    @staticmethod
     def _traverse(in_fmt, walk, et=None,
                   walk_default_first=None, walk_default=None,
                   preprocess=lambda s, n, r: s, proceed=lambda *x: x,

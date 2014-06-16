@@ -6,6 +6,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..command import Command, CommandAlias
+from ..filter import XMLFilter
 
 
 @Command.deco(('ccs2flatccs',
@@ -15,10 +16,9 @@ from ..command import Command, CommandAlias
                           ('pcs2simplepcs')))))
 def ccs2pcs_flatiron(cmd_ctxt,
                      input="/etc/cluster/cluster.conf",
-                     ccs_pcmk="./cluster.conf",
-                     cib="./cib.xml",
-                     nocheck=False,
-                     raw=False):
+                     ccs_pcmk="cluster.conf",
+                     cib="cib.xml",
+                     _common=XMLFilter.command_common):
     """CMAN -> Pacemaker-based cluster config. (corosync v1)
 
     More specifically, the output is suitable for Pacemaker integrated
@@ -30,11 +30,7 @@ def ccs2pcs_flatiron(cmd_ctxt,
         input     input CMAN-based cluster configuration file
         ccs_pcmk  output Pacemaker pass-through CMAN configuration
         cib       output Pacemaker-based cluster configuration file
-        nocheck   do not validate any step (even if self-checks present)
-        raw       do not ensure pretty-printed output where applicable
     """
-    cmd_ctxt.filter()['raw'] = raw
-    cmd_ctxt.filter()['validate'] = not nocheck
     return (
         ('file', input),
         (
@@ -56,10 +52,9 @@ def ccs2pcs_flatiron(cmd_ctxt,
                       ('xml2simpleconfig'))))
 def ccs2pcs_needle(cmd_ctxt,
                    input="/etc/cluster/cluster.conf",
-                   cib="./cib.xml",
-                   coro="./corosync.conf",
-                   nocheck=False,
-                   raw=False):
+                   cib="cib.xml",
+                   coro="corosync.conf",
+                   _common=XMLFilter.command_common):
     """CMAN -> Pacemaker-based cluster config. (corosync v2)
 
     More specifically, the output is suitable for Pacemaker integrated
@@ -70,11 +65,7 @@ def ccs2pcs_needle(cmd_ctxt,
         input    input CMAN-based cluster configuration file
         cib      output Pacemaker-based cluster configuration file
         coro     output Corosync v2 configuration file
-        nocheck  do not validate any step (even if self-checks present)
-        raw      do not ensure pretty-printed output where applicable
     """
-    cmd_ctxt.filter()['raw'] = raw
-    cmd_ctxt.filter()['validate'] = not nocheck
     return (
         ('file', input),
         (
