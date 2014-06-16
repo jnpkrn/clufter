@@ -7,12 +7,16 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
 from optparse import make_option
-from os import environ, path, pathsep
+from os import environ, pathsep
+from os.path import abspath, dirname, samefile, \
+                    isabs as path_isabs, \
+                    isfile as path_isfile, \
+                    join as path_join
 from subprocess import Popen
 from sys import stderr, stdin
 
 from .error import ClufterError
-from .utils import filterdict_pop, func_defaults_varnames, selfaware
+from .utils import filterdict_pop, func_defaults_varnames, selfaware, tuplist
 
 
 #
@@ -49,7 +53,7 @@ def set_logging(opts):
     last_hdlr = rootlog.handlers.pop()
     if isinstance(last_hdlr, logging.FileHandler if opts.logfile
                              else logging.StreamHandler) \
-      and (path.samefile(opts.logfile, last_hdlr.baseFilename)
+      and (samefile(opts.logfile, last_hdlr.baseFilename)
            if opts.logfile else last_hdlr.stream is stderr):
         hdlr = last_hdlr
     else:
@@ -82,22 +86,50 @@ OneoffWrappedStdinPopen = OneoffWrappedStdinPopen()
 # misc
 #
 
-def which(name, *where):
-    """Mimic `which' UNIX utility"""
-    where = tuple(path.abspath(i) for i in where)
-    if 'PATH' in environ:
-        use_path = tuple(i for i in environ['PATH'].split(pathsep)
-                         if len(i.strip()))
+def which(name, single='', *paths, **redefine_check):
+    """Mimic `which' UNIX utility
+
+    Both `single` and `paths` denotes paths to be tried for `name`
+    lookup, which includes positive result of `check` keyword argument,
+    filtering function (by default, a simple test if file exists).
+
+    What is special about `single` is that it can be defined either
+    plain one-path string, PATH-like-separated list of paths, or
+    an iterable.  It is decomposed into a list of paths and then
+    `paths` items are appended.
+
+    Apparently, when `name` is provided as an absolute path, only
+    the `check` (i.e., no lookup) phase is performed.
+
+    If nothing matching the criteria is found, `None` is returned,
+    complete nominal path corresponding to `name` and `check` otherwise.
+
+    Empty string instructs code to use environment's PATH instead.
+    """
+    check, expand_path = redefine_check.pop('check', path_isfile), True
+    if path_isabs(name):
+        where, expand_path = ['', ], False
     else:
-        use_path = ()
-    for p in where + use_path:
-        check = path.join(p, name)
-        if path.exists(check):
-            return check
+        where = list(single.split(pathsep) if not tuplist(single) else single)
+        where.extend(paths)
+        where.reverse()
+    while where:
+        p = where.pop()
+        if not p:
+            if expand_path:
+                where.extend(reversed(environ.get('PATH', '')))
+                expand_path = False
+                continue
+            elif where:
+                break  # degenerated case: multiple ''
+        p = path_join(abspath(p), name)
+        if check(p):
+            return p
     else:
         return None
 
-dirname_x = lambda p, c=1: reduce(lambda x, y: path.dirname(x), xrange(c), p)
+
+dirname_x = lambda p, c=1: reduce(lambda x, y: dirname(x), xrange(c), p)
 
 
 @selfaware
