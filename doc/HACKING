@@ -42,12 +42,35 @@ relationships:
     - 'composite' denotes multi-channel interchange format
       (consisting of atomic ones)
 
+Command
+-------
+
+
+Filter
+------
+
+
+Format
+------
+
+When defining a purpose-specific one, you can still utilize the inheritance
+and basic format distillation routines (`file` -> `bytestring` or viceversa).
+Even more, these are implicitly tried (in a backtracking manner,
+general-to-specific) if you redefine the distillation method with
+`chained=True`.
+
 
 Command context
 ---------------
 
-This is a declared set of keys that should always be present and are
-intended for public use:
+One can imagine this as a glue rolling the key-value pairs directly
+to the commands (unrestricted modification, as a point of control for
+a subsequent processing), in more limited sense to filters, and very
+restrictively (read-only and only a few items) to the formats.
+
+It is a declared or shared, agreement-based set of keys that should
+always are expected to be present in the particular context of use.
+Strictly reserved, intended for public use, are:
 
 - system:         lowercased system specifier (e.g., linux)
 - system_extra:   tuple of string values with details about the system
@@ -90,6 +113,11 @@ Notable points
      notation, but again, CLI will present it with dashes; also
      CommandAlias-backed functions should return string already
      promoted to such dash notation
+
+4. some limitations:
+
+   - one particular filter can only occur once in the command's filter chain
+
 
 x. to ease the perception of embedded XSLT snippets in the Python files,
    there is respective _vimrc_local.vim provided (in filters/cluster)
