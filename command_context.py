@@ -68,6 +68,9 @@ class CommandContextBase(MutableMapping):
     def __len__(self):
         return len(self._dict)
 
+    def __repr__(self):
+        return "<{0}: {1}>".format(repr(self.__class__), repr(self._dict))
+
     def __setitem__(self, key, value):
         # XXX value could be also any valid dict constructor argument
         self._dict[key] = CommandContextBase(initial=value, parent=self) \
