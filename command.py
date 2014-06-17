@@ -326,14 +326,14 @@ class Command(object):
         terminal_chain = cls._iochain_check_terminals(io_chain, terminal_chain)
 
         magic_fds = {}
-        input_cache = cmd_ctxt.setdefault('input_cache', {})
+        input_cache = cmd_ctxt.setdefault('input_cache', {}, bypass=True)
         worklist = list(reversed(tailshake(terminal_chain,
                                            partitioner=lambda x:
                                            not (tuplist(x)) or protodecl(x))))
         while worklist:
             flt, io_decl = worklist.pop()
             flt_ctxt = cmd_ctxt.ensure_filter(flt)
-            if not filter_backtrack[flt] and not flt_ctxt['out']:
+            if not filter_backtrack[flt] and 'out' not in flt_ctxt:
                 # INFILTER in in-mode
                 log.debug("Run `{0}' filter with `{1}' io decl. as INFILTER"
                           .format(flt.__class__.__name__, io_decl))
@@ -342,15 +342,16 @@ class Command(object):
                 else:
                     in_obj = flt.in_format.as_instance(*io_decl)
                     input_cache[io_decl] = in_obj
-            elif filter_backtrack[flt] and not flt_ctxt['out']:
+            elif filter_backtrack[flt] and 'out' not in flt_ctxt:
                 # not INFILTER in either mode (nor output already precomputed?)
                 log.debug("Run `{0}' filter with `{1}' io decl. as DOWNFILTER"
                           .format(flt.__class__.__name__, io_decl))
-                inputs = map(lambda x: cmd_ctxt.filter(x.__class__.__name__)['out'],
+                inputs = map(lambda x: cmd_ctxt.filter(x.__class__.__name__)
+                                       .get('out'),
                              filter_backtrack[flt])
-                notyet, ok = bifilter(lambda x:
-                                  cmd_ctxt.filter(x.__class__.__name__)['out'] is None,
-                                  filter_backtrack[flt])
+                ok, notyet = bifilter(lambda x: 'out' in
+                                        cmd_ctxt.filter(x.__class__.__name__),
+                                      filter_backtrack[flt])
                 if notyet:
                     log.debug("Backtrack with inclusion of {0} to feed `{1}'"
                               .format(', '.join("`{0}'"
@@ -375,8 +376,8 @@ class Command(object):
 
                 assert all(inputs)
                 in_obj = flt.in_format.as_instance(*inputs)
-            if not flt_ctxt['out'] or flt not in terminals:
-                if not flt_ctxt['out']:
+            if 'out' not in flt_ctxt or flt not in terminals:
+                if 'out' not in flt_ctxt:
                     if flt.__class__.name in cmd_ctxt['filter_noop']:
                         ret = in_obj
                     else:
@@ -438,7 +439,7 @@ class Command(object):
             'system':                getattr(opts, 'sys', ''),
             'system_extra':          getattr(opts, 'dist', '').split(','),
             'quiet':                 getattr(opts, 'quiet', False),
-        })
+        }, bypass=True)
         cmd_ctxt.ensure_filters(apply_intercalate(self._filter_chain))
         io_driver = any2iter(self._fnc(cmd_ctxt, **kwargs))
         io_handler = (self._iochain_proceed, lambda c, ec=EC.EXIT_SUCCESS: ec)

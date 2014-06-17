@@ -46,8 +46,12 @@ filterdict_invpop = \
 
 
 #
-# function introspection related
+# introspection related
 #
+
+def isinstanceexcept(subj, obj, exc=()):
+    return isinstance(subj, obj) and not isinstance(subj, exc)
+
 
 def func_defaults_varnames(func, skip=0):
     """Using introspection, get arg defaults (dict) + all arg names (tuple)

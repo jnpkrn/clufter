@@ -5,12 +5,14 @@
 """Command context, i.e., state distributed along filters chain"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from collections import MutableMapping
+from collections import MutableMapping, MutableSequence, MutableSet
 import logging
 
 from .error import ClufterError
+from .utils import isinstanceexcept
 
 log = logging.getLogger(__name__)
+mutables = (MutableMapping, MutableSequence, MutableSet)
 
 
 class CommandContextError(ClufterError):
@@ -19,26 +21,46 @@ class CommandContextError(ClufterError):
 
 class CommandContextBase(MutableMapping):
     """Object representing command context"""
-    def __init__(self, initial=None, parent=None):
-        try:
-            self._dict = initial if type(initial) is dict else dict(initial)
-        except TypeError:
-            self._dict = {}
+    def __init__(self, initial=None, parent=None, bypass=False):
         self._parent = parent if parent is not None else self
+        if isinstance(initial, CommandContextBase):
+            assert initial._parent is None
+            self._dict = initial._dict  # trust dict to have expected props
+        else:
+            self._dict = {}
+            if initial is not None:
+                if not isinstance(initial, MutableMapping):
+                    initial = dict(initial)
+                map(lambda (k, v): self.setdefault(k, v, bypass=bypass),
+                                   initial.iteritems())
 
     def __delitem__(self, key):
         del self._dict[key]
 
     def __getitem__(self, key):
         try:
-            return self._dict[key]
+            ret = self._dict[key]
         except KeyError:
-            pass
-        # make it soft-error (->setdefault reimpl.)
-        return None if self._parent is self else self._parent[key]
+            if self._parent is self:
+                raise
+            ret = self._parent[key]
+        if isinstanceexcept(ret, mutables, CommandContextBase):
+            ret = ret.copy()
+        return ret
 
-    def setdefault(self, key, default=None):
-        return self._dict.setdefault(key, default)
+    def setdefault(self, key, *args, **kwargs):
+        """Allows implicit arrangements to be bypassed via `bypass` flag"""
+        assert len(args) < 2
+        bypass = kwargs.get('bypass', False)
+        if bypass:
+            return self._dict.setdefault(key, *args)
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            if not args:
+                raise
+            self.__setitem__(key, *args)
+            return args[0]
 
     def __iter__(self):
         return iter(self._dict)
@@ -49,7 +71,9 @@ class CommandContextBase(MutableMapping):
     def __setitem__(self, key, value):
         # XXX value could be also any valid dict constructor argument
         self._dict[key] = CommandContextBase(initial=value, parent=self) \
-                          if isinstance(value, dict) else value
+                          if isinstanceexcept(value, MutableMapping,
+                                                     CommandContextBase) \
+                          else value
 
     @property
     def parent(self):
@@ -61,7 +85,7 @@ class CommandContext(CommandContextBase):
         # filter_context ... where global arguments for filters to be stored
         # filters        ... where filter instance + arguments hybrid is stored
         super(CommandContext, self).__init__(*args, **kwargs)
-        # could be cycle up to self if {} was used instead
+        # could be cycle up to self if not bypassed
         self['__filter_context__'] = CommandContextBase()
         self['__filters__'] = CommandContextBase()
 
