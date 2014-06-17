@@ -19,13 +19,26 @@ class CommandContextError(ClufterError):
     pass
 
 
+class notaint_context(object):
+    def __init__(self, self_outer, exit_off):
+        self._exit_off = exit_off
+        self._self_outer = self_outer
+    def __enter__(self):
+        self._exit_off |= not self._self_outer._notaint
+        self._self_outer._notaint = True
+    def __exit__(self, *exc):
+        self._self_outer._notaint = not self._exit_off
+
+
 class CommandContextBase(MutableMapping):
     """Object representing command context"""
-    def __init__(self, initial=None, parent=None, bypass=False):
+    def __init__(self, initial=None, parent=None, bypass=False, notaint=False):
         self._parent = parent if parent is not None else self
+        self._notaint = notaint
         if isinstance(initial, CommandContextBase):
             assert initial._parent is None
             self._dict = initial._dict  # trust dict to have expected props
+            self._notaint = initial._notaint
         else:
             self._dict = {}
             if initial is not None:
@@ -38,15 +51,26 @@ class CommandContextBase(MutableMapping):
         del self._dict[key]
 
     def __getitem__(self, key):
+        # any notainting parent incl. self is an authority for us
         try:
             ret = self._dict[key]
         except KeyError:
             if self._parent is self:
                 raise
             ret = self._parent[key]
-        if isinstanceexcept(ret, mutables, CommandContextBase):
+        if (isinstanceexcept(ret, mutables, CommandContextBase)
+            and any(getattr(p, '_notaint', False) for p in self.anabasis())):
             ret = ret.copy()
         return ret
+
+    def anabasis(self):
+        """Traverse nested contexts hierarchy upwards"""
+        cur = self
+        while True:
+            yield cur
+            if cur is cur._parent:
+                break
+            cur = cur._parent
 
     def setdefault(self, key, *args, **kwargs):
         """Allows implicit arrangements to be bypassed via `bypass` flag"""
@@ -73,6 +97,8 @@ class CommandContextBase(MutableMapping):
 
     def __setitem__(self, key, value):
         # XXX value could be also any valid dict constructor argument
+        if any(getattr(p, '_notaint', False) for p in self.anabasis()):
+            raise RuntimeError("Cannot set item to notaint context")
         self._dict[key] = CommandContextBase(initial=value, parent=self) \
                           if isinstanceexcept(value, MutableMapping,
                                                      CommandContextBase) \
@@ -81,6 +107,10 @@ class CommandContextBase(MutableMapping):
     @property
     def parent(self):
         return self._parent
+
+    def prevented_taint(self, exit_off=False):
+        """Context manager to safely yield underlying dicts while applied"""
+        return notaint_context(self, exit_off)
 
 
 class CommandContext(CommandContextBase):
@@ -138,3 +168,19 @@ class CommandContext(CommandContextBase):
         else:
             ret = self['__filter_context__']
         return ret
+
+    def prevented_taint(self, exit_off=False):
+        """Context manager to safely yield underlying dicts while applied"""
+        class notaint_command_context(notaint_context):
+            def __init__(self, self_outer, exit_off):
+                super(notaint_command_context, self).__init__(self_outer,
+                                                              exit_off)
+                self._fc = self_outer['__filter_context__'] \
+                           .prevented_taint(exit_off)
+            def __enter__(self):
+                super(notaint_command_context, self).__enter__()
+                self._fc.__enter__()
+            def __exit__(self, *exc):
+                self._fc.__exit__()
+                super(notaint_command_context, self).__exit__()
+        return notaint_command_context(self, exit_off)

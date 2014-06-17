@@ -381,7 +381,8 @@ class Command(object):
                     if flt.__class__.name in cmd_ctxt['filter_noop']:
                         ret = in_obj
                     else:
-                        ret = flt(in_obj, flt_ctxt)
+                        with cmd_ctxt.prevented_taint():
+                            ret = flt(in_obj, flt_ctxt)
                     flt_ctxt['out'] = ret
                 if flt not in terminals or not filter_backtrack[flt]:
                     continue
