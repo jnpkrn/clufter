@@ -29,12 +29,20 @@ head_tail = \
         (x, args2sgpl(*y)) if not tuplist(x) or kwargs.get('stop', 0) \
                            else (head_tail(stop=1, *tuple(x) + y))
 
-filtervars = \
-    lambda src, which: dict((x, src[x]) for x in which if x in src)
-filtervarsdef = \
-    lambda src, which: dict((x, src[x]) for x in which if src.get(x, None))
-filtervarspop = \
-    lambda src, which: dict((x, src.pop(x)) for x in which if x in src)
+nonetype = type(None)
+
+filterdict_keep = \
+    lambda src, *which, **kw: \
+        dict((x, src[x]) for x in which if x in src, **kw)
+filterdict_invkeep = \
+    lambda src, *which, **kw: \
+        dict((x, src[x]) for x in src.iterkeys() if x not in which, **kw)
+filterdict_pop = \
+    lambda src, *which, **kw: \
+        dict((x, src.pop(x)) for x in which if x in src, **kw)
+filterdict_invpop = \
+    lambda src, *which, **kw: \
+        dict((x, src.pop(x)) for x in src if x in which, **kw)
 
 
 #

@@ -18,7 +18,8 @@ from lxml import etree
 
 from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
-from .utils import head_tail, hybridproperty, filtervarspop
+from .utils import filterdict_keep, filterdict_pop, \
+                   head_tail, hybridproperty
 from .utils_prog import cli_undecor
 from .utils_xml import NAMESPACES, namespaced, nselem, squote, xslt_identity
 from .command_context import CommandContext
@@ -529,11 +530,10 @@ class XMLFilter(Filter, MetaPlugin):
     @classmethod
     def proceed(cls, in_obj, root_dir=DEFAULT_ROOT_DIR, **kwargs):
         """Push-button to be called from the filter itself"""
-        d = dict(symbol=cli_undecor(cls.name))
-        d.update(kwargs)
-        walk = in_obj.walk_schema(root_dir, **filtervarspop(d, (
-                                  'symbol', 'sparse')))
-        return cls._traverse(in_obj, walk, **d)
+        kwargs.setdefault('symbol', cli_undecor(cls.name))
+        walk = in_obj.walk_schema(root_dir, **filterdict_pop(kwargs, 'symbol',
+                                                                     'sparse'))
+        return cls._traverse(in_obj, walk, **kwargs)
 
     @classmethod
     def filter_proceed_xslt(cls, in_obj, **kwargs):
@@ -565,16 +565,17 @@ class XMLFilter(Filter, MetaPlugin):
     @classmethod
     def ctxt_proceed_xslt(cls, ctxt, in_obj, **kwargs):
         """The same as `filter_proceed_xslt`, context-aware"""
-        common = 'raw', 'system', 'system_extra'
-        k = dict((i, ctxt[i]) for i in common if ctxt[i] is not None, **kwargs)
-        return cls.filter_proceed_xslt(in_obj, **k)
-
+        kwargs = filterdict_keep(ctxt,
+            'raw', 'system', 'system_extra',                   # proceed_xslt
+            **kwargs
+        )
+        return self.filter_proceed_xslt(in_obj, **kwargs)
 
     @classmethod
     def get_template(cls, in_obj, root_dir=DEFAULT_ROOT_DIR, **kwargs):
         """Generate the overall XSLT template"""
-        d = dict(symbol=cli_undecor(cls.name))
-        d.update(kwargs)
+        kwargs.setdefault('symbol', cli_undecor(cls.name))
         walk = in_obj.walk_schema(root_dir, preprocess=cls._xslt_preprocess,
-                                  sparse=False, **filtervarspop(d, ('symbol',)))
+                                  sparse=False,
+                                  **filterdict_pop(kwargs, 'symbol'))
         return cls._xslt_template(walk)
