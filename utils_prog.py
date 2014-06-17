@@ -117,7 +117,7 @@ def which(name, single='', *paths, **redefine_check):
         p = where.pop()
         if not p:
             if expand_path:
-                where.extend(reversed(environ.get('PATH', '')))
+                where.extend(reversed(environ.get('PATH', '').split(pathsep)))
                 expand_path = False
                 continue
             elif where:
