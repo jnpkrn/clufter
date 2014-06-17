@@ -15,6 +15,7 @@ import _bootstrap  # known W402, required
 from clufter.format import FormatError
 from clufter.formats.ccs import ccs
 from clufter.formats.coro import coroxml_needle
+from clufter.utils import head_tail
 
 
 class XMLFormatWalkTestCase(unittest.TestCase):
@@ -78,15 +79,15 @@ class XMLValidationTestCase(unittest.TestCase):
             self.assertTrue(False)
 
     def testRngExplicitValidationOk(self):
-        et, entries = coroxml_needle.etree_validator(
+        entries, _ = head_tail(coroxml_needle.etree_validator(
             etree.parse(self.coro_input_ok)
-        )
+        ))
         self.assertFalse(entries)
 
     def testRngExplicitValidationFail(self):
-        et, entries = coroxml_needle.etree_validator(
+        entries, _ = head_tail(coroxml_needle.etree_validator(
             etree.parse(self.coro_input_fail)
-        )
+        ))
         self.assertTrue(entries)
 
 

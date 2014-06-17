@@ -22,12 +22,15 @@ from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
 from .utils import arg2wrapped, args2tuple, args2unwrapped, \
                    classproperty, \
+                   head_tail, \
                    immutable, \
                    tuplist
-from .utils_xml import rng_pivot
+from .utils_xml import rng_get_start, rng_pivot
 
 log = getLogger(__name__)
 MAX_DEPTH = 1000
+
+DEFAULT_ROOT_DIR = join(dirname(__file__), 'formats')
 
 
 class FormatError(ClufterError):
@@ -113,10 +116,12 @@ class Format(object):
         assert protocol in self._protocols
         validator = self._validators.get(protocol, (None, ''))
         if validator[0] and validator[1]:
-            ret, entries = validator[0](self, *args, spec=validator[1])
+            entries, _ = head_tail(validator[0](self, *args, spec=validator[1]))
             if entries:
-                raise FormatError(self,
-                                  "Validation: {0}".format(', '.join(entries)))
+                raise FormatError(self, "Validation: {0}".format(
+                    ', '.join(':'.join(args2tuple(str(e[0]), str(e[1]), *e[2:]))
+                              for e in entries))
+                )
         prev = self._representations.setdefault(protocol, args)
         assert prev is args
 
@@ -471,49 +476,73 @@ class XML(SimpleFormat):
     }
 
     @classmethod
-    def etree_rng_validator(cls, et, spec=validator_specs['etree'], start=None):
+    def etree_rng_validator(cls, et, root_dir=DEFAULT_ROOT_DIR,
+                            spec=validator_specs['etree'], start=None):
+        """RNG-validate `et` ElementTree with schemes as per `root_dir`+`spec`
+
+        ... and, optionally, narrowed to `start`-defined grammar segment.
+
+        The `spec` can either be relative (`root` is an initial path then)
+        or absolute wildcard (as in shell  globbing) or specific name.
+        All validators matching the specification will be tried in an
+        alphabetical order, first success wins, overall validation fails
+        otherwise.
+
+        `start` is either plain tag or namespaced one using Clark's notation.
+
+        Returns tuple of:
+            iterable of validation errors
+            path of the "master" validating schema (first good one/last used)
+            snippet from "master" validating schema relevant to `start`
+        """
         # XXX holds its private cache under cls._validation_cache
         assert spec
         if not sep in spec:
-            spec = join(dirname(__file__), 'formats', cls.root, spec)
+            spec = join(root_dir, cls.root, spec)
         if any(filter(lambda c: c in spec, '?*')):
             globbed = glob(spec)
             spec = globbed or spec
         elif exists(spec):
             spec = args2tuple(spec)
         if not tuplist(spec):
-            return et, ("Cannot validate, no matching spec: `{0}'"
-                        .format(spec), )
-        fatal = []
+            return ("Cannot validate, no matching spec: `{0}'"
+                    .format(spec), )
+        fatal, master, master_snippet = [], '', ''
         for s in reversed(sorted(spec)):
-            fatal[:] = []
+            fatal, master = [], s
             try:
-                schema = cls._validation_cache.get(s, None)
+                schema, rng = cls._validation_cache.get(s, None)
             except AttributeError:
                 setattr(cls, '_validation_cache', {})
                 schema = None
             if schema is None:
                 try:
-                    cls._validation_cache[s] = schema = etree.RelaxNG(file=s)
+                    schema = etree.parse(s)
+                    rng = etree.RelaxNG(schema)
+                    cls._validation_cache[s] = schema, rng
                 except etree.RelaxNGError:
                     log.warning("Problem processing RNG file `{0}'".format(s))
                     continue
             if start is not None:
                 schema = deepcopy(schema)
-                rng_pivot(schema, start)
+                target = rng_pivot(schema, start)
+                rng = etree.RelaxNG(schema)
+            else:
+                target = rng_get_start(schema)[0]
             try:
-                schema.assertValid(et)
+                rng.assertValid(et)
             except etree.DocumentInvalid:
                 log.warning("Invalid as per RNG file `{0}'".format(s))
-                for entry in schema.error_log:
-                    fatal.append(entry.message)
+                for entry in rng.error_log:
+                    fatal.append((entry.line, entry.column, entry.message))
+                master_snippet = etree.tostring(target, pretty_print=True)
             else:
                 break
         else:
             log.warning("None of the validation attempts succeeded with"
                         " validator spec `{0}' ".format(spec))
 
-        return et, fatal
+        return fatal, master, master_snippet.strip()
 
     etree_validator = etree_rng_validator
 
