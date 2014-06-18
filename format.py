@@ -30,7 +30,6 @@ from .utils import arg2wrapped, args2tuple, args2unwrapped, \
 from .utils_xml import rng_get_start, rng_pivot
 
 log = getLogger(__name__)
-MAX_DEPTH = 1000
 
 DEFAULT_ROOT_DIR = join(dirname(__file__), 'formats')
 
@@ -364,6 +363,9 @@ class CompositeFormat(Format, MetaPlugin):
 
 class XML(SimpleFormat):
     """"Base for XML-based configuration formats"""
+
+    MAX_DEPTH = 1000
+
     @classproperty
     def root(self):
         """Root tag of the XML document"""
@@ -476,7 +478,7 @@ class XML(SimpleFormat):
                     continue  # files are terminals anyway
                 current_tracking[name] = (swag, {})
 
-        for i in xrange(MAX_DEPTH):
+        for i in xrange(cls.MAX_DEPTH):
             if cls._walk_schema_step_up(tree_stack) is result:
                 return result
         else:
