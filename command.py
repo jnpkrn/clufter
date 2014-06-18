@@ -19,6 +19,7 @@ from .plugin_registry import PluginRegistry
 from .utils import any2iter, \
                    args2sgpl, \
                    args2tuple, \
+                   filterdict_keep, \
                    func_defaults_varnames, \
                    head_tail, \
                    hybridproperty, \
@@ -333,6 +334,8 @@ class Command(object):
         while worklist:
             flt, io_decl = worklist.pop()
             flt_ctxt = cmd_ctxt.ensure_filter(flt)
+            with flt_ctxt.prevented_taint():
+                fmt_kws = filterdict_keep(flt_ctxt, *flt.in_format.context)
             if not filter_backtrack[flt] and 'out' not in flt_ctxt:
                 # INFILTER in in-mode
                 log.debug("Run `{0}' filter with `{1}' io decl. as INFILTER"
@@ -340,7 +343,8 @@ class Command(object):
                 if io_decl in input_cache:
                     in_obj = input_cache[io_decl]
                 else:
-                    in_obj = flt.in_format.as_instance(*io_decl)
+                    with cmd_ctxt.prevented_taint():
+                        in_obj = flt.in_format.as_instance(*io_decl, **fmt_kws)
                     input_cache[io_decl] = in_obj
             elif filter_backtrack[flt] and 'out' not in flt_ctxt:
                 # not INFILTER in either mode (nor output already precomputed?)
@@ -375,7 +379,8 @@ class Command(object):
                     io_decl = args2sgpl(io_decl[0], magic_fds[fd], *io_decl[2:])
 
                 assert all(inputs)
-                in_obj = flt.in_format.as_instance(*inputs)
+                with cmd_ctxt.prevented_taint():
+                    in_obj = flt.in_format.as_instance(*inputs, **fmt_kws)
             if 'out' not in flt_ctxt or flt not in terminals:
                 if 'out' not in flt_ctxt:
                     if flt.__class__.name in cmd_ctxt['filter_noop']:

@@ -53,6 +53,27 @@ def isinstanceexcept(subj, obj, exc=()):
     return isinstance(subj, obj) and not isinstance(subj, exc)
 
 
+def popattr(obj, what, *args):
+    assert len(args) < 2
+    ret = getattr(obj, what, *args)
+    try:
+        delattr(obj, what)
+    except AttributeError:
+        if args:
+            ret = args[0]
+        else:
+            raise
+    return ret
+
+
+def iterattrs(obj, skip_private=True):
+    """Iterate through (unbound) attributes of obj, skipping private or not"""
+    if skip_private:
+        return ((n, v) for n, v in obj.__dict__.iteritems()
+                if not n.startswith('__'))
+    return obj.__dict__.iteritems()
+
+
 def func_defaults_varnames(func, skip=0):
     """Using introspection, get arg defaults (dict) + all arg names (tuple)
 

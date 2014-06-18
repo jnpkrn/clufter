@@ -23,7 +23,9 @@ from .plugin_registry import MetaPlugin, PluginRegistry
 from .utils import arg2wrapped, args2tuple, args2unwrapped, \
                    classproperty, \
                    head_tail, \
+                   iterattrs, \
                    immutable, \
+                   popattr, \
                    tuplist
 from .utils_xml import rng_get_start, rng_pivot
 
@@ -40,15 +42,21 @@ class FormatError(ClufterError):
 class formats(PluginRegistry):
     """Format registry (to be used as a metaclass for formats)"""
     def __init__(cls, name, bases, attrs):
+        # NOTE could be called multiple times, with popattr-destroyed
+        #      form (attrs missing), so defer to attrs then
         cls._protocols, cls._validators = {}, {}
+        cls._context = set(popattr(cls, 'context_specs',
+                           attrs.pop('context_specs', ())))
         # protocols merge: top-down through inheritance
         for base in reversed(cls.__bases__):
             cls._protocols.update(getattr(base, '_protocols', {}))
             cls._validators.update(getattr(base, '_validators', {}))
+            cls._context.update(getattr(base, '_context', ()))
         # updated with locally defined proto's (marked by `producing` wrapper)
-        specs = attrs.get('validator_specs', {})
+        specs = popattr(cls, 'validator_specs',
+                        attrs.pop('validator_specs', {}))
 
-        for attr, obj in attrs.iteritems():
+        for attr, obj in iterattrs(cls):
             try:
                 protocol = obj._protocol
                 delattr(obj, '_protocol')
@@ -108,6 +116,19 @@ class Format(object):
     """
     __metaclass__ = formats
 
+    context_specs = 'validator_specs',
+
+    @classproperty
+    def context(self):
+        return tuple(self._context)
+
+    @classproperty
+    def native_protocol(self):
+        """Native protocol"""
+        raise AttributeError
+
+    ###
+
     def swallow(self, protocol, *args):
         """"Called by implicit constructor to get a format instance"""
         if protocol == 'native':
@@ -147,7 +168,7 @@ class Format(object):
         self.swallow(protocol, *args)
 
     @classmethod
-    def as_instance(cls, *decl_or_instance):
+    def as_instance(cls, *decl_or_instance, **kwargs):
         """Create an instance or verify and return existing one"""
         if decl_or_instance and isinstance(decl_or_instance[0], Format):
             instance = decl_or_instance[0]
@@ -156,7 +177,7 @@ class Format(object):
                                   " (expected `{0}', got `{1}')", cls.name,
                                   instance.__class__.name)
         else:
-            instance = cls(*decl_or_instance)
+            instance = cls(*decl_or_instance, **kwargs)
         return instance
 
     def __call__(self, protocol='native', *args, **kwargs):
@@ -217,24 +238,17 @@ class Format(object):
             return deco_args
         return deco_meth
 
-    ####
-
-    @classproperty
-    def native_protocol(self):
-        """Native protocol"""
-        raise AttributeError
-
 
 class SimpleFormat(Format, MetaPlugin):
     """This is what most of the format classes want to subclass"""
     native_protocol = 'bytestring'
 
-    def __init__(self, protocol, *args):
+    def __init__(self, protocol, *args, **kwargs):
         """Format constructor, i.e., object = concrete uniformat data"""
         assert isinstance(protocol, basestring), \
                "protocol has to be string for `{0}', not `{1}'" \
-               .format(self.__class__.__name__, protocol)
-        super(SimpleFormat, self).__init__(protocol, *args)
+               .format(self.__class__.name, protocol)
+        super(SimpleFormat, self).__init__(protocol, *args, **kwargs)
 
     @Format.producing('bytestring')
     def get_bytestring(self, protocol):
@@ -312,7 +326,7 @@ class CompositeFormat(Format, MetaPlugin):
                and protocol[0] == self.__class__.native_protocol, \
                "protocol has to be tuple initiated with {0} for {1}" \
                .format(self.__class__.native_protocol, self.__class__.__name__)
-        formats = kwargs['formats']  # has to be present
+        formats = kwargs.pop('formats')  # has to be present
         # further checks
         assert len(protocol) > 1
         assert tuplist(protocol[1]) and len(protocol[1]) > 1
@@ -324,10 +338,10 @@ class CompositeFormat(Format, MetaPlugin):
                                 tuple(f.native_protocol for f in formats))
         # instantiate particular designated formats
         self._designee = tuple(
-            f(p, *args2tuple(a))
+            f(p, *args2tuple(a), **kwargs)
             for (f, p, a) in zip(formats, protocol[1], args)
         )
-        super(CompositeFormat, self).__init__(protocol, *args)
+        super(CompositeFormat, self).__init__(protocol, *args, **kwargs)
 
     def __iter__(self):
         return iter(self._designee)

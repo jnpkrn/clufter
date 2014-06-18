@@ -85,14 +85,15 @@ class Filter(object):
         """Output format identifier/class for the filter"""
         return this._out_format
 
-    def __call__(self, in_obj, flt_ctxt=None, **kwargs):
+    def __call__(self, in_obj, flt_ctxt=None, **fmt_kws):
         """Default is to use a function decorated with `deco`"""
         if flt_ctxt is None:  # when estranged (not under Command control)
             cmd_ctxt = CommandContext()
             flt_ctxt = cmd_ctxt.ensure_filter(self)
-        outdecl = self._fnc(flt_ctxt, in_obj, **kwargs)
+        outdecl = self._fnc(flt_ctxt, in_obj)
         outdecl_head, outdecl_tail = head_tail(outdecl)
-        return self.out_format(outdecl_head, *outdecl_tail)
+        fmt_kws = filterdict_keep(flt_ctxt, *self.out_format.context, **fmt_kws)
+        return self.out_format(outdecl_head, *outdecl_tail, **fmt_kws)
 
     @classmethod
     def deco(cls, in_format, out_format):
@@ -129,9 +130,10 @@ class XMLFilter(Filter, MetaPlugin):
             raw       do not care about pretty-printed output
         """
         flt_ctxt = cmd_ctxt.filter()
+        flt_ctxt.setdefault('validator_specs', {'': ''} if nocheck else {},
+                            bypass=True)
         flt_ctxt.update(
             raw=raw,
-            validate=not nocheck
         )
 
     @staticmethod

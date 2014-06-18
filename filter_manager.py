@@ -35,11 +35,13 @@ class FilterManager(PluginManager):
     @staticmethod
     def _resolve(formats, filters):
         def get_composite_onthefly(formats):
+            # XXX should rather be implemented by CompositeFormat itself?
             composite_onthefly = \
                 lambda protocol, *args: \
                     CompositeFormat(protocol, formats=formats, *args)
             # XXX currently instantiation only (no match for composite classes)
             composite_onthefly.as_instance = composite_onthefly
+            composite_onthefly.context = CompositeFormat.context
             return composite_onthefly
 
         for flt_name, flt_cls in filters.items():
