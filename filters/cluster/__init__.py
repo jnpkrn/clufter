@@ -151,6 +151,9 @@ flatccs2pcs = '''\
                 <clufter:descent at="rm"/>
 
             </resources>
+            <constraints>
+                <!-- TODO, just to prevent validation failure -->
+            </constraints>
 
             <!--
                 FENCING TOPOLOGY

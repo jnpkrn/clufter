@@ -8,9 +8,9 @@ ccs2needlexml = '''\
         <xsl:for-each select="@*">
             <xsl:variable name="attr_name">
                 <xsl:choose>
-                    <!-- @nodeid -> @id -->
+                    <!-- @nodeid -> @nodeid (unchanged) -->
                     <xsl:when test="name() = 'nodeid'">
-                        <xsl:value-of select="'id'"/>
+                        <xsl:value-of select="name()"/>
                     </xsl:when>
                     <!-- @name -> @ring0_addr -->
                     <xsl:when test="name() = 'name'">
