@@ -17,11 +17,14 @@ except ImportError:
 from lxml import etree
 
 from .error import ClufterError, ClufterPlainError
+from .format import XML
 from .plugin_registry import MetaPlugin, PluginRegistry
-from .utils import filterdict_keep, filterdict_pop, \
+from .utils import args2tuple, \
+                   filterdict_keep, filterdict_pop, \
                    head_tail, hybridproperty
 from .utils_prog import cli_undecor
-from .utils_xml import NAMESPACES, namespaced, nselem, squote, xslt_identity
+from .utils_xml import NAMESPACES, namespaced, nselem, squote, \
+                       xmltag_get_namespace, xslt_identity
 from .command_context import CommandContext
 
 log = logging.getLogger(__name__)
@@ -205,13 +208,46 @@ class XMLFilter(Filter, MetaPlugin):
         return postprocess(ret)
 
     @classmethod
-    def _xslt_get_atom_hook(self, quiet=False, **kws):
+    def _xslt_get_validate_hook(cls, validator, **kws):
+        assert validator is not None
+        def validate_hook(ret):
+            global_msgs = []
+
+            # figure out the target element, skip if not any suitable
+            #to_check = (ret.getroot(), )
+            root = ret.getroot()
+            if root.tag == namespaced(CLUFTER_NS, "snippet"):
+                to_check = reversed(root)
+            else:
+                to_check = (root, )
+            worklist = list(i for i in to_check
+                            if xmltag_get_namespace(i.tag) != XSL_NS)
+            while worklist:
+                elem = worklist.pop()
+                msgs, schema, schema_snippet = validator(elem, start=elem.tag)
+                global_msgs.extend(msgs)
+                if not (msgs and schema):
+                    break
+            return ret, global_msgs
+        return validate_hook
+
+    def _xslt_get_atom_hook(self, quiet=False, validator_specs={}, **kws):
+        validate_hook = None
+        if issubclass(self._out_format, XML):
+            # only when out format is XML-based, we can be quite sure the
+            # resulting form/protocol is etree
+            # XXX otherwise there would have to be a hint about it
+            #     or alternatively it would be passed into the filters
+            #     generically, which might hurt implicit laziness?
+            spec = validator_specs.get('etree', validator_specs.get('', None))
+            validator = self._out_format.validator('etree', spec=spec)
+            if validator:
+                validate_hook = self._xslt_get_validate_hook(validator, **kws)
         return (lambda ret, error_log=():
-                    self._xslt_atom_hook(ret, error_log, quiet))
+                    self._xslt_atom_hook(ret, error_log, quiet, validate_hook))
 
     @staticmethod
-    def _xslt_atom_hook(ret, error_log, quiet=False):
-        # XXX could be even interactive
+    def _xslt_atom_hook(ret, error_log, quiet=False, validate_hook=None):
         fatal = []
         for entry in error_log:
             msg = "XSLT: {0}".format(entry.message)
@@ -219,6 +255,11 @@ class XMLFilter(Filter, MetaPlugin):
                 print >>stderr, msg
                 if entry.type != 0:
                     fatal.append("XSLT: " + entry.message)
+        if not fatal and validate_hook:
+            ret, entries = validate_hook(ret)
+            fatal.extend("RNG: " + ':'.join(args2tuple(str(e[0]), str(e[1]),
+                                                       *e[2:]))
+                         for e in entries)
         if fatal:
             raise FilterPlainError("FAIL: {0}".format((', ').join(e for e in fatal)))
         return ret
@@ -543,8 +584,7 @@ class XMLFilter(Filter, MetaPlugin):
                                                                      'sparse'))
         return cls._traverse(in_obj, walk, **kwargs)
 
-    @classmethod
-    def filter_proceed_xslt(cls, in_obj, **kwargs):
+    def filter_proceed_xslt(self, in_obj, **kwargs):
         """Push-button to be called from the filter itself (with walk_default)"""
         raw = kwargs.pop('raw', False)
         def_first, system = '', kwargs.pop('system', '')
@@ -559,13 +599,13 @@ class XMLFilter(Filter, MetaPlugin):
         def_first += '<clufter:descent-mix preserve-rest="true"/>'
 
         xslt_atom_hook = self._xslt_get_atom_hook(**filterdict_pop(kwargs,
-            'quiet'
+            'quiet', 'validator_specs',
         ))
 
         kwargs.setdefault('walk_default_first', def_first)
         kwargs['xslt_atom_hook'] = xslt_atom_hook
 
-        ret = cls.proceed_xslt(in_obj, **kwargs)
+        ret = self.proceed_xslt(in_obj, **kwargs)
         if not raw:
             # <http://lxml.de/FAQ.html#
             #  why-doesn-t-the-pretty-print-option-reformat-my-xml-output>
@@ -574,12 +614,11 @@ class XMLFilter(Filter, MetaPlugin):
             ret = etree.fromstring(etree.tostring(ret), parser)
         return ret
 
-    @classmethod
-    def ctxt_proceed_xslt(cls, ctxt, in_obj, **kwargs):
+    def ctxt_proceed_xslt(self, ctxt, in_obj, **kwargs):
         """The same as `filter_proceed_xslt`, context-aware"""
         kwargs = filterdict_keep(ctxt,
             'raw', 'system', 'system_extra',                   # proceed_xslt
-            'quiet',  # atom_hook
+            'quiet', 'validator_specs',  # atom_hook
             **kwargs
         )
         return self.filter_proceed_xslt(in_obj, **kwargs)
