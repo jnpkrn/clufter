@@ -22,6 +22,7 @@ from .plugin_registry import MetaPlugin, PluginRegistry
 from .utils import args2tuple, \
                    filterdict_keep, filterdict_pop, \
                    head_tail, hybridproperty
+from .utils_func import loose_zip, zip_empty
 from .utils_prog import cli_undecor
 from .utils_xml import NAMESPACES, namespaced, nselem, squote, \
                        xmltag_get_namespace, xslt_identity
@@ -285,7 +286,6 @@ class XMLFilter(Filter, MetaPlugin):
                    ' </clufter:snippet>'.format(XSL_NS, CLUFTER_NS, sym))
             ret = etree.XML(sym)
             hooks = OrderedDict()
-            toplevel = []
 
             log.debug("walking {0}".format(etree.tostring(ret)))
             will_mix = 0  # whether any descent-mix observed
@@ -335,6 +335,7 @@ class XMLFilter(Filter, MetaPlugin):
             elif do_mix > 1 and will_mix:
                 do_mix = 1
 
+            #toplevel = []
             #if len(ret) and parent:
             #    top = filter(lambda x: x.tag in TOP_LEVEL_XSL, ret)
             #    for e in top:
@@ -369,10 +370,10 @@ class XMLFilter(Filter, MetaPlugin):
         # XXX postprocess: omitted as standard defines the only root element
 
         def proceed(transformer, elem, children):
-            if not callable(transformer):
-                # expect (xslt, hooks)
-                return xslt_atom_hook(*do_proceed(transformer, elem, children))
-            return transformer(elem, children)
+            # expect (xslt, hooks) in the former case
+            return xslt_atom_hook(*do_proceed(transformer, elem, children)
+                                  if not callable(transformer)
+                                  else transformer(elem, children))
 
         def _merge_previous(snippet, hooks, elem, children):
             # snippet, an original preprocessed "piece of template puzzle",
