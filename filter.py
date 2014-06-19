@@ -16,7 +16,7 @@ except ImportError:
 
 from lxml import etree
 
-from .error import ClufterError
+from .error import ClufterError, ClufterPlainError
 from .plugin_registry import MetaPlugin, PluginRegistry
 from .utils import filterdict_keep, filterdict_pop, \
                    head_tail, hybridproperty
@@ -54,6 +54,9 @@ TOP_LEVEL_XSL = [namespaced(XSL_NS, e) for e in
 
 
 class FilterError(ClufterError):
+    pass
+
+class FilterPlainError(ClufterPlainError, FilterError):
     pass
 
 
@@ -202,19 +205,22 @@ class XMLFilter(Filter, MetaPlugin):
         return postprocess(ret)
 
     @classmethod
-    def _xslt_get_atom_hook(cls, quiet):
-        if quiet:
-            return (lambda ret, error_log:
-                        cls._xslt_atom_hook(ret, error_log, True))
-        else:
-            return cls._xslt_atom_hook
+    def _xslt_get_atom_hook(self, quiet=False, **kws):
+        return (lambda ret, error_log=():
+                    self._xslt_atom_hook(ret, error_log, quiet))
 
     @staticmethod
     def _xslt_atom_hook(ret, error_log, quiet=False):
         # XXX could be even interactive
+        fatal = []
         for entry in error_log:
-            if entry.type != 0 or not quiet:
-                print >>stderr, "XSLT: {0}".format(entry.message)
+            msg = "XSLT: {0}".format(entry.message)
+            if entry.type != 0 or not quiet:  # avoid logging (suppression)
+                print >>stderr, msg
+                if entry.type != 0:
+                    fatal.append("XSLT: " + entry.message)
+        if fatal:
+            raise FilterPlainError("FAIL: {0}".format((', ').join(e for e in fatal)))
         return ret
 
     @staticmethod
@@ -540,7 +546,6 @@ class XMLFilter(Filter, MetaPlugin):
     @classmethod
     def filter_proceed_xslt(cls, in_obj, **kwargs):
         """Push-button to be called from the filter itself (with walk_default)"""
-        quiet = kwargs.pop('quiet', False)
         raw = kwargs.pop('raw', False)
         def_first, system = '', kwargs.pop('system', '')
         def_first += ('<xsl:param name="system" select="{0}"/>'
@@ -552,8 +557,13 @@ class XMLFilter(Filter, MetaPlugin):
                 def_first += ('<xsl:param name="system_{0}" select="{1}"/>'
                               .format(squote(i), squote(val)))
         def_first += '<clufter:descent-mix preserve-rest="true"/>'
+
+        xslt_atom_hook = self._xslt_get_atom_hook(**filterdict_pop(kwargs,
+            'quiet'
+        ))
+
         kwargs.setdefault('walk_default_first', def_first)
-        kwargs['xslt_atom_hook'] = cls._xslt_get_atom_hook(quiet)
+        kwargs['xslt_atom_hook'] = xslt_atom_hook
 
         ret = cls.proceed_xslt(in_obj, **kwargs)
         if not raw:
@@ -569,6 +579,7 @@ class XMLFilter(Filter, MetaPlugin):
         """The same as `filter_proceed_xslt`, context-aware"""
         kwargs = filterdict_keep(ctxt,
             'raw', 'system', 'system_extra',                   # proceed_xslt
+            'quiet',  # atom_hook
             **kwargs
         )
         return self.filter_proceed_xslt(in_obj, **kwargs)
