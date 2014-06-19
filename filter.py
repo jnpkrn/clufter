@@ -7,8 +7,13 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
 from copy import deepcopy
-from os.path import dirname, join
+from os import stat
+from os.path import dirname, join as path_join
+from shlex import split as shlex_split
+from shutil import rmtree
+from subprocess import CalledProcessError, check_call
 from sys import stderr
+from tempfile import mkdtemp, NamedTemporaryFile
 try:
     from collections import OrderedDict
 except ImportError:
@@ -16,6 +21,8 @@ except ImportError:
 
 from lxml import etree
 
+from . import package_name
+from .defaults import EDITOR
 from .error import ClufterError, ClufterPlainError
 from .format import XML
 from .plugin_registry import MetaPlugin, PluginRegistry
@@ -23,14 +30,15 @@ from .utils import args2tuple, \
                    filterdict_keep, filterdict_pop, \
                    head_tail, hybridproperty
 from .utils_func import loose_zip, zip_empty
-from .utils_prog import cli_undecor
+from .utils_prog import cli_undecor, which
 from .utils_xml import NAMESPACES, namespaced, nselem, squote, \
-                       xmltag_get_namespace, xslt_identity
+                       element_juggler, xml_get_root_pi, xmltag_get_namespace,\
+                       xslt_identity
 from .command_context import CommandContext
 
 log = logging.getLogger(__name__)
 
-DEFAULT_ROOT_DIR = join(dirname(__file__), 'filters')
+DEFAULT_ROOT_DIR = path_join(dirname(__file__), 'filters')
 
 CLUFTER_NS = NAMESPACES['clufter']
 XSL_NS = NAMESPACES['xsl']
@@ -131,9 +139,13 @@ class XMLFilter(Filter, MetaPlugin):
     @staticmethod
     def command_common(cmd_ctxt,
                        nocheck=False,
+                       batch=False,
+                       editor=EDITOR,
                        raw=False):
         """\
             nocheck   do not validate any step (even if self-checks present)
+            batch     do not interact (validation failure recovery, etc.)
+            editor    customize editor to run (unused in batch mode)
             raw       do not care about pretty-printed output
         """
         flt_ctxt = cmd_ctxt.filter()
@@ -141,6 +153,8 @@ class XMLFilter(Filter, MetaPlugin):
                             bypass=True)
         flt_ctxt.update(
             raw=raw,
+            interactive=not(batch),
+            editor=editor
         )
 
     @staticmethod
@@ -209,10 +223,105 @@ class XMLFilter(Filter, MetaPlugin):
         return postprocess(ret)
 
     @classmethod
-    def _xslt_get_validate_hook(cls, validator, **kws):
+    def _try_edit(cls, res_snippet, schema_path, schema_snippet, msgs,
+                  use_offset=True, editor=''):
+        editor = editor.strip() or EDITOR
+        pkg_name = package_name()
+        message = [
+            "{0} manual validation failure recovery due to (local positions):",
+            "",
+            "{1}",
+            "",
+            "On the basis of the two snippets enclosed in (XML PI) separators",
+            "revealing the purpose, to-be-fixed invalid result and excerpt of",
+            "{2}",
+            "(validating schema), the situation can be resolved by either:",
+            "",
+            ". realizing and FIXING the issue (and possibly notifying {0}",
+            "  maintainer): directly edit the respective snippet (upon",
+            "  exiting the editor, the snippet will be inspected again)",
+            ". OMITTING the snippet from the result, but be warned, this",
+            "  may cause validation error at the level closer to the root",
+            ". TERMINATING the whole conversion: delete everything",
+            "",
+            "+ forcing the snippet, empty or not, without validation:",
+            "  turn `:force-this=false` to `:force-this=true`",
+            "+ forcing the whole block of snippets without validation:",
+            "  change `force-block` attribute in the root element to `true`",
+        ]
+        offset = len(message) + len(msgs) + 5 if use_offset else 0
+        e = '  ' + '\n  '.join(["[{0}:{1}] {2}".format(
+                                m[0] + offset, *m[1:]) for m in msgs])
+        message = '  ' + '\n  '.join(message).format(pkg_name, e, schema_path)
+        prompt = """\
+<{0}-recovery force-block="false">
+
+<?{0} message
+{1}
+?>
+
+<?{0} EDIT-result-snippet-start:force-this=false?>
+{2}
+<?{0} EDIT-result-snippet-end?>
+
+<?{0} NOEDIT-schema-snippet-start?>
+{3}
+<?{0} NOEDIT-schema-snippet-end?>
+
+</{0}-recovery>
+""".format(pkg_name, message, res_snippet, schema_snippet)
+        tmpdir = mkdtemp(prefix=pkg_name)
+        reply, force = '', ''
+        try:
+            tmp = NamedTemporaryFile(dir=tmpdir, suffix='.xml', delete=True)
+            with tmp as tmpfile:
+                tmpfile.write(prompt)
+                tmpfile.flush()
+                orig_mtime = stat(tmp.name).st_mtime
+                # XXX: Windows platform: delete=False, then close-popen-open
+                editor_args = shlex_split(editor) + [tmp.name]
+                assert len(editor_args) >= 2
+                editor_args[0] = which(editor_args[0])
+                log.info("running `{0}'".format(' '.join(editor_args)))
+                try:
+                    check_call(editor_args)
+                except CalledProcessError as e:
+                    raise FilterError(self, str(e))
+                except OSError:
+                    raise FilterError(self, "Editor `{0}' seems unavailable"
+                                            .format(editor))
+                if orig_mtime == stat(tmp.name).st_mtime:
+                    return None, force  # no change occurred
+                tmpfile.seek(0)
+                reply = tmpfile.read().strip()
+        finally:
+            rmtree(tmpdir)
+        if not reply:
+            return False, force  # terminating
+        elems = []
+        reply = etree.fromstring(reply)
+        if reply.attrib.get('force-block', '').lower() == 'true':
+            force = 'block'
+        for root_pi in xml_get_root_pi(reply):
+            if (root_pi.target == pkg_name
+            and root_pi.text.strip().startswith('EDIT-result-snippet-start')):
+                text = root_pi.text[len('EDIT-result-snippet-start') + 1:]
+                attrs = dict(a.strip().split('=') for a in text.split(':'))
+                if attrs.get('force-this','false').lower() == 'true':
+                    force = force or 'this'
+                for sibling in root_pi.itersiblings():
+                    if isinstance(sibling, type(root_pi)):
+                        break
+                    elems.append(sibling)
+                break
+        return elems, force
+
+    @classmethod
+    def _xslt_get_validate_hook(cls, validator, interactive=True, **kws):
         assert validator is not None
         def validate_hook(ret):
             global_msgs = []
+            single_elem = False
 
             # figure out the target element, skip if not any suitable
             #to_check = (ret.getroot(), )
@@ -221,14 +330,49 @@ class XMLFilter(Filter, MetaPlugin):
                 to_check = reversed(root)
             else:
                 to_check = (root, )
+                single_elem = True
             worklist = list(i for i in to_check
                             if xmltag_get_namespace(i.tag) != XSL_NS)
+            use_offset = True
             while worklist:
                 elem = worklist.pop()
+                if elem is None:
+                    use_offset = True
+                errcnt = 0
                 msgs, schema, schema_snippet = validator(elem, start=elem.tag)
-                global_msgs.extend(msgs)
-                if not (msgs and schema):
+                if not (msgs and schema and interactive):
+                    global_msgs.extend(msgs)
                     break
+                parent_pos = element_juggler.grab(elem)
+                res_snippet = etree.tostring(elem, pretty_print=True)
+                while True:
+                    try:
+                        elems, force = cls._try_edit(res_snippet.strip(),
+                                                     schema, schema_snippet,
+                                                     msgs, use_offset, **kws)
+                    except FilterError as e:
+                        log.warn(str(e))
+                        elems = ()
+                    if elems is not None:  # active change
+                        break
+                if not elems:
+                    element_juggler.drop(elem)
+                    if elems is False:
+                        print >>stderr, "Terminating"
+                        raise SystemExit
+                elif single_elem:
+                    assert len(elems) == 1
+                else:
+                    # positive change occurred (reverse due to insert)
+                    elems = reversed(elems)
+                worklist.append(None)
+                for e in elems:
+                    if not force:
+                        worklist.append(e)  # ensure revalidation
+                    element_juggler.rebind(e, parent_pos)
+                if force == 'block':
+                    return ret, ()  # validation for the whole block cancelled
+                use_offset = False
             return ret, global_msgs
         return validate_hook
 
@@ -600,7 +744,7 @@ class XMLFilter(Filter, MetaPlugin):
         def_first += '<clufter:descent-mix preserve-rest="true"/>'
 
         xslt_atom_hook = self._xslt_get_atom_hook(**filterdict_pop(kwargs,
-            'quiet', 'validator_specs',
+            'editor', 'interactive', 'quiet', 'validator_specs'
         ))
 
         kwargs.setdefault('walk_default_first', def_first)
@@ -619,7 +763,7 @@ class XMLFilter(Filter, MetaPlugin):
         """The same as `filter_proceed_xslt`, context-aware"""
         kwargs = filterdict_keep(ctxt,
             'raw', 'system', 'system_extra',                   # proceed_xslt
-            'quiet', 'validator_specs',  # atom_hook
+            'editor', 'interactive', 'quiet', 'validator_specs',  # atom_hook
             **kwargs
         )
         return self.filter_proceed_xslt(in_obj, **kwargs)

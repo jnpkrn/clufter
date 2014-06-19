@@ -48,6 +48,7 @@ def nselem(ns, tag, **kwargs):
 rng_get_start = etree.ETXPath("/{0}/{1}"
                               .format(namespaced('rng', 'grammar'),
                                       namespaced('rng', 'start')))
+xml_get_root_pi = etree.XPath("/*/processing-instruction()")
 xmltag_get_localname = lambda tag: etree.QName(tag).localname
 xmltag_get_namespace = lambda tag: etree.QName(tag).namespace
 
