@@ -17,11 +17,6 @@ else:
 
 
 # yield corosync v.2/needle configuration compatible with el7
-# diff to ccs2flatironxml (note that "corosync" is used as pseudoroot):
-# - specify pseudoroot/totem/@cluster_name
-# - enumerate cluster nodes via /pseudoroot/nodelist
-# - do not use Pacemaker plugin via /pseudoroot/service[@name='pacemaker']
-# - possibly specify /pseudoroot/quorum
 ccs2needlexml = '''\
     <!-- cluster=current ~ corosync -->
     <corosync>
