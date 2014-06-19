@@ -59,10 +59,12 @@ class formats(PluginRegistry):
             try:
                 protocol = obj._protocol
                 delattr(obj, '_protocol')
-                cls._protocols[protocol] = obj
+                cls._protocols[protocol] = cls, attr
                 cls._validators[protocol] = obj._validator, None
                 delattr(obj, '_validator')
             except AttributeError:
+                if not hasattr(obj, '_protocol'):
+                    assert attr not in cls._protocols, 'Unexpected override'
                 pass
 
         for protocol in cls._protocols:
@@ -134,9 +136,10 @@ class Format(object):
             protocol = self.native_protocol
 
         assert protocol in self._protocols
-        validator = self._validators.get(protocol, (None, ''))
-        if validator[0] and validator[1]:
-            entries, _ = head_tail(validator[0](self, *args, spec=validator[1]))
+        assert args != (None, )
+        validator = self.validator(protocol)
+        if validator:
+            entries, _ = head_tail(validator(*args))
             if entries:
                 raise FormatError(self, "Validation: {0}".format(
                     ', '.join(':'.join(args2tuple(str(e[0]), str(e[1]), *e[2:]))
@@ -145,24 +148,38 @@ class Format(object):
         prev = self._representations.setdefault(protocol, args)
         assert prev is args
 
+    def producer(self, protocol):
+        protocol_cls, protocol_attr = self._protocols[protocol]
+        if protocol_cls is self.__class__:
+            return getattr(self, protocol_attr)  # has to be self
+        return getattr(super(self.__class__, self), protocol_attr)
+
     def produce(self, protocol, *args, **kwargs):
         """"Called by implicit invocation to get data externalized"""
         if protocol == 'native':
             protocol = self.native_protocol
 
         assert protocol in self._protocols
-        return self._protocols[protocol](self, protocol, *args, **kwargs)
+        ret = self.producer(protocol)(protocol, *args, **kwargs)
+        if ret is None:
+            raise FormatError(self, "Cannot produce `{0}' format"
+                                    " as `{1}'"
+                                    .format(self.__class__.name, protocol))
+        return ret
 
     def __init__(self, protocol, *args, **kwargs):
         """Format constructor, i.e., object = concrete internal data"""
         self._representations = {}
         validator_specs = kwargs.pop('validator_specs', {})
         default = validator_specs.setdefault('', None)  # None ~ don't track
+        validators = {}
         for p in self._validators.iterkeys():
             spec = validator_specs.get(p, default)
             if spec is None:
                 continue
-            self._validators[p] = (self._validators[p][0], spec)
+            validators[p] = (self._validators[p][0], spec)
+        if validators:  # force per-instance customization
+            self._validators = dict(self._validators, **validators)
         # XXX self._dict = kwargs
         self.swallow(protocol, *args)
 
@@ -183,10 +200,29 @@ class Format(object):
         """Way to externalize object's internal data"""
         return self.produce(protocol, *args, **kwargs)
 
-    @property
+    @classproperty
     def protocols(self):
         """Set of supported protocols for int-/externalization"""
-        return self._protocols.copy()  # installed by meta-level
+        return self._protocols.keys()  # installed by meta-level
+
+    @classmethod
+    def validator(cls, protocol=None, spec=None):
+        """Return validating function or None
+
+        This ought to be the authoritative (and only) way to use
+        a validator, do not touch _validators and also validator_specs
+        is not dropped from class attributes for this very reason.
+        """
+        which = cls.native_protocol if protocol is None else protocol
+        try:
+            validator, sp = cls._validators[which]  # installed by meta-level
+        except KeyError:
+            return None
+        spec = spec if spec is not None else sp
+        if spec == '':
+            return None
+        return lambda *args, **kwargs: validator(cls, *args,
+                                                 **dict(kwargs, spec=spec))
 
     @property
     def representations(self):
@@ -201,29 +237,44 @@ class Format(object):
         def deco_meth(meth):
             def deco_args(self, protocol, *args, **kwargs):
                 # XXX enforce nochain for this interative processing?
-                protect_safe = kwargs.pop('protect_safe', False)
+                do_protect = protect and not kwargs.pop('protect_safe', False)
+                produced = None
                 try:
                     # stored -> computed norm.: detuple if len == 1
                     produced = args2unwrapped(*self._representations[protocol])
                 except KeyError:
                     produced = None
-                    worklist = [type(self)]
-                    this_m = self._protocols[protocol]
+                    # seemingly absurd inversion of starting with this `prev`:
+                    # arranged like this for empty _protocols (hence `get`s)
+                    worklist = [(Format, self.__class__)] * 2
+                    this_proto = self._protocols[protocol]
                     while worklist:
-                        t = worklist.pop()
-                        that_m = t._protocols[protocol]
-                        if that_m is this_m and chained:
-                            worklist.extend(b for b in t.__bases__ if formats is
-                                            getattr(b, '__metaclass__', None))
-                            continue
-                        if that_m is not this_m:
-                            produced = that_m(self, protocol, *args, **kwargs)
+                        prev_cls, that_cls = worklist.pop()
+                        that_proto = that_cls._protocols[protocol]
+                        prev_proto = prev_cls._protocols.get(protocol)
+                        if that_proto in (this_proto, prev_proto):
+                            if worklist or that_proto == prev_proto:
+                                if chained:
+                                    worklist.extend((that_cls, b) for b in
+                                                    that_cls.__bases__ if
+                                                    protocol in b._protocols)
+                                 # also ensures meth fired atmost once (@level?)
+                                continue
+                            producer = lambda *args, **kwargs: \
+                                           meth(self, *args, **kwargs)
+                        else:
+                            producer = getattr(super(prev_cls, self), that_proto[1])
+                        produced = producer(protocol, *args, **kwargs)
                         if produced is None:
-                            produced = meth(self, protocol, *args, **kwargs)
+                            continue
+                        if that_cls is self.__class__:
                             # computed -> stored normalization
                             self.swallow(protocol, *arg2wrapped(produced))
+                        else:
+                            do_protect = False
+                        break
 
-                if protect and not protect_safe and not immutable(produced):
+                if do_protect and not immutable(produced):
                     log.debug("{0}:{1}:Forced deepcopy of `{2}' instance"
                               .format(self.__class__.name, meth.__name__,
                                       type(produced).__name__))
@@ -357,7 +408,8 @@ class CompositeFormat(Format, MetaPlugin):
         assert protocol[0] == self.__class__.native_protocol
         assert len(protocol[1]) == len(self._designee)
         args = args or ((),) * len(protocol[1])
-        return tuple(f._protocols[p](f, p, *a, **kwargs)
+        # should call produce instead
+        return tuple(f.producer(p)(p, *a, **kwargs)
                      for f, p, a in zip(self._designee, protocol[1], args))
 
 
