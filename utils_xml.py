@@ -57,6 +57,41 @@ RNG_ELEMENT = ("/{0}//{1}".format(namespaced('rng', 'grammar'),
                + "[@name = '{0}']")
 
 
+class ElementJuggler(object):
+    """Element juggling, possibly utilizing own temporary holder
+
+    This can be handy e.g. to automatically strip unused namespaces
+    for `tostring` method, without a need to copy/reparse, followed
+    by returning the element back.
+    """
+
+    _aside_tree = etree.ElementTree(etree.Element('ROOT'))
+
+    def __init__(self, tree=_aside_tree):
+        self._root = tree.getroot()
+
+    def grab(self, elem):
+        parent = elem.getparent()
+        assert parent is not self._root
+        parent_index = parent.index(elem)
+        self._root.append(elem)
+        return parent, parent_index
+
+    @staticmethod
+    def rebind(elem, parent_pos):
+        parent, parent_index = parent_pos
+        parent.insert(parent_index, elem)
+        return elem
+
+    def drop(self, elem):
+        parent = elem.getparent()
+        if parent is not self._root:
+            raise ValueError
+        parent.remove(elem)
+
+element_juggler = ElementJuggler()
+
+
 @selfaware
 def rng_pivot(me, et, tag):
     """Given Relax NG grammar etree as `et`, change start tag (in situ!)
