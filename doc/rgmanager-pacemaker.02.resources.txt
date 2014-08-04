@@ -499,6 +499,13 @@ P: by specifying `score` as WEIGHT
    # pcs constraint location add SOMEID B A WEIGHT(B,A)
 
 
+Initial exclusive resource-node affinity
+----------------------------------------
+
+TBD:
+https://bugzilla.redhat.com/994215#RFE--Control-which-node-a-service-autostarts-on
+
+
 
 Other resource properties
 =========================
