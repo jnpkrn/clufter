@@ -147,7 +147,7 @@ def defer_common(me, fnc, skip=0):
         fnc_varnames = tuple(fnc_varnames) + common_varnames
 
         def wrapfnc(cmd_ctxt, **kwargs):
-            common(cmd_ctxt, **filterdict_pop(kwargs, common_varnames))
+            common(cmd_ctxt, **filterdict_pop(kwargs, *common_varnames))
             kwargs.pop('_common', None)
             return fnc(cmd_ctxt, **kwargs)
         wrapfnc.__doc__ = fnc.__doc__ + common.__doc__
