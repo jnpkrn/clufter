@@ -85,15 +85,14 @@ ccs_obfuscate_identifiers = '''\
 '''
 
 flatccs2pcs = '''\
-    <xsl:for-each select="*[not(contains(concat(
-                              '|failoverdomains',
-                              '|events',
-                              '|resources',
-                              '|resource-defaults',
-                              '|'), concat('|', name(), '|')))]">
+    <xsl:for-each select="*[(contains(concat(
+                              '|service',
+                              '|vm',
+                              '|'), concat('|', name(), '|')))]/*">
         <xsl:variable name="Prefix"
                       select="concat('RESOURCE-', name(), '-',
-                                     @name, @address
+                                     @name,
+                                     translate(@address, '/', '_')
                               )"/>
         <primitive id="{$Prefix}">
             <xsl:choose>
