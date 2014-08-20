@@ -22,15 +22,18 @@ flatccs2pcs = '''\
             <!-- ip (+ cidr_netmask) ~ address -->
             <nvpair id="{concat($Prefix, '-ATTRS-ip')}"
                     name="ip"
-                    value="{@address}"/>
+                    value="{@address}">
                 <xsl:if test="$IpAddress">
                 <xsl:attribute name="value">
                     <xsl:value-of select="$IpAddress"/>
                 </xsl:attribute>
-                <nvpair id="{concat($Prefix, '-ATTRS-cidr_netmask')}"
-                        name="cidr_netmask"
-                        value="{substring-after(@address, '/')}"/>
                 </xsl:if>
+            </nvpair>
+            <xsl:if test="$IpAddress">
+            <nvpair id="{concat($Prefix, '-ATTRS-cidr_netmask')}"
+                    name="cidr_netmask"
+                    value="{substring-after(@address, '/')}"/>
+            </xsl:if>
         </instance_attributes>
     </xsl:when>
 '''
