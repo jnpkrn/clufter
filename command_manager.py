@@ -34,6 +34,7 @@ class CommandNotFoundError(ClufterPlainError):
 class CommandManager(PluginManager):
     """Class responsible for commands routing to filters or other actions"""
     _default_registry = commands
+    _implicit = None
 
     def _init_handle_plugins(self, commands, flt_mgr, *args):
         log.debug("Commands before resolving: {0}".format(commands))
@@ -41,6 +42,19 @@ class CommandManager(PluginManager):
 
     def __iter__(self):
         return self._commands.itervalues()
+
+    @classmethod
+    def implicit(cls, *args):
+        """Ad-hoc simply-cached construction of "implicit" manager's chain"""
+        if cls._implicit and not args:
+            implicit = cls._implicit
+        else:
+            from .filter_manager import FilterManager
+            from .format_manager import FormatManager
+            implicit = cls(FilterManager(FormatManager()), *args)
+            if not args:
+                cls._implicit = implicit
+        return implicit
 
     @staticmethod
     def _resolve(filters, commands, system='', system_extra=''):

@@ -17,7 +17,7 @@ from clufter.commands.ccs2pcs import ccs2pcs_needle
 
 class CommandManagerTestCase(unittest.TestCase):
     def setUp(self):
-        self.cmd_mgr = CommandManager(FilterManager(FormatManager()))
+        self.cmd_mgr = CommandManager.implicit()
 
     def tearDown(self):
         self.cmd_mgr.registry.setup(True)  # start from scratch

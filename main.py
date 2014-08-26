@@ -185,7 +185,7 @@ def run(argv=None, *args):
         pass
     set_logging(opts)
 
-    cm = CommandManager(FilterManager(FormatManager()), opts.sys, opts.dist)
+    cm = CommandManager.implicit(opts.sys, opts.dist)
     if not opts.help and (opts.list or opts.completion or not args):
         cmds = cm.pretty_cmds(ind=' ' * parser.formatter.indent_increment,
                               linesep_width=2,
