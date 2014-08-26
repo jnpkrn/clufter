@@ -9,8 +9,6 @@ import unittest
 
 import _bootstrap  # known W402, required
 
-from clufter.format_manager import FormatManager
-from clufter.filter_manager import FilterManager
 from clufter.command_manager import CommandManager
 from clufter.commands.ccs2pcs import ccs2pcs_needle
 

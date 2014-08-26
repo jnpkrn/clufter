@@ -17,8 +17,6 @@ from . import version_text, description_text
 from .command_manager import CommandManager
 from .completion import Completion
 from .error import EC
-from .format_manager import FormatManager
-from .filter_manager import FilterManager
 from .utils_prog import make_options, set_logging
 
 
@@ -122,7 +120,7 @@ class SharedOptionParser(OptionParser):
     # overridden methods
 
     def __init__(self, **kwargs):
-        if not 'formatter' in kwargs:
+        if 'formatter' not in kwargs:
             kwargs['formatter'] = SharedHelpFormatter()
         OptionParser.__init__(self, **kwargs)
         self.description_raw = ''
