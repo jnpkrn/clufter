@@ -9,7 +9,7 @@ from ..format import XML
 
 
 class ccs(XML):
-    """Cman-based cluster stack configuration (cluster.conf)
+    """CMAN-based cluster stack configuration (cluster.conf)
 
     Sometimes called Cluster Configuration System (ccs).
     """
@@ -21,8 +21,11 @@ class ccs(XML):
 
 
 class flatccs(ccs):
-    """Cman-based cluster stack configuration (cluster.conf)
+    """Private, artificially flattened CMAN-based cluster stack configuration
 
     Sometimes (ehm, exclusively by me) called Cluster Configuration System Flat.
+    This is a result of (one-off!) linearization of nested explicit ordering
+    of resources as performed internally by RGManager, and in turn, also
+    by the derived helper ccs_flatten (bundled).
     """
     pass

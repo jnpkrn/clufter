@@ -177,8 +177,14 @@ COOCCURENCE(B/RESOURCE1, C/RESOURCE2, POSITIVE)  [2. possitive cooccurence]
 a AND b -> c  [basic positive cooccurence condition]
 X b -> X d    ["dependent" follows its "leader"]
 
-R: driven by putting set of sequentially dependent resources hierarchically
-   (subsequent nesting) into service/vm
+R: driven by grouping set of sequentially dependent resources
+   either using subsequent nesting so as to preserve the predestined
+   order unconditionally (referred to as **explicit ordering**)
+   or just enumerating them on the same level within the hierarchy
+   to allow for (reasonably preselected) reordering as designated
+   (via service.sh metadata) rules (referred to as **implicit ordering**)
+   hierarchically (in general, but using just the latter provision
+   it can be plain flat) into service/vm stanza
    - `__independent_subtree` must not be used
 
 P: driven by (a) `colocation` constraint, specifying `INFINITY`,

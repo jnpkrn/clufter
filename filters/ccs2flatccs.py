@@ -20,6 +20,8 @@ CCS_FLATTEN = which('ccs_flatten', dirname_x(__file__, 2)) or ''
 def ccs2flatccs(flt_ctxt, in_obj):
     self = flt_ctxt.ctxt_wrapped
     # XXX currently ccs_flatten does not handle stdin (tempfile.mkstemp?)
+    # XXX conversion is not idempotent, should prevent using flatccs as input
+    #     (specifically, explicit ordering will get borken in subsequent round)
     in_file = in_obj('file')
     command = [CCS_FLATTEN, in_file]
     log.info("running `{0}'".format(' '.join(command)))
