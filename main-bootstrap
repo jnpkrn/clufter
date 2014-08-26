@@ -8,6 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import imp
 from os.path import dirname, join, realpath
+from sys import exit
 
 realdir = dirname(realpath(__file__))
 imp.load_source('main_bootstrap',  join(realdir, 'tests/_bootstrap.py'))
@@ -16,4 +17,4 @@ from clufter.main import run
 
 if __name__ == '__main__':
     from sys import argv
-    run(argv)
+    exit(run(argv))
