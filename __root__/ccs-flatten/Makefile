@@ -18,7 +18,7 @@ LDFLAGS += $(shell pkg-config --libs libxml-2.0)
 
 all: ${TARGET}
 ${TARGET}: ${OBJS}
-	${CC} ${CFLAGS} ${LDFLAGS} $^ -o $@
+	${CC} ${CFLAGS} $^ -o $@ ${LDFLAGS}
 
 metadata:
 	for f in $$(find ${RA_DIR} -maxdepth 1 -type f -name '*.sh' -printf '%f\n'); do \
