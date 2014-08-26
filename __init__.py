@@ -1,9 +1,10 @@
 # -*- coding: UTF-8 -*-
 version = '0.1'
+license = 'GPLv2+'
 copyright = """\
 Copyright 2014 Red Hat, Inc.
-Licensed under GPLv2+
-""".rstrip()
+Licensed under {0}
+""".format(license).rstrip()
 # XXX eventually there should be precise plugin authorship tracking
 author = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com> and plugin authors"
 
@@ -21,16 +22,25 @@ commands-filters-formats plugin framework.
 #cluster configuration of supported cluster stacks, and other
 #convenient actions.
 
+pkg_name = globals().get('ROOT')
+
 _deobfuscate_mail = (lambda what: what.replace(' @at@ ', '@')
                                       .replace(' .dot. ', '.')
                                       .replace('@Red Hat.', '@redhat.'))
 
 
-def version_text(package=None, sep='\n'):
-    if package is None:
+def package_name():
+    global pkg_name
+    if pkg_name is None:
         from os.path import basename, dirname
-        package = basename(dirname(__file__))
-    return (package + ' '
+        pkg_name = basename(dirname(__file__))
+    return pkg_name
+
+
+def version_text(name=pkg_name, sep='\n'):
+    if name is None:
+        name = package_name()
+    return (name + ' '
             + _deobfuscate_mail(sep.join(metadata).replace(' \n', '\n')))
 
 
