@@ -417,9 +417,9 @@ class Command(object):
                 kwargs[v] = opt
                 continue
             elif not isinstance(opt, (basestring, type(None))):
-                log.warning("`{0}' command: skipping attempt to pair argument"
-                            " to non-string `{1}' option (specify whole option"
-                            " instead)".format(self.__class__.name, v))
+                log.info("`{0}' command: skipping attempt to pair argument"
+                         " to non-string `{1}' option (specify whole option"
+                         " instead)".format(self.__class__.name, v))
                 continue
             try:
                 cur = args.pop()
@@ -434,9 +434,9 @@ class Command(object):
                     continue
                 raise CommandError(self, "missing ex-/implicit `{0}' value", v)
         if args:
-            log.warning("`{0}' command: unconsumed arguments: {1}"
-                        .format(self.__class__.name, ', '.join("`" + a + "'"
-                                                               for a in args)))
+            log.info("`{0}' command: unconsumed arguments: {1}"
+                     .format(self.__class__.name, ', '.join("`" + a + "'"
+                                                            for a in args)))
         log.debug("Running command `{0}';  args={1}, kwargs={2}"
                   .format(self.__class__.name, args, kwargs))
         cmd_ctxt = cmd_ctxt or CommandContext({
