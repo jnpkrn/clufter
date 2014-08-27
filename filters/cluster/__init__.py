@@ -52,6 +52,9 @@ ccs2needlexml = '''\
             <clufter:descent at="totem"/>
         </totem>
 
+        <!-- uidgid ~ uidgid -->
+        <clufter:descent at="uidgid"/>
+
     </corosync>
 '''
 
