@@ -8,10 +8,11 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 import logging
 from textwrap import wrap
 
-from .command import commands, CommandAlias
+from .command import commands, Command, CommandAlias
 from .error import ClufterError, ClufterPlainError, \
                    EC
 from .plugin_registry import PluginManager
+from .utils import nonetype
 from .utils_func import apply_preserving_depth, \
                         apply_aggregation_preserving_depth, \
                         apply_intercalate, \
@@ -90,7 +91,13 @@ class CommandManager(PluginManager):
             assert issubclass(alias_singleton, CommandAlias)
             resolved = alias_singleton(commands, system, system_extra)
             if resolved is None or resolved not in inverse_commands:
-                if resolved:
+                if issubclass(resolved, (Command, CommandAlias)):
+                    commands[cmd_name] = resolved
+                    if issubclass(resolved, CommandAlias):
+                        # alias to alias recursion -> just repeat the cycle
+                        aliases.append(resolved)
+                    continue
+                elif resolved:
                     log.warning("Resolve at `{0}' alias: target unrecognized"
                                 .format(cmd_name))
                 commands.pop(cmd_name)

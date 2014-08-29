@@ -39,6 +39,7 @@ log = logging.getLogger(__name__)
 
 protodecl = lambda x: len(x) == 2 and isinstance(x[0], Filter)
 
+
 class CommandError(ClufterError):
     pass
 
@@ -580,10 +581,11 @@ class CommandAlias(object):
             # XXX really pass mutable cmds dict?
             use_obj = fnc(cmds, system.lower(),
                                 tuple(system_extra.lower().split(',')))
-            if not isinstance(use_obj, Command):
-                assert isinstance(use_obj, basestring)
+            if isinstance(use_obj, basestring):
                 use_obj = cmds[use_obj]
                 assert isinstance(use_obj, Command)
+            else:
+                assert issubclass(use_obj, (nonetype, Command, CommandAlias))
             return use_obj
 
         attrs = {
