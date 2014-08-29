@@ -37,3 +37,7 @@ class Main(unittest.TestCase):
         self.assertFalse(cmd_manager.commands["ccs2pcs-needle"](clufter_args))
         # just the existence of the files is enough for now...
         map(lambda f: self.assertTrue(exists(f)), files.itervalues())
+
+
+if __name__ == '__main__':
+    unittest.main()
