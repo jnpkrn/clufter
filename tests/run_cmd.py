@@ -17,11 +17,13 @@ from clufter.command_manager import CommandManager
 class Main(unittest.TestCase):
     def testCcs2PcsNeedle(self):
         testfile = join(dirname(__file__), 'filled.conf')
+        testcib = join(dirname(__file__), '.testcib.xml')
+        testcoro = join(dirname(__file__), '.testcorosync.conf')
 
-        files = {
-            "cib": '/tmp/cibcib',
-            "coro": '/tmp/corocoro',
-        }
+        files = dict(
+            cib=testcib,
+            coro=testcoro,
+        )
         clufter_args = type("cluster_args", (object, ), dict(
             input=testfile,
             nocheck=True,
