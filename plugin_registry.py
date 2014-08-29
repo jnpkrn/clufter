@@ -56,9 +56,9 @@ class PluginRegistry(type):
                 # (e.g., specific plugin was imported natively)
                 registry.setup()
                 PluginRegistry._registries.add(registry)
-                if registry.namespace not in modules:
-                    # XXX hack to keep going in the test suite
-                    __import__(registry.namespace)
+                #if registry.namespace not in modules:
+                #    # XXX hack to keep going in the test suite
+                #    __import__(registry.namespace)
 
             ret = super(PluginRegistry, registry).__new__(registry, name,
                                                           bases, attrs)
