@@ -6,7 +6,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..command import Command
-from ..format import SimpleFormat
+from ..protocol import protocols
 
 
 @Command.deco(('ccs-obfuscate-credentials',
@@ -45,7 +45,7 @@ def ccs_obfuscate(cmd_ctxt,
     if skip == 2:
         cmd_ctxt['filter_noop'].append('ccs-obfuscate-identifiers')
 
-    FILE = SimpleFormat.FILE
+    FILE = protocols.plugins['file']
     return (
         (FILE, input),
         (

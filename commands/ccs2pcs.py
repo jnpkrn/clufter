@@ -7,7 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..command import Command, CommandAlias
 from ..filter import XMLFilter
-from ..format import SimpleFormat
+from ..protocol import protocols
 
 
 @Command.deco(('ccs2flatccs',
@@ -32,7 +32,7 @@ def ccs2pcs_flatiron(cmd_ctxt,
         ccs_pcmk  output Pacemaker pass-through CMAN configuration
         cib       output Pacemaker-based cluster configuration file
     """
-    FILE = SimpleFormat.FILE
+    FILE = protocols.plugins['file']
     return (
         (FILE, input),
         (
@@ -68,7 +68,7 @@ def ccs2pcs_needle(cmd_ctxt,
         cib      output Pacemaker-based cluster configuration file
         coro     output Corosync v2 configuration file
     """
-    FILE = SimpleFormat.FILE
+    FILE = protocols.plugins['file']
     return (
         (FILE, input),
         (

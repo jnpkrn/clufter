@@ -6,7 +6,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..command import Command
-from ..format import SimpleFormat
+from ..protocol import protocols
 
 
 @Command.deco('ccs-revitalize')
@@ -19,7 +19,7 @@ def ccs_revitalize(cmd_ctxt,
         input   input CMAN-based cluster configuration file
         output  output file with "revitalized" content
     """
-    FILE = SimpleFormat.FILE
+    FILE = protocols.plugins['file']
     return (
         (FILE, input),
         (FILE, output)

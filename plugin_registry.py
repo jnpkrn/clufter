@@ -9,6 +9,7 @@ import imp
 import logging
 from os import extsep, walk
 from os.path import abspath, dirname, join, splitext
+from collections import Mapping
 from contextlib import contextmanager
 from sys import modules
 
@@ -37,6 +38,7 @@ class PluginRegistry(type):
     Inspired by http://eli.thegreenplace.net/2012/08/07/ (Fundamental...).
     """
     _registries = set()  # dynamic tracking of specific registries
+    _proxy_plugins = None
 
     #
     # these are relevant for use case (1)
@@ -68,6 +70,16 @@ class PluginRegistry(type):
     #
     # these are relevant for both (1) + (2)
     #
+
+    class ProxyPlugins(Mapping):
+        def __init__(self, d):
+            self._d = d
+        def __getitem__(self, name):
+            return self._d[name]
+        def __iter__(self):
+            return iter(self._d)
+        def __len__(self):
+            return len(self._d)
 
     @classmethod
     def probe(registry, name, bases, attrs=None):
@@ -113,6 +125,12 @@ class PluginRegistry(type):
         except AttributeError:
             registry._namespace = '.'.join((__package__, registry.__name__))
             return registry._namespace
+
+    @classproperty
+    def plugins(registry):
+        if registry._proxy_plugins is None:
+            registry._proxy_plugins = registry.ProxyPlugins(registry._plugins)
+        return registry._proxy_plugins
 
     #
     # these are relevant for use case (2)
