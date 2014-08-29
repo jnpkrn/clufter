@@ -8,7 +8,6 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 import unittest
 from os.path import dirname, exists, join
 from os import unlink
-#import logging
 
 import _bootstrap
 
@@ -34,8 +33,6 @@ class Main(unittest.TestCase):
                 unlink(f)
             except OSError:
                 pass
-        #logging.basicConfig()
-        #logging.getLogger("clufter").setLevel(logging.DEBUG)
         cmd_manager = CommandManager.implicit()
         self.assertFalse(cmd_manager.commands["ccs2pcs-needle"](clufter_args))
         # just the existence of the files is enough for now...
