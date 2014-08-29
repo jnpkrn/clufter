@@ -20,6 +20,7 @@ from lxml import etree
 
 from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
+from .protocol import Protocol
 from .utils import arg2wrapped, args2tuple, args2unwrapped, \
                    classproperty, \
                    head_tail, \
@@ -291,7 +292,8 @@ class Format(object):
 
 class SimpleFormat(Format, MetaPlugin):
     """This is what most of the format classes want to subclass"""
-    native_protocol = 'bytestring'
+    native_protocol = BYTESTRING = Protocol('bytestring')
+    FILE = Protocol('file')
 
     def __init__(self, protocol, *args, **kwargs):
         """Format constructor, i.e., object = concrete uniformat data"""
@@ -300,37 +302,37 @@ class SimpleFormat(Format, MetaPlugin):
                .format(self.__class__.name, protocol)
         super(SimpleFormat, self).__init__(protocol, *args, **kwargs)
 
-    @Format.producing('bytestring')
+    @Format.producing(BYTESTRING)
     def get_bytestring(self, protocol):
-        if 'file' in self._representations:  # break the possible loop
-            with file(self('file'), 'rb') as f:
+        if self.FILE in self._representations:  # break the possible loop
+            with file(self(self.FILE), 'rb') as f:
                 return f.read()
 
-    @Format.producing('file')
+    @Format.producing(FILE)
     def get_file(self, protocol, outfile):
         if hasattr(outfile, 'write'):
             # assume fileobj out of our control, do not close
-            outfile.write(self('bytestring'))
+            outfile.write(self(self.BYTESTRING))
             return outfile.name
 
         assert isinstance(outfile, basestring)
         if outfile == '-' or outfile.rstrip('0123456789') == '@':
             if outfile == '-':
-                stdout.write(self('bytestring'))
+                stdout.write(self(self.BYTESTRING))
             else:
                 warn("@DIGIT+ in get_file deprecated, implicit handling fail?",
                      DeprecationWarning)
                 with fdopen(int(outfile[1:]), 'ab') as f:
-                    f.write(self('bytestring'))
+                    f.write(self(self.BYTESTRING))
         else:
             with file(outfile, 'wb') as f:
-                f.write(self('bytestring'))
+                f.write(self(self.BYTESTRING))
         return outfile
 
-    @staticmethod
-    def io_decl_fd(io_decl):
+    @classmethod
+    def io_decl_fd(cls, io_decl):
         """Return file descriptor (int) if conforms to "magic file" or None"""
-        if tuplist(io_decl) and len(io_decl) >= 2 and io_decl[0] == 'file':
+        if tuplist(io_decl) and len(io_decl) >= 2 and io_decl[0] == cls.FILE:
             if io_decl[1].rstrip('0123456789') == '@':
                 return int(io_decl[1][1:])
         return None
@@ -538,14 +540,16 @@ class XML(SimpleFormat):
 
     ###
 
-    native_protocol = 'etree'
+    native_protocol = ETREE = Protocol('etree')
+    BYTESTRING = SimpleFormat.BYTESTRING
+
     validator_specs = {
-        'etree': '*'  # grab whatever you'll find (with backtrack)
+        ETREE: '*'  # grab whatever you'll find (with backtrack)
     }
 
     @classmethod
     def etree_rng_validator(cls, et, root_dir=DEFAULT_ROOT_DIR,
-                            spec=validator_specs['etree'], start=None):
+                            spec=validator_specs[ETREE], start=None):
         """RNG-validate `et` ElementTree with schemes as per `root_dir`+`spec`
 
         ... and, optionally, narrowed to `start`-defined grammar segment.
@@ -614,13 +618,13 @@ class XML(SimpleFormat):
 
     etree_validator = etree_rng_validator
 
-    @SimpleFormat.producing('bytestring', chained=True)
+    @SimpleFormat.producing(BYTESTRING, chained=True)
     def get_bytestring(self, protocol):
         # chained fallback
-        return etree.tostring(self('etree', protect_safe=True),
+        return etree.tostring(self(self.ETREE, protect_safe=True),
                               pretty_print=True)
 
-    @SimpleFormat.producing('etree', protect=True,
+    @SimpleFormat.producing(ETREE, protect=True,
                             validator=etree_validator.__func__)
     def get_etree(self, protocol):
-        return etree.fromstring(self('bytestring')).getroottree()
+        return etree.fromstring(self(self.BYTESTRING)).getroottree()

@@ -16,12 +16,12 @@ class coroxml(XML):
     # XMLFormat
     root = 'corosync'
     validator_specs = {
-        'etree': ''  # XXX no RNG schema handy yet
+        XML.ETREE: ''  # XXX no RNG schema handy yet
     }
 
 
 class coroxml_needle(coroxml):
     """Corosync (v2. needle) executive configuration, XML version"""
     validator_specs = {
-        'etree': 'corosync.rng'
+        XML.ETREE: 'corosync.rng'
     }

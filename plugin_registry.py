@@ -12,8 +12,8 @@ from os.path import abspath, dirname, join, splitext
 from contextlib import contextmanager
 from sys import modules
 
-from .utils import classproperty, hybridproperty
-from .utils_prog import cli_decor
+from .utils import classproperty, hybridproperty, tuplist
+from .utils_prog import cli_decor, cli_undecor
 
 log = logging.getLogger(__name__)
 
@@ -70,10 +70,11 @@ class PluginRegistry(type):
     #
 
     @classmethod
-    def probe(registry, name, bases, attrs):
+    def probe(registry, name, bases, attrs=None):
         """Meta-magic to register plugin"""
         assert '-' not in name, "name cannot contain a dash"
         name = cli_decor(name)
+        attrs = attrs or {}
         try:
             ret = registry._plugins[name]
             log.info("Probe `{0}' plugin under `{1}' registry: already tracked"
@@ -81,7 +82,8 @@ class PluginRegistry(type):
         except KeyError:
             log.debug("Probe `{0}' plugin under `{1}' registry: yet untracked"
                       .format(name, registry.registry))
-            ret = super(PluginRegistry, registry).__new__(registry, name,
+            ret = bases if not tuplist(bases) else \
+                  super(PluginRegistry, registry).__new__(registry, name,
                                                           bases, attrs)
             registry._plugins[name] = ret
         finally:

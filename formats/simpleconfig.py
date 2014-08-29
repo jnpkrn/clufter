@@ -6,6 +6,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..format import SimpleFormat
+from ..protocol import Protocol
 from ..utils import tuplist
 from ..utils_func import apply_aggregation_preserving_depth
 
@@ -40,9 +41,10 @@ class simpleconfig(SimpleFormat):
        None]])
     """
     # NOTE yacc-based parser in fence-virt
-    native_protocol = 'struct'
+    native_protocol = STRUCT = Protocol('struct')
+    BYTESTRING = SimpleFormat.BYTESTRING
 
-    @SimpleFormat.producing('bytestring')
+    @SimpleFormat.producing(BYTESTRING)
     def get_bytestring(self, protocol):
         """Externalize 'struct', that is basically, pretty print it
 
@@ -69,12 +71,12 @@ class simpleconfig(SimpleFormat):
         }
         """
         # try to look (indirectly) if we have a file at hand first
-        ret = super(simpleconfig, self).get_bytestring('bytestring')
+        ret = super(simpleconfig, self).get_bytestring(self.BYTESTRING)
         if ret is not None:
             return ret
 
         # fallback
-        struct = self('struct', protect_safe=True)
+        struct = self(self.STRUCT, protect_safe=True)
         indent, optindent = ('\t', ) * 2
         lbrace, rbrace, optsep = '{', '}', ': '
         # XXX previous apply_aggregation_preserving_passing_depth attempt
@@ -112,7 +114,7 @@ class simpleconfig(SimpleFormat):
         ret = '\n'.join(ret.splitlines()[1:-1]) + '\n'
         return ret
 
-    @SimpleFormat.producing('struct', protect=True)
+    @SimpleFormat.producing(STRUCT, protect=True)
     def get_struct(self, protocol):
         # TODO parsing struct from string
         raise NotImplementedError
