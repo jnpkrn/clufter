@@ -83,7 +83,10 @@ class CommandManager(PluginManager):
             commands.pop(cmd_name)
 
         inverse_commands = dict((b, a) for a, b in commands.iteritems())
-        for cmd_name in aliases:
+        for i, cmd_name in enumerate(aliases):
+            if i >= 100:
+                log.warn("Signs of infinite loop observed, escaping loop")
+                break
             try:
                 alias_singleton = commands[cmd_name]
             except KeyError:
@@ -94,6 +97,7 @@ class CommandManager(PluginManager):
                 if issubclass(resolved, (Command, CommandAlias)):
                     commands[cmd_name] = resolved
                     if issubclass(resolved, CommandAlias):
+                        assert resolved is not alias_singleton, "triv. infloop"
                         # alias to alias recursion -> just repeat the cycle
                         aliases.append(resolved)
                     continue
