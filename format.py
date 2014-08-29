@@ -7,9 +7,9 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 # TODO: NamedTuple for tree_stack
 
-import imp
 from copy import deepcopy
 from glob import glob
+from imp import find_module, load_module
 from logging import getLogger
 from os import extsep, fdopen, walk
 from os.path import basename, commonprefix, dirname, exists, join, sep, splitext
@@ -500,7 +500,7 @@ class XML(SimpleFormat):
                     continue
 
                 log.debug("Trying `{0}' at `{1}'".format(name, root))
-                mfile, mpath, mdesc = imp.find_module(name, [root])
+                mfile, mpath, mdesc = find_module(name, [root])
                 # need to obfuscate the name due to, e.g., "logging" clash
                 mname = '.'.join((particular_namespace, 'walk_' + name))
                 # suppress problems with missing parent in module hierarchy
@@ -513,7 +513,7 @@ class XML(SimpleFormat):
                                           .format(mname))
                 else:
                     try:
-                        mod = imp.load_module(mname, mfile, mpath, mdesc)
+                        mod = load_module(mname, mfile, mpath, mdesc)
                     except ImportError:
                         log.debug("Cannot load `{0}'".format(mpath))
                         continue
