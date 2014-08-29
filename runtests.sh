@@ -58,4 +58,4 @@ if [ -z "${ACC}" ]; then
         ACC+=" --verbose"
     fi
 fi
-eval "${DEBUG} ${CMD} ${ACC} ${TAIL}"
+( cd "$(dirname "$0")"; eval "${DEBUG} ${CMD} ${ACC} ${TAIL}" )
