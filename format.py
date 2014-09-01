@@ -44,7 +44,7 @@ class formats(PluginRegistry):
     def __init__(cls, name, bases, attrs):
         # NOTE could be called multiple times, with popattr-destroyed
         #      form (attrs missing), so defer to attrs then
-        cls._protocols, cls._validators = {}, {}
+        cls._protocols, cls._validators, cls._protocol_attrs = {}, {}, set()
         cls._context = set(popattr(cls, 'context_specs',
                            attrs.pop('context_specs', ())))
         # protocols merge: top-down through inheritance
@@ -52,11 +52,15 @@ class formats(PluginRegistry):
             cls._protocols.update(getattr(base, '_protocols', {}))
             cls._validators.update(getattr(base, '_validators', {}))
             cls._context.update(getattr(base, '_context', ()))
+            cls._protocol_attrs.update(getattr(base, '_protocol_attrs', ()))
         # updated with locally defined proto's (marked by `producing` wrapper)
         specs = popattr(cls, 'validator_specs',
                         attrs.pop('validator_specs', {}))
 
         for attr, obj in iterattrs(cls):
+            if isinstance(obj, Protocol):
+                cls._protocol_attrs.add(attr)
+                continue
             try:
                 protocol = obj._protocol
                 delattr(obj, '_protocol')
@@ -182,6 +186,17 @@ class Format(object):
         if validators:  # force per-instance customization
             self._validators = dict(self._validators, **validators)
         # XXX self._dict = kwargs
+        # supercharge protocol objects with callability to provide
+        # a syntactic sugar: self(self.PROTO, ...) -> self.PROTO(...))
+        for attr in self._protocol_attrs:
+            def get_protocol_proxy(obj):
+                class ProtocolProxy(type(obj), MetaPlugin):
+                    def __call__(that, *args, **kwargs):
+                        return self(obj, *args, **kwargs)
+                obj.__class__ = ProtocolProxy
+                return obj
+            log.debug("Proxying {0} to add callability".format(attr))
+            setattr(self, attr, get_protocol_proxy(getattr(self, attr)))
         self.swallow(protocol, *args)
 
     @classmethod
@@ -305,28 +320,28 @@ class SimpleFormat(Format, MetaPlugin):
     @Format.producing(BYTESTRING)
     def get_bytestring(self, protocol):
         if self.FILE in self._representations:  # break the possible loop
-            with file(self(self.FILE), 'rb') as f:
+            with file(self.FILE(), 'rb') as f:
                 return f.read()
 
     @Format.producing(FILE)
     def get_file(self, protocol, outfile):
         if hasattr(outfile, 'write'):
             # assume fileobj out of our control, do not close
-            outfile.write(self(self.BYTESTRING))
+            outfile.write(self.BYTESTRING())
             return outfile.name
 
         assert isinstance(outfile, basestring)
         if outfile == '-' or outfile.rstrip('0123456789') == '@':
             if outfile == '-':
-                stdout.write(self(self.BYTESTRING))
+                stdout.write(self.BYTESTRING())
             else:
                 warn("@DIGIT+ in get_file deprecated, implicit handling fail?",
                      DeprecationWarning)
                 with fdopen(int(outfile[1:]), 'ab') as f:
-                    f.write(self(self.BYTESTRING))
+                    f.write(self.BYTESTRING())
         else:
             with file(outfile, 'wb') as f:
-                f.write(self(self.BYTESTRING))
+                f.write(self.BYTESTRING())
         return outfile
 
     @classmethod
@@ -621,10 +636,10 @@ class XML(SimpleFormat):
     @SimpleFormat.producing(BYTESTRING, chained=True)
     def get_bytestring(self, protocol):
         # chained fallback
-        return etree.tostring(self(self.ETREE, protect_safe=True),
+        return etree.tostring(self.ETREE(protect_safe=True),
                               pretty_print=True)
 
     @SimpleFormat.producing(ETREE, protect=True,
                             validator=etree_validator.__func__)
     def get_etree(self, protocol):
-        return etree.fromstring(self(self.BYTESTRING)).getroottree()
+        return etree.fromstring(self.BYTESTRING()).getroottree()

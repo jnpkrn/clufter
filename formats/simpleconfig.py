@@ -76,7 +76,7 @@ class simpleconfig(SimpleFormat):
             return ret
 
         # fallback
-        struct = self(self.STRUCT, protect_safe=True)
+        struct = self.STRUCT(protect_safe=True)
         indent, optindent = ('\t', ) * 2
         lbrace, rbrace, optsep = '{', '}', ': '
         # XXX previous apply_aggregation_preserving_passing_depth attempt
