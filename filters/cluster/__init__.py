@@ -44,7 +44,9 @@ ccs2needlexml = '''\
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:message>
-                            <xsl:value-of select="concat('Unsupported value for `transport&quot; dropped: ', .)"/>
+                            <xsl:value-of select="concat('Unsupported value for `transport',
+                                                         &quot;'&quot;, ' dropped: ',
+                                                         cman/@transport)"/>
                         </xsl:message>
                     </xsl:otherwise>
                 </xsl:choose>
