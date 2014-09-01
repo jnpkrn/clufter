@@ -58,9 +58,11 @@ class PluginRegistry(type):
                 # (e.g., specific plugin was imported natively)
                 registry.setup()
                 PluginRegistry._registries.add(registry)
-                #if registry.namespace not in modules:
-                #    # XXX hack to keep going in the test suite
-                #    __import__(registry.namespace)
+                # rely on __builtin__ being always present, hence failing test
+                if (registry.namespace or '__builtin__') not in modules:
+                    # XXX hack to prevent RuntimeWarning due to missing parent
+                    #     module (e.g., some tests in the test suite)
+                    __import__(registry.namespace)
 
             ret = super(PluginRegistry, registry).__new__(registry, name,
                                                           bases, attrs)

@@ -22,6 +22,8 @@ class protocols(PluginRegistry):
     in-code documentation of their usage as opposed to much further
     in the processing with some files already successfully produced, etc.
     """
+    _namespace = ''  # avoid the plugins module-import namespace, unused anyway
+
     @classmethod
     def register(registry, pr):
         # undecor to pass the checks in probe
