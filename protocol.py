@@ -7,11 +7,16 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
 
+from collections import MutableMapping
+
 from .plugin_registry import PluginRegistry
-from .utils import tuplist
+from .utils import args2sgpl, tuplist
 from .utils_prog import cli_undecor
 
 log = logging.getLogger(__name__)
+
+protodict = lambda x: isinstance(x, MutableMapping) and 'passin' in x
+protodictval = lambda x: args2sgpl(x['passin']) if protodict(x) else x
 
 
 class protocols(PluginRegistry):
@@ -40,4 +45,9 @@ class Protocol(str):
         return protocols.register(ret)
 
     def ensure_proto(self, value):
-        return value if tuplist(value) else (self, value)
+        work_val = protodictval(value)
+        work_val = work_val if tuplist(work_val) else (str(self), work_val)
+        if protodict(value):
+            value['passin'] = work_val
+            work_val = value
+        return work_val

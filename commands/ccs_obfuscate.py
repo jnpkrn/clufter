@@ -45,10 +45,10 @@ def ccs_obfuscate(cmd_ctxt,
     if skip == 2:
         cmd_ctxt['filter_noop'].append('ccs-obfuscate-identifiers')
 
-    FILE = protocols.plugins['file']
+    file_proto = protocols.plugins['file'].ensure_proto
     return (
-        (FILE, input),
+        file_proto(input),
         (
-            (FILE, output),
-        )
+            file_proto(output),
+        ),
     )

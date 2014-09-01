@@ -19,8 +19,8 @@ def ccs_revitalize(cmd_ctxt,
         input   input CMAN-based cluster configuration file
         output  output file with "revitalized" content
     """
-    FILE = protocols.plugins['file']
+    file_proto = protocols.plugins['file'].ensure_proto
     return (
-        (FILE, input),
-        (FILE, output)
+        file_proto(input),
+        file_proto(output),
     )

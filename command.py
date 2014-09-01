@@ -6,6 +6,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
+from collections import MutableMapping
 from itertools import izip_longest
 from optparse import SUPPRESS_HELP
 from os import fdopen
@@ -16,6 +17,7 @@ from .error import ClufterError, \
 from .filter import Filter
 from .format import SimpleFormat
 from .plugin_registry import PluginRegistry
+from .protocol import protodictval
 from .utils import any2iter, \
                    args2sgpl, \
                    args2tuple, \
@@ -23,6 +25,7 @@ from .utils import any2iter, \
                    func_defaults_varnames, \
                    head_tail, \
                    hybridproperty, \
+                   nonetype, \
                    selfaware, \
                    tuplist
 from .utils_func import apply_aggregation_preserving_depth, \
@@ -289,7 +292,7 @@ class Command(object):
             for passno, check in enumerate(head_tail(to_check_inner)):
                 checked = apply_aggregation_preserving_depth(
                     lambda i:
-                        head_tail(i[1])[0] not in getattr(i[0],
+                        head_tail(protodictval(i[1]))[0] not in getattr(i[0],
                             ('in_format', 'out_format')[passno])._protocols
                             and str(head_tail(i[1])[0]) or None
                         if protodecl(i) else i if any(i) else None
@@ -332,8 +335,12 @@ class Command(object):
         worklist = list(reversed(tailshake(terminal_chain,
                                            partitioner=lambda x:
                                            not (tuplist(x)) or protodecl(x))))
+        unused = {}
         while worklist:
             flt, io_decl = worklist.pop()
+            io_decl_use = protodictval(io_decl)
+            io_decl, passout = (io_decl_use, unused if io_decl_use is io_decl
+                                             else io_decl)
             flt_ctxt = cmd_ctxt.ensure_filter(flt)
             with flt_ctxt.prevented_taint():
                 fmt_kws = filterdict_keep(flt_ctxt, *flt.in_format.context)
@@ -363,7 +370,8 @@ class Command(object):
                                       .format(nt.__class__.__name__)
                                               for nt in notyet),
                                       flt.__class__.__name__))
-                    worklist.append((flt, io_decl))
+                    worklist.append((flt, io_decl if passout is unused
+                                          else passout))
                     worklist.extend(reversed(tuple((ny, None)
                                              for ny in notyet)))
                     continue
@@ -395,8 +403,8 @@ class Command(object):
             # output time!  (INFILTER terminal listed twice in io_chain)
             log.debug("Run `{0}' filter with `{1}' io decl. as TERMINAL"
                       .format(flt.__class__.__name__, io_decl))
-            # XXX following could be stored somewhere, but rather pointless
-            flt_ctxt['out'](*io_decl)
+            # store output somewhere, which even can be useful (use as a lib)
+            passout['passout'] = flt_ctxt['out'](*io_decl)
 
         map(lambda f: f.close(), magic_fds.itervalues())  # close "magic" fds
         return EC.EXIT_SUCCESS  # XXX some better decision?
@@ -414,7 +422,8 @@ class Command(object):
         for v in fnc_varnames:
             default = fnc_defaults.get(v, None)
             opt = getattr(opts, v, default)
-            if opt != default and type(opt) == type(default):
+            if opt != default and isinstance(opt, (type(default),
+                                                   MutableMapping)):
                 kwargs[v] = opt
                 continue
             elif not isinstance(opt, (basestring, type(None))):

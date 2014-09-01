@@ -32,17 +32,17 @@ def ccs2pcs_flatiron(cmd_ctxt,
         ccs_pcmk  output Pacemaker pass-through CMAN configuration
         cib       output Pacemaker-based cluster configuration file
     """
-    FILE = protocols.plugins['file']
+    file_proto = protocols.plugins['file'].ensure_proto
     return (
-        (FILE, input),
+        file_proto(input),
         (
-            (FILE, ccs_pcmk),
+            file_proto(ccs_pcmk),
             (
                 (
-                    (FILE, cib),
+                    file_proto(cib),
                 ),
-            )
-        )
+            ),
+        ),
     )
 
 
@@ -68,19 +68,19 @@ def ccs2pcs_needle(cmd_ctxt,
         cib      output Pacemaker-based cluster configuration file
         coro     output Corosync v2 configuration file
     """
-    FILE = protocols.plugins['file']
+    file_proto = protocols.plugins['file'].ensure_proto
     return (
-        (FILE, input),
+        file_proto(input),
         (
             (
                 (
-                    (FILE, cib),
+                    file_proto(cib),
                 ),
             ),
             (
-                (FILE, coro),
-            )
-        )
+                file_proto(coro),
+            ),
+        ),
     )
 
 

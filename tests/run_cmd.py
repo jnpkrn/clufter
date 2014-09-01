@@ -40,6 +40,24 @@ class Main(unittest.TestCase):
         # just the existence of the files is enough for now...
         map(lambda f: self.assertTrue(exists(f)), files.itervalues())
 
+    def testCcs2PcsNeedleBetter(self):
+        testfile = join(dirname(__file__), 'filled.conf')
+
+        files = {
+            "cib": {'passin': 'bytestring', },
+            "coro": {'passin': 'bytestring', },
+        }
+        clufter_args = type("cluster_args", (object, ), dict(
+            input=testfile,
+            nocheck=True,
+            batch=True,
+            **files)
+        )
+        cmd_manager = CommandManager.implicit()
+        self.assertFalse(cmd_manager.commands["ccs2pcs-needle"](clufter_args))
+        # just the existence of non-null strings is enough for now...
+        map(lambda fspec: self.assertTrue(fspec['passout']), files.values())
+
 
 if __name__ == '__main__':
     unittest.main()
