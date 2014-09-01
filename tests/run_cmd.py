@@ -15,30 +15,30 @@ from clufter.command_manager import CommandManager
 
 
 class Main(unittest.TestCase):
-    def testCcs2PcsNeedle(self):
-        testfile = join(dirname(__file__), 'filled.conf')
-        testcib = join(dirname(__file__), '.testcib.xml')
-        testcoro = join(dirname(__file__), '.testcorosync.conf')
+    #def testCcs2PcsNeedle(self):
+    #    testfile = join(dirname(__file__), 'filled.conf')
+    #    testcib = join(dirname(__file__), '.testcib.xml')
+    #    testcoro = join(dirname(__file__), '.testcorosync.conf')
 
-        files = dict(
-            cib=testcib,
-            coro=testcoro,
-        )
-        clufter_args = type("cluster_args", (object, ), dict(
-            input=testfile,
-            nocheck=True,
-            batch=True,
-            **files)
-        )
-        for f in files.itervalues():
-            try:
-                unlink(f)
-            except OSError:
-                pass
-        cmd_manager = CommandManager.implicit()
-        self.assertFalse(cmd_manager.commands["ccs2pcs-needle"](clufter_args))
-        # just the existence of the files is enough for now...
-        map(lambda f: self.assertTrue(exists(f)), files.itervalues())
+    #    files = dict(
+    #        cib=testcib,
+    #        coro=testcoro,
+    #    )
+    #    clufter_args = type("cluster_args", (object, ), dict(
+    #        input=testfile,
+    #        nocheck=True,
+    #        batch=True,
+    #        **files)
+    #    )
+    #    for f in files.itervalues():
+    #        try:
+    #            unlink(f)
+    #        except OSError:
+    #            pass
+    #    cmd_manager = CommandManager.implicit()
+    #    self.assertFalse(cmd_manager.commands["ccs2pcs-needle"](clufter_args))
+    #    # just the existence of the files is enough for now...
+    #    map(lambda f: self.assertTrue(exists(f)), files.itervalues())
 
     def testCcs2PcsNeedleBetter(self):
         testfile = join(dirname(__file__), 'filled.conf')
