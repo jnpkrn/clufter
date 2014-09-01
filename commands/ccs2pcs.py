@@ -92,5 +92,5 @@ def ccs2pcs(cmds, system, system_extra):
         v = v[:-len(v.lstrip('0123456789.'))] or str.isdigit(v[0]) and v or '0'
         v = tuple(map(int, (v.rstrip('.') + '.0.0').split('.')[:2]))
         if v < (7, 0):
-            return 'ccs2pcs-flatiron'
-    return 'ccs2pcs-needle'
+            return ccs2pcs_flatiron  # could be string ('ccs2pcs-flatiron')
+    return ccs2pcs_needle
