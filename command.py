@@ -296,7 +296,7 @@ class Command(object):
                             ('in_format', 'out_format')[passno])._protocols
                             and str(head_tail(i[1])[0]) or None
                         if protodecl(i) else i if any(i) else None
-                )(to_check_inner[passno])
+                )(check)
                 checked_flat = apply_intercalate((checked,))
                 for order, cmd in filter(lambda (i, x): x,
                                          enumerate(checked_flat)):
