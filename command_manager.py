@@ -167,8 +167,8 @@ class CommandManager(PluginManager):
                     refer_str='alias for {0}'):
         """Return string containing formatted list of commands (name + desc)"""
         cmds_aliases = [
-            ([(name, refer_str.format(obj) if i
-                     else obj.__doc__.splitlines()[0]) for name, obj in cat],
+            ([(name, refer_str.format(obj) if i else
+                     obj.__doc__.splitlines()[0]) for name, obj in sorted(cat)],
               max(tuple(len(name) for name, _ in cat)) if cat else 0)
             for i, cat in enumerate(
                 bifilter(lambda (name, obj): not isinstance(obj, basestring),
