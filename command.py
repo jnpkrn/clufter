@@ -512,7 +512,17 @@ class Command(object):
         direction of flow from the inputs towards outputs (final outputs
         at terminals: B, D, P), is encoded as:
 
-            ((A, B, (C, D, P)), (O, P), )
+            (A, B, (C, D, P)), (O, P)
+
+        when reformatted as per the only Approved Indenting Convention (TM):
+
+            (A,
+                (B),
+                (C,
+                    (D),
+                    (P))),
+            (O,
+                (P))
 
         where, for filter x (in {A, ..., D, O, P} for the example at hand):
 
@@ -568,11 +578,22 @@ class Command(object):
                 #   as the association is performed on intercalated chains
                 #   anyway (note that this is orthogonal to simplification 2.)
 
-            for the graph above, it would be, e.g.,:
+            for the graph above, it would be -- following the only
+            Approved Indenting Convention (TM) --, e.g.,:
 
-            (('Aproto', 'a-in.txt'),
-                (('Bproto', 'b-out.txt'), (('Dproto', 'd-out.txt'), ('Pproto')))),
-            (('Oproto', 'e-in.txt'), )
+                (
+                    ('Aproto', 'a-in.txt'),
+                    (
+                        ('Bproto', 'b-out.txt'),
+                        (
+                            ('Dproto', 'd-out.txt'),
+                            ('Pproto'),
+                        ),
+                    ),
+                ),
+                (
+                    ('Oproto', 'o-in.txt'),
+                )
 
             #which, as per point 4., can be further simplified as:
 
