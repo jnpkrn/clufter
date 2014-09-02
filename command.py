@@ -61,9 +61,9 @@ class Command(object):
     __metaclass__ = commands
 
     @classmethod
-    def _resolve(cls, flts):
+    def _resolve_filter_chain(cls, filters):
         res_input = cls._filter_chain
-        res_output = apply_preserving_depth(flts.get)(res_input)
+        res_output = apply_preserving_depth(filters.get)(res_input)
         if apply_aggregation_preserving_depth(all)(res_output):
             log.debug("resolve at `{0}' command: `{1}' -> {2}"
                       .format(cls.name, repr(res_input), repr(res_output)))
@@ -83,8 +83,8 @@ class Command(object):
         """Chain of filter identifiers/classes for the command"""
         return this._filter_chain
 
-    def __new__(cls, flts, *args):
-        filter_chain = cls._resolve(flts)
+    def __new__(cls, filters, *args):
+        filter_chain = cls._resolve_filter_chain(filters)
         if filter_chain is None:
             return None
         self = super(Command, cls).__new__(cls)
@@ -391,8 +391,8 @@ class Command(object):
                 if notyet:
                     log.debug("Backtrack with inclusion of {0} to feed `{1}'"
                               .format(', '.join("`{0}'"
-                                      .format(nt.__class__.__name__)
-                                              for nt in notyet),
+                                      .format(ny.__class__.__name__)
+                                              for ny in notyet),
                                       flt.__class__.__name__))
                     worklist.append((flt, io_decl if passout is unused
                                           else passout))
@@ -460,7 +460,7 @@ class Command(object):
                 while cur == '':  # deliberately skip (implicit) empty string
                     cur = args.pop()
                 if cur is not None:  # incl. case of explicit empty string
-                    kwargs[v] = cur.replace("''","") if len(cur) == 2 else cur
+                    kwargs[v] = cur.replace("''", "") if len(cur) == 2 else cur
                     continue
                 raise IndexError  # "required arg not provided" for sugar spec
             except IndexError:
