@@ -70,7 +70,6 @@ class Command(object):
             return res_output
         # drop the command if cannot resolve any of the filters
         res_input = apply_intercalate(res_input)
-        log.debug("cmd_name {0}".format(res_input))
         map(lambda (i, x): log.warning("Resolve at `{0}' command:"
                                        " `{1}' (#{2}) filter fail"
                                        .format(cls.name, res_input[i], i)),
