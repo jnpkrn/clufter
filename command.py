@@ -31,6 +31,7 @@ from .utils import any2iter, \
 from .utils_func import apply_aggregation_preserving_depth, \
                         apply_intercalate, \
                         apply_loose_zip_preserving_depth, \
+                        apply_preserving_depth, \
                         bifilter, \
                         tailshake, \
                         zip_empty
@@ -59,13 +60,35 @@ class Command(object):
     """
     __metaclass__ = commands
 
+    @classmethod
+    def _resolve(cls, flts):
+        res_input = cls._filter_chain
+        res_output = apply_preserving_depth(flts.get)(res_input)
+        if apply_aggregation_preserving_depth(all)(res_output):
+            log.debug("resolve at `{0}' command: `{1}' -> {2}"
+                      .format(cls.name, repr(res_input), repr(res_output)))
+            return res_output
+        # drop the command if cannot resolve any of the filters
+        res_input = apply_intercalate(res_input)
+        log.debug("cmd_name {0}".format(res_input))
+        map(lambda (i, x): log.warning("Resolve at `{0}' command:"
+                                       " `{1}' (#{2}) filter fail"
+                                       .format(cls.name, res_input[i], i)),
+            filter(lambda (i, x): not(x),
+                   enumerate(apply_intercalate(res_output))))
+        return None
+
     @hybridproperty
     def filter_chain(this):
         """Chain of filter identifiers/classes for the command"""
         return this._filter_chain
 
-    def __init__(self, *filter_chain):
-        self._filter_chain = filter_chain  # already resolved
+    def __new__(cls, flts, *args):
+        filter_chain = cls._resolve(flts)
+        if filter_chain is None:
+            return None
+        self = super(Command, cls).__new__(cls)
+        self._filter_chain = filter_chain
         # following will all be resolved lazily, on-demand;
         # all of these could be evaluated upon instantiation immediately,
         # but this is not the right thing to do due to potentially many
@@ -73,6 +96,7 @@ class Command(object):
         # of them will be run later on
         self._desc_opts = None
         self._filter_chain_analysis = None  # will be dict
+        return self
 
     #
     # filter chain related
@@ -577,30 +601,46 @@ class CommandAlias(object):
     """Way to define either static or dynamic command alias"""
     __metaclass__ = commands
 
+    def __new__(cls, flts, cmds, *args):
+        ic, sys, sys_extra = (lambda i={}, s='', e='', *a: (i, s, e))(*args)
+        # XXX really pass mutable cmds dict?
+        use_obj = cls
+        use_obj = use_obj._fnc(cmds, sys.lower(),
+                               tuple(sys_extra.lower().split(',')))
+        for i in xrange(1, 100):  # prevent infloop by force
+            if isinstance(use_obj, basestring):
+                use_obj = cmds.get(use_obj, None)
+                if not isinstance(use_obj, (nonetype, Command)):
+                    assert issubclass(use_obj, CommandAlias)
+                    assert use_obj is not cls, "trivial infloop"
+                    continue
+            elif use_obj is None:
+                pass
+            else:
+                assert issubclass(use_obj, (Command, CommandAlias))
+                if use_obj in ic:
+                    use_obj = cmds[ic[use_obj]]
+                else:
+                    name = '_' + use_obj.name
+                    assert name not in cmds
+                    ic[use_obj] = name
+                    cmds[name] = use_obj = use_obj(flts, cmds, *args)
+            assert isinstance(use_obj, (nonetype, Command)), repr(use_obj)
+            return use_obj
+
     @classmethod
     def deco(outer_cls, decl):
         if not hasattr(decl, '__call__'):
             assert issubclass(decl, Command)
-            fnc = lambda **kwargs: decl
+            fnc = lambda *args, **kwargs: decl
         else:
             fnc = decl
         log.debug("CommandAlias: deco for {0}".format(fnc))
 
-        def new(cls, cmds, system='', system_extra=''):
-            # XXX really pass mutable cmds dict?
-            use_obj = fnc(cmds, system.lower(),
-                                tuple(system_extra.lower().split(',')))
-            if isinstance(use_obj, basestring):
-                use_obj = cmds[use_obj]
-                assert isinstance(use_obj, Command)
-            else:
-                assert issubclass(use_obj, (nonetype, Command, CommandAlias))
-            return use_obj
-
-        attrs = {
-            '__module__': fnc.__module__,
-            '__new__': new,
-        }
+        attrs = dict(
+            __module__=fnc.__module__,
+            _fnc=staticmethod(fnc)
+        )
         # optimization: shorten type() -> new() -> probe
         ret = outer_cls.probe(fnc.__name__, (outer_cls, ), attrs)
         return ret

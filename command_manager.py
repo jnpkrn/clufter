@@ -8,15 +8,11 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 import logging
 from textwrap import wrap
 
-from .command import commands, Command, CommandAlias
+from .command import commands, CommandAlias
 from .error import ClufterError, ClufterPlainError, \
                    EC
 from .plugin_registry import PluginManager
-from .utils import nonetype
-from .utils_func import apply_preserving_depth, \
-                        apply_aggregation_preserving_depth, \
-                        apply_intercalate, \
-                        bifilter
+from .utils_func import bifilter
 from .utils_prog import make_options, set_logging
 
 log = logging.getLogger(__name__)
@@ -61,52 +57,36 @@ class CommandManager(PluginManager):
     def _resolve(filters, commands, system='', system_extra=''):
         # name -> (cmd obj if not alias or resolvable name)
         aliases = []
+        inverse_commands = dict((b, a) for a, b in commands.iteritems())
+
+        # first, resolve end-use commands
         for cmd_name, cmd_cls in commands.items():
             if issubclass(cmd_cls, CommandAlias):
                 aliases.append(cmd_name)
                 continue
-            res_input = cmd_cls.filter_chain
-            res_output = apply_preserving_depth(filters.get)(res_input)
-            if apply_aggregation_preserving_depth(all)(res_output):
-                log.debug("resolve at `{0}' command: `{1}' -> {2}"
-                          .format(cmd_name, repr(res_input), repr(res_output)))
-                commands[cmd_name] = cmd_cls(*res_output)
-                continue
-            # drop the command if cannot resolve any of the filters
-            res_input = apply_intercalate(res_input)
-            log.debug("cmd_name {0}".format(res_input))
-            map(lambda (i, x): log.warning("Resolve at `{0}' command:"
-                                           " `{1}' (#{2}) filter fail"
-                                           .format(cmd_name, res_input[i], i)),
-                filter(lambda (i, x): not(x),
-                       enumerate(apply_intercalate(res_output))))
-            commands.pop(cmd_name)
-
-        inverse_commands = dict((b, a) for a, b in commands.iteritems())
-        for i, cmd_name in enumerate(aliases):
-            if i >= 100:
-                log.warn("Signs of infinite loop observed, escaping loop")
-                break
-            try:
-                alias_singleton = commands[cmd_name]
-            except KeyError:
-                continue
-            assert issubclass(alias_singleton, CommandAlias)
-            resolved = alias_singleton(commands, system, system_extra)
-            if resolved is None or resolved not in inverse_commands:
-                if issubclass(resolved, (Command, CommandAlias)):
-                    commands[cmd_name] = resolved
-                    if issubclass(resolved, CommandAlias):
-                        assert resolved is not alias_singleton, "triv. infloop"
-                        # alias to alias recursion -> just repeat the cycle
-                        aliases.append(resolved)
-                    continue
-                elif resolved:
-                    log.warning("Resolve at `{0}' alias: target unrecognized"
-                                .format(cmd_name))
+            ret = cmd_cls(filters)
+            if ret is not None:
+                commands[cmd_name] = ret
+            else:
                 commands.pop(cmd_name)
-                continue
-            commands[cmd_name] = inverse_commands[resolved]
+
+        # only then resolve the command aliases, track a string identifying
+        # end-use command in `commands`
+        for cmd_name in aliases:
+            alias = commands[cmd_name]
+            if not isinstance(alias, basestring):
+                # not resolved yet
+                assert issubclass(alias, CommandAlias)
+                resolved = alias(filters, commands, inverse_commands,
+                                 system, system_extra)
+                resolved_cls = type(resolved)
+                if resolved_cls not in inverse_commands:
+                    if resolved is not None:
+                        log.warning("Resolve at `{0}' alias: target unknown"
+                                    .format(cmd_name))
+                    commands.pop(cmd_name)
+                else:
+                    commands[cmd_name] = inverse_commands[resolved_cls]
 
         return commands
 

@@ -22,9 +22,6 @@ from clufter.formats.ccs import ccs, flatccs
 from clufter.formats.coro import coroxml
 from clufter.formats.pcs import pcs
 
-from clufter.utils_func import apply_preserving_depth, \
-                               apply_aggregation_preserving_depth
-
 
 class ChainResolve(unittest.TestCase):
     def testShapeAndProtocolMatch(self):
@@ -112,27 +109,22 @@ class ChainResolve(unittest.TestCase):
         )
         split = cmd_classes.index(cmd_chain_nonmatch_01)
         for i, cmd_cls in enumerate(cmd_classes):
-            res_input = cmd_cls.filter_chain
-            res_output = apply_preserving_depth(filters.get)(res_input)
-            if apply_aggregation_preserving_depth(all)(res_output):
-                #log.debug("resolve at `{0}' command: `{1}' -> {2}"
-                #          .format(cmd_cls.name, repr(res_input), repr(res_output)))
-                try:
-                    cmd_cls(*res_output)({}, [])  # no args/kwargs
-                except CommandError as e:
-                    print "{0}: {1}".format(cmd_cls.name, e)
-                    self.assertFalse(i < split)
-                except Exception as e:
-                    print "{0}: {1}".format(cmd_cls.name, e)
-                    self.assertTrue(i < split)
-                    raise
-                else:
-                    self.assertTrue(i < split)
-                    # also test non-zero-size output whe
-                    self.assertTrue(stat(testoutput).st_size > 0)
-                    remove(testoutput)
-                continue
-            self.assertTrue(False)
+            try:
+                ret = cmd_cls(filters)({}, [])  # no args/kwargs
+                self.assertTrue(ret is not None)
+            except CommandError as e:
+                print "{0}: {1}".format(cmd_cls.name, e)
+                self.assertFalse(i < split)
+            except Exception as e:
+                print "{0}: {1}".format(cmd_cls.name, e)
+                self.assertTrue(i < split)
+                raise
+            else:
+                self.assertTrue(i < split)
+                # also test non-zero-size output whe
+                self.assertTrue(stat(testoutput).st_size > 0)
+                remove(testoutput)
+            continue
 
 
 if __name__ == '__main__':
