@@ -24,12 +24,17 @@ from lxml import etree
 from . import package_name
 from .defaults import EDITOR
 from .error import ClufterError, ClufterPlainError
-from .format import XML
+from .format import CompositeFormat, XML
 from .plugin_registry import MetaPlugin, PluginRegistry
 from .utils import args2tuple, \
                    filterdict_keep, filterdict_pop, \
-                   head_tail, hybridproperty
-from .utils_func import loose_zip, zip_empty
+                   head_tail, hybridproperty, \
+                   tuplist
+from .utils_func import apply_preserving_depth, \
+                        apply_aggregation_preserving_depth, \
+                        apply_intercalate, \
+                        loose_zip, \
+                        zip_empty
 from .utils_prog import cli_undecor, which
 from .utils_xml import NAMESPACES, namespaced, nselem, squote, \
                        element_juggler, xml_get_root_pi, xmltag_get_namespace,\
@@ -87,8 +92,53 @@ class Filter(object):
     """
     __metaclass__ = filters
 
-    def __init__(self, in_format, out_format):
-        self._in_format, self._out_format = in_format, out_format  # resolved
+    @staticmethod
+    def _resolve_formats_composite(formats):
+        # XXX should rather be implemented by CompositeFormat itself?
+        composite_onthefly = \
+            lambda protocol, *args: \
+                CompositeFormat(protocol, formats=formats, *args)
+        # XXX currently instantiation only (no match for composite classes)
+        composite_onthefly.as_instance = composite_onthefly
+        composite_onthefly.context = CompositeFormat.context
+        return composite_onthefly
+
+    @classmethod
+    def _resolve_formats(cls, formats):
+        res_input = [cls.in_format, cls.out_format]
+        res_output = apply_preserving_depth(formats.get)(res_input)
+        if apply_aggregation_preserving_depth(all)(res_output):
+            log.debug("Resolve at `{0}' filter: `{1}' -> {2}"
+                      .format(cls.name, repr(res_input), repr(res_output)))
+            # capture composite formats if present;  when running
+            # into composite format, we replace in-situ the whole iterable
+            # with as-of-now resolved formats with lazily pulled
+            # CompositeFormat passing it these formats along the standard
+            # business (as opposed to on-the-fly class creation when it
+            # probably won't be ever instantiated anyway);
+            # extra lambda wrapping so as to surely make a closure around
+            # ("remember correctly") the current value of res_output
+            res_output = tuple(
+                cls._resolve_formats_composite(o) if tuplist(o) else o
+                for o in res_output
+            )
+            return res_output
+        # drop the filter if cannot resolve any of the formats
+        res_input = apply_intercalate(res_input)
+        map(lambda (i, x): log.warning("Resolve at `{0}' filter:"
+                                       " `{1}' (#{2}) format fail"
+                                       .format(cls.name, res_input[i], i)),
+            filter(lambda (i, x): not(x),
+                   enumerate(apply_intercalate(res_output))))
+        return None
+
+    def __new__(cls, formats):
+        io_formats = cls._resolve_formats(formats)
+        if io_formats is None:
+            return None
+        self = super(Filter, cls).__new__(cls)
+        self._in_format, self._out_format = io_formats
+        return self
 
     @hybridproperty
     def in_format(this):
@@ -136,6 +186,9 @@ def tag_log(s, elem):
 
 class XMLFilter(Filter, MetaPlugin):
     """Base for XML/XSLT traversal filters"""
+
+    _in_format = _out_format = 'XML'
+
     @staticmethod
     def command_common(cmd_ctxt,
                        nocheck=False,

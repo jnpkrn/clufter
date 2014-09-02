@@ -18,18 +18,17 @@ from clufter.filters.ccs2flatccs import ccs2flatccs
 from clufter.filters.flatccs2pcs import flatccs2pcs
 from clufter.filters.ccs2coro import ccs2needlexml
 
-from clufter.formats.ccs import ccs, flatccs
-from clufter.formats.coro import coroxml
-from clufter.formats.pcs import pcs
+from clufter.format import formats
+formats = formats.plugins
 
 
 class ChainResolve(unittest.TestCase):
     def testShapeAndProtocolMatch(self):
         from tempfile import mktemp
         filters = dict(
-            ccs2flatccs=ccs2flatccs(ccs, flatccs),
-            flatccs2pcs=flatccs2pcs(flatccs, pcs),
-            ccs2coroxml=ccs2needlexml(ccs, coroxml),
+            ccs2flatccs=ccs2flatccs(formats),
+            flatccs2pcs=flatccs2pcs(formats),
+            ccs2coroxml=ccs2needlexml(formats),
         )
         testfile = join(dirname(__file__), 'empty.conf')
         testoutput = mktemp(prefix='out', suffix='.conf',

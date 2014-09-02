@@ -13,9 +13,9 @@ from lxml import etree
 
 import _bootstrap  # known W402, required
 
-from clufter.formats.ccs import ccs
-from clufter.formats.coro import coroxml
 from clufter.filter import XMLFilter
+from clufter.format import formats
+formats = formats.plugins
 from clufter.utils_prog import dirname_x
 
 #WALK_DIR = join(dirname_x(__file__, 2), 'filters', 'cluster')
@@ -24,8 +24,8 @@ WALK_DIR = join(dirname_x(__file__, 2), 'filters')
 
 class Ccs2NeedleXsltViewOnly(unittest.TestCase):
     def testXSLTTemplate2(self):
-        flt = XMLFilter(ccs, coroxml)
-        in_obj = ccs('file', join(dirname(__file__), 'filled.conf'))
+        flt = XMLFilter(formats)
+        in_obj = formats['ccs']('file', join(dirname(__file__), 'filled.conf'))
         r = flt.get_template(in_obj, symbol='ccs2needlexml',
                              root_dir=WALK_DIR)
 

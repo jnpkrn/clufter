@@ -11,6 +11,8 @@ from os.path import dirname, join
 import _bootstrap  # known W402, required
 
 from clufter.format_manager import FormatManager
+from clufter.format import formats
+formats = formats.plugins
 from clufter.filter import Filter
 from clufter.filter_manager import FilterManager
 from clufter.utils import head_tail
@@ -58,8 +60,7 @@ class CompositeFormatIO(FilterManagerTestCase):
         @Filter.deco(('ccs', 'ccs'), ('flatccs', 'flatccs'))
         def double_ccs2flatccs(flt_ctxt, in_objs, verify=False):
             from clufter.filters.ccs2flatccs import ccs2flatccs
-            from clufter.formats.ccs import ccs, flatccs
-            ccs2flatccs = ccs2flatccs(ccs, flatccs)
+            ccs2flatccs = ccs2flatccs(formats)
             outs = []
             for in_obj in in_objs:
                 outs.append(('bytestring', ccs2flatccs(in_obj)('bytestring')))

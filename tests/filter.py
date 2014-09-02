@@ -13,6 +13,8 @@ from lxml import etree
 
 import _bootstrap  # known W402, required
 
+from clufter.format import formats
+formats = formats.plugins
 from clufter.formats.ccs import ccs
 from clufter.filter import XMLFilter
 
@@ -36,7 +38,7 @@ def fnc(symbol, elem, children):
 
 class XMLTraverse(unittest.TestCase):
     def testDirectXSLT(self):
-        flt = XMLFilter(ccs, ccs)
+        flt = XMLFilter(formats)
         in_obj = ccs('file', join(dirname(__file__), 'filled.conf'))
         r = flt.proceed_xslt(in_obj, symbol='direct_xslt_test',
                              root_dir=join(dirname(__file__), 'XMLFormat-walk'))
@@ -49,7 +51,7 @@ class XMLTraverse(unittest.TestCase):
         self.assertTrue(etree.tostring(r) == RESULT_DIRECT_XSLT)
 
     def testXSLTTemplate(self):
-        flt = XMLFilter(ccs, ccs)
+        flt = XMLFilter(formats)
         in_obj = ccs('file', join(dirname(__file__), 'filled.conf'))
         r = flt.get_template(in_obj, symbol='direct_xslt_test',
                              root_dir=WALK_DIR)
