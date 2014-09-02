@@ -73,6 +73,7 @@ TOP_LEVEL_XSL = [namespaced(XSL_NS, e) for e in
 class FilterError(ClufterError):
     pass
 
+
 class FilterPlainError(ClufterPlainError, FilterError):
     pass
 
@@ -339,9 +340,9 @@ class XMLFilter(Filter, MetaPlugin):
                 try:
                     check_call(editor_args)
                 except CalledProcessError as e:
-                    raise FilterError(self, str(e))
+                    raise FilterError(cls, str(e))
                 except OSError:
-                    raise FilterError(self, "Editor `{0}' seems unavailable"
+                    raise FilterError(cls, "Editor `{0}' seems unavailable"
                                             .format(editor))
                 if orig_mtime == stat(tmp.name).st_mtime:
                     return None, force  # no change occurred
@@ -360,7 +361,7 @@ class XMLFilter(Filter, MetaPlugin):
             and root_pi.text.strip().startswith('EDIT-result-snippet-start')):
                 text = root_pi.text[len('EDIT-result-snippet-start') + 1:]
                 attrs = dict(a.strip().split('=') for a in text.split(':'))
-                if attrs.get('force-this','false').lower() == 'true':
+                if attrs.get('force-this', 'false').lower() == 'true':
                     force = force or 'this'
                 for sibling in root_pi.itersiblings():
                     if isinstance(sibling, type(root_pi)):
@@ -372,6 +373,7 @@ class XMLFilter(Filter, MetaPlugin):
     @classmethod
     def _xslt_get_validate_hook(cls, validator, interactive=True, **kws):
         assert validator is not None
+
         def validate_hook(ret):
             global_msgs = []
             single_elem = False
@@ -391,7 +393,6 @@ class XMLFilter(Filter, MetaPlugin):
                 elem = worklist.pop()
                 if elem is None:
                     use_offset = True
-                errcnt = 0
                 msgs, schema, schema_snippet = validator(elem, start=elem.tag)
                 if not (msgs and schema and interactive):
                     global_msgs.extend(msgs)
@@ -749,7 +750,7 @@ class XMLFilter(Filter, MetaPlugin):
                     xslt_root.append(snippet)
 
                 hooks = transformer[1]
-                if not key in scheduled_subst:
+                if key not in scheduled_subst:
                     if cur_walk is walk:
                         ret.append(xslt_root)
                     else:
@@ -783,7 +784,7 @@ class XMLFilter(Filter, MetaPlugin):
         return cls._traverse(in_obj, walk, **kwargs)
 
     def filter_proceed_xslt(self, in_obj, **kwargs):
-        """Push-button to be called from the filter itself (with walk_default)"""
+        """Push-button to be called from the filter itself, with walk_default"""
         raw = kwargs.pop('raw', False)
         def_first, system = '', kwargs.pop('system', '')
         def_first += ('<xsl:param name="system" select="{0}"/>'
