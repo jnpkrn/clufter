@@ -42,8 +42,12 @@ class FormatError(ClufterError):
 class formats(PluginRegistry):
     """Format registry (to be used as a metaclass for formats)"""
     def __init__(cls, name, bases, attrs):
-        # NOTE could be called multiple times, with popattr-destroyed
-        #      form (attrs missing), so defer to attrs then
+        # could be called multiple times but only once per respective
+        # __new__ (in plugin_registry) is required, rest would be waste
+        # of resources if not harmful due to non-idempotent modifications
+        if cls._probes > 1:
+            return
+
         cls._protocols, cls._validators, cls._protocol_attrs = {}, {}, set()
         cls._context = set(popattr(cls, 'context_specs',
                            attrs.pop('context_specs', ())))

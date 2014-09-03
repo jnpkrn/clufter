@@ -7,7 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import unittest
 from os.path import dirname, exists, join
-from os import unlink
+#from os import unlink
 
 import _bootstrap
 
@@ -20,7 +20,7 @@ class Main(unittest.TestCase):
     #    testcib = join(dirname(__file__), '.testcib.xml')
     #    testcoro = join(dirname(__file__), '.testcorosync.conf')
 
-    #    files = dict(
+    #    outputs = dict(
     #        cib=testcib,
     #        coro=testcoro,
     #    )
@@ -28,9 +28,9 @@ class Main(unittest.TestCase):
     #        input=testfile,
     #        nocheck=True,
     #        batch=True,
-    #        **files)
+    #        **outputs)
     #    )
-    #    for f in files.itervalues():
+    #    for f in outputs.itervalues():
     #        try:
     #            unlink(f)
     #        except OSError:
@@ -38,25 +38,31 @@ class Main(unittest.TestCase):
     #    cmd_manager = CommandManager.implicit()
     #    self.assertFalse(cmd_manager.commands["ccs2pcs-needle"](clufter_args))
     #    # just the existence of the files is enough for now...
-    #    map(lambda f: self.assertTrue(exists(f)), files.itervalues())
+    #    map(lambda f: self.assertTrue(exists(f)), outputs.itervalues())
 
     def testCcs2PcsNeedleBetter(self):
         testfile = join(dirname(__file__), 'filled.conf')
+        from clufter.formats.simpleconfig import simpleconfig
+        #from clufter.protocol import protocols
+        #protocols = protocols.plugins
 
-        files = {
-            "cib": {'passin': 'bytestring', },
-            "coro": {'passin': 'bytestring', },
+        outputs = {
+            # alternatives for posterity:
+            #"cib" : {'passin': protocols['bytestring']},
+            #"cib" : {'passin': 'bytestring'},
+            "cib" : {'passin': simpleconfig.BYTESTRING},
+            "coro": {'passin': simpleconfig.STRUCT},
         }
         clufter_args = type("cluster_args", (object, ), dict(
             input=testfile,
             nocheck=True,
             batch=True,
-            **files)
+            **outputs)
         )
         cmd_manager = CommandManager.implicit()
         self.assertFalse(cmd_manager.commands["ccs2pcs-needle"](clufter_args))
         # just the existence of non-null strings is enough for now...
-        map(lambda fspec: self.assertTrue(fspec['passout']), files.values())
+        map(lambda fspec: self.assertTrue(fspec['passout']), outputs.values())
 
 
 if __name__ == '__main__':

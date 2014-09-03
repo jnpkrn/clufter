@@ -47,6 +47,8 @@ class PluginRegistry(type):
     # non-API
 
     def __new__(registry, name, bases, attrs):
+        assert '_probes' not in attrs, "sabotage of the meta level detected"
+        attrs['_probes'] = 0
         if '__metaclass__' not in attrs and MetaPlugin not in bases:
             # alleged end-use plugin
             ret = registry.probe(name, bases, attrs)
@@ -67,6 +69,7 @@ class PluginRegistry(type):
             ret = super(PluginRegistry, registry).__new__(registry, name,
                                                           bases, attrs)
 
+        ret._probes += 1
         return ret
 
     #
