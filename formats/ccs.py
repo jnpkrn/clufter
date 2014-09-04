@@ -20,7 +20,7 @@ class ccs(XML):
     }
 
 
-class flatccs(ccs):
+class ccs_flat(ccs):
     """Private, artificially flattened CMAN-based cluster stack configuration
 
     Sometimes (ehm, exclusively by me) called Cluster Configuration System Flat.

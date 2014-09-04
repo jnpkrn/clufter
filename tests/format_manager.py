@@ -11,7 +11,7 @@ import _bootstrap  # known W402, required
 
 from clufter.format_manager import FormatManager
 from clufter.formats.ccs import ccs
-from clufter.formats.ccs import flatccs
+from clufter.formats.ccs import ccs_flat
 from clufter.formats.pcs import pcs
 
 
@@ -28,7 +28,7 @@ class Default(FormatManagerTestCase):
     def test_default(self):
         formats = self.fmt_mgr.formats
         #print formats
-        for cls in ccs, flatccs, pcs:
+        for cls in ccs, ccs_flat, pcs:
             self.assertTrue(cls.__name__ in formats)
             # the first was needed in the past, but now the more restrictive
             # one is ok

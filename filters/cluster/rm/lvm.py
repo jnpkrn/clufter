@@ -7,7 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from clufter.utils_cib import ResourceSpec
 
 
-flatccs2pcs = '''\
+ccsflat2pcs = '''\
     <!--
         LVM ~ lvm
      -->

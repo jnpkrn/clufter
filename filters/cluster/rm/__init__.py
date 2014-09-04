@@ -84,7 +84,7 @@ ccs_obfuscate_identifiers = '''\
     </xsl:template>
 '''
 
-flatccs2pcs = '''\
+ccsflat2pcs = '''\
     <xsl:for-each select="*[(contains(concat(
                               '|service',
                               '|vm',

@@ -60,7 +60,7 @@ ccs2needlexml = '''\
     </corosync>
 '''
 
-flatccs2pcs = '''\
+ccsflat2pcs = '''\
     <cib validate-with="pacemaker-1.2"
          admin_epoch="1"
          epoch="1"

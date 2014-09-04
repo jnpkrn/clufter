@@ -3,7 +3,7 @@
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
-flatccs2pcs = '''\
+ccsflat2pcs = '''\
     <template id="{concat('FENCEDEV-', @name)}"
               class="stonith"
               type="{@agent}">

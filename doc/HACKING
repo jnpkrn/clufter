@@ -130,6 +130,9 @@ Notable points
 
    - one particular filter can only occur once in the command's filter chain
 
+   - all symbols in the module for particular plugin shall share the common
+     prefix (mutually and also with respective module), which is considered
+     till the first underscore (if any, in static view, dash in live-one)
 
 x. to ease the perception of embedded XSLT snippets in the Python files,
    there is respective _vimrc_local.vim provided (in filters/cluster)

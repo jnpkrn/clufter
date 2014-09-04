@@ -10,10 +10,10 @@ from ..filter import XMLFilter
 from ..protocol import protocols
 
 
-@Command.deco(('ccs2flatccs',
+@Command.deco(('ccs2ccsflat',
                   ('ccs2ccs-pcmk'),
                   ('ccs-revitalize',
-                      ('flatccs2pcs',
+                      ('ccsflat2pcs',
                           ('pcs2simplepcs')))))
 def ccs2pcs_flatiron(cmd_ctxt,
                      input="/etc/cluster/cluster.conf",
@@ -46,9 +46,9 @@ def ccs2pcs_flatiron(cmd_ctxt,
     )
 
 
-@Command.deco(('ccs2flatccs',
+@Command.deco(('ccs2ccsflat',
                   ('ccs-revitalize',
-                      ('flatccs2pcs',
+                      ('ccsflat2pcs',
                           ('pcs2simplepcs'))),
                   ('ccs2needlexml',
                       ('xml2simpleconfig'))))
