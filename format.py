@@ -643,6 +643,7 @@ class XML(SimpleFormat):
                               pretty_print=True)
 
     @SimpleFormat.producing(ETREE, protect=True,
-                            validator=etree_validator.__func__)
+                            # pre 2.7 compat:  http://bugs.python.org/issue5982
+                            validator=etree_validator.__get__(1).im_func)
     def get_etree(self, protocol):
         return etree.fromstring(self.BYTESTRING()).getroottree()
