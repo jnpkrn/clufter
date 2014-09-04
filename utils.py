@@ -53,6 +53,10 @@ def isinstanceexcept(subj, obj, exc=()):
     return isinstance(subj, obj) and not isinstance(subj, exc)
 
 
+def areinstances(obj1, obj2):
+    isinstance(obj1, obj2.__class__) or isinstance(obj2, obj1.__class__)
+
+
 def popattr(obj, what, *args):
     assert len(args) < 2
     ret = getattr(obj, what, *args)

@@ -6,6 +6,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
+from collections import Mapping, MutableMapping, MutableSequence, MutableSet
 from optparse import make_option
 from os import environ, pathsep
 from os.path import abspath, dirname, samefile, \
@@ -16,7 +17,115 @@ from subprocess import Popen
 from sys import stderr, stdin
 
 from .error import ClufterError
-from .utils import filterdict_pop, func_defaults_varnames, selfaware, tuplist
+from .utils import areinstances, \
+                   filterdict_pop, \
+                   func_defaults_varnames, \
+                   isinstanceexcept, \
+                   selfaware, \
+                   tuplist
+
+
+#
+# generics
+#
+
+mutables = (MutableMapping, MutableSequence, MutableSet)
+
+class TweakedDict(MutableMapping):
+    """Object representing command context"""
+
+    class notaint_context(object):
+        def __init__(self, self_outer, exit_off):
+            self._exit_off = exit_off
+            self._self_outer = self_outer
+        def __enter__(self):
+            self._exit_off |= not self._self_outer._notaint
+            self._self_outer._notaint = True
+        def __exit__(self, *exc):
+            self._self_outer._notaint = not self._exit_off
+
+    def __init__(self, initial=None, bypass=False, notaint=False):
+        self._parent = self
+        self._notaint = True
+        if areinstances(initial, self):
+            assert initial._parent is initial
+            self._dict = initial._dict  # trust dict to have expected props
+            notaint = initial._notaint
+        else:
+            self._dict = {}
+            if initial is not None:
+                if not isinstance(initial, Mapping):
+                    initial = dict(initial)
+                elif not isinstance(initial, MutableMapping):
+                    # silently? follow the immutability
+                    notaint = True
+                    bypass = True
+                if bypass or notaint:
+                    self._dict = initial
+                if not bypass:
+                    # full examination
+                    self._notaint = False  # temporarily need to to allow
+                    map(lambda (k, v): self.__setitem__(k, v),
+                                       initial.iteritems())
+        self._notaint = notaint
+
+    def __delitem__(self, key):
+        if any(getattr(p, '_notaint', False) for p in self.anabasis):
+            raise RuntimeError("Cannot del item in notaint context")
+        del self._dict[key]
+
+    def __getitem__(self, key):
+        # any notainting parent incl. self is an authority for us
+        try:
+            ret = self._dict[key]
+        except KeyError:
+            if self._parent is self:
+                raise
+            ret = self._parent[key]
+        if (isinstanceexcept(ret, mutables, TweakedDict)
+            and any(getattr(p, '_notaint', False) for p in self.anabasis)):
+            ret = ret.copy()
+        return ret
+
+    @property
+    def anabasis(self):
+        """Traverse nested contexts hierarchy upwards"""
+        return (self, )
+
+    def setdefault(self, key, *args, **kwargs):
+        """Allows implicit arrangements to be bypassed via `bypass` flag"""
+        assert len(args) < 2
+        bypass = kwargs.get('bypass', False)
+        if bypass:  # for when adding MutableMapping that should be untouched
+            return self._dict.setdefault(key, *args)
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            if not args:
+                raise
+            self.__setitem__(key, *args)
+            return args[0]
+
+    def __iter__(self):
+        return iter(self._dict)
+
+    def __len__(self):
+        return len(self._dict)
+
+    def __repr__(self):
+        return "<{0}: {1}>".format(repr(self.__class__), repr(self._dict))
+
+    def __setitem__(self, key, value):
+        # XXX value could be also any valid dict constructor argument
+        if any(getattr(p, '_notaint', False) for p in self.anabasis):
+            raise RuntimeError("Cannot set item in notaint context")
+        self._dict[key] = value
+
+    def prevented_taint(self, exit_off=False):
+        """Context manager to safely yield underlying dicts while applied"""
+        return self.notaint_context(self, exit_off)
+
+ProtectedDict = lambda track: TweakedDict(track, notaint=True, bypass=True)
 
 
 #

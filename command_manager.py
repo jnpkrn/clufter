@@ -35,10 +35,7 @@ class CommandManager(PluginManager):
 
     def _init_handle_plugins(self, commands, flt_mgr, *args):
         log.debug("Commands before resolving: {0}".format(commands))
-        self._commands = self._resolve(flt_mgr.filters, commands, *args)
-
-    def __iter__(self):
-        return self._commands.itervalues()
+        return self._resolve(flt_mgr.filters, commands, *args)
 
     @classmethod
     def implicit(cls, *args):
@@ -92,10 +89,7 @@ class CommandManager(PluginManager):
 
     @property
     def commands(self):
-        return self._commands.copy()
-
-    def completion(self, completion):
-        return completion(self._commands.iteritems())
+        return self._plugins
 
     def __call__(self, parser, args=None):
         """Follow up of the entry point, facade to particular commands"""
@@ -106,7 +100,7 @@ class CommandManager(PluginManager):
                                             or args[0]
             while isinstance(command, basestring):
                 canonical_cmd = command
-                command = self._commands.get(command, None)
+                command = self._plugins.get(command, None)
             if not command:
                 raise CommandNotFoundError(cmd)
 
@@ -152,7 +146,7 @@ class CommandManager(PluginManager):
               max(tuple(len(name) for name, _ in cat)) if cat else 0)
             for i, cat in enumerate(
                 bifilter(lambda (name, obj): not isinstance(obj, basestring),
-                         self._commands.iteritems())
+                         self._plugins.iteritems())
             )
         ]
         width = max(i[1] for i in cmds_aliases) + linesep_width

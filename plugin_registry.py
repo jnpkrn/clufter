@@ -9,12 +9,11 @@ import imp
 import logging
 from os import extsep, walk
 from os.path import abspath, dirname, join, splitext
-from collections import Mapping
 from contextlib import contextmanager
 from sys import modules
 
 from .utils import classproperty, hybridproperty, tuplist
-from .utils_prog import cli_decor, cli_undecor
+from .utils_prog import ProtectedDict, cli_decor
 
 log = logging.getLogger(__name__)
 
@@ -76,16 +75,6 @@ class PluginRegistry(type):
     # these are relevant for both (1) + (2)
     #
 
-    class ProxyPlugins(Mapping):
-        def __init__(self, d):
-            self._d = d
-        def __getitem__(self, name):
-            return self._d[name]
-        def __iter__(self):
-            return iter(self._d)
-        def __len__(self):
-            return len(self._d)
-
     @classmethod
     def probe(registry, name, bases, attrs=None):
         """Meta-magic to register plugin"""
@@ -133,9 +122,7 @@ class PluginRegistry(type):
 
     @classproperty
     def plugins(registry):
-        if registry._proxy_plugins is None:
-            registry._proxy_plugins = registry.ProxyPlugins(registry._plugins)
-        return registry._proxy_plugins
+        return registry._plugins_ro
 
     #
     # these are relevant for use case (2)
@@ -177,7 +164,9 @@ class PluginRegistry(type):
     @classmethod
     def setup(registry, reset=False):
         """Implicit setup upon first registry involvement or external reset"""
-        attrs = ('_path_context', None), ('_path_mapping', {}), ('_plugins', {})
+        ps = {}
+        attrs = (('_path_context', None), ('_path_mapping', {}),
+                 ('_plugins', ps), ('_plugins_ro', ProtectedDict(ps)))
         if reset:
             map(lambda (a, d): setattr(registry, a, d), attrs)
         else:
@@ -230,11 +219,23 @@ class PluginManager(object):
         paths = kwargs.pop('paths', ())
         plugins = registry.discover(paths)
         plugins.update(kwargs.pop(registry.name if registry else '', {}))
-        self._init_handle_plugins(plugins, *args, **kwargs)
+        self._plugins = ProtectedDict(
+            self._init_handle_plugins(plugins, *args, **kwargs),
+        )
 
     def _init_handle_plugins(self, plugins, *args, **kwargs):
-        raise NotImplementedError('subclasses should implement')
+        log.info("Plugins under `{0}' manager left intact".format(self
+                                                                  ._registry
+                                                                  .name))
+        return plugins
 
     @property
     def registry(self):
         return self._registry
+
+    @property
+    def plugins(self):
+        return self._plugins
+
+    #def __iter__(self):
+    #    return self._plugins.itervalues()

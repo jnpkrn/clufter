@@ -16,13 +16,13 @@ class TestCommandContextBase(unittest.TestCase):
     def testAnabasisConstructor(self):
         ccb = CommandContextBase({'a': {'b': {'c': {'d': {'e': 42}}}}})
         e = ccb['a']['b']['c']['d']
-        self.assertTrue(len(tuple(e.anabasis())) == 5)
+        self.assertTrue(len(tuple(e.anabasis)) == 5)
 
     def testAnabasisBuilt(self):
         ccb = CommandContextBase()
         ccb['a'] =  {'b': {'c': {'d': {'e': 42}}}}
         e = ccb['a']['b']['c']['d']
-        self.assertTrue(len(tuple(e.anabasis())) == 5)
+        self.assertTrue(len(tuple(e.anabasis)) == 5)
 
     def testPreventedTaint(self):
         ccb = CommandContextBase({'a': 42})

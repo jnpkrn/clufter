@@ -194,11 +194,9 @@ def run(argv=None, *args):
         if opts.list:
             print cmds
         elif opts.completion:
-            print cm.completion(
-                Completion.get_completion(opts.completion,
-                                          prog,
+            c = Completion.get_completion(opts.completion, prog,
                                           opts_common, opts_main, opts_nonmain)
-            )
+            print c(cm.plugins.iteritems())
         else:
             print parser.format_customized_help(
                 usage="%prog [<global option> ...] [<cmd> [<cmd option ...>]]",

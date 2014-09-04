@@ -13,9 +13,6 @@ class FormatManager(PluginManager):
     """Class responsible for available formats of data to be converted"""
     _default_registry = formats
 
-    def _init_handle_plugins(self, formats):
-        self._formats = formats
-
     @property
     def formats(self):
-        return self._formats.copy()
+        return self._plugins

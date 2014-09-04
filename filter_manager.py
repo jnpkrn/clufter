@@ -25,7 +25,7 @@ class FilterManager(PluginManager):
 
     def _init_handle_plugins(self, filters, fmt_mgr):
         log.debug("Filters before resolving: {0}".format(filters))
-        self._filters = self._resolve(fmt_mgr.formats, filters)
+        return self._resolve(fmt_mgr.formats, filters)
 
     @staticmethod
     def _resolve(formats, filters):
@@ -49,9 +49,9 @@ class FilterManager(PluginManager):
 
     @property
     def filters(self):
-        return self._filters.copy()
+        return self._plugins
 
     def __call__(self, which, in_decl, **kwargs):
-        flt = self._filters[which]
+        flt = self._plugins[which]
         in_obj = flt.in_format.as_instance(*in_decl)
         return flt(in_obj, **kwargs)

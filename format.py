@@ -28,6 +28,7 @@ from .utils import arg2wrapped, args2tuple, args2unwrapped, \
                    immutable, \
                    popattr, \
                    tuplist
+from .utils_prog import ProtectedDict
 from .utils_xml import rng_get_start, rng_pivot
 
 log = getLogger(__name__)
@@ -177,7 +178,8 @@ class Format(object):
 
     def __init__(self, protocol, *args, **kwargs):
         """Format constructor, i.e., object = concrete internal data"""
-        self._representations = {}
+        rs = {}
+        self._representations, self._representations_ro = rs, ProtectedDict(rs)
         validator_specs = kwargs.pop('validator_specs', {})
         default = validator_specs.setdefault('', None)  # None ~ don't track
         validators = {}
