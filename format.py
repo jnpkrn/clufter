@@ -74,7 +74,6 @@ class formats(PluginRegistry):
             except AttributeError:
                 if not hasattr(obj, '_protocol'):
                     assert attr not in cls._protocols, 'Unexpected override'
-                pass
 
         for protocol in cls._protocols:
             newspec = specs.get(protocol, None)
@@ -588,7 +587,7 @@ class XML(SimpleFormat):
         """
         # XXX holds its private cache under cls._validation_cache
         assert spec
-        if not sep in spec:
+        if sep not in spec:
             spec = join(root_dir, cls.root, spec)
         if any(filter(lambda c: c in spec, '?*')):
             globbed = glob(spec)
