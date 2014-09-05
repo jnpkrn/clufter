@@ -220,7 +220,7 @@ class PluginManager(object):
         self._registry = registry
         paths = kwargs.pop('paths', ())
         plugins = registry.discover(paths)
-        plugins.update(kwargs.pop(registry.name if registry else '', {}))
+        plugins.update(kwargs.pop('plugins', {}))
         self._plugins = ProtectedDict(
             self._init_plugins(plugins, *args, **kwargs),
         )
