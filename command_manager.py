@@ -42,7 +42,7 @@ class CommandManager(PluginManager):
                 map(lambda flt: flts.add(flt),
                     apply_intercalate(getattr(cmd, 'filter_chain', ())))
             flt_mgr = FilterManager.init_lookup(flts, **kwargs)
-        return cls._resolve(flt_mgr.filters, commands, *args)
+        return cls._resolve(flt_mgr.filters, commands, *args, **kwargs)
 
     @staticmethod
     def _resolve(filters, commands, system='', system_extra=''):

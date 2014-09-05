@@ -18,6 +18,7 @@ from .utils import args2tuple, \
                    args2sgpl, \
                    classproperty, \
                    filterdict_keep, \
+                   filterdict_pop, \
                    hybridproperty, \
                    tuplist
 from .utils_prog import ProtectedDict, cli_decor
@@ -243,24 +244,25 @@ class PluginManager(object):
                 ret[plugin] = registry.plugins[plugin]
             except KeyError:
                 to_discover.add(plugin)
+        kwargs = filterdict_keep(kwargs, 'paths')
         ret.update(registry.discover(fname_start=tuple(to_discover), **kwargs))
         return ret  # if tuplist(plugins) else ret[plugins]
 
     @classmethod
     def init_lookup(cls, plugin=(), *plugins, **kwargs):
         plugins = args2tuple(*args2sgpl(plugin)) + plugins
-        return cls(plugins=cls.lookup(plugins, **kwargs), path=None, **kwargs)
+        filterdict_pop(kwargs, 'paths')
+        return cls(plugins=cls.lookup(plugins, **kwargs), paths=None, **kwargs)
 
     def __init__(self, *args, **kwargs):
         registry = kwargs.pop('registry', None) or self._default_registry
         assert (registry is not PluginRegistry,
                 "PluginManager subclass should refer to its custom registry")
         self._registry = registry
-        discover_kwargs = filterdict_keep(kwargs, 'paths')
-        plugins = registry.discover(**discover_kwargs)
+        plugins = registry.discover(**filterdict_pop(kwargs, 'paths'))
         plugins.update(kwargs.pop('plugins', {}))
         self._plugins = ProtectedDict(
-            self._init_plugins(plugins, *args, **discover_kwargs),
+            self._init_plugins(plugins, *args, **kwargs),
         )
 
     @classmethod
