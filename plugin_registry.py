@@ -199,7 +199,7 @@ class PluginRegistry(type):
         ))
         for path, path_plugins in registry._context(paths):
             # skip if path already discovered (considered final)
-            if not len(path_plugins):
+            if not path_plugins:
                 # visit *.py files within (and under) the path and probe them
                 for root, dirs, files in walk(path):
                     for f in files:
@@ -232,6 +232,8 @@ class PluginRegistry(type):
 class PluginManager(object):
     """Common (abstract) base for *Manager objects"""
 
+    _default_registry = PluginRegistry
+
     @classmethod
     def lookup(cls, plugins, registry=None, **kwargs):
         ret, to_discover = {}, set()
@@ -251,6 +253,8 @@ class PluginManager(object):
 
     def __init__(self, *args, **kwargs):
         registry = kwargs.pop('registry', None) or self._default_registry
+        assert (registry is not PluginRegistry,
+                "PluginManager subclass should refer to its custom registry")
         self._registry = registry
         discover_kwargs = filterdict_keep(kwargs, 'paths')
         plugins = registry.discover(**discover_kwargs)
