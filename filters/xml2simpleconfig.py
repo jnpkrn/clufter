@@ -13,6 +13,8 @@ from lxml import etree
 def xml2simpleconfig(flt_ctxt, in_obj):
     """Mapping (almost bijective) XML -> simpleconfig
 
+    Inverse mapping cannot be generally loseless, as XML cannot contain
+    repeated attributes, which seems/is valid with simpleconfig.
     See `simpleconfig` docstring for details about the target representation.
     """
     # using similar trick of stack emulation in-place as command.analyse_chain.
