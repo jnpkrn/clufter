@@ -9,7 +9,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 # inspired by http://stackoverflow.com/a/4374075
 immutable = lambda x: isinstance(x, (basestring, int, long, bool, float, tuple))
 
-tuplist = lambda x: isinstance(x, (tuple, list))
+tuplist = lambda x: isinstance(x, (tuple, list, set))
 # turn args into tuple unless single tuplist arg
 args2sgpl = \
     lambda x=(), *y: x if not y and tuplist(x) else (x, ) + y

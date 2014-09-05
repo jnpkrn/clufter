@@ -100,7 +100,7 @@ XSLT processing of XMLFilter as parameters:
 Low-level Terms
 ---------------
 
-tuplist		tuple or list (also see utils.py)
+tuplist		tuple, list, or set (also see utils.py)
 
 
 Notable points
