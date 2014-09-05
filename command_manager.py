@@ -32,7 +32,6 @@ class CommandNotFoundError(ClufterPlainError):
 class CommandManager(PluginManager):
     """Class responsible for commands routing to filters or other actions"""
     _default_registry = commands
-    _implicit = None
 
     @classmethod
     def _init_plugins(cls, commands, flt_mgr=None, *args, **kwargs):
