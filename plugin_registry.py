@@ -6,10 +6,10 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
-from os import extsep, walk
-from os.path import abspath, dirname, join, splitext
 from contextlib import contextmanager
-from imp import find_module, load_module
+from imp import PY_SOURCE, find_module, get_suffixes, load_module
+from os import walk
+from os.path import abspath, dirname, join, splitext
 from sys import modules
 
 from .utils import args2tuple, \
@@ -20,6 +20,7 @@ from .utils import args2tuple, \
 from .utils_prog import ProtectedDict, cli_decor
 
 log = logging.getLogger(__name__)
+module_ext = dict((t, s) for s, m, t in get_suffixes())[PY_SOURCE]
 
 
 class MetaPlugin(object):
@@ -191,7 +192,7 @@ class PluginRegistry(type):
                 for root, dirs, files in walk(path):
                     for f in files:
                         name, ext = splitext(f)
-                        if not name.startswith('_') and ext == extsep + 'py':
+                        if not name.startswith('_') and ext == module_ext:
                             mfile, mpath, mdesc = find_module(name, [root])
                             if not mfile:
                                 log.debug("Omitting `{0}' at `{1}'"
