@@ -7,14 +7,17 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
 from contextlib import contextmanager
+from fnmatch import translate
 from imp import PY_SOURCE, find_module, get_suffixes, load_module
 from os import walk
 from os.path import abspath, dirname, join, splitext
+from re import compile as re_compile
 from sys import modules
 
 from .utils import args2tuple, \
                    args2sgpl, \
                    classproperty, \
+                   filterdict_keep, \
                    hybridproperty, \
                    tuplist
 from .utils_prog import ProtectedDict, cli_decor
@@ -179,12 +182,21 @@ class PluginRegistry(type):
             PluginRegistry._registries.discard(registry)
 
     @classmethod
-    def discover(registry, paths):
+    def discover(registry, paths=(), fname_start=''):
         """Find relevant plugins available at the specified path(s)
+
+        Keyword arguments:
+            fname_start     glob/fnmatch pattern (not RE) used to filter files,
+                            can also be a tuplist of strings like this
 
         Returns `{plugin_name: plugin_cls}` mapping of plugins found.
         """
         ret = {}
+        fname_start_use = args2sgpl(fname_start or '[!_]')
+        fp = re_compile('|'.join(
+            translate(fs + '*' + module_ext)
+            for fs in (pfx.split('-', 1)[0] for pfx in fname_start_use)
+        ))
         for path, path_plugins in registry._context(paths):
             # skip if path already discovered (considered final)
             if not len(path_plugins):
@@ -192,7 +204,7 @@ class PluginRegistry(type):
                 for root, dirs, files in walk(path):
                     for f in files:
                         name, ext = splitext(f)
-                        if not name.startswith('_') and ext == module_ext:
+                        if fp.match(f):
                             mfile, mpath, mdesc = find_module(name, [root])
                             if not mfile:
                                 log.debug("Omitting `{0}' at `{1}'"
@@ -204,26 +216,47 @@ class PluginRegistry(type):
                             finally:
                                 mfile.close()
                 path_plugins = registry._path_mapping[path]
+                if fname_start:  # not picking everything -> restart next time
+                    registry._path_mapping.pop(path)
 
             # filled as a side-effect of meta-magic, see `__new__`
             ret.update((n, registry._plugins[n]) for n in path_plugins)
-            # add "built-in" ones
-            ret.update((n, p) for n, p in registry._plugins.iteritems()
-                       if MetaPlugin not in p.__bases__)
+            if not fname_start:
+                # add "built-in" ones
+                ret.update((n, p) for n, p in registry._plugins.iteritems()
+                        if MetaPlugin not in p.__bases__)
 
         return ret
 
 
 class PluginManager(object):
     """Common (abstract) base for *Manager objects"""
+
+    @classmethod
+    def lookup(cls, plugins, registry=None, **kwargs):
+        ret, to_discover = {}, set()
+        registry = cls._default_registry if registry is None else registry
+        for plugin in args2sgpl(plugins):
+            try:
+                ret[plugin] = registry.plugins[plugin]
+            except KeyError:
+                to_discover.add(plugin)
+        ret.update(registry.discover(fname_start=tuple(to_discover), **kwargs))
+        return ret  # if tuplist(plugins) else ret[plugins]
+
+    @classmethod
+    def init_lookup(cls, plugin=(), *plugins, **kwargs):
+        plugins = args2tuple(*args2sgpl(plugin)) + plugins
+        return cls(plugins=cls.lookup(plugins, **kwargs), path=None, **kwargs)
+
     def __init__(self, *args, **kwargs):
         registry = kwargs.pop('registry', None) or self._default_registry
         self._registry = registry
-        paths = kwargs.pop('paths', ())
-        plugins = registry.discover(paths)
+        discover_kwargs = filterdict_keep(kwargs, 'paths')
+        plugins = registry.discover(**discover_kwargs)
         plugins.update(kwargs.pop('plugins', {}))
         self._plugins = ProtectedDict(
-            self._init_plugins(plugins, *args, **kwargs),
+            self._init_plugins(plugins, *args, **discover_kwargs),
         )
 
     @classmethod
