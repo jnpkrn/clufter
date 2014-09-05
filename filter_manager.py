@@ -10,6 +10,7 @@ import logging
 from .error import ClufterError
 from .filter import filters
 from .format import CompositeFormat
+from .format_manager import FormatManager
 from .plugin_registry import PluginManager
 
 log = logging.getLogger(__name__)
@@ -24,8 +25,15 @@ class FilterManager(PluginManager):
     _default_registry = filters
 
     @classmethod
-    def _init_plugins(cls, filters, fmt_mgr):
+    def _init_plugins(cls, filters, fmt_mgr=None, **kwargs):
         log.debug("Filters before resolving: {0}".format(filters))
+        if fmt_mgr is None:
+            fmts = set()
+            for flt in filters.itervalues():
+                # XXX composite format
+                map(lambda a: fmts.add(getattr(flt, a)),
+                    ('in_format', 'out_format'))
+            fmt_mgr = FormatManager.init_lookup(fmts, **kwargs)
         return cls._resolve(fmt_mgr.formats, filters)
 
     @staticmethod

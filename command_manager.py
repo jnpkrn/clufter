@@ -11,8 +11,9 @@ from textwrap import wrap
 from .command import commands, CommandAlias
 from .error import ClufterError, ClufterPlainError, \
                    EC
+from .filter_manager import FilterManager
 from .plugin_registry import PluginManager
-from .utils_func import bifilter
+from .utils_func import apply_intercalate, bifilter
 from .utils_prog import make_options, set_logging
 
 log = logging.getLogger(__name__)
@@ -47,8 +48,14 @@ class CommandManager(PluginManager):
         return implicit
 
     @classmethod
-    def _init_plugins(cls, commands, flt_mgr, *args):
+    def _init_plugins(cls, commands, flt_mgr=None, *args, **kwargs):
         log.debug("Commands before resolving: {0}".format(commands))
+        if flt_mgr is None:
+            flts = set()
+            for cmd in commands.itervalues():
+                map(lambda flt: flts.add(flt),
+                    apply_intercalate(getattr(cmd, 'filter_chain', ())))
+            flt_mgr = FilterManager.init_lookup(flts, **kwargs)
         return cls._resolve(flt_mgr.filters, commands, *args)
 
     @staticmethod
