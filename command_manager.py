@@ -33,10 +33,6 @@ class CommandManager(PluginManager):
     _default_registry = commands
     _implicit = None
 
-    def _init_handle_plugins(self, commands, flt_mgr, *args):
-        log.debug("Commands before resolving: {0}".format(commands))
-        return self._resolve(flt_mgr.filters, commands, *args)
-
     @classmethod
     def implicit(cls, *args):
         """Ad-hoc simply-cached construction of "implicit" manager's chain"""
@@ -49,6 +45,11 @@ class CommandManager(PluginManager):
             if not args:
                 cls._implicit = implicit
         return implicit
+
+    @classmethod
+    def _init_plugins(cls, commands, flt_mgr, *args):
+        log.debug("Commands before resolving: {0}".format(commands))
+        return cls._resolve(flt_mgr.filters, commands, *args)
 
     @staticmethod
     def _resolve(filters, commands, system='', system_extra=''):

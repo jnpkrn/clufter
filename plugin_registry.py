@@ -91,6 +91,7 @@ class PluginRegistry(type):
             ret = bases if not tuplist(bases) else \
                   super(PluginRegistry, registry).__new__(registry, name,
                                                           bases, attrs)
+            # XXX init plugin here?
             registry._plugins[name] = ret
         finally:
             if registry._path_context is not None:
@@ -220,13 +221,12 @@ class PluginManager(object):
         plugins = registry.discover(paths)
         plugins.update(kwargs.pop(registry.name if registry else '', {}))
         self._plugins = ProtectedDict(
-            self._init_handle_plugins(plugins, *args, **kwargs),
+            self._init_plugins(plugins, *args, **kwargs),
         )
 
-    def _init_handle_plugins(self, plugins, *args, **kwargs):
-        log.info("Plugins under `{0}' manager left intact".format(self
-                                                                  ._registry
-                                                                  .name))
+    @classmethod
+    def _init_plugins(cls, plugins, *args, **kwargs):
+        log.info("Plugins under `{0}' left intact".format(cls.__name__))
         return plugins
 
     @property

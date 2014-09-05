@@ -23,9 +23,10 @@ class FilterManager(PluginManager):
     """Class responsible to manage filters and filtering itself"""
     _default_registry = filters
 
-    def _init_handle_plugins(self, filters, fmt_mgr):
+    @classmethod
+    def _init_plugins(cls, filters, fmt_mgr):
         log.debug("Filters before resolving: {0}".format(filters))
-        return self._resolve(fmt_mgr.formats, filters)
+        return cls._resolve(fmt_mgr.formats, filters)
 
     @staticmethod
     def _resolve(formats, filters):
