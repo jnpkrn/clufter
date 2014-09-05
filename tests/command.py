@@ -45,8 +45,8 @@ class ChainResolve(unittest.TestCase):
                 ('file', input),
                 (
                     ('file', output),
-                    ('file', coro)
-                )
+                    ('file', coro),
+                ),
             )
         @Command.deco(('ccs2ccsflat'))
         def cmd_chain_match_02(cmd_ctxt,
@@ -55,7 +55,7 @@ class ChainResolve(unittest.TestCase):
                                coro='.coro'):
             return (
                 ('file', input),
-                ('file', output)
+                ('file', output),
             )
         @Command.deco(('ccs2ccsflat'))
         def cmd_chain_nonmatch_01(cmd_ctxt,
@@ -66,7 +66,7 @@ class ChainResolve(unittest.TestCase):
                 ('file', input),
                 (
                     ('file', output),
-                    ('file', coro)
+                    ('file', coro),
                 )
             )
         @Command.deco(('ccs2ccsflat',
@@ -81,7 +81,7 @@ class ChainResolve(unittest.TestCase):
                 ('file', input),
                 (
                     ('file', output),
-                    ('file', coro)
+                    ('file', coro),
                 )
             )
         # malformed protocol name
@@ -96,7 +96,7 @@ class ChainResolve(unittest.TestCase):
                 ('file', input),
                 (
                     ('file', output),
-                    ('life', coro)
+                    ('life', coro),
                 )
             )
         cmd_classes = (
