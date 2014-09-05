@@ -18,7 +18,7 @@ args2combsgpl = arg2wrapped = \
 args2unwrapped = \
     lambda x=None, *y: x if not y else (x, ) + y
 # turn args into tuple unconditionally
-args2tuple = lambda *args: tuple(args)
+args2tuple = lambda *args: args
 any2iter = \
     lambda x: \
         x if hasattr(x, 'next') and hasattr(x.next, '__call__') \
