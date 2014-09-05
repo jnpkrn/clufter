@@ -5,11 +5,11 @@
 """Easy (at least for usage) plugin framework"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import imp
 import logging
 from os import extsep, walk
 from os.path import abspath, dirname, join, splitext
 from contextlib import contextmanager
+from imp import find_module, load_module
 from sys import modules
 
 from .utils import args2tuple, \
@@ -192,14 +192,14 @@ class PluginRegistry(type):
                     for f in files:
                         name, ext = splitext(f)
                         if not name.startswith('_') and ext == extsep + 'py':
-                            mfile, mpath, mdesc = imp.find_module(name, [root])
+                            mfile, mpath, mdesc = find_module(name, [root])
                             if not mfile:
                                 log.debug("Omitting `{0}' at `{1}'"
                                           .format(name, root))
                                 continue
                             mname = '.'.join((registry.namespace, name))
                             try:
-                                imp.load_module(mname, mfile, mpath, mdesc)
+                                load_module(mname, mfile, mpath, mdesc)
                             finally:
                                 mfile.close()
                 path_plugins = registry._path_mapping[path]
