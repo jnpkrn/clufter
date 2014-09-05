@@ -12,7 +12,11 @@ from os.path import abspath, dirname, join, splitext
 from contextlib import contextmanager
 from sys import modules
 
-from .utils import classproperty, hybridproperty, tuplist
+from .utils import args2tuple, \
+                   args2sgpl, \
+                   classproperty, \
+                   hybridproperty, \
+                   tuplist
 from .utils_prog import ProtectedDict, cli_decor
 
 log = logging.getLogger(__name__)
@@ -147,14 +151,11 @@ class PluginRegistry(type):
 
         Context is a pair `(path, list_of_per_path_tracked_plugins_so_far)`.
         """
-        if not isinstance(paths, (list, tuple)):
-            if paths is None:
-                return  # explictly asked not to use even implicit path
-            paths = (paths, )
-
+        if paths is None:
+            return  # explictly asked not to use even implicit path
         # inject implicit one
         implicit = join(dirname(abspath(__file__)), registry.__name__)
-        paths = (lambda *x: x)(implicit, *paths)
+        paths = args2tuple(implicit, *args2sgpl(paths))
 
         for path in paths:
             with registry._path(path) as context:
