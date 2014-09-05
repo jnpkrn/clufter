@@ -59,8 +59,12 @@ class Main(unittest.TestCase):
             batch=True,
             **outputs)
         )
-        cmd_manager = CommandManager.implicit()
-        self.assertFalse(cmd_manager.commands["ccs2pcs-needle"](clufter_args))
+        # alternatively:
+        #commands = CommandManager.lookup('ccs2pcs-needle')
+        #cmd_manager = CommandManager(plugins=commands, paths=None)
+        #cmd = cmd_manager.commands['ccs2pcs-needle']
+        cmd = CommandManager.init_lookup('ccs2pcs').commands['ccs2pcs-needle']
+        self.assertFalse(cmd(clufter_args))
         # just the existence of non-null strings is enough for now...
         map(lambda fspec: self.assertTrue(fspec['passout']), outputs.values())
 

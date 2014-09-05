@@ -35,19 +35,6 @@ class CommandManager(PluginManager):
     _implicit = None
 
     @classmethod
-    def implicit(cls, *args):
-        """Ad-hoc simply-cached construction of "implicit" manager's chain"""
-        if cls._implicit and not args:
-            implicit = cls._implicit
-        else:
-            from .filter_manager import FilterManager
-            from .format_manager import FormatManager
-            implicit = cls(FilterManager(FormatManager()), *args)
-            if not args:
-                cls._implicit = implicit
-        return implicit
-
-    @classmethod
     def _init_plugins(cls, commands, flt_mgr=None, *args, **kwargs):
         log.debug("Commands before resolving: {0}".format(commands))
         if flt_mgr is None:
