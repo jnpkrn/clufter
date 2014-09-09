@@ -88,23 +88,28 @@ class PluginRegistry(type):
     def probe(registry, name, bases, attrs=None):
         """Meta-magic to register plugin"""
         assert '-' not in name, "name cannot contain a dash"
-        name = cli_decor(name)
+        dname = cli_decor(name)
         attrs = attrs or {}
         try:
-            ret = registry._plugins[name]
+            ret = registry._plugins[dname]
             log.info("Probe `{0}' plugin under `{1}' registry: already tracked"
-                     .format(name, registry.registry))
+                     .format(dname, registry.registry))
         except KeyError:
             log.debug("Probe `{0}' plugin under `{1}' registry: yet untracked"
-                      .format(name, registry.registry))
-            ret = bases if not tuplist(bases) else \
-                  super(PluginRegistry, registry).__new__(registry, name,
-                                                          bases, attrs)
+                      .format(dname, registry.registry))
+            namespaced = registry.namespaced(dname.split('-', 1)[0])
+            if namespaced in modules and hasattr(modules[namespaced], name):
+                # XXX can be used even for "preload"
+                ret = getattr(modules[namespaced], name)
+            else:  # bases arg of type has to be tuplist, final plugin otherwise
+                ret = bases if not tuplist(bases) else \
+                      super(PluginRegistry, registry).__new__(registry, dname,
+                                                              bases, attrs)
             # XXX init plugin here?
-            registry._plugins[name] = ret
+            registry._plugins[dname] = ret
         finally:
             if registry._path_context is not None:
-                registry._path_mapping[registry._path_context].add(name)
+                registry._path_mapping[registry._path_context].add(dname)
 
         return ret
 
