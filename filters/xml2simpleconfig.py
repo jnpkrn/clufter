@@ -5,7 +5,7 @@
 """xml2simpleconfig filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from clufter.filter import XMLFilter
+from ..filter import XMLFilter
 from lxml import etree
 
 

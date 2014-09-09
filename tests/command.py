@@ -5,31 +5,27 @@
 """Testing command"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import unittest
+import os.path as op; execfile(op.join(op.dirname(__file__), '_bootstrap.py'))
+
+
+from unittest import TestCase
 from os.path import dirname, join
 from os import remove, stat
 #from pprint import pprint
 
-import _bootstrap  # known W402, required
+from .command import Command, CommandError
+from .filter_manager import FilterManager
 
-from clufter.command import Command, CommandError
-
-from clufter.filters.ccs2ccsflat import ccs2ccsflat
-from clufter.filters.ccsflat2pcs import ccsflat2pcs
-from clufter.filters.ccs2coro import ccs2needlexml
-
-from clufter.format import formats
+from .format import formats
 formats = formats.plugins
 
 
-class ChainResolve(unittest.TestCase):
+class ChainResolve(TestCase):
     def testShapeAndProtocolMatch(self):
+        filters = FilterManager.init_lookup('ccs2ccsflat',
+                                            'ccsflat2pcs',
+                                            'ccs2needlexml').plugins
         from tempfile import mktemp
-        filters = dict(
-            ccs2ccsflat=ccs2ccsflat(formats),
-            ccsflat2pcs=ccsflat2pcs(formats),
-            ccs2needlexml=ccs2needlexml(formats),
-        )
         testfile = join(dirname(__file__), 'empty.conf')
         testoutput = mktemp(prefix='out', suffix='.conf',
                             dir=join(dirname(__file__), 'tmp'))
@@ -126,5 +122,4 @@ class ChainResolve(unittest.TestCase):
             continue
 
 
-if __name__ == '__main__':
-    unittest.main()
+execfile(op.join(op.dirname(__file__), '_bootstart.py'))

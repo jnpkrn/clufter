@@ -5,15 +5,16 @@
 """Testing command manager"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import unittest
-
-import _bootstrap  # known W402, required
-
-from clufter.command_manager import CommandManager
-from clufter.commands.ccs2pcs import ccs2pcs_needle
+import os.path as op; execfile(op.join(op.dirname(__file__), '_bootstrap.py'))
 
 
-class CommandManagerTestCase(unittest.TestCase):
+from unittest import TestCase
+
+from .command_manager import CommandManager
+from .commands.ccs2pcs import ccs2pcs_needle
+
+
+class CommandManagerTestCase(TestCase):
     def setUp(self):
         self.cmd_mgr = CommandManager.init_lookup()
 
@@ -31,5 +32,4 @@ class Default(CommandManagerTestCase):
             self.assertEqual(cls, type(commands[cls.name]))
 
 
-if __name__ == '__main__':
-    unittest.main()
+execfile(op.join(op.dirname(__file__), '_bootstart.py'))

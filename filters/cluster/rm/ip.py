@@ -4,7 +4,7 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from clufter.utils_cib import ResourceSpec
+from ..utils_cib import ResourceSpec
 
 
 ccsflat2pcs = '''\

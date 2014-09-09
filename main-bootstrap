@@ -6,15 +6,12 @@
 """Machinery entry point -- to be run from in-repo location"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import imp
-from os.path import dirname, join, realpath
-from sys import exit
+from imp import load_source
+from os.path import dirname, join, abspath
+from sys import argv, exit
 
-realdir = dirname(realpath(__file__))
-imp.load_source('main_bootstrap',  join(realdir, 'tests/_bootstrap.py'))
-from clufter.main import run
+bootstrap = join(dirname(abspath(__file__)), 'tests', '_bootstrap.py')
+__package__ = getattr(load_source('main_bootstrap', bootstrap), '__package__')
+from .main import run
 
-
-if __name__ == '__main__':
-    from sys import argv
-    exit(run(argv))
+exit(run(argv))

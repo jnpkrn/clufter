@@ -18,3 +18,6 @@ class Main(CommonFilterTestCase):
         out_obj = self.flt_mgr('ccs2needlexml', ('etree', out_obj('etree')),
                                validator_specs={'':''})
         print out_obj('bytestring')
+
+
+import os.path as op; execfile(op.join(op.dirname(__file__), '_bootstart.py'))

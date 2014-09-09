@@ -5,20 +5,21 @@
 """Testing filter manager"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import unittest
+import os.path as op; execfile(op.join(op.dirname(__file__), '_bootstrap.py'))
+
+
+from unittest import TestCase
 from os.path import dirname, join
 
-import _bootstrap  # known W402, required
-
-from clufter.format_manager import FormatManager
-from clufter.format import formats
+from .format_manager import FormatManager
+from .format import formats
 formats = formats.plugins
-from clufter.filter import Filter
-from clufter.filter_manager import FilterManager
-from clufter.utils import head_tail
+from .filter import Filter
+from .filter_manager import FilterManager
+from .utils import head_tail
 
 
-class FilterManagerTestCase(unittest.TestCase):
+class FilterManagerTestCase(TestCase):
     def setUp(self):
         self.flt_mgr = FilterManager(FormatManager())
 
@@ -31,8 +32,8 @@ class Default(FilterManagerTestCase):
     def test_default(self):
         # NOTE imports has to be just there due to environment changed
         #      by "starting from scratch" + plugin discovery elsewhere
-        from clufter.filters.ccs2ccsflat import ccs2ccsflat
-        from clufter.filters.ccsflat2pcs import ccsflat2pcs
+        from .filters.ccs2ccsflat import ccs2ccsflat
+        from .filters.ccsflat2pcs import ccsflat2pcs
         filters = self.flt_mgr.filters
         #print filters
         for cls in ccs2ccsflat, ccsflat2pcs:
@@ -59,7 +60,7 @@ class CompositeFormatIO(FilterManagerTestCase):
     def setUp(self):
         @Filter.deco(('ccs', 'ccs'), ('ccs-flat', 'ccs-flat'))
         def double_ccs2ccsflat(flt_ctxt, in_objs, verify=False):
-            from clufter.filters.ccs2ccsflat import ccs2ccsflat
+            from .filters.ccs2ccsflat import ccs2ccsflat
             ccs2ccsflat = ccs2ccsflat(formats)
             outs = []
             for in_obj in in_objs:
@@ -90,5 +91,4 @@ class CompositeFormatIO(FilterManagerTestCase):
             self.assertEqual(results[0], f.read())
 
 
-if __name__ == '__main__':
-    unittest.main()
+execfile(op.join(op.dirname(__file__), '_bootstart.py'))

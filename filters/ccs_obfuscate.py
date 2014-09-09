@@ -5,7 +5,7 @@
 """obfuscation filters for ccs"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from clufter.filter import XMLFilter
+from ..filter import XMLFilter
 
 
 def _ccs_obfuscate(flt_ctxt, in_obj):

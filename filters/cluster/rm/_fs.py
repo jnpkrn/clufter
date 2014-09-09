@@ -8,7 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 #      and {cluster,net}.py referring to it, but due to the way it is used
 #      in the parent, current approach seems better
 
-from clufter.utils_cib import ResourceSpec
+from ..utils_cib import ResourceSpec
 
 
 ccsflat2pcs = '''\

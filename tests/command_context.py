@@ -5,14 +5,15 @@
 """Testing command context"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import unittest
-
-import _bootstrap  # known W402, required
-
-from clufter.command_context import CommandContextBase
+import os.path as op; execfile(op.join(op.dirname(__file__), '_bootstrap.py'))
 
 
-class TestCommandContextBase(unittest.TestCase):
+from unittest import TestCase
+
+from .command_context import CommandContextBase
+
+
+class TestCommandContextBase(TestCase):
     def testAnabasisConstructor(self):
         ccb = CommandContextBase({'a': {'b': {'c': {'d': {'e': 42}}}}})
         e = ccb['a']['b']['c']['d']
@@ -57,5 +58,4 @@ class TestCommandContextBase(unittest.TestCase):
             self.assertTrue(ccb['a']['b'] == 43)
 
 
-if __name__ == '__main__':
-    unittest.main()
+execfile(op.join(op.dirname(__file__), '_bootstart.py'))

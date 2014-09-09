@@ -5,11 +5,12 @@
 """Testing utils module"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from unittest import TestCase, main
+import os.path as op; execfile(op.join(op.dirname(__file__), '_bootstrap.py'))
 
-import _bootstrap  # known W402, required
 
-from clufter.utils import func_defaults_varnames
+from unittest import TestCase
+
+from .utils import func_defaults_varnames
 
 
 class FuncDefaultsVarnames(TestCase):
@@ -39,5 +40,4 @@ class FuncDefaultsVarnames(TestCase):
         self.assertEqual(len(varnames), 2)
 
 
-if __name__ == '__main__':
-    main()
+execfile(op.join(op.dirname(__file__), '_bootstart.py'))

@@ -1,22 +1,23 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import unittest
+import os.path as op; execfile(op.join(op.dirname(__file__), '_bootstrap.py'))
+
+
+from unittest import TestCase
 from os.path import dirname, join
 #from pprint import pprint
 
 from lxml import etree
 
-import _bootstrap  # known W402, required
-
-from clufter.format import formats
+from .format import formats
 formats = formats.plugins
-from clufter.formats.ccs import ccs
-from clufter.filter import XMLFilter
+from .formats.ccs import ccs
+from .filter import XMLFilter
 
 WALK_DIR = join(dirname(__file__), 'XMLFormat-walk')
 
@@ -36,7 +37,7 @@ def fnc(symbol, elem, children):
     return symbol, "element: " + elem.tag, children.values()
 
 
-class XMLTraverse(unittest.TestCase):
+class XMLTraverse(TestCase):
     def testDirectXSLT(self):
         flt = XMLFilter(formats)
         in_obj = ccs('file', join(dirname(__file__), 'filled.conf'))
@@ -66,5 +67,4 @@ class XMLTraverse(unittest.TestCase):
         self.assertTrue(ret == RESULT_DIRECT_XSLT)
 
 
-if __name__ == '__main__':
-    unittest.main()
+execfile(op.join(op.dirname(__file__), '_bootstart.py'))

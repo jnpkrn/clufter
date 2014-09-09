@@ -5,7 +5,7 @@
 """ccsflat2pcs filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from clufter.filter import XMLFilter
+from ..filter import XMLFilter
 
 
 @XMLFilter.deco('ccs', 'pcs')

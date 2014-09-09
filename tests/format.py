@@ -1,24 +1,26 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing format"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import unittest
-from lxml import etree
+import os.path as op; execfile(op.join(op.dirname(__file__), '_bootstrap.py'))
+
+
 from os.path import dirname, join
+from unittest import TestCase
 #from pprint import pprint
 
-import _bootstrap  # known W402, required
+from lxml import etree
 
-from clufter.format import FormatError
-from clufter.formats.ccs import ccs
-from clufter.formats.coro import coroxml_needle
-from clufter.utils import head_tail
+from .format import FormatError
+from .formats.ccs import ccs
+from .formats.coro import coroxml_needle
+from .utils import head_tail
 
 
-class XMLFormatWalkTestCase(unittest.TestCase):
+class XMLFormatWalkTestCase(TestCase):
     walk_dir = join(dirname(__file__), 'XMLFormat-walk')
     result_walk_full = {
         'cluster': ('cluster-full', {
@@ -58,7 +60,7 @@ class XMLFormatWalkTestCase(unittest.TestCase):
         self.assertTrue(r == self.result_walk_sparse)
 
 
-class XMLValidationTestCase(unittest.TestCase):
+class XMLValidationTestCase(TestCase):
     coro_input_ok = join(dirname(__file__), 'coro_ok.xml')
     coro_input_fail = join(dirname(__file__), 'coro_fail.xml')
 
@@ -91,5 +93,4 @@ class XMLValidationTestCase(unittest.TestCase):
         self.assertTrue(entries)
 
 
-if __name__ == '__main__':
-    unittest.main()
+execfile(op.join(op.dirname(__file__), '_bootstart.py'))

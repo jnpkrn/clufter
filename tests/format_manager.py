@@ -5,17 +5,18 @@
 """Testing format manager"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import unittest
-
-import _bootstrap  # known W402, required
-
-from clufter.format_manager import FormatManager
-from clufter.formats.ccs import ccs
-from clufter.formats.ccs import ccs_flat
-from clufter.formats.pcs import pcs
+import os.path as op; execfile(op.join(op.dirname(__file__), '_bootstrap.py'))
 
 
-class FormatManagerTestCase(unittest.TestCase):
+from unittest import TestCase
+
+from .format_manager import FormatManager
+from .formats.ccs import ccs
+from .formats.ccs import ccs_flat
+from .formats.pcs import pcs
+
+
+class FormatManagerTestCase(TestCase):
     def setUp(self):
         self.fmt_mgr = FormatManager()
 
@@ -37,9 +38,9 @@ class Default(FormatManagerTestCase):
 
 
 class Injection(FormatManagerTestCase):
-    formats = {'frobniccs': ccs}
 
     def setUp(self):
+        self.formats = {'frobniccs': ccs}
         self.fmt_mgr = FormatManager(paths=None, plugins=self.formats)
 
     def test_injection(self):
@@ -51,5 +52,4 @@ class Injection(FormatManagerTestCase):
             self.assertEqual(fmt_cls, formats[fmt_id])
 
 
-if __name__ == '__main__':
-    unittest.main()
+execfile(op.join(op.dirname(__file__), '_bootstart.py'))

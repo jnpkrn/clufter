@@ -8,8 +8,8 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from subprocess import PIPE
 import logging
 
-from clufter.filter import Filter, FilterError
-from clufter.utils_prog import OneoffWrappedStdinPopen, dirname_x, which
+from ..filter import Filter, FilterError
+from ..utils_prog import OneoffWrappedStdinPopen, dirname_x, which
 
 log = logging.getLogger(__name__)
 # XXX

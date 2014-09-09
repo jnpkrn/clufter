@@ -5,13 +5,14 @@
 """Testing CIB helpers"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import unittest
+import os.path as op; execfile(op.join(op.dirname(__file__), '_bootstrap.py'))
 
-import _bootstrap  # known W402, required
 
-from clufter.utils_cib import ResourceSpec
+from unittest import TestCase
 
-class TestResourceSpec(unittest.TestCase):
+from .utils_cib import ResourceSpec
+
+class TestResourceSpec(TestCase):
     def test_xsl_attrs_ocf(self):
         rs = ResourceSpec('ocf:heartbeat:Filesystem')
         self.assertTrue(rs.res_class == 'ocf')
@@ -22,3 +23,6 @@ class TestResourceSpec(unittest.TestCase):
         rs = ResourceSpec('systemd:smb')
         self.assertTrue(rs.res_class == 'systemd')
         self.assertTrue(rs.res_type == 'smb')
+
+
+execfile(op.join(op.dirname(__file__), '_bootstart.py'))

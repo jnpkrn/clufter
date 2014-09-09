@@ -5,16 +5,17 @@
 """Testing direct command run (e.g., when clufter used as a library)"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import unittest
+import os.path as op; execfile(op.join(op.dirname(__file__), '_bootstrap.py'))
+
+
+from unittest import TestCase
 from os.path import dirname, exists, join
 #from os import unlink
 
-import _bootstrap
-
-from clufter.command_manager import CommandManager
+from .command_manager import CommandManager
 
 
-class Main(unittest.TestCase):
+class Main(TestCase):
     #def testCcs2PcsNeedle(self):
     #    testfile = join(dirname(__file__), 'filled.conf')
     #    testcib = join(dirname(__file__), '.testcib.xml')
@@ -42,7 +43,7 @@ class Main(unittest.TestCase):
 
     def testCcs2PcsNeedleBetter(self):
         testfile = join(dirname(__file__), 'filled.conf')
-        from clufter.formats.simpleconfig import simpleconfig
+        from .formats.simpleconfig import simpleconfig
         #from clufter.protocol import protocols
         #protocols = protocols.plugins
 
@@ -67,7 +68,8 @@ class Main(unittest.TestCase):
         self.assertFalse(cmd(clufter_args))
         # just the existence of non-null strings is enough for now...
         map(lambda fspec: self.assertTrue(fspec['passout']), outputs.values())
+        #from pprint import pprint
+        #pprint(outputs['coro']['passout'])
 
 
-if __name__ == '__main__':
-    unittest.main()
+execfile(op.join(op.dirname(__file__), '_bootstart.py'))
