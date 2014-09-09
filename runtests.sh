@@ -34,6 +34,13 @@ VERBOSE=1
 ACC=
 while [ $# -gt 0 ]; do
     case "$1" in
+	-a)  # alternative && all
+	    ret=0
+	    for f in $(ls -1 tests/[!_]*.py); do
+	        python "$f" &>/dev/null && echo OK || { echo FAIL; ret=1; }
+	    done
+	    exit ${ret}
+	    ;;
         -d)
             DEBUG=
             ;;
