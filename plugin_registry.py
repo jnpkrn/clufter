@@ -130,6 +130,10 @@ class PluginRegistry(type):
             registry._namespace = '.'.join((__package__, registry.__name__))
             return registry._namespace
 
+    @classmethod
+    def namespaced(registry, symbol, *symbols):
+        return '.'.join(args2tuple(registry.namespace, symbol, *symbols))
+
     @classproperty
     def plugins(registry):
         return registry._plugins_ro
@@ -211,7 +215,7 @@ class PluginRegistry(type):
                                 log.debug("Omitting `{0}' at `{1}'"
                                           .format(name, root))
                                 continue
-                            mname = '.'.join((registry.namespace, name))
+                            mname = registry.namespaced(name)
                             try:
                                 load_module(mname, mfile, mpath, mdesc)
                             finally:
