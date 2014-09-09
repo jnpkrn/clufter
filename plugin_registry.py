@@ -256,8 +256,8 @@ class PluginManager(object):
 
     def __init__(self, *args, **kwargs):
         registry = kwargs.pop('registry', None) or self._default_registry
-        assert (registry is not PluginRegistry,
-                "PluginManager subclass should refer to its custom registry")
+        assert registry is not PluginRegistry, \
+               "PluginManager subclass should refer to its custom registry"
         self._registry = registry
         plugins = registry.discover(**filterdict_pop(kwargs, 'paths'))
         plugins.update(kwargs.pop('plugins', {}))
