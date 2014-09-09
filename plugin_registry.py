@@ -106,7 +106,7 @@ class PluginRegistry(type):
             if registry._path_context is not None:
                 registry._path_mapping[registry._path_context].add(name)
 
-            return ret
+        return ret
 
     @hybridproperty
     def name(this):
