@@ -1,0 +1,8 @@
+include run-dev
+
+graft ccs-flatten
+recursive-exclude ccs-flatten ccs_flatten *.o
+
+recursive-include doc cib-ids.txt rgmanager-pacemaker.*
+
+global-exclude /.*
