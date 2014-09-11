@@ -1,7 +1,7 @@
 clufter aka Cluster Filter
 ==========================
 
-$ clufter -h | sed '2,8p;d'
+$ ./run-dev -h | sed '2,8p;d'
 
 Tool to perform various transformations on cluster configuration formats.
 
