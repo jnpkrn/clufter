@@ -9,6 +9,11 @@
 # ---
 # [1] http://docs.python.org/2/library/unittest.html#command-line-interface
 
+PATH=${PATH:+${PATH}:}$(dirname $(dirname $(realpath -e "$0"))) \
+which ccs_flatten 2>/dev/null || ( \
+    cd __root__; python setup.py build && make -C ccs-flatten symlink
+) || { ret=$?; echo "ccs_flatten missing, cannot be built"; exit ${ret}; }
+
 stop=$(printf "\033\[0m")
 blue=$(printf "\033[01;34m") red=$(printf "\033[01;31m")
 green=$(printf "\033[01;32m") cyan=$(printf "\033[01;36m")

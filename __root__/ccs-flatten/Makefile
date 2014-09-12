@@ -4,7 +4,7 @@
 
 # Intended way of building is via setup.py, this is primarily for maintenance!
 
-.PHONY: all clean metadata full install deepclean
+.PHONY: all clean metadata full install symlink deepclean
 
 TARGET  = ccs_flatten
 OBJS    = flatten.o reslist.o resrules.o restree.o xmlconf.o
@@ -60,6 +60,9 @@ full: all metadata
 install: full
 	install ${TARGET} ${PREFIX}/${ccs_flatten}
 	install *.${ra_metadata_ext} ${PREFIX}/${ra_metadata}
+
+symlink:
+	ln -fs ../build/ccs_flatten .
 
 clean:
 	${RM} -- ${TARGET} ${OBJS} config.h *.${ra_metadata_ext}.tmp
