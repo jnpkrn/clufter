@@ -4,7 +4,7 @@
 
 # Intended way of building is via setup.py, this is primarily for maintenance!
 
-.PHONY: all clean metadata full install
+.PHONY: all clean metadata full install deepclean
 
 TARGET  = ccs_flatten
 OBJS    = flatten.o reslist.o resrules.o restree.o xmlconf.o
