@@ -1,16 +1,19 @@
 *.o
 *.py[co]
-*.un~
 /__root__/ccs-flatten/Makefile.setup
 /__root__/ccs-flatten/ccs_flatten
 /__root__/ccs-flatten/config.h
 /__root__/build
 /__root__/dist
 /__root__/*.egg-info
+
 !/.gitignore
 !/tests/XMLFormat-walk/
-/.*
+
 /cib.xml
 /corosync.conf
+
+# KEEP
+/.*
 /tests/*/
 /tests/*-archive

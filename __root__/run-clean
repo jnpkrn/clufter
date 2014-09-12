@@ -1,0 +1,19 @@
+#!/bin/bash
+# Copyright 2014 Red Hat, Inc.
+# Part of clufter project                                                     
+# Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+prefix="$(git rev-parse --show-prefix)"
+grep_prefix="${prefix}"
+[ -n "${grep_prefix}" ] || grep_prefix="[^#!]"
+sed -n '/# KEEP/q;p'                                   \
+  "$(git rev-parse --show-cdup).gitignore"             \
+| grep                                                 \
+  -e "^/\?${grep_prefix}"                              \
+  -e "^[^/#!]+$"                                       \
+| sed "s|^/\?${prefix}||"                              \
+| xargs -- sh -c 'ls -1d $@ 2>/dev/null' sh            \
+| tee >(xargs -r -- sh -c 'ls --color -d "$@"' sh >&2) \
+| xargs -r -- sh -c 'rm -Ir -- "$@" </dev/tty' sh
+#| tee /dev/stderr                                      \
+# ^
+# +-- using this instead of tee >(xargs ...) means one can use plain /bin/sh
