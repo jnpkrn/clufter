@@ -1,3 +1,5 @@
+include gpl-2.0.txt COPYING
+include KNOWN-ISSUES
 include run-dev
 
 graft ccs-flatten
