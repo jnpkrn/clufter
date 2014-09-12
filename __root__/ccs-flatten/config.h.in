@@ -1,0 +1,52 @@
+/*
+  Copyright 2014 Red Hat, Inc.
+
+  This program is free software; you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as published by the
+  Free Software Foundation; either version 2, or (at your option) any
+  later version.
+
+  This program is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; see the file COPYING.  If not, write to the
+  Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+  MA 02110-1301 USA
+*/
+
+#ifndef CONFIG_H
+#define CONFIG_H
+
+/* heavily inspired from
+   http://gustedt.wordpress.com/2010/06/08/detect-empty-macro-arguments/
+ */
+#define _HAS_COMMA(_0, _1, _2, ...) _2
+#define HAS_COMMA(...)              _HAS_COMMA(__VA_ARGS__, 1, 0)
+#define _TRIGGER_PAREN(...)         ,
+#define IS_EMPTY(...)                HAS_COMMA(_TRIGGER_PAREN __VA_ARGS__ ())
+
+/* https://gcc.gnu.org/onlinedocs/cpp/Stringification.html */
+#define _STRINGIFY(arg)             #arg
+#define STRINGIFY(arg)              _STRINGIFY(arg)
+
+
+/* following constructions say: define macro iff not defined yet + non-empty */
+
+#ifndef RA_METADATA_DIR
+#  define RA_METADATA_DIR_DEF       @RA_METADATA_DIR@
+#  if !IS_EMPTY(RA_METADATA_DIR_DEF)
+#    define RA_METADATA_DIR         STRINGIFY(RA_METADATA_DIR_DEF)
+#  endif
+#endif
+
+#ifndef RA_METADATA_EXT
+#  define RA_METADATA_EXT_DEF       @RA_METADATA_EXT@
+#  if !IS_EMPTY(RA_METADATA_EXT_DEF)
+#    define RA_METADATA_EXT         STRINGIFY(RA_METADATA_EXT_DEF)
+#  endif
+#endif
+
+#endif

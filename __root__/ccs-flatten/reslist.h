@@ -24,6 +24,8 @@
 #  include <libxml/xmlmemory.h>
 #  include <libxml/xpath.h>
 
+#  include "config.h"
+
 #  define RA_PRIMARY	(1<<0)  /** Primary key */
 #  define RA_UNIQUE	(1<<1)  /** Unique for given type */
 #  define RA_REQUIRED	(1<<2)  /** Required (or an error if not present */
@@ -57,11 +59,7 @@
 #  define RES_FAILED	(2)
 #  define RES_DISABLED	(3)
 
-#  ifndef SHAREDIR
-#    define SHAREDIR		"/usr/share/cluster"
-#  endif
-
-#  define RESOURCE_ROOTDIR	SHAREDIR
+#  define RESOURCE_ROOTDIR	RA_METADATA_DIR
 #  define RESOURCE_TREE_ROOT	"//rm"
 #  define RESOURCE_BASE		RESOURCE_TREE_ROOT "/resources"
 #  define RESOURCE_ROOT_FMT 	RESOURCE_TREE_ROOT "/%s[%d]"

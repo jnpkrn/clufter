@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <libgen.h>
+#include "config.h"
 #include "list.h"
 #include "resgroup.h"
 #include "reslist.h"
@@ -127,7 +128,7 @@ flatten(int argc, char **argv)
         if (!strcmp(argv[0], "-r")) {
             if (!new_rb)
                 new_rb = xmlNewNode(NULL, (xmlChar *) "rm");
-#ifdef RAWMETADATA_EXT
+#ifdef RA_METADATA_EXT
         } else if (!strcmp(argv[0], "-m")) {
             rawmetadata = 1;
 #endif
@@ -210,10 +211,10 @@ flatten(int argc, char **argv)
 static void
 usage(const char *arg0, int ret)
 {
-#ifdef RAWMETADATA_EXT
+#ifdef RA_METADATA_EXT
     fprintf(stderr, "usage: %s <input.conf> [-m] [-r] [output.conf] \n\n", arg0);
     fprintf(stderr, "-m\tskip evaluation of RA executables, immediately use *.%s"
-                    " files\n", RAWMETADATA_EXT);
+                    " files\n", RA_METADATA_EXT);
 #else
     fprintf(stderr, "usage: %s <input.conf> [-r] [output.conf] \n\n", arg0);
 #endif

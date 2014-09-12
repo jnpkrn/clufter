@@ -30,6 +30,7 @@
 #include <limits.h>
 #include <stddef.h>
 #include <sys/wait.h>
+#include "config.h"
 #include "list.h"
 #include "resgroup.h"
 #include "reslist.h"
@@ -797,7 +798,7 @@ read_resource_agent_metadata(char *filename)
    @param filename      File name to load rules from
    @param rules         Rule list to add new rules to
    @param rawmetadata   Flag whether to read "raw metadata"
-                        (ignored unless compiled with RAWMETADATA_EXT)
+                        (ignored unless compiled with RA_METADATA_EXT)
    @return              0 or -1
  */
 static int
@@ -813,7 +814,7 @@ load_resource_rulefile(char *filename, resource_rule_t ** rules,
 
     if (!rawmetadata)
         doc = read_resource_agent_metadata(filename);
-#ifdef RAWMETADATA_EXT
+#ifdef RA_METADATA_EXT
     else
         doc = xmlParseFile(filename);
 #endif
@@ -901,7 +902,7 @@ load_resource_rulefile(char *filename, resource_rule_t ** rules,
 
    @param rules         Rule list to create/add to
    @param rawmetadata   Flag whether to read "raw metadata"
-                        (ignored unless compiled with RAWMETADATA_EXT)
+                        (ignored unless compiled with RA_METADATA_EXT)
    @return              0 on success, -1 on failure.  Sucess does not
                         imply any rules have been found; only that no
                         errors were encountered.
@@ -967,9 +968,9 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
             }
         }
 
-#ifdef RAWMETADATA_EXT
+#ifdef RA_METADATA_EXT
         /* when only raw metadata accepted */
-        if (rawmetadata && (!dot || strcmp(dot + 1, RAWMETADATA_EXT)))
+        if (rawmetadata && (!dot || strcmp(dot + 1, RA_METADATA_EXT)))
             continue;
 #endif
 

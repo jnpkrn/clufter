@@ -15,7 +15,7 @@ except ImportError:
 from glob import glob
 from os import getenv
 from os.path import (join as path_join, basename as path_basename,
-                     dirname as path_dirname,
+                     dirname as path_dirname, normpath as path_norm,
                      isabs as path_isabs, splitext as path_splitext)
 from shutil import copy, copymode
 from distutils.cmd import Command
@@ -360,8 +360,9 @@ pkg_name = pkg.package_name()
 # into ``pkg_params'' passed as an option to this command in ``setup()''
 # so they can be used for string substitutions as well
 pkg_prepare = setup_pkg_prepare(pkg_name, (
-    ('ccs_flatten', "location of bundled helper ccs_flatten"),
-    ('ra_metadata', "location of bundled metadata of RGManager's RAs"),
+    ('ccs_flatten',     "location of bundled helper ccs_flatten"),
+    ('ra_metadata_dir', "location of RGManager agents/metadata"),
+    ('ra_metadata_ext', "extension used for RGManager agents' metadata"),
 ))
 
 # Contains important values that are then referred to from ``package_data'',
@@ -374,8 +375,12 @@ pkg_prepare = setup_pkg_prepare(pkg_name, (
 # string with this dictionary (dynamically updated with the concrete values
 # for parameters passed into ``setup_pkg_prepare'') as a parameter
 pkg_params = {
-    '__ccs_flatten' : 'ccs_flatten',
-    '__ra_metadata' : 'ccs-flatten/*.metadata'
+    '__ccs_flatten'        : 'ccs_flatten',
+    '__ra_metadata'        : lambda pkg_params:
+                             path_norm('ccs-flatten/*.'
+                                       + pkg_params['ra_metadata_ext']),
+    '__ccs_flatten_config' : path_norm("ccs-flatten/config.h.in"),
+    'ccs_flatten_config'   : path_norm("ccs-flatten/config.h"),
 }
 
 
@@ -431,13 +436,19 @@ setup(
         # Options "passed" to ``pkg_prepare'' subcommand
         pkg_prepare.__name__: dict(
             pkg_params=pkg_params,
-            # In addition to standard ``data_files''
             built_files=(
                 dict(src='__ccs_flatten', dst='ccs_flatten'),
             ),
+            # In addition to standard ``data_files''
             data_files=(
-                dict(src='__ra_metadata', dst='ra_metadata'),
-            )
+                dict(src='__ra_metadata', dst='ra_metadata_dir'),
+            ),
+            # Similar to ``data files'' but for files used e.g. for building
+            # C extensions
+            buildonly_files=(
+                dict(src='__ccs_flatten_config', dst='ccs_flatten_config', substitute=True),
+            ),
+
         ),
         build_binary.__name__: dict(
             binaries=(
