@@ -20,6 +20,7 @@ ccs_flatten     ?= /usr/bin/ccs_flatten
 ra_metadata     ?= /usr/share/cluster
 ra_metadata_ext ?= metadata
 
+# preferably take values from ../setup.cfg (abuse the similarity of decls)
 -include ${SETUP_MAKEFILE}
 
 CFLAGS  += $(shell pkg-config --cflags libxml-2.0)  #-std=c99
@@ -61,6 +62,7 @@ install: full
 	install *.${ra_metadata_ext} ${PREFIX}/${ra_metadata}
 
 clean:
-	${RM} -- ${TARGET} ${OBJS} config.h *.${ra_metadata_ext}{.tmp,}
+	${RM} -- ${TARGET} ${OBJS} config.h *.${ra_metadata_ext}.tmp
 
-# preferably take values from ../setup.cfg (abuse the similarity of decls)
+deepclean: clean
+	${RM} -- *.${ra_metadata_ext}
