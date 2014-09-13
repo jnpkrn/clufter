@@ -18,7 +18,7 @@ stop=$(printf "\033\[0m")
 blue=$(printf "\033[01;34m") red=$(printf "\033[01;31m")
 green=$(printf "\033[01;32m") cyan=$(printf "\033[01;36m")
 magenta=$(printf "\033[01;35m")
-TAIL='|& sed \
+TAIL='2>&1 | sed \
     -e "s/\(^\|[^A-Za-z]\)\(OK\)/\1${blue}\2${stop}/"      \
     -e "s/\(^\|[^A-Za-z]\)\(FAILED.*\)/\1${red}\2${stop}/" \
     -e "s/\(^\|[^A-Za-z]\)\(ok\)/\1${green}\2${stop}/"     \
@@ -54,6 +54,9 @@ while [ $# -gt 0 ]; do
             ;;
         -p)
             TAIL+=" 2>&1 | ${PGR}"  # bash: " |& ${PGR}"
+            ;;
+        -t)
+            TAIL=
             ;;
         *)
             ACC+=" $1"
