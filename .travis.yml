@@ -3,6 +3,12 @@ python:
         - 2.7
 install:
         - pushd __root__
+        - echo "${PATH}; ${HOME}" >&2
+        - python --version
+        - python setup.py saveopts --filename=setup.cfg pkg_prepare
+          --ra-metadata-dir=$(pwd)/cluster
+          --ccs-flatten=${HOME}/.local/bin/ccs_flatten
+        - cat setup.cfg
         - python setup.py install
         - popd
 script: ./run-tests

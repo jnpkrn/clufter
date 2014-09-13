@@ -122,8 +122,8 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                        "and can also mimic enhanced ``develop'' using %s)"
                        % DEV_SWITCH)
         user_options = [
-            (key + "=", None, "specify " + help + " for " + pkg_name)
-            for key, help in pkg_prepare_options
+            (key.replace('_', '-') + "=", None, "specify " + help
+             + " for " + pkg_name) for key, help in pkg_prepare_options
         ]
         user_options.append((DEV_SWITCH, None, "mimics ``develop'' command "
                              "(to be used only w/ standalone ``pkg_prepare'')"))
@@ -176,7 +176,8 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
 
         def __init__(self, dist):
             self.pkg_options = tuple(
-                key.split('=', 1)[0] for (key, _, __) in self.user_options
+                key.split('=', 1)[0].replace('-', '_')
+                for (key, _, __) in self.user_options
             )
             Command.__init__(self, dist)
 
