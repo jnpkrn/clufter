@@ -3,6 +3,10 @@ python:
         - 2.7
 install:
         - pushd __root__
-        - sudo python setup.py install
+        - echo "${PATH}; ${HOME}"
+        - python setup.py saveopts --filename=setup.cfg pkg_prepare \
+          --ra_metadata_dir=$(pwd)/cluster \
+          --ccs_flatten=${HOME}/.local/bin/ccs_flatten
+        - python setup.py install
         - popd
 script: ./run-tests
