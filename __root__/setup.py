@@ -212,15 +212,15 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
 
         def run(self):
             if DEBUG: print (DBGPFX + "\trun")
+            if self.distribution.get_command_obj('build', create=False):
+                # As a part of ``build'' command
+                if DEBUG: print (DBGPFX + "\trun: build")
+                self._pkg_prepare_build()
             if self.distribution.get_command_obj('install', create=False):
                 # As a part of ``install'' command
                 if DEBUG: print (DBGPFX + "\trun: install")
                 self._pkg_prepare_install()
-            elif self.distribution.get_command_obj('build', create=False):
-                # As a part of ``build'' command
-                if DEBUG: print (DBGPFX + "\trun: build")
-                self._pkg_prepare_build()
-            elif getattr(self, self.DEV_SWITCH, 0):
+            if getattr(self, self.DEV_SWITCH, 0):
                 # Mimic ``develop'' command over "prepared" files
                 if DEBUG: print (DBGPFX + "\trun: mimic develop")
                 self._pkg_prepare_build()
