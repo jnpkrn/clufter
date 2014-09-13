@@ -3,6 +3,6 @@ python:
         - 2.7
 install:
         - pushd __root__
-        - python setup.py install
+        - sudo python setup.py install
         - popd
 script: ./run-tests
