@@ -16,7 +16,7 @@ if __name__ != 'main_bootstrap':
     from os import environ
     import logging
     logging.basicConfig()
-    logging.getLogger().setLevel(environ.get('LOGLEVEL', logging.DEBUG))
+    logging.getLogger().setLevel(environ.get('LOGLEVEL') or logging.DEBUG)
 
 # inject PYTHONPATH we are to use
 root = reduce(lambda x, y: dirname(x), xrange(2), abspath(__file__))
