@@ -8,4 +8,4 @@ install:
           --ccs-flatten=${HOME}/ccs_flatten
         - pip install -e .
         - popd
-script: ./run-tests
+script: ./run-tests -d
