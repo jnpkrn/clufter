@@ -1,6 +1,6 @@
 #!/bin/bash
 # Copyright 2014 Red Hat, Inc.
-# Part of clufter project                                                     
+# Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 prefix="$(git rev-parse --show-prefix)"
 grep_prefix="${prefix}"
@@ -11,6 +11,10 @@ sed -n '/# KEEP/q;p'                                   \
   -e "^/\?${grep_prefix}"                              \
   -e "^[^/#!]+$"                                       \
 | sed "s|^/\?${prefix}||"                              \
+| while read file; do [[ "${file}" =~ [*?].* ]]        \
+    && find -name "${file}"                            \
+    || echo "${file}";                                 \
+  done                                                 \
 | xargs -- sh -c 'ls -1d $@ 2>/dev/null' sh            \
 | tee >(xargs -r -- sh -c 'ls --color -d "$@"' sh >&2) \
 | xargs -r -- sh -c 'rm -Ir -- "$@" </dev/tty' sh
