@@ -16,7 +16,7 @@ from lxml import etree
 
 from .format import FormatError
 from .formats.ccs import ccs
-from .formats.coro import coroxml_needle
+from .formats.coroxml import coroxml_needle
 from .utils import head_tail
 
 
