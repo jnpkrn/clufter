@@ -42,7 +42,7 @@ while [ $# -gt 0 ]; do
         -a)  # alternative && all
             ret=0
             for f in $(ls -1 tests/[!_]*.py); do
-                python "$f" &>/dev/null && echo OK || { echo FAIL; ret=1; }
+                python "$f" >/dev/null 2>&1 && echo OK || { echo FAIL; ret=1; }
             done
             exit ${ret}
             ;;
@@ -53,13 +53,13 @@ while [ $# -gt 0 ]; do
             VERBOSE=0
             ;;
         -p)
-            TAIL+=" 2>&1 | ${PGR}"  # bash: " |& ${PGR}"
+            TAIL="${TAIL} 2>&1 | ${PGR}"  # bash: " |& ${PGR}"
             ;;
         -t)
             TAIL=
             ;;
         *)
-            ACC+=" $1"
+            ACC="${ACC} $1"
             ;;
     esac
     shift
@@ -70,7 +70,7 @@ fi
 if [ -z "${ACC}" ]; then
     ACC=" discover -s tests -p '*.py'"
     if [ "${VERBOSE}" -eq 1 ]; then
-        ACC+=" --verbose"
+        ACC="${ACC} --verbose"
     fi
 fi
 
