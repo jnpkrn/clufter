@@ -73,4 +73,13 @@ if [ -z "${ACC}" ]; then
         ACC+=" --verbose"
     fi
 fi
-( cd "$(dirname "$0")"; cd __project__ || :; eval "${DEBUG} ${CMD} ${ACC} ${TAIL}" )
+
+# signal-based harness to catch non-zero retval while isolating PWD changes
+# in the subshell
+ret=0
+trap 'ret=1' USR1
+(
+    cd "$(dirname "$0")"; cd __project__ || :
+    eval "{ ${DEBUG} ${CMD} ${ACC}; [ \$? -eq 0 ] || kill -USR1 \$\$; } ${TAIL}"
+)
+f() { return $1; }; f ${ret}
