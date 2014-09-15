@@ -11,6 +11,7 @@ except ImportError:
     from ez_setup import use_setuptools
     use_setuptools()
     from setuptools import setup, find_packages, Extension
+from setuptools.command.develop import develop as setuptools_develop
 
 from glob import glob
 from os import getenv
@@ -105,6 +106,12 @@ class build_binary(build_ext):
 
     def get_ext_filename(self, ext_name):
         return path_splitext(build_ext.get_ext_filename(self, ext_name))[0]
+
+
+class develop(setuptools_develop):
+    def install_for_development(self):
+        self.reinitialize_command('pkg_prepare', develop=1)
+        self.run_command('pkg_prepare')
 
 
 class install_data(install_data):
@@ -213,6 +220,15 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
 
         def run(self):
             if DEBUG: print (DBGPFX + "\trun")
+            if getattr(self, self.DEV_SWITCH, 0):
+                # Mimic ``develop'' command over "prepared" files
+                if DEBUG: print (DBGPFX + "\trun: mimic develop")
+                self._pkg_prepare_build()
+                self.run_command('build_binary')
+                self._pkg_prepare_install()
+                self.run_command('install_data')
+                self.run_command('setuptools_develop')
+                return
             if self.distribution.get_command_obj('build', create=False):
                 # As a part of ``build'' command
                 if DEBUG: print (DBGPFX + "\trun: build")
@@ -221,16 +237,9 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                 # As a part of ``install'' command
                 if DEBUG: print (DBGPFX + "\trun: install")
                 self._pkg_prepare_install()
-            if getattr(self, self.DEV_SWITCH, 0):
-                # Mimic ``develop'' command over "prepared" files
-                if DEBUG: print (DBGPFX + "\trun: mimic develop")
-                self._pkg_prepare_build()
-                self._pkg_prepare_install()
-                self.run_command('install_data')
-                self.run_command('develop')
             else:
                 from distutils import log
-                log.info("``pkg_name'' command used with no effect")
+                log.debug("``pkg_name'' command used with no effect")
 
         def _pkg_prepare_build(self):
             for pkg_name, filedefs in (self.package_data or {}).iteritems():
@@ -430,8 +439,10 @@ setup(
     #data_files=(),
     # Override ``build'' command handler with local specialized one
     cmdclass = pkg_prepare.inject_cmdclass(
+        develop,
         build=(build, build_binary),
         install=(install, install_data),
+        setuptools_develop=setuptools_develop,
     ),
     options = {
         # Options "passed" to ``pkg_prepare'' subcommand
