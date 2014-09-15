@@ -276,7 +276,8 @@ class PluginManager(object):
 
     @classmethod
     def _init_plugins(cls, plugins, *args, **kwargs):
-        log.info("Plugins under `{0}' left intact".format(cls.__name__))
+        log.info("Plugins under `{0}' left intact: {1}".format(cls.__name__,
+                                                               plugins))
         return plugins
 
     @property
