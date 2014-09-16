@@ -8,6 +8,7 @@
 /__root__/*.egg-info
 
 !/.gitignore
+!/.travis.yml
 !/tests/XMLFormat-walk/
 
 /README.[!r]*
