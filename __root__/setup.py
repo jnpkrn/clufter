@@ -81,7 +81,7 @@ class build_binary(build_ext):
         build_ext.initialize_options(self)
         self.binaries = ()
 
-    def finalize_options( self):
+    def finalize_options(self):
         build_ext.finalize_options(self)
         self.extensions = self.binaries
         self.build_lib = path_dirname(self.build_lib)
@@ -396,6 +396,21 @@ pkg_params = {
 
 # =========================================================================
 
+
+def cond_require(package, *packages, **preferred):
+    packages = (lambda *args: args)(package, *packages)
+    for package in packages:
+        for preferred_package, sym in preferred.iteritems():
+            try:
+                preferred_module = __import__(preferred_package)
+                for symbol in ((sym, ) if isinstance(sym, basestring) else sym):
+                    if not hasattr(preferred_module, symbol):
+                        raise ImportError
+            except ImportError:
+                return (package, )
+    return ()
+
+
 setup(
 
     # STANDARD DISTUTILS ARGUMENTS
@@ -483,15 +498,15 @@ setup(
     setup_requires=(
     ),
     install_requires=(
-        "lxml",
-    ),
+        'lxml',
+    ) + cond_require('ordereddict', collections='OrderedDict'),
     # Use pure ``package_data'' value (i.e. do no use MANIFEST.ini or CVS tree);
     # see also comment by ``package data''
     include_package_data=False,
 
     # TODO: uncomment this when ready for tests
     #test_suite='nose.collector',
-    #tests_require=('BeautifulSoup', 'WebTest'),
+    tests_require=cond_require('unittest2', unittest='runner'),
 
     entry_points = {
         'console_scripts': (
