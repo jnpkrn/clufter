@@ -1,11 +1,12 @@
 language: python
 python:
+        - 2.6
         - 2.7
 install:
         - pushd __root__
-        - python setup.py saveopts --filename=setup.cfg pkg_prepare
-          --ra-metadata-dir=$(pwd)/cluster
-          --ccs-flatten=${HOME}/ccs_flatten
-        - pip install -e .
+        - python setup.py -q saveopts -f setup.cfg pkg_prepare
+                             --ra-metadata-dir=$(pwd)/cluster
+                             --ccs-flatten=${HOME}/ccs_flatten
+        - pip install -qe .
         - popd
-script: ./run-tests -d
+script: ./run-tests
