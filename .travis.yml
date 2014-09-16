@@ -7,6 +7,6 @@ install:
         - python setup.py -q saveopts -f setup.cfg pkg_prepare
                              --ra-metadata-dir=$(pwd)/cluster
                              --ccs-flatten=${HOME}/ccs_flatten
-        - pip install -qe .
+        - pip install -qe . || { cat ~/.pip/pip.log; false; }
         - popd
 script: ./run-tests
