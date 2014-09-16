@@ -58,8 +58,11 @@ while [ $# -gt 0 ]; do
         -t)
             TAIL=
             ;;
-        *)
+        tests.*)
             ACC="${ACC} $1"
+            ;;
+        *)
+            ACC="${ACC} tests.$1"
             ;;
     esac
     shift
