@@ -31,6 +31,8 @@ head_tail = \
 
 nonetype = type(None)
 
+identity = lambda x: x
+
 filterdict_keep = \
     lambda src, *which, **kw: \
         dict((x, src[x]) for x in which if x in src, **kw)
@@ -40,9 +42,13 @@ filterdict_invkeep = \
 filterdict_pop = \
     lambda src, *which, **kw: \
         dict((x, src.pop(x)) for x in which if x in src, **kw)
+
+filterdict_invpop_map = \
+    lambda fn, src, *which, **kw: \
+        dict((x, fn(src.pop(x))) for x in src.keys() if x in which, **kw)
 filterdict_invpop = \
     lambda src, *which, **kw: \
-        dict((x, src.pop(x)) for x in src if x in which, **kw)
+        filterdict_invpop_map(identity, src, *which, **kw)
 
 
 #

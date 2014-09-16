@@ -19,6 +19,7 @@ from .utils import args2tuple, \
                    classproperty, \
                    filterdict_keep, \
                    filterdict_pop, \
+                   filterdict_invpop_map, \
                    hybridproperty, \
                    tuplist
 from .utils_prog import ProtectedDict, cli_decor
@@ -107,9 +108,11 @@ class PluginRegistry(type):
                                                               bases, attrs)
             # XXX init plugin here?
             registry._plugins[dname] = ret
-        finally:
-            if registry._path_context is not None:
-                registry._path_mapping[registry._path_context].add(dname)
+
+        if registry._path_context is not None:
+            registry._path_mapping[registry._path_context].add(dname)
+        if tuplist(bases) and ret.__metaclass__.__module__ == ret.__module__:
+            ret.__metaclass__._native_plugins[cli_decor(ret.name)] = ret
 
         return ret
 
@@ -142,6 +145,10 @@ class PluginRegistry(type):
     @classproperty
     def plugins(registry):
         return registry._plugins_ro
+
+    @classproperty
+    def native_plugins(registry):
+        return registry._native_plugins_ro
 
     #
     # these are relevant for use case (2)
@@ -188,6 +195,8 @@ class PluginRegistry(type):
         else:
             map(lambda (a, d): setattr(registry, a, getattr(registry, a, d)),
                 attrs)
+        registry._native_plugins = np = getattr(registry, '_native_plugins', {})
+        registry._native_plugins_ro = ProtectedDict(np)
         if reset:
             PluginRegistry._registries.discard(registry)
 
@@ -231,10 +240,6 @@ class PluginRegistry(type):
 
             # filled as a side-effect of meta-magic, see `__new__`
             ret.update((n, registry._plugins[n]) for n in path_plugins)
-            if not fname_start:
-                # add "built-in" ones
-                ret.update((n, p) for n, p in registry._plugins.iteritems()
-                        if MetaPlugin not in p.__bases__)
 
         return ret
 
@@ -249,12 +254,22 @@ class PluginManager(object):
         ret, to_discover = {}, set()
         registry = cls._default_registry if registry is None else registry
         for plugin in args2sgpl(plugins):
+            # XXX we could introspect sys.modules here as well
             try:
                 ret[plugin] = registry.plugins[plugin]
             except KeyError:
                 to_discover.add(plugin)
         kwargs = filterdict_keep(kwargs, 'paths')
         ret.update(registry.discover(fname_start=tuple(to_discover), **kwargs))
+
+        to_discover.difference_update(ret.iterkeys())
+        native_plugins = registry.native_plugins
+        ret.update(filterdict_invpop_map(lambda x: native_plugins[x],
+                                         dict(zip(to_discover, to_discover)),
+                                         *native_plugins.keys()))
+        if to_discover:
+            log.debug("Couldn't look up everything: {0}".format(', '.join(
+                                                                to_discover)))
         return ret  # if tuplist(plugins) else ret[plugins]
 
     @classmethod
@@ -269,7 +284,8 @@ class PluginManager(object):
                "PluginManager subclass should refer to its custom registry"
         self._registry = registry
         plugins = registry.discover(**filterdict_pop(kwargs, 'paths'))
-        plugins.update(kwargs.pop('plugins', {}))
+        plugins.update(kwargs.pop('plugins', None)
+                       or dict(registry.native_plugins, **registry.plugins))
         self._plugins = ProtectedDict(
             self._init_plugins(plugins, *args, **kwargs),
         )
