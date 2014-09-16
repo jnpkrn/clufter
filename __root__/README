@@ -1,48 +1,96 @@
-clufter aka Cluster Filter
+==========================
+ clufter (CLUster FilTER)
 ==========================
 
-$ ./run-dev -h | sed '2,8p;d'
+.. code-block:: bash
 
-Tool to perform various transformations on cluster configuration formats.
+  $ ./run-dev -h | sed '2,8p;d'
 
-Primarily aimed at (CMAN, rgmanager) -> (Corosync, Pacemaker) cluster stacks
-configuration conversion (following RHEL trend), the tool, however, offers
-more uses further extensible within the arranged commands-filters-formats
-plugin framework.
+  Tool to perform various transformations on cluster configuration formats.
+
+  Primarily aimed at (CMAN, rgmanager) -> (Corosync, Pacemaker) cluster stacks
+  configuration conversion (following RHEL trend), the tool, however, offers
+  more uses further extensible within the arranged commands-filters-formats
+  plugin framework.
 
 
-Prerequisites
--------------
+-------
+ Usage
+-------
+
+The package can either be used as a separate CLI tool (as per *What*) or as
+a Python library, which is the case, e.g., with `pcs`_.
+
+.. _pcs: https://github.com/feist/pcs/
+
+
+Dependencies
+~~~~~~~~~~~~
 
 Python-wise:
-- lxml (python-lxml)
+
+- `lxml`_ (``python-lxml``)
 
 general:
+
 - Python 2
+
   - 2.7 preferred
-  - 2.6 with https://pypi.python.org/pypi/ordereddict or some kind
-    of collections.OrderedDict backport (#929258) required
-- ccs_flatten from pacemaker/extra/rgmanager:
-  ./configure --with-cman=1 && pushd extra/rgmanager && make; popd
+
+  - 2.6 with `ordereddict`_ or some kind of ``collections.OrderedDict``
+    backport (#929258) required
+
+- ``ccs_flatten``, embedded, originally ``pacemaker/extra/rgmanager``:
+
+.. code-block:: bash
+
+  ./configure --with-cman=1 && ( cd extra/rgmanager && make )
+
 
 tests:
-- outside of Python 2.7+, unittest2 (python-unittest2) is needed
+
+- outside of Python 2.7+, `unittest2`_ (``python-unittest2``) is needed
+
+.. _lxml: http://lxml.de
+.. _ordereddict: https://pypi.python.org/pypi/ordereddict
+.. _unittest2: https://pypi.python.org/pypi/unittest2
 
 
-    
+Installation
+~~~~~~~~~~~~
+
 TBD
 
+.. image:: https://travis-ci.org/jnpkrn/clufter.svg?branch=master
+  :target: https://travis-ci.org/jnpkrn/clufter
 
-Other remarks
--------------
+
+Development version
+~~~~~~~~~~~~~~~~~~~
+
+TBD
+
+.. image:: https://travis-ci.org/jnpkrn/clufter.svg?branch=next
+  :target: https://travis-ci.org/jnpkrn/clufter
+
+
+---------------
+ Other remarks
+---------------
+
+Bash completion
+~~~~~~~~~~~~~~~
 
 For convenience, bash completion is at user's hands by just running within
 the session:
 
-$ eval "$(clufter --completion-bash)"
+.. code-block:: bash
+
+  $ eval "$(clufter --completion-bash)"
+
 
 Indeed, to make such a feature permanent, the produced script can be appended
-to or referred from some relevant file like ~/.bashrc, or when bash-completion
-package installed, stored to ~/.config/bash_completion (per-user) or
-/usr/share/bash-completion/bash_completion (system-wide).  It's also
-possible this is already performed on the packaging level.
+to or referred from some relevant file like ``~/.bashrc``, or when
+``bash-completion`` package installed, stored to ``~/.config/bash_completion``
+(per-user) or ``/usr/share/bash-completion/bash_completion`` (system-wide).
+It's also possible this is already performed on the packaging level.

@@ -10,6 +10,7 @@
 !/.gitignore
 !/tests/XMLFormat-walk/
 
+/README.[!r]*
 /cib.xml
 /corosync.conf
 
