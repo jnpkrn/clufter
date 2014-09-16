@@ -47,7 +47,6 @@ class PluginRegistry(type):
     Inspired by http://eli.thegreenplace.net/2012/08/07/ (Fundamental...).
     """
     _registries = set()  # dynamic tracking of specific registries
-    _proxy_plugins = None
 
     #
     # these are relevant for use case (1)
