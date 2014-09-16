@@ -124,6 +124,7 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
 
     class pkg_prepare(Command):
         DEV_SWITCH = 'develop'
+        BUILD_DEV_SWITCH = 'build_develop'
         description = ("Prepare specified files, i.e. substitute some values "
                        "(works as a subcommand for ``build'' and ``install'' "
                        "and can also mimic enhanced ``develop'' using %s)"
@@ -132,9 +133,14 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
             (key.replace('_', '-') + "=", None, "specify " + help
              + " for " + pkg_name) for key, help in pkg_prepare_options
         ]
-        user_options.append((DEV_SWITCH, None, "mimics ``develop'' command "
+        user_options.append((DEV_SWITCH.replace('_', '-'), None,
+                             "mimics ``develop'' command "
                              "(to be used only w/ standalone ``pkg_prepare'')"))
-        boolean_options = (DEV_SWITCH, )
+        user_options.append((BUILD_DEV_SWITCH.replace('_', '-'), None,
+                             "as --{0} but quit early "
+                             "(to be used only w/ standalone ``pkg_prepare'')"
+                             .format(DEV_SWITCH)))
+        boolean_options = (DEV_SWITCH, BUILD_DEV_SWITCH)
         needs_any_opt = ('package_data', 'data_files',
                          'buildonly_files', 'built_files')
         needs_always_opts = ('pkg_params', )
@@ -196,6 +202,7 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                         + self.needs_always_opts):
                 setattr(self, key, None)
             setattr(self, self.DEV_SWITCH, 0)
+            setattr(self, self.BUILD_DEV_SWITCH, 0)
 
         def finalize_options(self):
             # Obtained parameters are all moved to ``self.pkg_params'' dict
@@ -220,11 +227,15 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
 
         def run(self):
             if DEBUG: print (DBGPFX + "\trun")
-            if getattr(self, self.DEV_SWITCH, 0):
+            if getattr(self, self.DEV_SWITCH, 0) \
+            or getattr(self, self.BUILD_DEV_SWITCH, 0):
                 # Mimic ``develop'' command over "prepared" files
                 if DEBUG: print (DBGPFX + "\trun: mimic develop")
                 self._pkg_prepare_build()
                 self.run_command('build_binary')
+                self.run_command('build_ext')
+                if getattr(self, self.BUILD_DEV_SWITCH, 0):
+                    return
                 self._pkg_prepare_install()
                 self.run_command('install_data')
                 self.run_command('setuptools_develop')
