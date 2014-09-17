@@ -9,11 +9,10 @@ before_install:
           'from sys import exit, version_info as v; exit(v[:2] in ((2, 7), (3, 2)))'
           || sudo apt-get install -qq python-lxml python-distribute
 install:
-        - pushd __root__
+        - cd __root__
         - python setup.py -q saveopts -f setup.cfg pkg_prepare
-                             --ra-metadata-dir=$(pwd)/cluster
-                             --ccs-flatten=${HOME}/ccs_flatten
-        - cat setup.cfg
+                             --ra-metadata-dir="$(pwd)/cluster"
+                             --ccs-flatten="$(dirname $(pwd))/ccs_flatten"
+        #- cat setup.cfg
         - pip install -qe .[test] || { cat ~/.pip/pip.log; false; }
-        - popd
 script: ./run-tests
