@@ -2,8 +2,8 @@ include gpl-2.0.txt COPYING
 include KNOWN-ISSUES
 include run-dev
 
-graft ccs-flatten
-recursive-exclude ccs-flatten ccs_flatten *.o
+exclude .ropeproject
+recursive-exclude ccs-flatten ccs_flatten *.o Makefile.setup config.h
 
 recursive-include doc cib-ids.txt rgmanager-pacemaker.*
 
