@@ -1,6 +1,6 @@
 #!/bin/sh
 # Copyright 2014 Red Hat, Inc.
-# Part of clufter project                                                     
+# Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
 # Specific tests can be specified as per [1], e.g.:
@@ -9,10 +9,16 @@
 # ---
 # [1] http://docs.python.org/2/library/unittest.html#command-line-interface
 
-PATH=${PATH:+${PATH}:}$(dirname $(dirname $(realpath -e "$0")))
+PATH="${PATH:+${PATH}:}$(
+  dirname "$(
+    dirname "$(pwd)/$(
+      ls -l "$(echo "${0}" | sed 's|\./||')" | cut -d'>' -f2 | awk '{print $NF}'
+    )"
+  )"
+)"
 echo "Current path: ${PATH}"
 which ccs_flatten 2>/dev/null || (
-    cd __root__
+    cd __root__ 2>/dev/null
     python setup.py pkg_prepare --build-develop && make -C ccs-flatten symlink
 ) || { ret=$?; echo "ccs_flatten missing, cannot be built"; exit ${ret}; }
 
