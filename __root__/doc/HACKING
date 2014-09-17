@@ -149,6 +149,23 @@ x. to ease the perception of embedded XSLT snippets in the Python files,
 [2] http://fedorapeople.org/cgit/jpokorny/public_git/vim4projects.git
 
 
+Interactive/exploratory use: IPython and friends
+------------------------------------------------
+
+For top-level modules, following prologue can be used:
+
+    import os.path as op; execfile(op.join('tests', '_bootstrap.py'))
+
+or alternatively add this command-line option to ipython invocation:
+
+    ipython --InteractiveShellApp.exec_files='["tests/_bootstrap.py"]'
+
+and from now on, one can use relative imports conveniently:
+
+    from .utils_prog import which
+
+
+
 Common problems run into (just for self-reference)
 --------------------------------------------------
 
