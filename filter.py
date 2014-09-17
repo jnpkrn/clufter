@@ -7,7 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
 from copy import deepcopy
-from os import stat
+from os import environ, stat
 from os.path import dirname, join as path_join
 from shlex import split as shlex_split
 from shutil import rmtree
@@ -22,7 +22,6 @@ except ImportError:
 from lxml import etree
 
 from . import package_name
-from .defaults import EDITOR
 from .error import ClufterError, ClufterPlainError
 from .format import CompositeFormat, XML
 from .plugin_registry import MetaPlugin, PluginRegistry
@@ -40,6 +39,13 @@ from .utils_xml import NAMESPACES, namespaced, nselem, squote, \
                        element_juggler, xml_get_root_pi, xmltag_get_namespace,\
                        xslt_identity
 from .command_context import CommandContext
+
+try:
+    from .defaults import EDITOR
+except ImportError:
+    EDITOR = ''
+if not EDITOR:
+    EDITOR = environ.get('EDITOR', 'vi')
 
 log = logging.getLogger(__name__)
 
