@@ -516,7 +516,7 @@ setup(
     include_package_data=False,
 
     # TODO: uncomment this when ready for tests
-    #test_suite='nose.collector',
+    test_suite='{0}.tests'.format(pkg_name),
     tests_require=cond_require('unittest2', unittest='runner'),
 
     entry_points = {
