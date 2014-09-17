@@ -461,7 +461,8 @@ setup(
     author_email=pkg.author_text(justname=False),
     #maintainer=pkg.author.partition(", ")[0],
     #maintainer_email=pkg.email.partition(", ")[0],
-    #download_url='https://https://github.com/jnpkrn/clufter/tarball/v0.1.0',
+    download_url='https://https://github.com/jnpkrn/clufter/tarball/v{0}'.
+                  format(pkg.version) if '-' not in pkg.version else None,
     #long_description=pkg.description_text(justhead=False),
     long_description=LazyRead('README', lambda c: c.rstrip('\n')),
     classifiers=(
