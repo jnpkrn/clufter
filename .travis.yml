@@ -14,6 +14,6 @@ install:
                              --ra-metadata-dir=$(pwd)/cluster
                              --ccs-flatten=${HOME}/ccs_flatten
         - cat setup.cfg
-        - pip install -qe . || { cat ~/.pip/pip.log; false; }
+        - pip install -qe .[test] || { cat ~/.pip/pip.log; false; }
         - popd
 script: ./run-tests

@@ -515,6 +515,10 @@ setup(
     # see also comment by ``package data''
     include_package_data=False,
 
+    extras_require={
+        'test': cond_require('unittest2', unittest='runner')
+    },
+
     # TODO: uncomment this when ready for tests
     test_suite='{0}.tests'.format(pkg_name),
     tests_require=cond_require('unittest2', unittest='runner'),
