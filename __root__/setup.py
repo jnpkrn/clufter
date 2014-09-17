@@ -64,6 +64,29 @@ def pkgconfig(*packages, **kw):
         kw[k] = list(set(v))
     return kw
 
+# inspired from speaklater: http://pypi.python.org/pypi/speaklater
+class LazyRead(object):
+    """Mimic string that in fact is read on-demand from file(s)
+
+    Note: only direct use, str methods and '+' operator supported.
+    """
+    def __init__(self, filename, postproc=lambda c: c):
+        self._filename = filename
+        self._postproc = postproc
+        self._content = None
+    @property
+    def content(self):
+        ret = self._content
+        if ret is None:
+            with open(self._filename) as f:
+                ret = self._content = self._postproc(f.read())
+        return ret
+    def __str__(self):           return str(self.content)
+    def __repr__(self):          return repr(self.content)
+    def __getattr__(self, what): return getattr(self.content, what)
+    def __add__(self, other):    return self.content + other
+    def __radd__(self, other):   return other + self.content
+
 
 class Binary(Extension):
     pass
@@ -439,7 +462,8 @@ setup(
     #maintainer=pkg.author.partition(", ")[0],
     #maintainer_email=pkg.email.partition(", ")[0],
     #download_url='https://https://github.com/jnpkrn/clufter/tarball/v0.1.0',
-    long_description=pkg.description_text(justhead=False),
+    #long_description=pkg.description_text(justhead=False),
+    long_description=LazyRead('README', lambda c: c.rstrip('\n')),
     classifiers=(
         'Development Status :: 4 - Beta',
         'Operating System :: POSIX',
