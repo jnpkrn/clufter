@@ -382,6 +382,7 @@ pkg_name = pkg.package_name()
 # so they can be used for string substitutions as well
 pkg_prepare = setup_pkg_prepare(pkg_name, (
     ('ccs_flatten',     "location of bundled helper ccs_flatten"),
+    ('editor',          "which editor to use if EDITOR env variable not set"),
     ('ra_metadata_dir', "location of RGManager agents/metadata"),
     ('ra_metadata_ext', "extension used for RGManager agents' metadata"),
 ))
@@ -402,6 +403,8 @@ pkg_params = {
                                        + pkg_params['ra_metadata_ext']),
     '__ccs_flatten_config' : path_norm("ccs-flatten/config.h.in"),
     'ccs_flatten_config'   : path_norm("ccs-flatten/config.h"),
+    '__defaults'           : path_join(pkg_name, 'defaults.py.in'),
+    'defaults'             : path_join(pkg_name, 'defaults.py'),
 }
 
 
@@ -485,6 +488,7 @@ setup(
             # C extensions
             buildonly_files=(
                 dict(src='__ccs_flatten_config', dst='ccs_flatten_config', substitute=True),
+                dict(src='__defaults',           dst='defaults',           substitute=True),
             ),
 
         ),
