@@ -1,0 +1,7 @@
+#!/bin/sh
+use_dir="$(
+  dirname "$(pwd)/$(
+    ls -l "$(echo "${0}" | sed 's|\./||')" | cut -d'>' -f2 | awk '{print $NF}'
+  )"
+)"
+(cd "${use_dir}"; python setup.py "$@")
