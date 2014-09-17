@@ -217,7 +217,7 @@ def which(name, single='', *paths, **redefine_check):
     """
     check, expand_path = redefine_check.pop('check', path_isfile), True
     if path_isabs(name):
-        where, expand_path = ['', ], False
+        where, expand_path = [''], False
     else:
         where = list(single.split(pathsep) if not tuplist(single) else single)
         where.extend(paths)
