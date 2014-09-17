@@ -6,6 +6,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from sys import modules, path
+from os import getcwd
 from os.path import basename, dirname, abspath
 
 
@@ -18,8 +19,13 @@ if __name__ != 'main_bootstrap':
     logging.basicConfig()
     logging.getLogger().setLevel(environ.get('LOGLEVEL') or logging.DEBUG)
 
-# inject PYTHONPATH we are to use
-root = reduce(lambda x, y: dirname(x), xrange(2), abspath(__file__))
+# in interactive run, we have no __file__
+__file__ = str(globals().get('__file__', ''))  # convert from possibly unicode
+if __file__:
+    # inject PYTHONPATH we are to use
+    root = reduce(lambda x, y: dirname(x), xrange(2), abspath(__file__))
+else:
+    root = getcwd()
 path.insert(0, dirname(root))
 
 # set the correct __package__ for relative imports
