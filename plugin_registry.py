@@ -210,7 +210,7 @@ class PluginRegistry(type):
         Returns `{plugin_name: plugin_cls}` mapping of plugins found.
         """
         ret = {}
-        fname_start_use = args2sgpl(fname_start or '[!_]')
+        fname_start_use = args2sgpl(fname_start or '[!_.]')
         fp = re_compile('|'.join(
             translate(fs + '*' + module_ext)
             for fs in (pfx.split('-', 1)[0] for pfx in fname_start_use)
