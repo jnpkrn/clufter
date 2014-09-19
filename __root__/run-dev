@@ -6,16 +6,55 @@
 """Machinery entry point -- to be run from in-repo location"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from imp import load_source
-from os.path import dirname, exists, join, abspath
-from sys import argv, exit
+import sys
+from os.path import abspath, basename, dirname, exists, join, realpath
+from inspect import getabsfile
 
-here = dirname(abspath(__file__))
-here_test = join(here, '__project__')
-if exists(here_test):
-    here = here_test
-bootstrap = join(here, 'tests', '_bootstrap.py')
-__package__ = getattr(load_source('main_bootstrap', bootstrap), '__package__')
-from .main import run
 
-exit(run(argv))
+# inspired by http://stackoverflow.com/a/22881871
+def get_script_path(follow_symlinks=True):
+    if getattr(sys, 'frozen', False):  # PyInstaller, cx_Freeze
+        path = abspath(sys.executable)
+    else:
+        path = getabsfile(get_script_path)
+    return path
+
+script_path = get_script_path()
+real_script_path = realpath(script_path)
+
+
+if __name__ != '__main__':
+    # XXX recognize when this file executed directly and report
+
+    # if not run from main-bootstrap, verbose logging desired
+    from os import environ
+    import logging
+    logging.basicConfig()
+    logging.getLogger().setLevel(environ.get('LOGLEVEL') or logging.DEBUG)
+
+root = dirname(real_script_path)
+if exists(join(root, '__project__')):
+    root = realpath(join(root, '__project__'))
+sys.path.insert(0, dirname(root))
+
+# set the correct __package__ for relative imports
+__package__ = basename(root)  # XXX optionally take the part before 1st '-'
+if __package__ not in sys.modules:
+    sys.modules[__package__] = __import__(__package__)
+
+if __name__ == '__main__':
+    if basename(script_path) == 'run-dev':
+        from .main import run
+        sys.exit(run(sys.argv))
+
+# XXX previous attempt to get unittest.main executed automagically at the end,
+#     which was failing likely because unittest uses Threading that register
+#     another atexit handler somehow interfering w/ its main started from here
+#    elif ('tests' == basename(dirname(script_path))
+#          == basename(dirname(abspath(__file__))):
+#        from atexit import register
+#        from unittest import main
+#        register(main)
+#        # hmm, see https://code.google.com/p/modwsgi/issues/detail?id=197
+#        # https://github.com/GrahamDumpleton/mod_wsgi/commit/fdef274
+#        register(lambda: __import__('dummy_threading'))
