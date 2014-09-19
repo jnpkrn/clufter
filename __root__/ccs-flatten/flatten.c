@@ -150,14 +150,17 @@ flatten(int argc, char **argv)
     } while (rawmetadata);
     if (!rulelist) {
         fprintf(stderr, "No resource rules available\n");
-        goto out;
+        if (rm)
+            goto out;
+        else
+            goto out_print;
     }
 
     load_resources(&reslist, &rulelist);
     build_resource_tree(&tree, &rulelist, &reslist);
     if (!tree) {
         fprintf(stderr, "No resource trees defined; nothing to do\n");
-        goto out;
+        goto out_print;
     }
 #ifdef DEBUG
     fprintf(stderr, "Resources %p tree %p\n", reslist, tree);
@@ -195,11 +198,13 @@ flatten(int argc, char **argv)
         xmlAddChild(rm, new_rb);
     }
 
+  out_print:
     xmlDocFormatDump(f, d, 1);
+
+  out:
     if (f != stdout)
         fclose(f);
 
-  out:
     conf_close();
     destroy_resource_tree(&tree);
     destroy_resources(&reslist);

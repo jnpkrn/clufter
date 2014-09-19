@@ -42,14 +42,7 @@ def ccs2ccsflat(flt_ctxt, in_obj):
     except OSError:
         raise FilterError(self, "ccs_flatten binary seems unavailable")
     out, err = proc.communicate()
-    if proc.returncode != 0:
+    if proc.returncode != 0 or out == '' and err != '':
         raise FilterError(self, "ccs_flatten exit code: {0}\n\t{1}",
                           proc.returncode, err)
-    elif out == '':
-        # "No resource trees defined; nothing to do"
-        try:
-            with file(in_file, 'r') as f:
-                out = f.read()
-        except IOError, e:
-            raise FilterError(self, e.strerror + ": {0}", e.filename)
     return ('bytestring', out)
