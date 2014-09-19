@@ -34,7 +34,7 @@ def doraise_py_compile(file, cfile=None, dfile=None, doraise=False):
     orig_py_compile(file, cfile=cfile, dfile=dfile, doraise=True)
 py_compile.compile = doraise_py_compile
 
-
+PREFER_GITHUB=True
 DEBUG = getenv("SETUPDEBUG")
 DBGPFX = str(__file__)
 
@@ -447,6 +447,14 @@ def cond_require(package, *packages, **preferred):
                 return (package, )
     return ()
 
+url_dict = dict(name=pkg_name, ver=pkg.version)
+if PREFER_GITHUB:
+    url = 'https://github.com/jnpkrn/{name}'
+    download_url = url + '/tarball/v{ver}'
+else:
+    url = 'http://people.redhat.com/jpokorny/pkgs/{name}'
+    download_url = url + '/{name}-{ver}.tar.gz'
+download_url = download_url if '-' not in pkg.version else ''
 
 setup(
 
@@ -455,14 +463,13 @@ setup(
     name=pkg_name,
     version=pkg.version,
     description=pkg.description_text(justhead=True),
-    url='https://github.com/jnpkrn/clufter',
+    url=url.format(**url_dict),
     license=pkg.license,
     author=pkg.author_text(justname=True),
     author_email=pkg.author_text(justname=False),
     #maintainer=pkg.author.partition(", ")[0],
     #maintainer_email=pkg.email.partition(", ")[0],
-    download_url='https://https://github.com/jnpkrn/clufter/tarball/v{0}'.
-                  format(pkg.version) if '-' not in pkg.version else None,
+    download_url=download_url.format(**url_dict),
     #long_description=pkg.description_text(justhead=False),
     long_description=LazyRead('README', lambda c: c.rstrip('\n')),
     classifiers=(
