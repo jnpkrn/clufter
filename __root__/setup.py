@@ -419,6 +419,7 @@ pkg_prepare = setup_pkg_prepare(pkg_name, (
 # The right side can be either string or lazily evaluated function returning
 # string with this dictionary (dynamically updated with the concrete values
 # for parameters passed into ``setup_pkg_prepare'') as a parameter
+pkg_param_defaults = 'defaults.py.in'
 pkg_params = {
     '__ccs_flatten'        : 'ccs_flatten',
     '__ra_metadata'        : lambda pkg_params:
@@ -426,7 +427,7 @@ pkg_params = {
                                        + pkg_params['ra_metadata_ext']),
     '__ccs_flatten_config' : path_norm("ccs-flatten/config.h.in"),
     'ccs_flatten_config'   : path_norm("ccs-flatten/config.h"),
-    '__defaults'           : path_join(pkg_name, 'defaults.py.in'),
+    '__defaults'           : path_join(pkg_name, pkg_param_defaults),
     'defaults'             : path_join(pkg_name, 'defaults.py'),
 }
 
@@ -493,6 +494,7 @@ setup(
     # Note: See ``package_data'' under options['pkg_prepare']
     package_data={
         pkg_name: [
+            pkg_param_defaults,
             'formats/*/*.rng',
         ],
     },
