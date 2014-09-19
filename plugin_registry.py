@@ -220,6 +220,8 @@ class PluginRegistry(type):
             if not path_plugins:
                 # visit *.py files within (and under) the path and probe them
                 for root, dirs, files in walk(path):
+                    if root != path:
+                        break  # ATM we only support flat dir (nested ~ private)
                     for f in files:
                         name, ext = splitext(f)
                         if fp.match(f):
