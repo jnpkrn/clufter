@@ -6,12 +6,11 @@
 
   $ ./run-dev -h | sed '2,8p;d'
 
-  Tool to perform various transformations on cluster configuration formats.
+  Tool/library for transforming/analyzing cluster configuration formats
 
   Primarily aimed at (CMAN, rgmanager) -> (Corosync, Pacemaker) cluster stacks
-  configuration conversion (following RHEL trend), the tool, however, offers
-  more uses further extensible within the arranged commands-filters-formats
-  plugin framework.
+  configuration conversion (following RHEL trend), but the package has a more
+  universal use as commands-filters-formats plugin framework.
 
 
 -------

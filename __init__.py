@@ -11,12 +11,11 @@ author = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com> and plugin authors"
 metadata = (version, copyright, author)
 
 description = """\
-Tool to perform various transformations on cluster configuration formats.
+Tool/library for transforming/analyzing cluster configuration formats
 
 Primarily aimed at (CMAN, rgmanager) -> (Corosync, Pacemaker) cluster
-stacks configuration conversion (following RHEL trend), the tool,
-however, offers more uses further extensible within the arranged
-commands-filters-formats plugin framework.
+stacks configuration conversion (following RHEL trend), but the package
+has a more universal use as commands-filters-formats plugin framework.
 """
 #Native plugins allows also for obfuscation of sensitive data within
 #cluster configuration of supported cluster stacks, and other
