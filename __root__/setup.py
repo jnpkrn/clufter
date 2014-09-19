@@ -391,8 +391,22 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
 
 # =========================================================================
 
-pkg = {}
-pkg = __import__('__project__', globals=pkg, level=1)
+self_discovery_plan = ['__project__']
+while True:
+    pkg = {}
+    project = self_discovery_plan.pop()
+    try:
+        # XXX check relative import
+        pkg = __import__(project, globals=pkg, level=1)
+        break
+    except ImportError:
+        if project == '__project__':
+            from glob import iglob
+            self_discovery_plan.extend(p[:-len('.egg-info')].split('-', 1)[0]
+                                       for p in iglob('*.egg-info'))
+        if not self_discovery_plan:
+            print "Cannot find myself, please help me with __project__ symlink"
+            raise
 #pkg_root = path_real('__project__')
 pkg_name = pkg.package_name()
 
