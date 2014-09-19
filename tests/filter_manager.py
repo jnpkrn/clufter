@@ -11,6 +11,8 @@ import os.path as op; execfile(op.join(op.dirname(__file__), '_bootstrap.py'))
 from unittest import TestCase
 from os.path import dirname, join
 
+from lxml.doctestcompare import norm_whitespace
+
 from .format_manager import FormatManager
 from .format import formats
 formats = formats.plugins
@@ -52,7 +54,7 @@ class Default(FilterManagerTestCase):
         # XXX print result
         # CHECK the externalized representation matches the original
         with file(testfile) as f:
-            self.assertEqual(result, f.read())
+            self.assertEqual(norm_whitespace(result), norm_whitespace(f.read()))
 
 
 class CompositeFormatIO(FilterManagerTestCase):
@@ -84,11 +86,12 @@ class CompositeFormatIO(FilterManagerTestCase):
         # externalize outputs
         results = out_objs(('composite', ('bytestring', 'bytestring')))
         # XXX print results
-        # CHECK resulting externalized reprezentation is, however, tha same
-        self.assertEqual(*results)
+        # CHECK resulting externalized representation is, however, tha same
+        self.assertEqual(*tuple(norm_whitespace for r in results))
         # CHECK picked externalized representation matches the original
         with file(testfile) as f:
-            self.assertEqual(results[0], f.read())
+            self.assertEqual(norm_whitespace(results[0]),
+                             norm_whitespace(f.read()))
 
 
 execfile(op.join(op.dirname(__file__), '_bootstart.py'))
