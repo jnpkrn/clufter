@@ -72,7 +72,9 @@ class PluginRegistry(type):
                 if (registry.namespace or '__builtin__') not in modules:
                     # XXX hack to prevent RuntimeWarning due to missing parent
                     #     module (e.g., some tests in the test suite)
-                    __import__(registry.namespace)
+                    #__import__(registry.namespace.split(__package__, 1)[1])
+                    #__import__(registry.namespace)
+                    pass
 
             ret = super(PluginRegistry, registry).__new__(registry, name,
                                                           bases, attrs)
