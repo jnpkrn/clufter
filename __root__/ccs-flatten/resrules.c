@@ -922,7 +922,9 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
 
     dir = opendir(rpath);
     if (!dir) {
-        /* convenient fallback for local/test deployment */
+        /* convenient fallback for local/test deployment, rawmetadata only */
+        if (!rawmetadata)
+            return -1;
         for (i = 0; i < 8; i++) {
             errno = 0;
             if (readlink(*path1, *path2, sizeof(*path2)/sizeof(**path2))
