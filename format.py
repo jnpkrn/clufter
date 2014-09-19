@@ -518,7 +518,8 @@ class XML(SimpleFormat):
 
             for i in dirs + files:
                 name, ext = splitext(i)  # does not hurt even if it is a dir
-                if name.startswith('_') or i in files and ext != extsep + 'py':
+                if name.startswith('_') or name.startswith('.') \
+                or i in files and ext != extsep + 'py':
                     continue
 
                 log.debug("Trying `{0}' at `{1}'".format(name, root))
