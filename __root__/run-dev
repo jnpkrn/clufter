@@ -24,8 +24,9 @@ script_path = get_script_path()
 real_script_path = realpath(script_path)
 
 
-if __name__ != '__main__':
-    # when execfile'd from tests, verbose logging desired
+if (basename(real_script_path) != basename(sys.path[0])
+    and 'LOGSKIP' not in globals()):
+    # when execfile'd from tests or so, verbose logging desired
     from os import environ
     import logging
     logging.basicConfig()
@@ -61,7 +62,7 @@ if __package__ not in sys.modules:
     sys.modules[__package__] = pkg
 
 if __name__ == '__main__':
-    if basename(script_path) == 'run-dev':
+    if basename(real_script_path) == basename(sys.argv[0]):  # __file__ undef?
         from .main import run
         sys.exit(run(sys.argv))
 

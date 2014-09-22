@@ -5,7 +5,7 @@
 """Testing format"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import os.path as op; execfile(op.join(op.dirname(__file__), '_bootstrap.py'))
+from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
 
 
 from os.path import dirname, join
@@ -93,4 +93,4 @@ class XMLValidationTestCase(TestCase):
         self.assertTrue(entries)
 
 
-execfile(op.join(op.dirname(__file__), '_bootstart.py'))
+from os.path import join, dirname as d; execfile(join(d(__file__), '_gone'))

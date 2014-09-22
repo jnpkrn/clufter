@@ -5,7 +5,7 @@
 """Testing destilling XSLT from the sparse tree-organized snippets"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import os.path as op; execfile(op.join(op.dirname(__file__), '_bootstrap.py'))
+from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
 
 
 from unittest import TestCase
@@ -41,5 +41,4 @@ class Ccs2NeedleXsltViewOnly(TestCase):
         assert not isinstance(r, list)
 
 
-
-execfile(op.join(op.dirname(__file__), '_bootstart.py'))
+from os.path import join, dirname as d; execfile(join(d(__file__), '_gone'))

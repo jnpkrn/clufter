@@ -20,4 +20,4 @@ class Main(CommonFilterTestCase):
         print out_obj('bytestring')
 
 
-import os.path as op; execfile(op.join(op.dirname(__file__), '_bootstart.py'))
+from os.path import join, dirname as d; execfile(join(d(__file__), '_gone'))
