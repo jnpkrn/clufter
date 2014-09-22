@@ -14,7 +14,6 @@ from lxml import etree
 from os.path import dirname, join
 
 from .utils_xml import rng_pivot
-from .utils_prog import dirname_x
 
 
 class TestRngPivot(TestCase):
