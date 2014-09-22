@@ -18,7 +18,7 @@ PATH="${PATH:+${PATH}:}$(
 )"
 echo "Current path: ${PATH}"
 which ccs_flatten 2>/dev/null || (
-    cd __root__ 2>/dev/null
+    cd __root__ 2>/dev/null || :
     python setup.py pkg_prepare --build-develop && make -C ccs-flatten symlink
 ) || { ret=$?; echo "ccs_flatten missing, cannot be built"; exit ${ret}; }
 
@@ -90,7 +90,7 @@ fi
 ret=0
 trap 'ret=1' USR1
 (
-    cd "$(dirname "$0")"; cd __project__ || :
+    cd "$(dirname "$0")"; cd __project__ 2>/dev/null || :
     eval "{ ${DEBUG} ${CMD} ${ACC}; [ \$? -eq 0 ] || kill -USR1 \$\$; } ${TAIL}"
 )
 f() { return $1; }; f ${ret}
