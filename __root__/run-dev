@@ -63,8 +63,7 @@ if __package__ not in sys.modules:
 
 if __name__ == '__main__':
     if basename(real_script_path) == basename(sys.argv[0]):  # __file__ undef?
-        from .main import run
-        sys.exit(run(sys.argv))
+        from . import __main__
 
 # XXX previous attempt to get unittest.main executed automagically at the end,
 #     which was failing likely because unittest uses Threading that register
