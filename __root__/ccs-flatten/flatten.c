@@ -117,7 +117,12 @@ flatten(int argc, char **argv)
     resource_t *reslist = NULL, *curres;
     resource_node_t *tree = NULL, *rn;
     FILE *f = stdout;
-    int rawmetadata = 0, ret = 0;
+    int ret = 0;
+#ifdef RA_METADATA_EXT
+    int rawmetadata = 1;
+#else
+    int rawmetadata = 0;
+#endif
 
     conf_setconfig(argv[0]);
     if (conf_open() < 0)
@@ -129,8 +134,8 @@ flatten(int argc, char **argv)
             if (!new_rb)
                 new_rb = xmlNewNode(NULL, (xmlChar *) "rm");
 #ifdef RA_METADATA_EXT
-        } else if (!strcmp(argv[0], "-m")) {
-            rawmetadata = 1;
+        } else if (!strcmp(argv[0], "-e")) {
+            rawmetadata = 0;
 #endif
         } else {
             if (f == stdout)
@@ -217,8 +222,8 @@ static void
 usage(const char *arg0, int ret)
 {
 #ifdef RA_METADATA_EXT
-    fprintf(stderr, "usage: %s <input.conf> [-m] [-r] [output.conf] \n\n", arg0);
-    fprintf(stderr, "-m\tskip evaluation of RA executables, immediately use *.%s"
+    fprintf(stderr, "usage: %s <input.conf> [-e] [-r] [output.conf] \n\n", arg0);
+    fprintf(stderr, "-e\tfirst try evaluating RA executables, only then try *.%s"
                     " files\n", RA_METADATA_EXT);
 #else
     fprintf(stderr, "usage: %s <input.conf> [-r] [output.conf] \n\n", arg0);
