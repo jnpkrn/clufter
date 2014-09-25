@@ -56,8 +56,19 @@ cluster_map = {
                     'pacemaker[cman]': (1, 1),
                 }),
                 ((7, 0), {
-                    'pacemaker[coro]': (1, 1),
                     'corosync':        (2, 3),
+                    'pacemaker[coro]': (1, 1),
+                }),
+            ),
+            # may be inaccurate
+            'ubuntu': (
+                ((13, 04), {
+                    'corosync':        (1, 4),
+                    'pacemaker[cman]': (1, 1),
+                }),
+                ((13, 10), {
+                    'corosync':        (2, 3),
+                    'pacemaker[coro]': (1, 1),
                 }),
             ),
         },
