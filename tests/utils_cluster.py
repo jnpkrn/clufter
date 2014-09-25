@@ -24,6 +24,11 @@ class TestClusterSystem(TestCase):
         self.assertTrue (cluster_pcs_flatiron('linux', ('redhat', '6.22')))
         self.assertFalse(cluster_pcs_flatiron('linux', ('redhat', '7.0' )))
         self.assertFalse(cluster_pcs_flatiron('linux', ('redhat', '7.1' )))
+        self.assertTrue (cluster_pcs_flatiron('linux', ('fedora', '13' )))
+        self.assertTrue (cluster_pcs_flatiron('linux', ('fedora', '14' )))
+        self.assertTrue (cluster_pcs_flatiron('linux', ('fedora', '15' )))
+        self.assertTrue (cluster_pcs_flatiron('linux', ('fedora', '16' )))
+        self.assertFalse(cluster_pcs_flatiron('linux', ('fedora', '17' )))
 
 
 from os.path import join, dirname as d; execfile(join(d(__file__), '_gone'))

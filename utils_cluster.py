@@ -33,7 +33,14 @@ cluster_map = {
     'linux':
         {
             'fedora': (
-                ((18, 0), {
+                ((13, 0), {
+                    'corosync':        (1, 3),
+                    'pacemaker[cman]': (1, 1),
+                }),
+                ((14, 0), {
+                    'corosync':        (1, 4),
+                }),
+                ((17, 0), {
                     'corosync':        (2, 3),
                     'pacemaker[coro]': (1, 1),
                 }),
