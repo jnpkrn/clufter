@@ -109,7 +109,7 @@ def infere_sys(sys, branches=None):
     if branches is None:
         branches = [cluster_map]
     if sys == "*":
-        return apply_intercalate([b.itervalues() for b in branches])
+        return apply_intercalate([b.values() for b in branches])
     return [b[sys] for b in branches if sys in b]
 
 
