@@ -8,6 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from ..command import Command, CommandAlias
 from ..filter import XMLFilter
 from ..protocol import protocols
+from ..utils_cluster import cluster_pcs_flatiron
 
 
 @Command.deco(('ccs2ccsflat',
@@ -85,12 +86,6 @@ def ccs2pcs_needle(cmd_ctxt,
 
 
 @CommandAlias.deco
-def ccs2pcs(cmds, system, system_extra):
-    # unless el <7.0 (XXX identification of SL and other derivates unknown)
-    if system == 'linux' and system_extra[0] in ('redhat', 'centos'):
-        v = system_extra[1] if system_extra else '7'  # default if undecidable
-        v = v[:-len(v.lstrip('0123456789.'))] or str.isdigit(v[0]) and v or '0'
-        v = tuple(map(int, (v.rstrip('.') + '.0.0').split('.')[:2]))
-        if v < (7, 0):
-            return ccs2pcs_flatiron  # could be string ('ccs2pcs-flatiron')
-    return ccs2pcs_needle
+def ccs2pcs(cmds, *sys_id):
+    # cluster_pcs_needle assumed unless "cluster_pcs_flatiron"
+    return ccs2pcs_flatiron if cluster_pcs_flatiron(*sys_id) else ccs2pcs_needle
