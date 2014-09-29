@@ -285,7 +285,8 @@ class Format(object):
                             producer = lambda *args, **kwargs: \
                                            meth(self, *args, **kwargs)
                         else:
-                            producer = getattr(super(prev_cls, self), that_proto[1])
+                            producer = getattr(super(prev_cls, self),
+                                               that_proto[1])
                         produced = producer(protocol, *args, **kwargs)
                         if produced is None:
                             continue
