@@ -1,0 +1,125 @@
+#!/bin/sh
+# Copyright 2014 Red Hat, Inc.
+# Part of clufter project
+# Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+# Depending on the usage, quick sanity check or just the prologue for run-tests
+
+declare s="${0}"
+[ $# -gt 0 ] && s="${1}"
+
+PATH="${PATH:+${PATH}:}$(
+  dirname "$(pwd)/$(
+    ls -l "$(echo "${s}" | sed 's|\./||')" | cut -d'>' -f2 | awk '{print $NF}'
+  )"
+)"
+unset s
+
+echo "Current path: ${PATH}"
+which ccs_flatten 2>/dev/null || (
+    cd __root__ 2>/dev/null || :
+    python setup.py pkg_prepare --build-develop  #&& make -C ccs-flatten symlink
+    ln -fs -- build/ccs_flatten .
+) || { ret=$?; echo "ccs_flatten missing, cannot be built"; exit ${ret}; }
+
+if [ $# -eq 0 ]; then
+    # self-check for sanity usage
+    declare testcib="$(mktemp)" testcoro="$(mktemp)"
+    { ./run-dev ccs2pcs-needle - "${testcib}" "${testcoro}" \
+    && echo "TEST: execution OK" \
+    || { echo "TEST: execution FAIL"; ret=20; }; }<<EOF
+<?xml version="1.0"?>
+<cluster name="one" config_version="6">
+  <logging debug="on"/>
+  <clusternodes>
+    <clusternode name="rhel6-node1" votes="1" nodeid="1">
+      <fence>
+        <method name="single">
+          <device name="xvm" domain="rhel6-node1"/>
+        </method>
+      </fence>
+    </clusternode>
+    <clusternode name="rhel6-node2" votes="1" nodeid="2">
+      <fence>
+        <method name="single">
+          <device name="xvm" domain="rhel6-node2"/>
+        </method>
+      </fence>
+    </clusternode>
+  </clusternodes>
+  <fencedevices>
+    <fencedevice name="xvm" agent="fence_xvm"/>
+  </fencedevices>
+  <quorumd label="qdisk"/>
+  <rm central_processing="1">
+    <failoverdomains>
+      <failoverdomain name="failover_domain1" ordered="0" restricted="0">
+        <failoverdomainnode name="rhel6-node1" priority="1"/>
+        <failoverdomainnode name="rhel6-node2" priority="1"/>
+      </failoverdomain>
+    </failoverdomains>
+    <resources>
+      <ip address="192.168.0.128" monitor_link="1"/>
+    </resources>
+    <service autostart="1" name="mm" domain="failover_domain1">
+      <ip ref="192.168.0.128"/>
+    </service>
+  </rm>
+</cluster>
+EOF
+    { diff -u "${testcib}" - \
+      && echo "TEST: cib diff OK" \
+      || { echo "TEST: cib diff FAIL"; ret=21; }; }<<EOF
+<cib validate-with="pacemaker-1.2" admin_epoch="1" epoch="1" num_updates="0" update-client="$(./run-dev --version | head -n1)">
+  <configuration>
+    <crm_config/>
+    <nodes>
+      <node id="NODE-rhel6-node1" uname="rhel6-node1" type="member"/>
+      <node id="NODE-rhel6-node2" uname="rhel6-node2" type="member"/>
+    </nodes>
+    <resources>
+      <!-- fencing/stonith (+ possibly topology below) -->
+      <primitive id="FENCEDEV-xvm" class="stonith" type="fence_xvm">
+        <instance_attributes id="FENCEDEV-xvm-ATTRS">
+          <nvpair id="FENCEDEV-xvm-ATTRS-pcmk_host_map" name="pcmk_host_map" value="rhel6-node1:rhel6-node1,rhel6-node2:rhel6-node2"/>
+        </instance_attributes>
+      </primitive>
+      <!-- resources+arrangement -->
+      <primitive id="RESOURCE-ip-192.168.0.128" class="ocf" provider="heartbeat" type="IPaddr2">
+        <instance_attributes id="RESOURCE-ip-192.168.0.128-ATTRS">
+          <nvpair id="RESOURCE-ip-192.168.0.128-ATTRS-ip" name="ip" value="192.168.0.128"/>
+        </instance_attributes>
+      </primitive>
+    </resources>
+    <constraints/>
+  </configuration>
+  <status/>
+</cib>
+EOF
+    { diff -u "${testcoro}" - \
+      && echo "TEST: coro diff OK" \
+      || { echo "TEST: coro diff FAIL"; ret=22; }; }<<EOF
+nodelist {
+	node {
+		ring0_addr: rhel6-node1
+		quorum_votes: 1
+		nodeid: 1
+	}
+	node {
+		ring0_addr: rhel6-node2
+		quorum_votes: 1
+		nodeid: 2
+	}
+}
+logging {
+	debug: on
+}
+totem {
+	version: 2
+	cluster_name: one
+}
+EOF
+    rm -f -- "${testcib}" "${testcoro}"
+    unset testcib testcoro
+    f() { return $1; }; f ${ret}
+fi
