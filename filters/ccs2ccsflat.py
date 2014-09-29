@@ -30,6 +30,8 @@ def ccs2ccsflat(flt_ctxt, in_obj):
     # - directories-part as per specification in setup.cfg
     # - PATH env variable (if defined)
     ccs_flatten = which(ccsf_basename, dirname_x(__file__, 2), ccsf_dirname, '')
+    if not ccs_flatten:
+        raise FilterError(self, "ccs_flatten binary seems unavailable")
 
     # XXX currently ccs_flatten does not handle stdin (tempfile.mkstemp?)
     # XXX conversion is not idempotent, should prevent using ccs-flat as input
@@ -40,7 +42,7 @@ def ccs2ccsflat(flt_ctxt, in_obj):
     try:
         proc = OneoffWrappedStdinPopen(command, stdout=PIPE, stderr=PIPE)
     except OSError:
-        raise FilterError(self, "ccs_flatten binary seems unavailable")
+        raise FilterError(self, "error running ccs_flatten binary")
     out, err = proc.communicate()
     if proc.returncode != 0 or out == '' and err != '':
         raise FilterError(self, "ccs_flatten exit code: {0}\n\t{1}",
