@@ -5,7 +5,7 @@
 
 # Depending on the usage, quick sanity check or just the prologue for run-tests
 
-declare s="${0}"
+s="${0}"
 [ $# -gt 0 ] && s="${1}"
 
 PATH="${PATH:+${PATH}:}$(
@@ -26,7 +26,7 @@ which ccs_flatten 2>/dev/null || (
 
 if [ $# -eq 0 ]; then
     # self-check for sanity usage
-    declare testcib="$(mktemp)" testcoro="$(mktemp)"
+    testcib="$(mktemp)" testcoro="$(mktemp)"
     { ${PYTHONEXEC} run-dev ccs2pcs-needle - "${testcib}" "${testcoro}" \
     && echo "TEST: execution OK" \
     || { echo "TEST: execution FAIL"; ret=20; }; }<<EOF
