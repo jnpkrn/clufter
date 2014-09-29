@@ -9,18 +9,7 @@
 # ---
 # [1] http://docs.python.org/2/library/unittest.html#command-line-interface
 
-PATH="${PATH:+${PATH}:}$(
-  dirname "$(
-    dirname "$(pwd)/$(
-      ls -l "$(echo "${0}" | sed 's|\./||')" | cut -d'>' -f2 | awk '{print $NF}'
-    )"
-  )"
-)"
-echo "Current path: ${PATH}"
-which ccs_flatten 2>/dev/null || (
-    cd __root__ 2>/dev/null || :
-    python setup.py pkg_prepare --build-develop && make -C ccs-flatten symlink
-) || { ret=$?; echo "ccs_flatten missing, cannot be built"; exit ${ret}; }
+source ./run-check "$(dirname "${0}")/run-check"
 
 stop=$(printf "\033\[0m")
 blue=$(printf "\033[01;34m") red=$(printf "\033[01;31m")

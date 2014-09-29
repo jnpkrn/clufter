@@ -1,6 +1,6 @@
 include gpl-2.0.txt COPYING
 include KNOWN-ISSUES
-include run-dev
+include run-check run-dev
 
 graft ccs-flatten
 recursive-exclude ccs-flatten ccs_flatten *.o Makefile.setup config.h .*/*
