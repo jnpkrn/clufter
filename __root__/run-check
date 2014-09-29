@@ -15,17 +15,19 @@ PATH="${PATH:+${PATH}:}$(
 )"
 unset s
 
+PYTHONEXEC="python -Es"
+
 echo "Current path: ${PATH}"
 which ccs_flatten 2>/dev/null || (
     cd __root__ 2>/dev/null || :
-    python setup.py pkg_prepare --build-develop  #&& make -C ccs-flatten symlink
+    ${PYTHONEXEC} setup.py pkg_prepare --build-develop  #&& make -C ccs-flatten symlink
     ln -fs -- build/ccs_flatten .
 ) || { ret=$?; echo "ccs_flatten missing, cannot be built"; exit ${ret}; }
 
 if [ $# -eq 0 ]; then
     # self-check for sanity usage
     declare testcib="$(mktemp)" testcoro="$(mktemp)"
-    { ./run-dev ccs2pcs-needle - "${testcib}" "${testcoro}" \
+    { ${PYTHONEXEC} run-dev ccs2pcs-needle - "${testcib}" "${testcoro}" \
     && echo "TEST: execution OK" \
     || { echo "TEST: execution FAIL"; ret=20; }; }<<EOF
 <?xml version="1.0"?>
@@ -70,7 +72,7 @@ EOF
     { diff -u "${testcib}" - \
       && echo "TEST: cib diff OK" \
       || { echo "TEST: cib diff FAIL"; ret=21; }; }<<EOF
-<cib validate-with="pacemaker-1.2" admin_epoch="1" epoch="1" num_updates="0" update-client="$(./run-dev --version | head -n1)">
+<cib validate-with="pacemaker-1.2" admin_epoch="1" epoch="1" num_updates="0" update-client="$(${PYTHONEXEC} run-dev --version | head -n1)">
   <configuration>
     <crm_config/>
     <nodes>

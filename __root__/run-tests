@@ -24,8 +24,8 @@ TAIL='2>&1 | sed \
     -e "s/\(^\|[^A-Za-z]\)\(ERROR\)/\1${red}\2${stop}/"    \
     -e "s/^\(Ran [1-9][0-9]*.*\)/${cyan}\1${stop}/"'
 
-if python -c "import sys; sys.exit(sys.version_info[:2] < (2,7))"; then
-    CMD="python -m unittest"
+if ${PYTHONEXEC} -c "import sys; sys.exit(sys.version_info[:2] < (2,7))"; then
+    CMD="${PYTHONEXEC} -m unittest"
 else
     # pre-2.7 unittest doesn't offer test discovery, use external unittest2
     CMD="unit2"
@@ -39,7 +39,9 @@ while [ $# -gt 0 ]; do
         -a)  # alternative && all
             ret=0
             for f in $(ls -1 tests/[!_]*.py); do
-                python "$f" >/dev/null 2>&1 && echo OK || { echo FAIL; ret=1; }
+                ${PYTHONEXEC} "$f" >/dev/null 2>&1 \
+                  && echo OK \
+                  || { echo FAIL; ret=1; }
             done
             exit ${ret}
             ;;
