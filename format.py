@@ -248,7 +248,8 @@ class Format(object):
     @property
     def representations(self):
         """Mapping of `protocol: initializing_data`"""
-        return self._representations.copy()
+        # XXX should be ProtectedDict
+        return self._representations_ro
 
     @staticmethod
     def producing(protocol, chained=False, protect=False, validator=None):
