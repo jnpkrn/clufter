@@ -12,7 +12,7 @@ from ..protocol import protocols
 @Command.deco('ccs-revitalize')
 def ccs_revitalize(cmd_ctxt,
                    input="/etc/cluster/cluster.conf",
-                   output="./cluster.conf"):
+                   output="cluster-revitalized-{ccs-revitalize.in.hash}.conf"):
     """Migrate deprecated config's props (agent params, etc.)
 
     Options:

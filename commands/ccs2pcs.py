@@ -18,8 +18,8 @@ from ..utils_cluster import cluster_pcs_flatiron
                           ('pcs2simplepcs')))))
 def ccs2pcs_flatiron(cmd_ctxt,
                      input="/etc/cluster/cluster.conf",
-                     ccs_pcmk="cluster.conf",
-                     cib="cib.xml",
+                     ccs_pcmk="cluster-{ccs2ccsflat.in.hash}.conf",
+                     cib="cib-{ccs2ccsflat.in.hash}.xml",
                      _common=XMLFilter.command_common):
     """CMAN -> Pacemaker-based cluster config. (corosync v1)
 
@@ -55,8 +55,8 @@ def ccs2pcs_flatiron(cmd_ctxt,
                       ('xml2simpleconfig'))))
 def ccs2pcs_needle(cmd_ctxt,
                    input="/etc/cluster/cluster.conf",
-                   cib="cib.xml",
-                   coro="corosync.conf",
+                   cib="cib-{ccs2ccsflat.in.hash}.xml",
+                   coro="corosync-{ccs2ccsflat.in.hash}.conf",
                    _common=XMLFilter.command_common):
     """CMAN -> Pacemaker-based cluster config. (corosync v2)
 
