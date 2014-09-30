@@ -195,11 +195,18 @@ class Format(object):
         # a syntactic sugar: self(self.PROTO, ...) -> self.PROTO(...))
         for attr in self._protocol_attrs:
             def get_protocol_proxy(obj):
-                class ProtocolProxy(type(obj), MetaPlugin):
-                    def __call__(that, *args, **kwargs):
-                        return self(obj, *args, **kwargs)
-                obj.__class__ = ProtocolProxy
-                return obj
+                class wrapped_call(object):
+                    #def __getattribute__(this, name):
+                    #    return obj.__getattribute__(name)
+                    #def __str__(self):
+                    #    return str(obj)
+                    def __call__(this, *a, **kw):
+                        return self(this, *a, **kw)
+                    def __eq__(self, other):
+                        return str(obj) == other
+                    def __hash__(self):  # for "x in bars"
+                        return hash(obj)
+                return wrapped_call()
             log.debug("Proxying {0} to add callability".format(attr))
             setattr(self, attr, get_protocol_proxy(getattr(self, attr)))
         self.swallow(protocol, *args)
