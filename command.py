@@ -9,7 +9,6 @@ import logging
 from collections import MutableMapping
 from itertools import izip_longest
 from optparse import SUPPRESS_HELP
-from os import fdopen
 from sys import stderr
 
 from .command_context import CommandContext
@@ -377,6 +376,9 @@ class Command(object):
                     in_obj = input_cache[io_decl]
                 else:
                     with cmd_ctxt.prevented_taint():
+                        io_decl = SimpleFormat.io_decl_specials(
+                                      io_decl, 1, magic_fds
+                        )
                         in_obj = flt.in_format.as_instance(*io_decl, **fmt_kws)
                     input_cache[io_decl] = in_obj
             elif filter_backtrack[flt] and 'out' not in flt_ctxt:
@@ -401,17 +403,6 @@ class Command(object):
                                              for ny in notyet)))
                     continue
 
-                # turning @DIGIT+ magic files into fileobjs (needs global view)
-                fd = SimpleFormat.io_decl_fd(io_decl)
-                if fd is not None:
-                    if fd not in magic_fds:
-                        try:
-                            magic_fds[fd] = fdopen(fd, 'ab')
-                        except (OSError, IOError):
-                            # keep untouched
-                            pass
-                    io_decl = args2sgpl(io_decl[0], magic_fds[fd], *io_decl[2:])
-
                 assert all(inputs)
                 with cmd_ctxt.prevented_taint():
                     in_obj = flt.in_format.as_instance(*inputs, **fmt_kws)
@@ -426,6 +417,8 @@ class Command(object):
                 if flt not in terminals or not filter_backtrack[flt]:
                     continue
             # output time!  (INFILTER terminal listed twice in io_chain)
+            with cmd_ctxt.prevented_taint():
+                io_decl = SimpleFormat.io_decl_specials(io_decl, 0, magic_fds)
             log.debug("Run `{0}' filter with `{1}' io decl. as TERMINAL"
                       .format(flt.__class__.__name__, io_decl))
             # store output somewhere, which even can be useful (use as a lib)
