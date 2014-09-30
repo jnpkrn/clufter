@@ -10,6 +10,7 @@ from collections import MutableMapping
 from itertools import izip_longest
 from optparse import SUPPRESS_HELP
 from os import fdopen
+from sys import stderr
 
 from .command_context import CommandContext
 from .error import ClufterError, \
@@ -358,7 +359,8 @@ class Command(object):
         worklist = list(reversed(tailshake(terminal_chain,
                                            partitioner=lambda x:
                                            not (tuplist(x)) or protodecl(x))))
-        unused = {}
+        maxl = sorted(worklist, key=lambda x: len(x[0].__class__.name))[-1][0]
+        maxl, unused = len(maxl.__class__.name), {}
         while worklist:
             flt, io_decl = worklist.pop()
             io_decl_use = protodictval(io_decl)
@@ -428,6 +430,11 @@ class Command(object):
                       .format(flt.__class__.__name__, io_decl))
             # store output somewhere, which even can be useful (use as a lib)
             passout['passout'] = flt_ctxt['out'](*io_decl)
+            if not cmd_ctxt['quiet'] and passout is unused:
+                if io_decl[0] == SimpleFormat.FILE:
+                    print >>stderr, "[{0:{1}}] output file: {2}".format(
+                        flt.__class__.__name__, maxl, passout['passout']
+                    )
 
         map(lambda f: f.close(), magic_fds.itervalues())  # close "magic" fds
         return EC.EXIT_SUCCESS  # XXX some better decision?
