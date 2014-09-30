@@ -377,10 +377,11 @@ class Command(object):
                 else:
                     with cmd_ctxt.prevented_taint():
                         io_decl = SimpleFormat.io_decl_specials(
-                                      io_decl, 1, magic_fds
+                                      io_decl, 1, magic_fds,
+                                      cmd_ctxt['__filters__']
                         )
                         in_obj = flt.in_format.as_instance(*io_decl, **fmt_kws)
-                    input_cache[io_decl] = in_obj
+                    input_cache[io_decl] = flt_ctxt['in'] = in_obj
             elif filter_backtrack[flt] and 'out' not in flt_ctxt:
                 # not INFILTER in either mode (nor output already precomputed?)
                 log.debug("Run `{0}' filter with `{1}' io decl. as DOWNFILTER"
@@ -406,6 +407,7 @@ class Command(object):
                 assert all(inputs)
                 with cmd_ctxt.prevented_taint():
                     in_obj = flt.in_format.as_instance(*inputs, **fmt_kws)
+                flt_ctxt['in'] = in_obj  # referred in interpolation -> a bug?
             if 'out' not in flt_ctxt or flt not in terminals:
                 if 'out' not in flt_ctxt:
                     if flt.__class__.name in cmd_ctxt['filter_noop']:
@@ -418,7 +420,8 @@ class Command(object):
                     continue
             # output time!  (INFILTER terminal listed twice in io_chain)
             with cmd_ctxt.prevented_taint():
-                io_decl = SimpleFormat.io_decl_specials(io_decl, 0, magic_fds)
+                io_decl = SimpleFormat.io_decl_specials(io_decl, 0, magic_fds,
+                                                        cmd_ctxt['__filters__'])
             log.debug("Run `{0}' filter with `{1}' io decl. as TERMINAL"
                       .format(flt.__class__.__name__, io_decl))
             # store output somewhere, which even can be useful (use as a lib)
