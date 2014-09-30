@@ -9,11 +9,13 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from copy import deepcopy
 from glob import glob
+from hashlib import md5  # not for security
 from imp import find_module, load_module
 from logging import getLogger
-from os import extsep, fdopen, walk
+from os import extsep, fdopen, stat, walk
 from os.path import basename, commonprefix, dirname, exists, join, sep, splitext
 from sys import modules, stdout
+from time import time
 from warnings import warn
 
 from lxml import etree
@@ -180,6 +182,7 @@ class Format(object):
         """Format constructor, i.e., object = concrete internal data"""
         rs = {}
         self._representations, self._representations_ro = rs, ProtectedDict(rs)
+        self._hash = None
         validator_specs = kwargs.pop('validator_specs', {})
         default = validator_specs.setdefault('', None)  # None ~ don't track
         validators = {}
@@ -357,6 +360,46 @@ class SimpleFormat(Format, MetaPlugin):
             with file(outfile, 'wb') as f:
                 f.write(self.BYTESTRING())
         return outfile
+
+    @property
+    def hash(self):
+        """Compute hash trying to uniquely identify the format instance"""
+        if self._hash is None:
+            # to prevent possible brute-force-based attacks on e.g.,
+            # configuration files with sensitive data obfuscated
+            # but with hash of the original contained in the output
+            # filename as per the common interpolation, we add some
+            # salt based either on input's mtime (if it is a file)
+            # or current UNIX time (otherwise -- as we cannot anchor
+            # it reliably anyway);  this way in such cases, for the
+            # unchanged input provided as a file, we always get the
+            # identical respective part of the output name, without
+            # putting the content of the original at risk (hopefully)
+            salt = 0
+            try:
+                h = md5()
+            except:
+                h = md5(usedforsecurity=False)  # Fedora/RHEL-specific
+
+            if self.FILE in self._representations:
+                try:
+                    salt = int(stat(self.FILE()).st_mtime)
+                except OSError:
+                    pass
+                self.BYTESTRING()  # ensure bytestring repr (assumed "cheap")
+
+            if self.BYTESTRING in self._representations:
+                h.update(self.BYTESTRING())
+            else:
+                h.update(hex(hash(self)).lstrip('-'))
+
+            if not salt:
+                salt = int(time())
+
+            h.update(hex(salt))
+            # omit first and last quarter of the whole hexdigest
+            self._hash = h.hexdigest()[h.digest_size/2:-h.digest_size/2]
+        return self._hash
 
     @classmethod
     def io_decl_specials(cls, io_decl, in_mode, magic_fds, interpolations={}):
