@@ -13,7 +13,8 @@ from ..protocol import protocols
                   ('ccs-obfuscate-identifiers')))
 def ccs_obfuscate(cmd_ctxt,
                   input="/etc/cluster/cluster.conf",
-                  output="./cluster.conf",
+                  output="cluster-obfuscated-"
+                         "{ccs-obfuscate-identifiers.in.hash}.conf",
                   skip='none'):
     """Obfuscate credentials/IDs in CMAN-based cluster config.
 
