@@ -86,9 +86,12 @@ aliases_dist = {
 # of particular packages
 aliases_releases = {
     'corosync': {
-        'flatiron': '1.*',
-        'needle':   '2.*',
-    }
+        'flatiron':   '1.*',
+        'needle':     '2.*',
+    },
+    'debian': {  # because of http://bugs.python.org/issue9514 @ 2.6 ?
+        'wheezy/sid': '7.999',
+    },
 }
 
 
