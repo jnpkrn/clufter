@@ -222,6 +222,8 @@ def run(argv=None, *args):
                      " sugar: all can be passed as a single, first,"
                      " ::-delimited argument;"
                      " magic files: `-', `@DIGIT+'."
+                     " `{{formula}}' in output file spec: input-backed"
+                     " (e.g. hash) substitution recipe."
                      "  All available commands listed as `{0} --list'."
                      .format(prog_simple))
     #try:
