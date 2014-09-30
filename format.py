@@ -23,6 +23,7 @@ from .plugin_registry import MetaPlugin, PluginRegistry
 from .protocol import Protocol
 from .utils import arg2wrapped, args2sgpl, args2tuple, args2unwrapped, \
                    classproperty, \
+                   filterdict_keep, \
                    head_tail, \
                    iterattrs, \
                    immutable, \
@@ -359,13 +360,23 @@ class SimpleFormat(Format, MetaPlugin):
         return outfile
 
     @classmethod
-    def io_decl_specials(cls, io_decl, in_mode, magic_fds):
-        """Special file decl. treatment: "magic files"
+    def io_decl_specials(cls, io_decl, in_mode, magic_fds, interpolations={}):
+        """Special file decl. treatment: "magic files", string interpolation
 
-        Only return number if we've hit "magic file" (otherwise None).
+        Only return number if we've hit "magic file" (otherwise None),
+        preceded with the string interpolation (via string.format())
+        behind the curtains for "file" decl.
         """
         # turning @DIGIT+ magic files into fileobjs (needs global view)
         if tuplist(io_decl) and len(io_decl) >= 2 and io_decl[0] == cls.FILE:
+            interpols = [x.split('.', 1)[0] for x in io_decl[1].split('{')[1:]]
+            try:
+                io_decl = args2tuple(io_decl[0],
+                                     io_decl[1].format(**filterdict_keep(
+                                         interpolations, *interpols)),
+                                     *io_decl[2:])
+            except (ValueError, KeyError):
+                pass
             # XXX handle also '-', but be careful about not duplicating?
             #     maybe even nothing should be duplicated at all?
             if io_decl[1].rstrip('0123456789') == '@':
