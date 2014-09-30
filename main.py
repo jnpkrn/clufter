@@ -69,7 +69,7 @@ opts_common = (
     (('--dist', ), dict(
         action='store',
         default=','.join(_system_extra),
-        help="override autodetected distro if `sys` is `Linux' [%default]"
+        help="override autodetected distro if `sys' is `Linux' [%default]"
     )),
 )
 
