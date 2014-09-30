@@ -76,7 +76,7 @@ class CommandContext(CommandContextBase):
         class wrapped(CommandContextBase):
             def __getattribute__(self, name):
                 if name == 'ctxt_wrapped':
-                    return obj
+                    ret = obj
                 elif name == 'ctxt_set':
                     ret = lambda self, **kwargs: self.update(kwargs)
                 elif name.startswith('ctxt_'):
@@ -89,9 +89,14 @@ class CommandContext(CommandContextBase):
                                 obj.__getattribute__(name)(self, *args, **kwargs)
                 else:
                     try:
-                        ret = super(wrapped, self).__getattribute__(name)
-                    except AttributeError:
-                        ret = obj.__getattribute__(name)
+                        if name.startswith('_'):
+                            raise KeyError  # dot=index access not for internals
+                        ret = self.__getitem__(name)
+                    except KeyError:
+                        try:
+                            ret = super(wrapped, self).__getattribute__(name)
+                        except AttributeError:
+                            ret = obj.__getattribute__(name)
                 return ret
 
             def __setattribute__(self, name, value):
