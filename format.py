@@ -21,7 +21,7 @@ from lxml import etree
 from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
 from .protocol import Protocol
-from .utils import arg2wrapped, args2tuple, args2unwrapped, \
+from .utils import arg2wrapped, args2sgpl, args2tuple, args2unwrapped, \
                    classproperty, \
                    head_tail, \
                    iterattrs, \
@@ -359,12 +359,27 @@ class SimpleFormat(Format, MetaPlugin):
         return outfile
 
     @classmethod
-    def io_decl_fd(cls, io_decl):
-        """Return file descriptor (int) if conforms to "magic file" or None"""
+    def io_decl_specials(cls, io_decl, in_mode, magic_fds):
+        """Special file decl. treatment: "magic files"
+
+        Only return number if we've hit "magic file" (otherwise None).
+        """
+        # turning @DIGIT+ magic files into fileobjs (needs global view)
         if tuplist(io_decl) and len(io_decl) >= 2 and io_decl[0] == cls.FILE:
+            # XXX handle also '-', but be careful about not duplicating?
+            #     maybe even nothing should be duplicated at all?
             if io_decl[1].rstrip('0123456789') == '@':
-                return int(io_decl[1][1:])
-        return None
+                fd = int(io_decl[1][1:])
+                if fd not in magic_fds:
+                    try:
+                        magic_fds[fd] = fdopen(fd, 'r+b' if in_mode else 'ab')
+                    except (OSError, IOError):
+                        # keep untouched
+                        pass
+                    else:
+                        io_decl = args2sgpl(io_decl[0], magic_fds[fd],
+                                            *io_decl[2:])
+        return io_decl
 
 
 class CompositeFormat(Format, MetaPlugin):
