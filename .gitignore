@@ -19,6 +19,6 @@
 /corosync.conf
 
 # KEEP
-/.*
+.*
 /tests/*/
 /tests/*-archive
