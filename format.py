@@ -322,7 +322,7 @@ class Format(object):
         return deco_meth
 
 
-class SimpleFormat(Format, MetaPlugin):
+class SimpleFormat(Format):
     """This is what most of the format classes want to subclass"""
     native_protocol = BYTESTRING = Protocol('bytestring')
     FILE = Protocol('file')
