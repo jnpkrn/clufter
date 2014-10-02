@@ -397,8 +397,8 @@ class SimpleFormat(Format, MetaPlugin):
                 salt = int(time())
 
             h.update(hex(salt))
-            # omit first and last quarter of the whole hexdigest
-            self._hash = h.hexdigest()[h.digest_size/2:-h.digest_size/2]
+            # only use first quarter of the whole hexdigest
+            self._hash = h.hexdigest()[:h.digest_size/2]
         return self._hash
 
     @classmethod
