@@ -8,7 +8,7 @@ log = getLogger(__name__)
 
 # XXX a bit dirty DRY approach
 from os.path import dirname, exists, join
-use = reduce(lambda a, b: dirname(a), xrange(5), __file__)
+use = reduce(lambda a, b: dirname(a), xrange(6), __file__)
 use = join(use, 'fencedevices', 'fencedevice')
 use = use + '.py' if exists(use + '.py') else join(use, '__init__.py')
 myglobals = {}
