@@ -16,6 +16,7 @@ from os.path import abspath, dirname, samefile, \
 from subprocess import Popen
 from sys import stderr, stdin
 
+from . import package_name
 from .error import ClufterError
 from .utils import areinstances, \
                    filterdict_pop, \
@@ -274,3 +275,8 @@ def defer_common(me, fnc, skip=0):
             return fnc(cmd_ctxt, **kwargs)
         wrapfnc.__doc__ = fnc.__doc__ + common.__doc__
     return fnc_defaults, fnc_varnames, wrapfnc
+
+
+def getenv_namespaced(varname, value=None, namespace=package_name().upper()):
+    """Obtain value of environment variable prefixed with `namespace + '_'`"""
+    return environ.get('_'.join((namespace, varname)), value)
