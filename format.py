@@ -7,9 +7,9 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 # TODO: NamedTuple for tree_stack
 
+import hashlib
 from copy import deepcopy
 from glob import glob
-from hashlib import md5  # not for security
 from imp import find_module, load_module
 from logging import getLogger
 from os import extsep, fdopen, stat, walk
@@ -30,7 +30,7 @@ from .utils import arg2wrapped, args2sgpl, args2tuple, args2unwrapped, \
                    immutable, \
                    popattr, \
                    tuplist
-from .utils_prog import ProtectedDict
+from .utils_prog import ProtectedDict, getenv_namespaced
 from .utils_xml import rng_get_start, rng_pivot
 
 log = getLogger(__name__)
@@ -375,28 +375,40 @@ class SimpleFormat(Format):
             # unchanged input provided as a file, we always get the
             # identical respective part of the output name, without
             # putting the content of the original at risk (hopefully)
-            salt = 0
+            #
+            # manual verification (provided HASHALGO=md5, default):
+            # w/o salt:   md5sum $FILE
+            # with salt:  { stat --printf "%Y" $FILE; cat $FILE; } | md5sum
+            salt = ''
+            hash_algo = getenv_namespaced('HASHALGO', 'md5')
+            do_salt = getenv_namespaced('NOSALT', '0') in ('0', 'false')
             try:
-                h = md5()
+                hash_algo = getattr(hashlib, hash_algo)
+            except AttributeError:
+                log.warn("`{0}' hash algorithm unknown".format(hash_algo))
+                hash_algo = hashlib.md5
+            try:
+                h = hash_algo()
             except:
-                h = md5(usedforsecurity=False)  # Fedora/RHEL-specific
+                h = hash_algo(usedforsecurity=False)  # Fedora/RHEL-specific
 
             if self.FILE in self._representations:
-                try:
-                    salt = int(stat(self.FILE()).st_mtime)
-                except OSError:
-                    pass
+                if do_salt:
+                    try:
+                        salt = str(int(stat(self.FILE()).st_mtime))
+                    except OSError:
+                        pass
                 self.BYTESTRING()  # ensure bytestring repr (assumed "cheap")
+
+            if not salt and do_salt:
+                salt = str(int(time()))
+            h.update(salt)
 
             if self.BYTESTRING in self._representations:
                 h.update(self.BYTESTRING())
             else:
-                h.update(hex(hash(self)).lstrip('-'))
+                h.update(str(hash(self)))
 
-            if not salt:
-                salt = int(time())
-
-            h.update(hex(salt))
             # only use first quarter of the whole hexdigest
             self._hash = h.hexdigest()[:h.digest_size/2]
         return self._hash
