@@ -243,7 +243,20 @@ dirname_x = lambda p, c=1: reduce(lambda x, y: dirname(x), xrange(c), p)
 
 @selfaware
 def defer_common(me, fnc, skip=0):
-    """Use when you have a func with common initial kwargs consumption"""
+    """Use when you have a func with common initial kwargs consumption
+
+    Calling this on another function will, upon invocation, first look
+    at default argument to `_common` keyword parameter, and if present,
+    will consider it as a function to be run before the one passed as
+    an argument; aside from returning a function decorated in a stated
+    way, it will also return dict of function paramater defaults (joint
+    for both original and '_common' function) and a list of joint
+    function arguments.
+
+    In other words, it allows DRY principle for common shared initial
+    kwargs "consumer" function on top of (actually prior to) the function
+    being passed in as an argument.
+    """
     fnc_defaults, fnc_varnames = func_defaults_varnames(fnc, skip=skip)
     common = fnc_defaults.pop('_common', None)
     if not common:
