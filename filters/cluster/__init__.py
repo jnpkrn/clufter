@@ -4,16 +4,11 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-# XXX a bit dirty approach
-from os.path import basename, dirname, exists, join
-use = reduce(lambda a, b: dirname(a), xrange(3), __file__)
-myglobals = {}
 try:
-    execfile(join(use, '__init__.py'), myglobals)
-except IOError:
-    self_id = basename(use)
-else:
-    self_id = "{0} {1}".format(basename(use), myglobals['version'])
+    from .... import package_name, version
+except ImportError as e:
+    assert False, str(e)
+self_id = "{0} {1}".format(package_name(), version)
 
 
 # yield corosync v.2/needle configuration compatible with el7
