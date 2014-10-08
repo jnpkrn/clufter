@@ -5,6 +5,7 @@
 
 from ....utils_xslt import xslt_is_member
 
+###
 
 ccsflat2pcs = '''\
     <template id="{concat('FENCEDEV-', @name)}"
@@ -21,6 +22,7 @@ ccsflat2pcs = '''\
     </template>
 '''
 
+###
 
 ccs_obfuscate_credentials_password = (
     'passwd',
@@ -50,6 +52,7 @@ ccs_obfuscate_credentials = '''\
     </xsl:copy>
 '''
 
+###
 
 ccs_revitalize = '''\
     <!-- xvm: domain -> port -->

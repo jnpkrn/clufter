@@ -6,7 +6,6 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ....utils_cib import ResourceSpec
 
-
 ccsflat2pcs = '''\
     <!--
         mysql ~ mysql
