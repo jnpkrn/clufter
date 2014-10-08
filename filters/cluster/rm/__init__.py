@@ -6,6 +6,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ....utils_xslt import xslt_is_member
 
+###
 
 # avoid accidental start of rgmanager, see bz#723925;
 # only rm tag already present as only then there is a chance
@@ -16,6 +17,7 @@ ccs2ccs_pcmk = '''\
     </xsl:copy>
 '''
 
+###
 
 ccs_obfuscate_identifiers = '''\
 
@@ -88,6 +90,7 @@ ccs_obfuscate_identifiers = '''\
     </xsl:template>
 '''
 
+###
 
 ccsflat2pcs_elems = (
     'service',

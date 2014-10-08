@@ -5,12 +5,12 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 try:
-    from .... import package_name, version
     from ....utils_xslt import xslt_is_member
 except ImportError as e:
     assert False, str(e)
 self_id = "{0} {1}".format(package_name(), version)
 
+###
 
 # yield corosync v.2/needle configuration compatible with el7
 ccs2needlexml = '''\
@@ -55,6 +55,11 @@ ccs2needlexml = '''\
 
     </corosync>
 '''
+
+###
+
+from .... import package_name, version
+ccsflat2pcs_self_id = "{0} {1}".format(package_name(), version)
 
 ccsflat2pcs = '''\
     <cib validate-with="pacemaker-1.2"
@@ -194,7 +199,9 @@ ccsflat2pcs = '''\
         </configuration>
         <status/>
     </cib>
-''' % dict(self_id=self_id)
+''' % dict(self_id=ccsflat2pcs_self_id)
+
+###
 
 ccs_revitalize = '''\
     <clufter:descent-mix preserve-rest="true"/>
@@ -236,6 +243,8 @@ ccs_revitalize = '''\
     </xsl:template>
 '''
 
+###
+
 ccs2ccs_pcmk = '''\
     <clufter:descent-mix preserve-rest="true"/>
 
@@ -246,6 +255,8 @@ ccs2ccs_pcmk = '''\
         </xsl:attribute>
     </xsl:template>
 '''
+
+###
 
 # check http://stackoverflow.com/questions/4509662/how-to-generate-unique-string
 # XXX device/@port for: fence_pcmk, fence_rhevm, fence_virsh, fence_{virt,xvm},

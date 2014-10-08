@@ -5,6 +5,7 @@
 
 from ....utils_xslt import xslt_is_member
 
+###
 
 ccs_obfuscate_identifiers = '''\
     <xsl:copy>

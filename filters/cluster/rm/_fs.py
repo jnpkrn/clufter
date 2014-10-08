@@ -6,6 +6,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ....utils_xslt import xslt_is_member
 
+###
 
 # XXX: normally, there would be fs.py containing this common implementation
 #      and {cluster,net}.py referring to it, but due to the way it is used
