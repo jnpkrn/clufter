@@ -269,8 +269,12 @@ class XMLFilter(Filter, MetaPlugin):
                 if elem.tag == tree_stack[-1][0]:
                     walk, children = tree_stack.pop()[1:3]
                     tree_stack[-1][2][elem] = proceed(walk[0], elem, children)
-                    log.debug("Proceeded {0}".format(
-                              etree.tostring(tree_stack[-1][2][elem]).replace('\n', '')))
+                    try:
+                        log.debug("Proceeded {0}".format(
+                                  etree.tostring(tree_stack[-1][2][elem]).replace('\n', '')))
+                    except AttributeError:
+                        log.debug("Proceeded {0}".format(tree_stack[-1][2][elem]))
+
                 # XXX: optimization prunning, probably no good
                 #else:
                 #    skip_until = [('end', tree_stack[-1][0])]
@@ -724,9 +728,12 @@ class XMLFilter(Filter, MetaPlugin):
             etree.cleanup_namespaces(ret)
             return ret
 
-        kws.update(preprocess=cls._xslt_preprocess, proceed=proceed,
-                   postprocess=postprocess, sparse=True)
-        return cls.proceed(in_obj, **kws)
+        if not kws.pop('textmode', False):
+            kws.setdefault('postprocess', postprocess)
+        defaults = dict(preprocess=cls._xslt_preprocess, proceed=proceed,
+                        sparse=True)
+        defaults.update(kws)
+        return cls.proceed(in_obj, **defaults)
 
     # XXX missing descent-mix
     @classmethod
@@ -797,7 +804,7 @@ class XMLFilter(Filter, MetaPlugin):
 
     def filter_proceed_xslt(self, in_obj, **kwargs):
         """Push-button to be called from the filter itself, with walk_default"""
-        raw = kwargs.pop('raw', False)
+        raw, textmode = kwargs.pop('raw', False), kwargs.get('textmode', False)
         def_first, system = '', kwargs.pop('system', '')
         system_extra = kwargs.pop('system_extra', ())
         def_first += ('<xsl:param name="system" select="{0}"/>'
@@ -808,7 +815,12 @@ class XMLFilter(Filter, MetaPlugin):
                 val = val if val is not zip_empty else ''
                 def_first += ('<xsl:param name="system_{0}" select="{1}"/>'
                               .format(str(i), squote(val)))
-        def_first += '<clufter:descent-mix preserve-rest="true"/>'
+        if textmode:
+            def_first += '<xsl:output method="text"/>'
+            def_first += '<xsl:strip-space elements="*"/>'
+            def_first += '<clufter:descent-mix preserve-rest="false"/>'
+        else:
+            def_first += '<clufter:descent-mix preserve-rest="true"/>'
 
         xslt_atom_hook = self._xslt_get_atom_hook(**filterdict_pop(kwargs,
             'editor', 'interactive', 'quiet', 'validator_specs'
@@ -818,12 +830,14 @@ class XMLFilter(Filter, MetaPlugin):
         kwargs['xslt_atom_hook'] = xslt_atom_hook
 
         ret = self.proceed_xslt(in_obj, **kwargs)
-        if not raw:
+        if not raw and not textmode:
             # <http://lxml.de/FAQ.html#
             #  why-doesn-t-the-pretty-print-option-reformat-my-xml-output>
             # XXX we could use a single shared un-blanking parser around
             parser = etree.XMLParser(remove_blank_text=True)
             ret = etree.fromstring(etree.tostring(ret), parser)
+        elif textmode:
+            ret = str(ret)
         return ret
 
     def ctxt_proceed_xslt(self, ctxt, in_obj, **kwargs):
