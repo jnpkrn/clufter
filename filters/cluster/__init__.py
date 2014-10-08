@@ -4,11 +4,11 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+# following 2nd chance import is to allow direct usage context (testing, etc.)
 try:
     from ....utils_xslt import xslt_is_member
-except ImportError as e:
-    assert False, str(e)
-self_id = "{0} {1}".format(package_name(), version)
+except ValueError:  # Value?
+    from ...utils_xslt import xslt_is_member
 
 ###
 
@@ -58,7 +58,10 @@ ccs2needlexml = '''\
 
 ###
 
-from .... import package_name, version
+try:
+    from .... import package_name, version
+except ValueError:
+    from ... import package_name, version
 ccsflat2pcs_self_id = "{0} {1}".format(package_name(), version)
 
 ccsflat2pcs = '''\
