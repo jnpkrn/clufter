@@ -18,14 +18,6 @@ NAMESPACES = {
     'xsl':     'http://www.w3.org/1999/XSL/Transform',
 }
 
-xslt_identity = '''\
-    <xsl:template match="{0}@*|{0}node()"
-                  xmlns:xsl="''' + NAMESPACES['xsl'] + '''">
-        <xsl:copy>
-            <xsl:apply-templates select="@*|node()"/>
-       </xsl:copy>
-    </xsl:template>'''
-
 
 class UtilsXmlError(ClufterPlainError):
     pass
