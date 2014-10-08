@@ -5,7 +5,7 @@
 """Testing command"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from _shared import empty_otps
+from _shared import empty_opts
 
 from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
 
@@ -107,7 +107,7 @@ class ChainResolve(TestCase):
         split = cmd_classes.index(cmd_chain_nonmatch_01)
         for i, cmd_cls in enumerate(cmd_classes):
             try:
-                ret = cmd_cls(filters)(empty_otps, ())  # no otps/args
+                ret = cmd_cls(filters)(empty_opts, ())  # no opts/args
                 self.assertTrue(ret is not None)
             except CommandError as e:
                 print "{0}: {1}".format(cmd_cls.name, e)
