@@ -793,14 +793,15 @@ class XMLFilter(Filter, MetaPlugin):
         """Push-button to be called from the filter itself, with walk_default"""
         raw = kwargs.pop('raw', False)
         def_first, system = '', kwargs.pop('system', '')
+        system_extra = kwargs.pop('system_extra', ())
         def_first += ('<xsl:param name="system" select="{0}"/>'
                       .format(squote(system)))
         if system:
             # guarantee at least 3 extra params, so they can be relied upon
-            for i, val in loose_zip(kwargs.pop('system_extra', ()), range(1,4)):
+            for i, val in loose_zip(xrange(1,4), system_extra):
                 val = val if val is not zip_empty else ''
                 def_first += ('<xsl:param name="system_{0}" select="{1}"/>'
-                              .format(squote(i), squote(val)))
+                              .format(str(i), squote(val)))
         def_first += '<clufter:descent-mix preserve-rest="true"/>'
 
         xslt_atom_hook = self._xslt_get_atom_hook(**filterdict_pop(kwargs,
