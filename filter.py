@@ -36,8 +36,8 @@ from .utils_func import apply_preserving_depth, \
                         zip_empty
 from .utils_prog import cli_undecor, which
 from .utils_xml import NAMESPACES, namespaced, nselem, squote, \
-                       element_juggler, xml_get_root_pi, xmltag_get_namespace,\
-                       xslt_identity
+                       element_juggler, xml_get_root_pi, xmltag_get_namespace
+from .utils_xslt import xslt_identity
 from .command_context import CommandContext
 
 try:
@@ -676,7 +676,7 @@ class XMLFilter(Filter, MetaPlugin):
                 template = etree.XML(xslt_identity.format(elem.tag + '/'))
             elif elem.getparent() is None:
             #elif elem.getparent() is None and not do_mix:
-                template = etree.XML(xslt_identity.format(''))
+                template = etree.XML(xslt_identity(''))
                 xslt_root.append(template)
 
             #else:
