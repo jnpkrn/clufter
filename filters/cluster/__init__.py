@@ -6,6 +6,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 try:
     from .... import package_name, version
+    from ....utils_xslt import xslt_is_member
 except ImportError as e:
     assert False, str(e)
 self_id = "{0} {1}".format(package_name(), version)
@@ -31,10 +32,10 @@ ccs2needlexml = '''\
             <xsl:if test="cman/@transport">
                 <xsl:choose>
                     <xsl:when test="cman/@transport[
-                        contains(concat(
-                            '|udp',
-                            '|udpu',
-                            '|'), concat('|', ., '|'))]">
+''' + ( \
+                        xslt_is_member('.', ('udp',
+                                             'udpu'))
+) + ''']">
                         <xsl:copy-of select="cman/@transport"/>
                     </xsl:when>
                     <xsl:otherwise>

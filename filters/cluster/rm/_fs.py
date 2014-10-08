@@ -4,22 +4,34 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+from ....utils_xslt import xslt_is_member
+
+
 # XXX: normally, there would be fs.py containing this common implementation
 #      and {cluster,net}.py referring to it, but due to the way it is used
 #      in the parent, current approach seems better
 
 from ...utils_cib import ResourceSpec
 
+ccsflat2pcs_elems = (
+    'fs',
+    'netfs',
+    'clusterfs',
+)
+
+ccsflat2pcs_clusterfs = (
+    'gfs',
+    'gfs2',
+)
 
 ccsflat2pcs = '''\
     <!--
         Filesystem ~ {,cluster,net}fs
      -->
-    <xsl:when test="contains(concat(
-                        '|fs',
-                        '|netfs',
-                        '|clusterfs'
-                        '|'), concat('|', name(), '|'))">
+    <xsl:when test="
+''' + \
+        xslt_is_member('name()', ccsflat2pcs_elems)
++ '''">
         <xsl:variable name="FsKind">
             <xsl:choose>
                 <!-- XXX could be as per meta-rgmanager-... -->
@@ -30,10 +42,10 @@ ccsflat2pcs = '''\
                                 @export">
                     <xsl:value-of select="'netfs'"/>
                 </xsl:when>
-                <xsl:when test="contains(concat(
-                                    '|gfs',
-                                    '|gfs2',
-                                    '|'), concat('|', @fstype, '|'))">
+                <xsl:when test="
+''' + \
+                    xslt_is_member('@fstype', ccsflat2pcs_clusterfs)
++ '''">
                     <xsl:value-of select="'clusterfs'"/>
                 </xsl:when>
                 <xsl:otherwise>
@@ -119,7 +131,10 @@ ccsflat2pcs = '''\
                 </xsl:attribute>
             </xsl:if>
             <!-- run_fsck ~ force_fsck -->
-            <xsl:if test="@force_fsck = '1' or @force_fsck = 'yes'">
+            <xsl:if test="
+''' + \
+                xslt_is_member('@force_fsck', ('1', 'yes'))
++ '''">
             <nvpair id="{concat($Prefix, '-ATTRS-run_fsck')}"
                     name="run_fsck"
                     value="force"/>
@@ -132,12 +147,10 @@ ccsflat2pcs = '''\
             <nvpair id="{concat($Prefix, '-ATTRS-force_unmount')}"
                     name="force_unmount"
                     value="false">
-                <xsl:if test="not(contains(concat(
-                                  '|yes',
-                                  '|on',
-                                  '|true',
-                                  '|1',
-                                  '|'), concat('|', @force_unmount, '|')))">
+                <xsl:if test="not(
+''' + \
+                    xslt_is_member('@force_unmount', ('1', 'yes', 'on', 'true'))
++ '''">
                     <xsl:attribute name="value">
                         <xsl:value-of select="'safe'"/>
                     </xsl:attribute>

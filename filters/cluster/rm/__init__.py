@@ -4,6 +4,9 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+from ....utils_xslt import xslt_is_member
+
+
 # avoid accidental start of rgmanager, see bz#723925;
 # only rm tag already present as only then there is a chance
 # of having RGManager + service set to start on boot
@@ -12,6 +15,7 @@ ccs2ccs_pcmk = '''\
         <xsl:attribute name="disabled">1</xsl:attribute>
     </xsl:copy>
 '''
+
 
 ccs_obfuscate_identifiers = '''\
 
@@ -84,11 +88,17 @@ ccs_obfuscate_identifiers = '''\
     </xsl:template>
 '''
 
+
+ccsflat2pcs_elems = (
+    'service',
+    'vm',
+)
+
 ccsflat2pcs = '''\
-    <xsl:for-each select="*[(contains(concat(
-                              '|service',
-                              '|vm',
-                              '|'), concat('|', name(), '|')))]/*">
+    <xsl:for-each select="*[
+''' + ( \
+    xslt_is_member('name()', ccsflat2pcs_elems)
+) + ''']/*">
         <xsl:variable name="Prefix"
                       select="concat('RESOURCE-', name(), '-',
                                      @name,
