@@ -523,12 +523,17 @@ class XMLFilter(Filter, MetaPlugin):
                         raise FilterError(None, "Ambigous match for `{0}'"
                                           " tag ({1} vs {2})".format(at, walk, prev))
 
+            if parent and parent[2] == 1 and '*' not in hooks:
+                hooks['*'] = (len(ret), ), 1
+                ret.append(nselem(CLUFTER_NS, 'descent-mix',
+                                  attrib={'preserve-rest': 'false'}))
+
             # do_mix decides whether the current sub-template will be
             # be applied and the result attached (0), or just merged
             # to the parent template (1 if not preserve-rest required,
             # 2 otherwise)
             do_mix = parent[1].get(name, parent[1].get('*', (None, None)))[1] \
-                     if parent else 0
+                     if parent else will_mix
             if do_mix is None:
                 raise RuntimeError("Parent does not expect `{0}' nor wildcard"
                                    .format(name))
@@ -671,10 +676,12 @@ class XMLFilter(Filter, MetaPlugin):
 
             # append "identities" to preserve application
             # XXX needs clarification
-            if do_mix == 1:
-                template = etree.XML(xslt_identity.format(elem.tag + '/'))
-            elif elem.getparent() is None:
-            #elif elem.getparent() is None and not do_mix:
+                if do_mix == 1 and elem.getparent() is not None:
+                    e = nselem(XSL_NS, 'apply-templates',
+                            select="*")
+                    template.append(e)
+            if do_mix > 1:
+            # if elem.getparent() is None: # and not do_mix:
                 template = etree.XML(xslt_identity(''))
                 xslt_root.append(template)
 
@@ -683,7 +690,7 @@ class XMLFilter(Filter, MetaPlugin):
             #    print "zdrham", elem.tag
             #    return elem
 
-            if do_mix:
+            if do_mix and elem.getparent() is not None:
                 # "mix/carry" case in which we postpone this XSLT execution
                 # (presumably non-local) by enquing it to the parent's turn
                 #ret = xslt_root.getroot()
