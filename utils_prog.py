@@ -85,7 +85,7 @@ class TweakedDict(MutableMapping):
             ret = self._parent[key]
         if (isinstanceexcept(ret, mutables, TweakedDict)
             and any(getattr(p, '_notaint', False) for p in self.anabasis)):
-            ret = ret.copy()
+            ret = type(ret)(ret)
         return ret
 
     @property
