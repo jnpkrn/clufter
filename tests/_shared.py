@@ -5,4 +5,4 @@
 """Common base for testing"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-empty_otps = type('empty_opts', (), {})
+empty_opts = type('empty_opts', (), {})
