@@ -11,7 +11,7 @@ from os.path import dirname, exists, join
 use = reduce(lambda a, b: dirname(a), xrange(6), __file__)
 use = join(use, 'fencedevices', 'fencedevice')
 use = use + '.py' if exists(use + '.py') else join(use, '__init__.py')
-myglobals = {}
+myglobals = {'__package__': __package__}
 try:
     execfile(use, myglobals)
 except IOError:
