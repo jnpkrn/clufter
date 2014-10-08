@@ -68,7 +68,7 @@ class CommandContext(CommandContextBase):
         # filters        ... where filter instance + arguments hybrid is stored
         super(CommandContext, self).__init__(*args, **kwargs)
         # could be cycle up to self if not bypassed
-        self['__filter_context__'] = CommandContextBase()
+        self['__filter_context__'] = {}  # here we actually want a fallback
         self['__filters__'] = CommandContextBase()
 
     @staticmethod
