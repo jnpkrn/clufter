@@ -29,3 +29,10 @@ ccs2needlexml = '''\
         </logger_subsys>
     </xsl:if>
 '''
+
+###
+
+from ....filters.ccs_artefacts import artefact_cond
+
+ccs_artefacts = artefact_cond('@logfile', kind='F',
+                              desc="log file for ', normalize-space(@name), '")

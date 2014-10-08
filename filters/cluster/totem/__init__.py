@@ -34,3 +34,9 @@ ccs2needlexml = '''\
     </xsl:if -->
     <clufter:descent at="interface"/>
 '''
+
+###
+
+from ....filters.ccs_artefacts import artefact_cond
+
+ccs_artefacts = artefact_cond('@keyfile', kind='F', desc='totem keyfile')

@@ -53,3 +53,17 @@ ccsflat2pcs = '''\
         </operations>
     </xsl:when>
 '''
+
+###
+
+from ....filters.ccs_artefacts import artefact_cond_ra
+
+ccs_artefacts = ''.join((
+    artefact_cond_ra('@httpd',
+                     kind='B', desc='path to httpd binary'),
+    artefact_cond_ra('@server_root',
+                     kind='D', desc='ServerRoot'),
+    artefact_cond_ra('@config_file[../@server_root]',
+                     xpath="concat(../@server_root, '/', .)",
+                     kind='A', desc='configuration file'),
+))

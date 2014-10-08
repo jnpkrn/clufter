@@ -20,3 +20,9 @@ ccs2needlexml = '''\
 ) + ''']"/>
     </quorum>
 '''
+
+###
+
+from ....filters.ccs_artefacts import artefact_cond
+
+ccs_artefacts = artefact_cond('@keyfile', kind='F', desc='CMAN keyfile')

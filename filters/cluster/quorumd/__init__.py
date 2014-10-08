@@ -43,3 +43,10 @@ ccs_obfuscate_identifiers = '''\
         <xsl:apply-templates/>
     </xsl:copy>
 '''
+
+###
+
+from ....filters.ccs_artefacts import artefact_cond
+
+ccs_artefacts = artefact_cond('@statusfile', kind='F',
+                              desc='quorumd status file')
