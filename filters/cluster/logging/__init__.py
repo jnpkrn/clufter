@@ -27,3 +27,9 @@ ccs2needlexml = '''\
         <clufter:descent at="logging_daemon"/>
     </logging>
 '''
+
+###
+
+from ....filters.ccs_artefacts import artefact_cond
+
+ccs_artefacts = artefact_cond('@logfile', kind='F', desc='base logfile')

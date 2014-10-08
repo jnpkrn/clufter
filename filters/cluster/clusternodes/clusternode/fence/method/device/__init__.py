@@ -18,3 +18,5 @@ except IOError:
     log.error("Unable to refer to `{0}' file".format(use))
 else:
     ccs_obfuscate_credentials = myglobals['ccs_obfuscate_credentials']
+    # XXX might be in tighter bind to particular fencedevice-s
+    ccs_artefacts = myglobals['ccs_artefacts_common_params']

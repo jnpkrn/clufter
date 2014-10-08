@@ -37,3 +37,12 @@ ccsflat2pcs = '''\
         </instance_attributes>
     </xsl:when>
 '''
+
+###
+
+from ....filters.ccs_artefacts import artefact_cond_ra
+
+ccs_artefacts = ''.join((
+    artefact_cond_ra('@address',
+                     kind='I', own=True, desc='IP address'),
+))

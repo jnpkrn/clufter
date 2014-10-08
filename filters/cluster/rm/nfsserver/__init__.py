@@ -26,3 +26,12 @@ ccsflat2pcs = '''\
         </instance_attributes>
     </xsl:when>
 '''
+
+###
+
+from ....filters.ccs_artefacts import artefact_cond_ra
+
+ccs_artefacts = ''.join((
+    artefact_cond_ra('@path',
+                     kind='I', own=True, desc='exported path'),
+))
