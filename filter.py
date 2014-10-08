@@ -171,8 +171,7 @@ class Filter(object):
     def deco(cls, in_format, out_format):
         """Decorator as an easy factory of actual filters"""
         def deco_fnc(fnc):
-            log.debug("Filter: deco for {0}"
-                      .format(fnc))
+            log.debug("Filter: deco for {0}".format(fnc))
             attrs = {
                 '__module__': fnc.__module__,
                 '__doc__': fnc.__doc__,
@@ -535,8 +534,8 @@ class XMLFilter(Filter, MetaPlugin):
                                    .format(name))
             if do_mix and do_mix < will_mix:
                 raise RuntimeError("Parent does not want preserve-rest while"
-                                   " children wants to")
-            elif do_mix > 1 and will_mix:
+                                   " child wants to")
+            elif do_mix > 1 and will_mix:  # and not parent
                 do_mix = 1
 
             #toplevel = []
