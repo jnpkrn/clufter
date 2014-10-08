@@ -3,6 +3,9 @@
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
+from ....utils_xslt import xslt_is_member
+
+
 ccsflat2pcs = '''\
     <template id="{concat('FENCEDEV-', @name)}"
               class="stonith"
@@ -18,23 +21,35 @@ ccsflat2pcs = '''\
     </template>
 '''
 
+
+ccs_obfuscate_credentials_password = (
+    'passwd',
+    'snmp_priv_passwd',
+)
+
+ccs_obfuscate_credentials_login = (
+    'login',
+)
+
 ccs_obfuscate_credentials = '''\
     <xsl:copy>
         <xsl:apply-templates select="@*"/>
-        <xsl:for-each select="@*[contains(concat(
-                '|passwd',
-                '|snmp_priv_passwd',
-                '|'), concat('|', name(), '|'))]">
-                <xsl:attribute name="{name()}">SECRET-PASSWORD</xsl:attribute>
+        <xsl:for-each select="@*[
+''' + ( \
+        xslt_is_member('name()', ccs_obfuscate_credentials_password)
+) + ''']">
+            <xsl:attribute name="{name()}">SECRET-PASSWORD</xsl:attribute>
         </xsl:for-each>
-        <xsl:for-each select="@*[contains(concat(
-                '|login',
-                '|'), concat('|', name(), '|'))]">
-                <xsl:attribute name="{name()}">SECRET-LOGIN</xsl:attribute>
+        <xsl:for-each select="@*[
+''' + ( \
+        xslt_is_member('name()', ccs_obfuscate_credentials_login)
+) + ''']">
+            <xsl:attribute name="{name()}">SECRET-LOGIN</xsl:attribute>
         </xsl:for-each>
         <xsl:apply-templates/>
     </xsl:copy>
 '''
+
 
 ccs_revitalize = '''\
     <!-- xvm: domain -> port -->

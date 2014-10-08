@@ -3,18 +3,19 @@
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
+from ....utils_xslt import xslt_is_member
+
+
 ccs_obfuscate_identifiers = '''\
     <xsl:copy>
         <!-- awkward way to keep both relative attribute ordering
              and ordering QUORUMD-LABEL-{1, 2}; not scaling well -->
         <xsl:variable name="QuorumdLabel"
                       select="@*[
-                          contains(concat(
-                              '|cman_label',
-                              '|label',
-                              '|'), concat('|', name(), '|')
-                          )
-                      ]"/>
+''' + ( \
+            xslt_is_member('name()', ('cman_label',
+                                      'label'))
+) + ''']"/>
         <xsl:for-each select="@*">
             <xsl:variable name="QuorumdLabelMatch"
                           select="$QuorumdLabel[

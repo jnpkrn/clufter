@@ -3,12 +3,19 @@
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
+from ....utils_xslt import xslt_is_member
+
+
+ccs2needlexml_attrs = (
+    'expected_votes',
+    'two_node',
+)
+
 ccs2needlexml = '''\
     <quorum provider="corosync_votequorum">
         <xsl:copy-of select="@*[
-            contains(concat(
-                '|expected_votes',
-                '|two_node',
-                '|'), concat('|', name(), '|'))]" />
+''' + ( \
+            xslt_is_member('name()', ccs2needlexml_attrs)
+) + ''']"/>
     </quorum>
 '''
