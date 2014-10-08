@@ -16,3 +16,10 @@ def xslt_identity(particular_selector=''):
             <xsl:apply-templates select="@*|node()"/>
        </xsl:copy>
     </xsl:template>'''.format(particular_selector, NAMESPACES['xsl'])
+
+
+def xslt_is_member(item, items):
+    """Readable item-itemset membership test"""
+    items = "\n    '|" + "',\n    '|".join(items) + "',\n    '|'"
+    return '''\
+    (contains(concat({1}), concat('|', {0}, '|')))'''.format(item, items)
