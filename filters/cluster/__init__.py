@@ -64,7 +64,7 @@ except ValueError:
     from ... import package_name, version
 ccsflat2pcs_self_id = "{0} {1}".format(package_name(), version)
 
-ccsflat2pcs = '''\
+ccsflat2pcs = ('''\
     <cib validate-with="pacemaker-1.2"
          admin_epoch="1"
          epoch="1"
@@ -202,7 +202,7 @@ ccsflat2pcs = '''\
         </configuration>
         <status/>
     </cib>
-''' % dict(self_id=ccsflat2pcs_self_id)
+''') % dict(self_id=ccsflat2pcs_self_id)
 
 ###
 
