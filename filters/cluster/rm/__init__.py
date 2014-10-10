@@ -92,12 +92,14 @@ ccs_obfuscate_identifiers = '''\
 
 ###
 
+from .... import package_name
+
 ccsflat2pcs_elems = (
     'service',
     'vm',
 )
 
-ccsflat2pcs = '''\
+ccsflat2pcs = ('''\
     <xsl:for-each select="*[
 ''' + ( \
     xslt_is_member('name()', ccsflat2pcs_elems)
@@ -120,6 +122,77 @@ ccsflat2pcs = '''\
                     </xsl:message>
                 </xsl:otherwise>
             </xsl:choose>
+
+            <!-- store service reference for later use -->
+
+            <meta_attributes id="{$Prefix}-META">
+                <nvpair id="{$Prefix}-META-service"
+                        name="rgmanager-service"
+                        value="{concat(
+                                  translate(
+                                      name(..),
+                                      'abcdefghijklmnopqrstuvwxyz',
+                                      'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                                  ),
+                                  '-',
+                                  ../@name
+                               )}"/>
+                <!--nvpair id="{$Prefix}-META-domain"
+                        name="rgmanager-domain"
+                        value="{../@domain}"/-->
+            </meta_attributes>
         </primitive>
     </xsl:for-each>
-'''
+
+    <xsl:for-each select="*[
+''' + ( \
+    xslt_is_member('name()', ccsflat2pcs_elems)
+) + ''']">
+        <xsl:variable name="Container"
+                      select="concat(
+                                  translate(
+                                      name(),
+                                      'abcdefghijklmnopqrstuvwxyz',
+                                      'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                                  ),
+                                  '-',
+                                  @name
+                              )"/>
+        <template id="{$Container}"
+                class="ocf"
+                provider="%(package_name)s"
+                type="temporary-service">
+            <meta_attributes id="{$Container}-META">
+                <nvpair id="{$Container}-META-domain"
+                        name="domain"
+                        value="FAILOVERDOMAIN-{@domain}"/>
+                <nvpair id="{$Container}-META-autostart"
+                        name="autostart"
+                        value="{@autostart}"/>
+                <nvpair id="{$Container}-META-exclusive"
+                        name="exclusive"
+                        value="{@exclusive}"/>
+                <nvpair id="{$Container}-META-recovery"
+                        name="recovery"
+                        value="{@recovery}"/>
+                <nvpair id="{$Container}-META-depend"
+                        name="depend"
+                        value="{@depend}"/>
+                <nvpair id="{$Container}-META-depend_mode"
+                        name="depend_mode"
+                        value="{@depend_mode}"/>
+                <nvpair id="{$Container}-META-max_restarts"
+                        name="max_restarts"
+                        value="{@max_restarts}"/>
+                <nvpair id="{$Container}-META-restart_expire_time"
+                        name="restart_expire_time"
+                        value="{@restart_expire_time}"/>
+                <nvpair id="{$Container}-META-priority"
+                        name="priority"
+                        value="{@priority}"/>
+            </meta_attributes>
+        </template>
+    </xsl:for-each>
+
+    <clufter:descent at="failoverdomain"/>
+''') % dict(package_name=package_name())
