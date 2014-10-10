@@ -4,7 +4,11 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from ....utils_xslt import xslt_is_member
+# following 2nd chance import is to allow direct usage context (testing, etc.)
+try:
+    from ....utils_xslt import xslt_is_member
+except ValueError:  # Value?
+    from ...utils_xslt import xslt_is_member
 
 ###
 
@@ -12,48 +16,17 @@ from ....utils_xslt import xslt_is_member
 #      and {cluster,net}.py referring to it, but due to the way it is used
 #      in the parent, current approach seems better
 
-from ...utils_cib import ResourceSpec
+try:
+    from ....utils_cib import ResourceSpec
+except ValueError:
+    from ...utils_cib import ResourceSpec
 
-ccsflat2pcs_elems = (
-    'fs',
-    'netfs',
-    'clusterfs',
-)
-
-ccsflat2pcs_clusterfs = (
-    'gfs',
-    'gfs2',
-)
-
-ccsflat2pcs = '''\
+ccsflat2pcs = ('''
     <!--
         Filesystem ~ {,cluster,net}fs
      -->
-    <xsl:when test="
-''' + \
-        xslt_is_member('name()', ccsflat2pcs_elems)
-+ '''">
-        <xsl:variable name="FsKind">
-            <xsl:choose>
-                <!-- XXX could be as per meta-rgmanager-... -->
-                <xsl:when test="not(@device)
-                                and
-                                @host
-                                and
-                                @export">
-                    <xsl:value-of select="'netfs'"/>
-                </xsl:when>
-                <xsl:when test="
-''' + \
-                    xslt_is_member('@fstype', ccsflat2pcs_clusterfs)
-+ '''">
-                    <xsl:value-of select="'clusterfs'"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="'fs'"/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
+    <xsl:when test="name() = '%(target)s'">
+        <xsl:variable name="FsKind" select="name()"/>
 ''' + \
         ResourceSpec('ocf:heartbeat:Filesystem').xsl_attrs \
 + '''
@@ -61,7 +34,7 @@ ccsflat2pcs = '''\
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
             <!-- device ~ device -->
             <nvpair id="{concat($Prefix, '-ATTRS-device')}"
-                    name="device"/>
+                    name="device">
                 <xsl:attribute name="value">
                     <xsl:choose>
                         <!-- LABEL or UUID specification -->
@@ -70,7 +43,6 @@ ccsflat2pcs = '''\
                                                       '-L',
                                                       substring-after(@device, 'LABEL=')
                                                   )"/>
-                            </xsl:attribute>
                         </xsl:when>
                         <xsl:when test="starts-with(@device, 'UUID=')">
                             <xsl:value-of select="concat(
@@ -91,16 +63,17 @@ ccsflat2pcs = '''\
                                         and
                                         starts-with(@fstype, 'cifs')">
                             <xsl:value-of select="concat(
-                                                      '//'
+                                                      '//',
                                                       @host,
                                                       '/',
                                                       @export)"/>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:value-of select="@device">
+                            <xsl:value-of select="@device"/>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:attribute>
+            </nvpair>
             <!-- directory ~ mountpoint -->
             <nvpair id="{concat($Prefix, '-ATTRS-directory')}"
                     name="directory"
@@ -108,7 +81,7 @@ ccsflat2pcs = '''\
             <!-- options ~ options -->
             <xsl:if test="@options or $FsKind = 'netfs'">
             <nvpair id="{concat($Prefix, '-ATTRS-options')}"
-                    name="options"/>
+                    name="options">
                 <xsl:attribute name="value">
                     <xsl:choose>
                         <xsl:when test="$FsKind = 'netfs'
@@ -130,12 +103,13 @@ ccsflat2pcs = '''\
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:attribute>
+            </nvpair>
             </xsl:if>
             <!-- run_fsck ~ force_fsck -->
             <xsl:if test="
-''' + \
+''' + ( \
                 xslt_is_member('@force_fsck', ('1', 'yes'))
-+ '''">
+) + '''">
             <nvpair id="{concat($Prefix, '-ATTRS-run_fsck')}"
                     name="run_fsck"
                     value="force"/>
@@ -149,9 +123,9 @@ ccsflat2pcs = '''\
                     name="force_unmount"
                     value="false">
                 <xsl:if test="not(
-''' + \
+''' + ( \
                     xslt_is_member('@force_unmount', ('1', 'yes', 'on', 'true'))
-+ '''">
+) + ''')">
                     <xsl:attribute name="value">
                         <xsl:value-of select="'safe'"/>
                     </xsl:attribute>
@@ -172,4 +146,4 @@ ccsflat2pcs = '''\
         </operations>
         </xsl:if -->
     </xsl:when>
-'''
+''') % dict(target=__name__.rsplit('.', 1)[-1].split('_', 1)[-1])
