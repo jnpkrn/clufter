@@ -478,6 +478,11 @@ class XMLFilter(Filter, MetaPlugin):
 
         If callable is observed instead of XSLT snippet, keep it untouched.
         Used by `proceed_xslt` and `get_template` methods (hence class-wide).
+
+        ...also, turn xls:comment into clufter:comment form so as to preserve
+        (hold off) emitting XML comments, that would eitherwise be dropped
+        because of repeated XSLT processings (xsl:comment -> literal comment
+                                              -> forgotten)
         """
         # in top-down manner
         if isinstance(sym, tuple):
@@ -526,6 +531,13 @@ class XMLFilter(Filter, MetaPlugin):
                     if prev != (walk, mix):
                         raise FilterError(None, "Ambigous match for `{0}'"
                                           " tag ({1} vs {2})".format(at, walk, prev))
+                elif elem.tag == namespaced(XSL_NS, 'comment') and parent:
+                    # in non-root, turn the comments into "protected" ones
+                    element_juggler.rebind(
+                        nselem(CLUFTER_NS, 'comment'),
+                        element_juggler.grab(elem)
+                    ).extend(elem)
+                    element_juggler.drop(elem)
 
             if parent and parent[2] == 1 and '*' not in hooks:
                 hooks['*'] = (len(ret), ), 1
@@ -717,11 +729,24 @@ class XMLFilter(Filter, MetaPlugin):
             return ret, error_log
 
         def postprocess(ret):
+            """Postprocess the final result
+
+            ...also, turn clufter:comment back into (now true) comment form
+            """
             #log.debug("Applying postprocess onto {0}".format(etree.tostring(ret)))
             assert len(ret) == 1
             ret = ret[0]
             if ret.getroot().tag == namespaced(CLUFTER_NS, 'snippet'):
                 ret = ret.getroot()[0]
+
+            # any "protected" comments are turned into full-fledged ones now
+            cl = ret.xpath("//clufter:comment",
+                           namespaces={'clufter': CLUFTER_NS})
+            for e in cl:
+                element_juggler.rebind(etree.Comment(e.text),
+                                       element_juggler.grab(e))
+                element_juggler.drop(e)
+
             # XXX: ugly solution to get rid of the unneeded namespace
             # (cleanup_namespaces did not work here)
             ret = etree.fromstring(etree.tostring(ret))
