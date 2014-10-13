@@ -4,9 +4,9 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from ....utils_xslt import xslt_is_member
-
 ###
+
+from ....utils_xml import squote
 
 ccsflat2pcs = '''\
     <!--
@@ -31,8 +31,18 @@ ccsflat2pcs = '''\
         <xsl:attribute name="type">
             <xsl:value-of select="concat('../..', @file)"/>
         </xsl:attribute>
+        <xsl:comment><xsl:value-of select="concat(' ', %(note)s, ' ')"/></xsl:comment>
+        <xsl:message><xsl:value-of select="concat(%(note)s)"/></xsl:message>
     </xsl:when>
-'''
+''' % dict(
+    note=', '.join((
+        squote("NOTE: consider moving "),
+        "@file",
+        squote(" into canonical LSB scripts location (standard: /etc/init.d/)"
+               " + reflecting this in the configuration, perhaps even"
+               " switching to an equivalent (systemd, anything OCF RA, ...)")
+    ))
+)
 
 ###
 
