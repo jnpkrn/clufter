@@ -5,7 +5,7 @@
 """XSLT helpers"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from .utils_xml import NAMESPACES
+from .utils_xml import NAMESPACES, XSL
 
 
 def xslt_identity(particular_selector=''):
@@ -15,7 +15,7 @@ def xslt_identity(particular_selector=''):
         <xsl:copy>
             <xsl:apply-templates select="@*|node()"/>
        </xsl:copy>
-    </xsl:template>'''.format(particular_selector, NAMESPACES['xsl'])
+    </xsl:template>'''.format(particular_selector, NAMESPACES[XSL])
 
 
 def xslt_is_member(item, items):

@@ -35,8 +35,9 @@ from .utils_func import apply_preserving_depth, \
                         loose_zip, \
                         zip_empty
 from .utils_prog import cli_undecor, which
-from .utils_xml import NAMESPACES, namespaced, nselem, squote, \
-                       element_juggler, xml_get_root_pi, xmltag_get_namespace
+from .utils_xml import NAMESPACES, CLUFTER_NS, XSL_NS, \
+                       namespaced, nselem, squote, element_juggler, \
+                       xml_get_root_pi, xmltag_get_namespace
 from .utils_xslt import xslt_identity
 from .command_context import CommandContext
 
@@ -50,9 +51,6 @@ if not EDITOR:
 log = logging.getLogger(__name__)
 
 DEFAULT_ROOT_DIR = path_join(dirname(__file__), 'filters')
-
-CLUFTER_NS = NAMESPACES['clufter']
-XSL_NS = NAMESPACES['xsl']
 
 # XXX: consult standard/books
 _TOP_LEVEL_XSL = (

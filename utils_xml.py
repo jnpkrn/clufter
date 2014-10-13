@@ -18,6 +18,11 @@ NAMESPACES = {
     'xsl':     'http://www.w3.org/1999/XSL/Transform',
 }
 
+# X=x and X_NS=url for each (x, url) in NAMESPACES
+map(lambda ns: globals().setdefault(ns.upper(), ns), NAMESPACES.iterkeys())
+map(lambda (ns, url): globals().setdefault(ns.upper() + '_NS', url),
+    NAMESPACES.iteritems())
+
 
 class UtilsXmlError(ClufterPlainError):
     pass
@@ -38,14 +43,14 @@ def nselem(ns, tag, **kwargs):
     return etree.Element(namespaced(ns, tag), **kwargs)
 
 rng_get_start = etree.ETXPath("/{0}/{1}"
-                              .format(namespaced('rng', 'grammar'),
-                                      namespaced('rng', 'start')))
+                              .format(namespaced(RNG, 'grammar'),
+                                      namespaced(RNG, 'start')))
 xml_get_root_pi = etree.XPath("/*/processing-instruction()")
 xmltag_get_localname = lambda tag: etree.QName(tag).localname
 xmltag_get_namespace = lambda tag: etree.QName(tag).namespace
 
-RNG_ELEMENT = ("/{0}//{1}".format(namespaced('rng', 'grammar'),
-                                  namespaced('rng', 'element'))
+RNG_ELEMENT = ("/{0}//{1}".format(namespaced(RNG, 'grammar'),
+                                  namespaced(RNG, 'element'))
                .replace('{', '{{').replace('}', '}}')
                + "[@name = '{0}']")
 
@@ -117,16 +122,16 @@ def rng_pivot(me, et, tag):
     label = me.__name__ + '_' + localname
 
     # target's content place directly under /grammar wrapped with new define...
-    new_define = nselem('rng', 'define', name=label)
+    new_define = nselem(RNG, 'define', name=label)
     new_define.append(target)
     parent_start.append(new_define)
 
     # ... while the original occurrence substituted in-situ with the reference
-    new_ref = nselem('rng', 'ref', name=label)
+    new_ref = nselem(RNG, 'ref', name=label)
     parent_target.insert(index_target, new_ref)
 
     # ... and finally /grammar/start pointed anew to refer to the new label
-    start_ref = nselem('rng', 'ref', name=label)
+    start_ref = nselem(RNG, 'ref', name=label)
     start.clear()
     start.append(start_ref)
 
