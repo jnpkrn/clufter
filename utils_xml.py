@@ -5,7 +5,6 @@
 """XML helpers"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from copy import deepcopy
 from lxml import etree
 
 from .error import ClufterPlainError
