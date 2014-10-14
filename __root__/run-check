@@ -69,7 +69,7 @@ if [ $# -eq 0 ]; then
   </rm>
 </cluster>
 EOF
-    { diff -u "${testcib}" - \
+    { diff -u -- - "${testcib}" \
       && echo "TEST: cib diff OK" \
       || { echo "TEST: cib diff FAIL"; ret=21; }; }<<EOF
 <cib validate-with="pacemaker-1.2" admin_epoch="1" epoch="1" num_updates="0" update-client="$(${PYTHONEXEC} run-dev --version | head -n1)">
@@ -98,7 +98,7 @@ EOF
   <status/>
 </cib>
 EOF
-    { diff -u "${testcoro}" - \
+    { diff -u -- - "${testcoro}" \
       && echo "TEST: coro diff OK" \
       || { echo "TEST: coro diff FAIL"; ret=22; }; }<<EOF
 nodelist {
