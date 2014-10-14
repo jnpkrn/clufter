@@ -25,3 +25,10 @@ class pcs_prelude(pcs):
 
     This is a result of ccsflat2pcsprelude filter.
     """
+
+
+class pcs_compact(pcs):
+    """Private, "unfinished" pacemaker-based cluster stack configuration
+
+    This is a result of pcsprelude2pcscompact filter.
+    """

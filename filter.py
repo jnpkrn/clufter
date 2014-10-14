@@ -694,8 +694,8 @@ class XMLFilter(Filter, MetaPlugin):
                     e = nselem(XSL_NS, 'apply-templates',
                             select="*")
                     template.append(e)
-            if do_mix > 1:
-            # if elem.getparent() is None: # and not do_mix:
+            if do_mix > 1 or elem.getparent() is None and not children:
+            # and not do_mix:
                 template = etree.XML(xslt_identity(''))
                 xslt_root.append(template)
 
