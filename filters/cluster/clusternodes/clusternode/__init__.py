@@ -49,7 +49,7 @@ ccs2ccs_pcmk = '''\
     </xsl:copy>
 '''
 
-ccsflat2pcs = '''\
+ccsflat2pcsprelude = '''\
     <node id="{concat('NODE-', @name)}"
           uname="{@name}"
           type="member"

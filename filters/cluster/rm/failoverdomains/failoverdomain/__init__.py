@@ -8,7 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from .... import package_name
 
-ccsflat2pcs = ('''\
+ccsflat2pcsprelude = ('''\
     <template id="FAILOVERDOMAIN-{@name}"
               class="ocf"
               provider="%(package_name)s"

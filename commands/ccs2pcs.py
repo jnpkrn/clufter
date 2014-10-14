@@ -14,8 +14,8 @@ from ..utils_cluster import cluster_pcs_flatiron
 @Command.deco(('ccs2ccsflat',
                   ('ccs2ccs-pcmk'),
                   ('ccs-revitalize',
-                      ('ccsflat2pcs',
-                          ('pcs2simplepcs')))))
+                      ('ccsflat2pcsprelude',
+                          ('pcsprelude2pcs')))))
 def ccs2pcs_flatiron(cmd_ctxt,
                      input="/etc/cluster/cluster.conf",
                      ccs_pcmk="cluster-{ccs2ccsflat.in.hash}.conf",
@@ -49,8 +49,8 @@ def ccs2pcs_flatiron(cmd_ctxt,
 
 @Command.deco(('ccs2ccsflat',
                   ('ccs-revitalize',
-                      ('ccsflat2pcs',
-                          ('pcs2simplepcs'))),
+                      ('ccsflat2pcsprelude',
+                          ('pcsprelude2pcs'))),
                   ('ccs2needlexml',
                       ('xml2simpleconfig'))))
 def ccs2pcs_needle(cmd_ctxt,

@@ -7,7 +7,7 @@ from ....utils_xslt import xslt_is_member
 
 ###
 
-ccsflat2pcs = '''\
+ccsflat2pcsprelude = '''\
     <template id="{concat('FENCEDEV-', @name)}"
               class="stonith"
               type="{@agent}">

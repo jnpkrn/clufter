@@ -18,4 +18,4 @@ try:
 except IOError:
     log.error("Unable to refer to `{0}' file".format(use))
 else:
-    ccsflat2pcs = myglobals['ccsflat2pcs']
+    ccsflat2pcsprelude = myglobals['ccsflat2pcsprelude']
