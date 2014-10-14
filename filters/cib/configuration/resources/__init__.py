@@ -4,7 +4,7 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-pcsprelude2pcs = '''\
+pcsprelude2pcscompact = '''\
     <!--
         SIMPLIFY FENCING/STONITH
      -->
