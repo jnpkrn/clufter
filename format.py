@@ -26,8 +26,9 @@ from .protocol import Protocol
 from .utils import arg2wrapped, args2sgpl, args2tuple, args2unwrapped, \
                    classproperty, \
                    head_tail, \
-                   iterattrs, \
                    immutable, \
+                   iterattrs, \
+                   isinstanceupto, \
                    popattr, \
                    tuplist
 from .utils_prog import ProtectedDict, getenv_namespaced
@@ -219,10 +220,11 @@ class Format(object):
         """Create an instance or verify and return existing one"""
         if decl_or_instance and isinstance(decl_or_instance[0], Format):
             instance = decl_or_instance[0]
-            if not isinstance(instance, cls):
+            # XXX
+            if not isinstanceupto(instance, cls, Format):
                 raise FormatError(cls, "input object: format mismatch"
-                                  " (expected `{0}', got `{1}')", cls.name,
-                                  instance.__class__.name)
+                                  " (expected `{0}' or a superclass, got"
+                                  " `{1}')", cls.name, instance.__class__.name)
         else:
             instance = cls(*decl_or_instance, **kwargs)
         return instance

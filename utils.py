@@ -5,6 +5,8 @@
 """Various little+independent helpers"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+from itertools import takewhile
+
 
 # inspired by http://stackoverflow.com/a/4374075
 immutable = lambda x: isinstance(x, (basestring, int, long, bool, float, tuple))
@@ -55,8 +57,13 @@ filterdict_invpop = \
 # introspection related
 #
 
-def isinstanceexcept(subj, obj, exc=()):
+def isinstanceexcept(subj, obj, *exc):
     return isinstance(subj, obj) and not isinstance(subj, exc)
+
+
+def isinstanceupto(subj, obj, *exc):
+    return isinstance(subj,
+                      tuple(takewhile(lambda x: x not in exc, obj.__mro__)))
 
 
 def areinstances(obj1, obj2):
