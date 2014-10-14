@@ -6,7 +6,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ....utils_cib import ResourceSpec
 
-ccsflat2pcs = '''\
+ccsflat2pcsprelude = '''\
     <!--
         native initscript/systemd unitfile ~ samba
      -->

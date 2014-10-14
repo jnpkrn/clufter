@@ -18,3 +18,10 @@ class pcs(XML):
     validator_specs = {
         XML.ETREE: 'pacemaker-1.2.rng'
     }
+
+
+class pcs_prelude(pcs):
+    """Private, "unfinished" pacemaker-based cluster stack configuration
+
+    This is a result of ccsflat2pcsprelude filter.
+    """

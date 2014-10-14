@@ -21,7 +21,7 @@ try:
 except ValueError:
     from ...utils_cib import ResourceSpec
 
-ccsflat2pcs = ('''
+ccsflat2pcsprelude = ('''
     <!--
         Filesystem ~ {,cluster,net}fs
      -->

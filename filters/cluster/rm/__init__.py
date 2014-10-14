@@ -94,15 +94,15 @@ ccs_obfuscate_identifiers = '''\
 
 from .... import package_name
 
-ccsflat2pcs_elems = (
+ccsflat2pcsprelude_elems = (
     'service',
     'vm',
 )
 
-ccsflat2pcs = ('''\
+ccsflat2pcsprelude = ('''\
     <xsl:for-each select="*[
 ''' + ( \
-    xslt_is_member('name()', ccsflat2pcs_elems)
+    xslt_is_member('name()', ccsflat2pcsprelude_elems)
 ) + ''']/*">
         <xsl:variable name="Prefix"
                       select="concat('RESOURCE-', name(), '-',
@@ -146,7 +146,7 @@ ccsflat2pcs = ('''\
 
     <xsl:for-each select="*[
 ''' + ( \
-    xslt_is_member('name()', ccsflat2pcs_elems)
+    xslt_is_member('name()', ccsflat2pcsprelude_elems)
 ) + ''']">
         <xsl:variable name="Container"
                       select="concat(

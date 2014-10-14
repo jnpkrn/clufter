@@ -5,7 +5,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 
-pcs2simplepcs = '''\
+pcsprelude2pcs = '''\
     <clufter:descent-mix preserve-rest="true"/>
     <!-- strip empty optional elements -->
     <xsl:template match="fencing-topology[count(*) = 0]"/>

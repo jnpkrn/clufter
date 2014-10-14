@@ -23,9 +23,8 @@ class ccs(XML):
 class ccs_flat(ccs):
     """Private, artificially flattened CMAN-based cluster stack configuration
 
-    Sometimes (ehm, exclusively by me) called Cluster Configuration System Flat.
     This is a result of (one-off!) linearization of nested explicit ordering
     of resources as performed internally by RGManager, and in turn, also
-    by the derived helper ccs_flatten (bundled).
+    by the derived helper ccs_flatten (bundled) ... wrapped in ccs2ccsflat
+    filter.
     """
-    pass

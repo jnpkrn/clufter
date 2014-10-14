@@ -35,10 +35,10 @@ class Default(FilterManagerTestCase):
         # NOTE imports has to be just there due to environment changed
         #      by "starting from scratch" + plugin discovery elsewhere
         from .filters.ccs2ccsflat import ccs2ccsflat
-        from .filters.ccsflat2pcs import ccsflat2pcs
+        from .filters.ccsflat2pcsprelude import ccsflat2pcsprelude
         filters = self.flt_mgr.filters
         #print filters
-        for cls in ccs2ccsflat, ccsflat2pcs:
+        for cls in ccs2ccsflat, ccsflat2pcsprelude:
             # CHECK selected built-in plugin is auto-discovered
             self.assertTrue(cls.name in filters)
             # CHECK it's class matches the class of natively imported one

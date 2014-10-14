@@ -2,12 +2,14 @@
 # Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
-"""pcs2simplepcs filter"""
+"""ccsflat2pcsprelude filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..filter import XMLFilter
 
 
-@XMLFilter.deco('pcs', 'pcs')
-def pcs2simplepcs(flt_ctxt, in_obj):
+@XMLFilter.deco('ccs-flat', 'pcs-prelude')
+def ccsflat2pcsprelude(flt_ctxt, in_obj):
+    # XXX temporary hack with plain ccs;
+    # check that it is indeed ccs-flat, by exploring flt_ctxt?
     return ('etree', flt_ctxt.ctxt_proceed_xslt(in_obj))
