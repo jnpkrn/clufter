@@ -35,7 +35,7 @@ from .utils_func import apply_preserving_depth, \
                         loose_zip, \
                         zip_empty
 from .utils_prog import cli_undecor, which
-from .utils_xml import NAMESPACES, CLUFTER_NS, XSL_NS, \
+from .utils_xml import CLUFTER_NS, XSL_NS, \
                        namespaced, nselem, squote, element_juggler, \
                        xml_get_root_pi, xmltag_get_namespace
 from .utils_xslt import xslt_identity
