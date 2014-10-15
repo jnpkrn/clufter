@@ -70,14 +70,18 @@ class ElementJuggler(object):
     def grab(self, elem):
         parent = elem.getparent()
         assert parent is not self._root
-        parent_index = parent.index(elem)
+        if parent is None:
+            parent_index = None
+        else:
+            parent_index = parent.index(elem)
         self._root.append(elem)
         return parent, parent_index
 
     @staticmethod
     def rebind(elem, parent_pos):
         parent, parent_index = parent_pos
-        parent.insert(parent_index, elem)
+        if parent is not None:
+            parent.insert(parent_index, elem)
         return elem
 
     def drop(self, elem):
