@@ -401,6 +401,7 @@ class XMLFilter(Filter, MetaPlugin):
                 elem = worklist.pop()
                 if elem is None:
                     use_offset = True
+                    continue
                 msgs, schema, schema_snippet = validator(elem, start=elem.tag)
                 if not (msgs and schema and interactive):
                     global_msgs.extend(msgs)
