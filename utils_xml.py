@@ -9,6 +9,7 @@ from lxml import etree
 
 from .error import ClufterPlainError
 from .utils import selfaware
+from .utils_func import bifilter
 
 
 NAMESPACES = {
@@ -38,8 +39,16 @@ def namespaced(ns, ident):
     return ret
 
 
-def nselem(ns, tag, **kwargs):
-    return etree.Element(namespaced(ns, tag), **kwargs)
+def nselem(ns, tag, *args, **kwargs):
+    ret = etree.Element(namespaced(ns, tag), **kwargs)
+    strings, nonstrings = bifilter(lambda x: isinstance(x, basestring), args)
+    ret.extend(nonstrings)
+    # conditionally assigned so as to support self-closed tags where possible
+    text = ' '.join(strings)
+    if text:
+        ret.text = text
+    return ret
+
 
 rng_get_start = etree.ETXPath("/{0}/{1}"
                               .format(namespaced(RNG, 'grammar'),
