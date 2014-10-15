@@ -6,7 +6,12 @@
 # Depending on the usage, quick sanity check or just the prologue for run-tests
 
 s="${0}"
-[ $# -gt 0 ] && s="${1}"
+[ $# -gt 0 ] && {
+    case "${1}" in
+    -*) ;;
+    *) s="${1}"; shift ;;
+    esac
+}
 
 PATH="${PATH:+${PATH}:}$(
   dirname "$(pwd)/$(
@@ -24,10 +29,10 @@ which ccs_flatten 2>/dev/null || (
     ln -fs -- build/ccs_flatten .
 ) || { ret=$?; echo "ccs_flatten missing, cannot be built"; exit ${ret}; }
 
-if [ $# -eq 0 ]; then
+if [ "${s}" != "__norun__" ]; then
     # self-check for sanity usage
     testcib="$(mktemp)" testcoro="$(mktemp)"
-    { ${PYTHONEXEC} run-dev ccs2pcs-needle - "${testcib}" "${testcoro}" \
+    { ${PYTHONEXEC} run-dev ccs2pcs-needle "${@}" -- - "${testcib}" "${testcoro}" \
     && echo "TEST: execution OK" \
     || { echo "TEST: execution FAIL"; ret=20; }; }<<EOF
 <?xml version="1.0"?>
