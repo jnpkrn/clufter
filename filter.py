@@ -45,8 +45,7 @@ try:
     from .defaults import EDITOR
 except ImportError:
     EDITOR = ''
-if not EDITOR:
-    EDITOR = environ.get('EDITOR', 'vi')
+EDITOR = environ.get('EDITOR', EDITOR)
 
 log = logging.getLogger(__name__)
 
