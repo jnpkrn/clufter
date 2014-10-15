@@ -530,12 +530,13 @@ class XMLFilter(Filter, MetaPlugin):
                     if prev != (walk, mix):
                         raise FilterError(None, "Ambigous match for `{0}'"
                                           " tag ({1} vs {2})".format(at, walk, prev))
-                elif elem.tag == namespaced(XSL_NS, 'comment') and parent:
+                elif (elem.tag == namespaced(XSL_NS, 'comment')
+                      and parent and not(parent[2])):
                     # in non-root, turn the comments into "protected" ones
                     element_juggler.rebind(
-                        nselem(CLUFTER_NS, 'comment'),
+                        nselem(CLUFTER_NS, 'comment', elem.text, *tuple(elem)),
                         element_juggler.grab(elem)
-                    ).extend(elem)
+                    )
                     element_juggler.drop(elem)
 
             if parent and parent[2] == 1 and '*' not in hooks:
