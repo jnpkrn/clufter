@@ -407,6 +407,7 @@ class XMLFilter(Filter, MetaPlugin):
                     break
                 parent_pos = element_juggler.grab(elem)
                 res_snippet = etree.tostring(elem, pretty_print=True)
+                force = False
                 while True:
                     try:
                         elems, force = cls._try_edit(res_snippet.strip(),
