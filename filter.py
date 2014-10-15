@@ -345,8 +345,10 @@ class XMLFilter(Filter, MetaPlugin):
                 editor_args[0] = which(editor_args[0])
                 log.info("running `{0}'".format(' '.join(editor_args)))
                 try:
-                    check_call(editor_args)
-                except CalledProcessError as e:
+                    # pty.spawn doesn't work as nicely
+                    with open('/dev/tty') as f_tty:
+                        check_call(editor_args, stdin=f_tty)
+                except (CalledProcessError, IOError) as e:
                     raise FilterError(cls, str(e))
                 except OSError:
                     raise FilterError(cls, "Editor `{0}' seems unavailable"
