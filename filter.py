@@ -310,8 +310,8 @@ class XMLFilter(Filter, MetaPlugin):
             "  change `force-block` attribute in the root element to `true`",
         ]
         offset = len(message) + len(msgs) + 5 if use_offset else 0
-        e = '  ' + '\n  '.join(["[{0}:{1}] {2}".format(
-                                m[0] + offset, *m[1:]) for m in msgs])
+        e = '\n  '.join(["[{0}:{1}] {2}".format(m[0] + offset, *m[1:])
+                        for m in msgs])
         message = '  ' + '\n  '.join(message).format(pkg_name, e, schema_path)
         prompt = """\
 <{0}-recovery force-block="false">
