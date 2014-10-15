@@ -8,7 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ....utils_xml import squote
 
-ccsflat2pcsprelude = '''\
+ccsflat2pcsprelude = ('''\
     <!--
         lsb:<script> ~ script;  starts-with(@file, '/etc/init.d/')
      -->
@@ -34,7 +34,7 @@ ccsflat2pcsprelude = '''\
         <xsl:comment><xsl:value-of select="concat(' ', %(note)s, ' ')"/></xsl:comment>
         <xsl:message><xsl:value-of select="concat(%(note)s)"/></xsl:message>
     </xsl:when>
-''' % dict(
+''') % dict(
     note=', '.join((
         squote("NOTE: consider moving "),
         "@file",
