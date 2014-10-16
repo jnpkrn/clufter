@@ -177,7 +177,11 @@ ccsflat2pcsprelude = ('''\
                 </nvpair>
                 <nvpair id="{$Container}-META-exclusive"
                         name="exclusive"
-                        value="{@exclusive}"/>
+                        value="{@exclusive}">
+                    <xsl:if test="not(@exclusive)">
+                        <xsl:attribute name="value">0</xsl:attribute>
+                    </xsl:if>
+                </nvpair>
                 <nvpair id="{$Container}-META-recovery"
                         name="recovery"
                         value="{@recovery}"/>

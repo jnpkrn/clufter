@@ -157,6 +157,18 @@ pcsprelude2pcscompact = ('''\
                                      @name = 'domain'
                                  ]
                              )
+                             and
+                             not(
+                                 meta_attributes/nvpair[
+                                     @name = 'exclusive'
+                                     and
+                                     (
+                                        @value = 'yes'
+                                        or
+                                        @value &gt; 0
+                                    )
+                                 ]
+                             )
                           ]">
         <xsl:variable name="Container" select="@id"/>
         <group id="{$Container}-GROUP">
@@ -233,6 +245,18 @@ pcsprelude2pcscompact = ('''\
                                     not(
                                         meta_attributes/nvpair[
                                             @name = 'domain'
+                                        ]
+                                    )
+                                    and
+                                    not(
+                                        meta_attributes/nvpair[
+                                            @name = 'exclusive'
+                                            and
+                                            (
+                                               @value = 'yes'
+                                               or
+                                               @value &gt; 0
+                                           )
                                         ]
                                     )
                                 ]/@id
