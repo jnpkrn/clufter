@@ -4,7 +4,11 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-pcsprelude2pcscompact = '''\
+###
+
+from .... import package_name
+
+pcsprelude2pcscompact = ('''\
     <!--
         SIMPLIFY FENCING/STONITH
      -->
@@ -136,4 +140,92 @@ pcsprelude2pcscompact = '''\
                              ]
                          ]"/>
     <xsl:template match="template[@class = 'stonith']"/>
-'''
+
+
+    <!--
+        trivial conversion of resource groups without failover
+        domain assigned into groups
+     -->
+
+    <xsl:template match="template[
+                             @provider = '%(package_name)s'
+                             and
+                             @type = 'temporary-service'
+                             and
+                             not(
+                                 meta_attributes/nvpair[
+                                     @name = 'domain'
+                                 ]
+                             )
+                          ]">
+        <xsl:variable name="Container" select="@id"/>
+        <group id="{$Container}-GROUP">
+            <xsl:for-each select="../primitive[
+                                     meta_attributes/nvpair[
+                                         @name = 'rgmanager-service'
+                                         and
+                                         @value = $Container
+                                     ]
+                                  ]">
+                <xsl:copy>
+                    <xsl:copy-of select="@*"/>
+                    <xsl:for-each select="node()[not(
+                                              name() = 'meta_attributes'
+                                              and
+                                              (
+                                                  count(*) = 0
+                                                  or
+                                                  (
+                                                      count(*) = 1
+                                                      and
+                                                      nvpair[
+                                                          @name = 'rgmanager-service'
+                                                      ]
+                                                  )
+                                              )
+                                          )]">
+                        <xsl:choose>
+                            <xsl:when test="meta_attributes">
+                                <xsl:copy>
+                                    <xsl:copy-of select="@*|node()[
+                                                            name() != 'nvpair'
+                                                            or
+                                                            (
+                                                                name() = 'nvpair'
+                                                                and
+                                                                @name != 'rgmanager-service'
+                                                            )]"/>
+                                </xsl:copy>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:copy>
+                                    <xsl:copy-of select="@*|node()"/>
+                                </xsl:copy>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:for-each>
+                </xsl:copy>
+            </xsl:for-each>
+        </group>
+    </xsl:template>
+
+    <!-- also remove the primitive(s) now moved to the group(s) -->
+    <xsl:template match="primitive[
+                            meta_attributes/nvpair[
+                                @name = 'rgmanager-service'
+                                and
+                                @value = current()/../template[
+                                    @provider = '%(package_name)s'
+                                    and
+                                    @type = 'temporary-service'
+                                    and
+                                    not(
+                                        meta_attributes/nvpair[
+                                            @name = 'domain'
+                                        ]
+                                    )
+                                ]/@id
+                            ]
+                         ]"/>
+
+''') % dict(package_name=package_name())
