@@ -170,7 +170,11 @@ ccsflat2pcsprelude = ('''\
                 </xsl:if>
                 <nvpair id="{$Container}-META-autostart"
                         name="autostart"
-                        value="{@autostart}"/>
+                        value="{@autostart}">
+                    <xsl:if test="not(@autostart)">
+                        <xsl:attribute name="value">1</xsl:attribute>
+                    </xsl:if>
+                </nvpair>
                 <nvpair id="{$Container}-META-exclusive"
                         name="exclusive"
                         value="{@exclusive}"/>
