@@ -163,9 +163,11 @@ ccsflat2pcsprelude = ('''\
                 provider="%(package_name)s"
                 type="temporary-service">
             <meta_attributes id="{$Container}-META">
-                <nvpair id="{$Container}-META-domain"
-                        name="domain"
-                        value="FAILOVERDOMAIN-{@domain}"/>
+                <xsl:if test="@domain">
+                    <nvpair id="{$Container}-META-domain"
+                            name="domain"
+                            value="FAILOVERDOMAIN-{@domain}"/>
+                </xsl:if>
                 <nvpair id="{$Container}-META-autostart"
                         name="autostart"
                         value="{@autostart}"/>
