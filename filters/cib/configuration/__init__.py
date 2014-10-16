@@ -28,13 +28,13 @@ pcscompact2pcs = ('''\
                              )
                          ]">
         <xsl:copy>
-        <xsl:comment> %(note_stonith)s </xsl:comment>
-        <xsl:message>%(note_stonith)s</xsl:message>
-        <cluster_property_set id="CRMCONFIG-bootstrap">
-            <nvpair id="CRMCONFIG-bootstrap-STONITH-ENABLED"
-                    name="stonith-enabled"
-                    value="false"/>
-        </cluster_property_set>
+            <xsl:comment> %(note_stonith)s </xsl:comment>
+            <xsl:message>%(note_stonith)s</xsl:message>
+            <cluster_property_set id="CRMCONFIG-bootstrap">
+                <nvpair id="CRMCONFIG-bootstrap-STONITH-ENABLED"
+                        name="stonith-enabled"
+                        value="false"/>
+            </cluster_property_set>
         </xsl:copy>
     </xsl:template>
 ''') % dict(
