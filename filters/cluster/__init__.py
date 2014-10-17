@@ -90,7 +90,7 @@ ccsflat2pcsprelude = ('''\
                     FENCING/STONITH CONFIGURATION
                  -->
 
-                <xsl:comment> fencing/stonith (+ possibly topology below) </xsl:comment>
+                <xsl:comment> FENCING/STONITH (+ POSSIBLY TOPOLOGY BELOW) </xsl:comment>
 
                 <!-- device-wide (fencedev) parameters -> resource templates -->
                 <clufter:descent at="fencedevice"/>
@@ -155,7 +155,7 @@ ccsflat2pcsprelude = ('''\
                     RESOURCES+ARRANGEMENT CONFIGURATION
                  -->
 
-                <xsl:comment> resources+arrangement </xsl:comment>
+                <xsl:comment> RESOURCES+ARRANGEMENT </xsl:comment>
 
                 <clufter:descent at="rm"/>
 
