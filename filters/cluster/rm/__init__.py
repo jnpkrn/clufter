@@ -148,7 +148,7 @@ ccsflat2pcsprelude = ('''\
 ''' + ( \
     xslt_is_member('name()', ccsflat2pcsprelude_elems)
 ) + ''']">
-        <xsl:variable name="Container"
+        <xsl:variable name="ResourceGroup"
                       select="concat(
                                   translate(
                                       name(),
@@ -158,46 +158,46 @@ ccsflat2pcsprelude = ('''\
                                   '-',
                                   @name
                               )"/>
-        <template id="{$Container}"
+        <template id="{$ResourceGroup}"
                 class="ocf"
                 provider="%(package_name)s"
                 type="temporary-service">
-            <meta_attributes id="{$Container}-META">
+            <meta_attributes id="{$ResourceGroup}-META">
                 <xsl:if test="@domain">
-                    <nvpair id="{$Container}-META-domain"
+                    <nvpair id="{$ResourceGroup}-META-domain"
                             name="domain"
                             value="FAILOVERDOMAIN-{@domain}"/>
                 </xsl:if>
-                <nvpair id="{$Container}-META-autostart"
+                <nvpair id="{$ResourceGroup}-META-autostart"
                         name="autostart"
                         value="{@autostart}">
                     <xsl:if test="not(@autostart)">
                         <xsl:attribute name="value">1</xsl:attribute>
                     </xsl:if>
                 </nvpair>
-                <nvpair id="{$Container}-META-exclusive"
+                <nvpair id="{$ResourceGroup}-META-exclusive"
                         name="exclusive"
                         value="{@exclusive}">
                     <xsl:if test="not(@exclusive)">
                         <xsl:attribute name="value">0</xsl:attribute>
                     </xsl:if>
                 </nvpair>
-                <nvpair id="{$Container}-META-recovery"
+                <nvpair id="{$ResourceGroup}-META-recovery"
                         name="recovery"
                         value="{@recovery}"/>
-                <nvpair id="{$Container}-META-depend"
+                <nvpair id="{$ResourceGroup}-META-depend"
                         name="depend"
                         value="{@depend}"/>
-                <nvpair id="{$Container}-META-depend_mode"
+                <nvpair id="{$ResourceGroup}-META-depend_mode"
                         name="depend_mode"
                         value="{@depend_mode}"/>
-                <nvpair id="{$Container}-META-max_restarts"
+                <nvpair id="{$ResourceGroup}-META-max_restarts"
                         name="max_restarts"
                         value="{@max_restarts}"/>
-                <nvpair id="{$Container}-META-restart_expire_time"
+                <nvpair id="{$ResourceGroup}-META-restart_expire_time"
                         name="restart_expire_time"
                         value="{@restart_expire_time}"/>
-                <nvpair id="{$Container}-META-priority"
+                <nvpair id="{$ResourceGroup}-META-priority"
                         name="priority"
                         value="{@priority}"/>
             </meta_attributes>
