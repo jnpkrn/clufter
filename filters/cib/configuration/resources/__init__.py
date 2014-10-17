@@ -164,13 +164,13 @@ pcsprelude2pcscompact = ('''\
                                  ]
                              )
                           ]">
-        <xsl:variable name="Container" select="@id"/>
-        <group id="{$Container}-GROUP">
+        <xsl:variable name="ResourceGroup" select="@id"/>
+        <group id="{$ResourceGroup}-GROUP">
             <xsl:for-each select="../primitive[
                                      meta_attributes/nvpair[
                                          @name = 'rgmanager-service'
                                          and
-                                         @value = $Container
+                                         @value = $ResourceGroup
                                      ]
                                   ]">
                 <xsl:copy>
@@ -219,8 +219,10 @@ pcsprelude2pcscompact = ('''\
             <xsl:if test="$Autostart = 'no'
                           or
                           $Autostart = 0">
-                <meta_attributes id="{$Container}-META">
-                    <nvpair id="{$Container}-META-is-managed" name="is-managed" value="false"/>
+                <meta_attributes id="{$ResourceGroup}-META">
+                    <nvpair id="{$ResourceGroup}-META-is-managed"
+                            name="is-managed"
+                            value="false"/>
                 </meta_attributes>
             </xsl:if>
         </group>
