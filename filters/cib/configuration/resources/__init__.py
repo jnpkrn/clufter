@@ -143,20 +143,14 @@ pcsprelude2pcscompact = ('''\
 
 
     <!--
-        trivial conversion of resource groups without failover
-        domain assigned into groups
+        trivial conversion of resource groups into groups (original groups
+        are preserved as-were) if they are not exclusive
      -->
 
     <xsl:template match="template[
                              @provider = '%(package_name)s'
                              and
                              @type = 'temporary-service'
-                             and
-                             not(
-                                 meta_attributes/nvpair[
-                                     @name = 'domain'
-                                 ]
-                             )
                              and
                              not(
                                  meta_attributes/nvpair[
@@ -230,6 +224,14 @@ pcsprelude2pcscompact = ('''\
                 </meta_attributes>
             </xsl:if>
         </group>
+
+        <xsl:if test="meta_attributes/nvpair[
+                          @name = 'domain'
+                      ]">
+            <xsl:copy>
+                <xsl:copy-of select="@*|node()"/>
+            </xsl:copy>
+        </xsl:if>
     </xsl:template>
 
     <!-- also remove the primitive(s) now moved to the group(s) -->
@@ -241,12 +243,6 @@ pcsprelude2pcscompact = ('''\
                                     @provider = '%(package_name)s'
                                     and
                                     @type = 'temporary-service'
-                                    and
-                                    not(
-                                        meta_attributes/nvpair[
-                                            @name = 'domain'
-                                        ]
-                                    )
                                     and
                                     not(
                                         meta_attributes/nvpair[
