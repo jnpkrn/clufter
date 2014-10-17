@@ -49,6 +49,11 @@ ccsflat2pcsprelude = ('''\
                     </xsl:attribute>
                 </xsl:if>
             </nvpair>
+            <xsl:for-each select="failoverdomainnode">
+                <nvpair id="FAILOVERDOMAIN-{../@name}-META-failoverdomainnode-{@name}"
+                        name="failoverdomainnode-{@priority}"
+                        value="{@name}"/>
+            </xsl:for-each>
         </meta_attributes>
     </template>
 ''') % dict(package_name=package_name())
