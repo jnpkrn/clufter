@@ -17,7 +17,9 @@ ccsflat2pcsprelude = ('''\
             <nvpair id="FAILOVERDOMAIN-{@name}-META-ordered"
                     name="ordered"
                     value="0">
-                <xsl:if test="contains('123456789',
+                <xsl:if test="@ordered != ''
+                              and
+                              contains('123456789',
                                         substring(@ordered, 1, 1))">
                     <xsl:attribute name="value">
                         <xsl:value-of select="'1'"/>
@@ -27,7 +29,9 @@ ccsflat2pcsprelude = ('''\
             <nvpair id="FAILOVERDOMAIN-{@name}-META-restricted"
                     name="restricted"
                     value="0">
-                <xsl:if test="contains('123456789',
+                <xsl:if test="@restricted != ''
+                              and
+                              contains('123456789',
                                         substring(@restricted, 1, 1))">
                     <xsl:attribute name="value">
                         <xsl:value-of select="'1'"/>
@@ -37,8 +41,9 @@ ccsflat2pcsprelude = ('''\
             <nvpair id="FAILOVERDOMAIN-{@name}-META-nofailback"
                     name="nofailback"
                     value="0">
-                <xsl:if test="contains('123456789',
-                                        substring(@nofailback, 1, 1))">
+                <xsl:if test="@nofailback != ''
+                              and contains('123456789',
+                                           substring(@nofailback, 1, 1))">
                     <xsl:attribute name="value">
                         <xsl:value-of select="'1'"/>
                     </xsl:attribute>
