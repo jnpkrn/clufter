@@ -32,3 +32,10 @@ class pcs_compact(pcs):
 
     This is a result of pcsprelude2pcscompact filter.
     """
+
+
+class pcs_final(pcs):
+    """Public, "finished" pacemaker-based cluster stack configuration
+
+    This is a result of pcs2pcsfinal filter.
+    """
