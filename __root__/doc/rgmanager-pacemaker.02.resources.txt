@@ -422,7 +422,7 @@ P: driven by `location` constraint
 
 exists A in AN: AFFINITY(B, A, NONE)  [1. no resource-node affinity]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-R: driven by general arrangement patterns (possibilites with "NONE"):
+R: driven by general arrangement patterns (possibilities with "NONE"):
    - if for all A in AN: AFFINITY(B, A, NONE):
      - nodes AN form attached failover domain, and this is either not `ordered`
        or with the same `priority` for ordering
