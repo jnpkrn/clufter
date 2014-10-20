@@ -16,7 +16,8 @@ from ..utils_cluster import cluster_pcs_flatiron
                   ('ccs-revitalize',
                       ('ccsflat2pcsprelude',
                           ('pcsprelude2pcscompact',
-                              ('pcscompact2pcs'))))))
+                              ('pcscompact2pcs',
+                                  ('pcs2pcsfinal')))))))
 def ccs2pcs_flatiron(cmd_ctxt,
                      input="/etc/cluster/cluster.conf",
                      ccs_pcmk="cluster-{ccs2ccsflat.in.hash}.conf",
@@ -42,7 +43,9 @@ def ccs2pcs_flatiron(cmd_ctxt,
             (
                 (
                     (
-                        file_proto(cib),
+                        (
+                            file_proto(cib),
+                        ),
                     ),
                 ),
             ),
@@ -54,7 +57,8 @@ def ccs2pcs_flatiron(cmd_ctxt,
                   ('ccs-revitalize',
                       ('ccsflat2pcsprelude',
                           ('pcsprelude2pcscompact',
-                              ('pcscompact2pcs')))),
+                              ('pcscompact2pcs',
+                                  ('pcs2pcsfinal'))))),
                   ('ccs2needlexml',
                       ('xml2simpleconfig'))))
 def ccs2pcs_needle(cmd_ctxt,
@@ -80,7 +84,9 @@ def ccs2pcs_needle(cmd_ctxt,
             (
                 (
                     (
-                        file_proto(cib),
+                        (
+                            file_proto(cib),
+                        ),
                     ),
                 ),
             ),
