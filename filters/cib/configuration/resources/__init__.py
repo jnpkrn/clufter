@@ -234,6 +234,10 @@ pcsprelude2pcscompact = ('''\
                                   starts-with(@name, 'failoverdomainnode-')
                               ]
                           ) != 0">
+                <xsl:comment
+                ><xsl:value-of select="concat(' mimic NOFAILBACK failoverdomain (',
+                                              $FailoverDomain/@id, ')')"
+                /></xsl:comment>
                 <meta_attributes id="{$ResourceGroup}-META-ATTRS-nofailback">
                     <rule id="{$ResourceGroup}-META-RULE-stickiness"
                           score="INFINITY"
@@ -260,6 +264,10 @@ pcsprelude2pcscompact = ('''\
             <xsl:if test="$Autostart = 'no'
                           or
                           $Autostart = 0">
+                <xsl:comment
+                ><xsl:value-of select="concat(' mimic no-autostart resource group (',
+                                              $ResourceGroup, ')')"
+                /></xsl:comment>
                 <meta_attributes id="{$ResourceGroup}-META-ATTRS-autostart">
                     <nvpair id="{$ResourceGroup}-META-is-managed"
                             name="is-managed"
