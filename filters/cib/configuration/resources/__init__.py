@@ -165,116 +165,119 @@ pcsprelude2pcscompact = ('''\
                              )
                           ]">
         <xsl:variable name="ResourceGroup" select="@id"/>
-        <group id="{$ResourceGroup}-GROUP">
-            <xsl:for-each select="../primitive[
-                                     meta_attributes/nvpair[
-                                         @name = 'rgmanager-service'
-                                         and
-                                         @value = $ResourceGroup
-                                     ]
-                                  ]">
-                <xsl:copy>
-                    <xsl:copy-of select="@*"/>
-                    <xsl:for-each select="node()[not(
-                                              name() = 'meta_attributes'
-                                              and
-                                              (
-                                                  count(*) = 0
-                                                  or
-                                                  (
-                                                      count(*) = 1
+        <xsl:variable name="Resources" select="../primitive[
+                                                  meta_attributes/nvpair[
+                                                      @name = 'rgmanager-service'
                                                       and
-                                                      nvpair[
-                                                          @name = 'rgmanager-service'
-                                                      ]
-                                                  )
-                                              )
-                                          )]">
-                        <xsl:choose>
-                            <xsl:when test="meta_attributes">
-                                <xsl:copy>
-                                    <xsl:copy-of select="@*|node()[
-                                                            name() != 'nvpair'
-                                                            or
-                                                            (
-                                                                name() = 'nvpair'
-                                                                and
-                                                                @name != 'rgmanager-service'
-                                                            )]"/>
-                                </xsl:copy>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <xsl:copy>
-                                    <xsl:copy-of select="@*|node()"/>
-                                </xsl:copy>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:for-each>
-                </xsl:copy>
-            </xsl:for-each>
-            <!--
-                stickiness=INFINITY for each N in dedicated nodes ~ @nofailback
-             -->
-            <xsl:variable name="FailoverDomain"
-                          select="../template[
-                                @provider = '%(package_name)s'
-                                and
-                                @type = 'temporary-failoverdomain'
-                                and
-                                @id = current()/meta_attributes/nvpair[
-                                    @name = 'domain'
-                                ]/@value
-                            ]"/>
-            <xsl:if test="$FailoverDomain/meta_attributes/nvpair[
-                              @name = 'nofailback'
-                          ]/@value ='1'
-                          and
-                          count(
-                              $FailoverDomain/meta_attributes/nvpair[
-                                  starts-with(@name, 'failoverdomainnode-')
-                              ]
-                          ) != 0">
-                <xsl:comment
-                ><xsl:value-of select="concat(' mimic NOFAILBACK failoverdomain (',
-                                              $FailoverDomain/@id, ')')"
-                /></xsl:comment>
-                <meta_attributes id="{$ResourceGroup}-META-ATTRS-nofailback">
-                    <rule id="{$ResourceGroup}-META-RULE-stickiness"
-                          score="INFINITY"
-                          boolean-op="or">
-                        <xsl:for-each select="$FailoverDomain/meta_attributes/nvpair[
-                                                  starts-with(@name, 'failoverdomainnode-')
-                                              ]">
-                            <expression id="STICKINESS-{$ResourceGroup}-{@value}"
-                                        attribute="#uname"
-                                        operation="eq"
-                                        value="{@value}">
-                            </expression>
+                                                      @value = $ResourceGroup
+                                                  ]
+                                               ]"/>
+        <xsl:if test="$Resources">
+            <group id="{$ResourceGroup}-GROUP">
+                <xsl:for-each select="$Resources">
+                    <xsl:copy>
+                        <xsl:copy-of select="@*"/>
+                        <xsl:for-each select="node()[not(
+                                                name() = 'meta_attributes'
+                                                and
+                                                (
+                                                    count(*) = 0
+                                                    or
+                                                    (
+                                                        count(*) = 1
+                                                        and
+                                                        nvpair[
+                                                            @name = 'rgmanager-service'
+                                                        ]
+                                                    )
+                                                )
+                                            )]">
+                            <xsl:choose>
+                                <xsl:when test="meta_attributes">
+                                    <xsl:copy>
+                                        <xsl:copy-of select="@*|node()[
+                                                                name() != 'nvpair'
+                                                                or
+                                                                (
+                                                                    name() = 'nvpair'
+                                                                    and
+                                                                    @name != 'rgmanager-service'
+                                                                )]"/>
+                                    </xsl:copy>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:copy>
+                                        <xsl:copy-of select="@*|node()"/>
+                                    </xsl:copy>
+                                </xsl:otherwise>
+                            </xsl:choose>
                         </xsl:for-each>
-                    </rule>
-                </meta_attributes>
-            </xsl:if>
-            <!--
-                is-managed=false ~ @autostart in (no, 0)
-             -->
-            <xsl:variable name="Autostart"
-                          select="meta_attributes/nvpair[
-                                      @name = 'autostart'
-                                  ]/@value"/>
-            <xsl:if test="$Autostart = 'no'
-                          or
-                          $Autostart = 0">
-                <xsl:comment
-                ><xsl:value-of select="concat(' mimic no-autostart resource group (',
-                                              $ResourceGroup, ')')"
-                /></xsl:comment>
-                <meta_attributes id="{$ResourceGroup}-META-ATTRS-autostart">
-                    <nvpair id="{$ResourceGroup}-META-is-managed"
-                            name="is-managed"
-                            value="false"/>
-                </meta_attributes>
-            </xsl:if>
-        </group>
+                    </xsl:copy>
+                </xsl:for-each>
+                <!--
+                    stickiness=INFINITY for each N in dedicated nodes ~ @nofailback
+                -->
+                <xsl:variable name="FailoverDomain"
+                            select="../template[
+                                    @provider = '%(package_name)s'
+                                    and
+                                    @type = 'temporary-failoverdomain'
+                                    and
+                                    @id = current()/meta_attributes/nvpair[
+                                        @name = 'domain'
+                                    ]/@value
+                                ]"/>
+                <xsl:if test="$FailoverDomain/meta_attributes/nvpair[
+                                @name = 'nofailback'
+                            ]/@value ='1'
+                            and
+                            count(
+                                $FailoverDomain/meta_attributes/nvpair[
+                                    starts-with(@name, 'failoverdomainnode-')
+                                ]
+                            ) != 0">
+                    <xsl:comment
+                    ><xsl:value-of select="concat(' mimic NOFAILBACK failoverdomain (',
+                                                $FailoverDomain/@id, ')')"
+                    /></xsl:comment>
+                    <meta_attributes id="{$ResourceGroup}-META-ATTRS-nofailback">
+                        <rule id="{$ResourceGroup}-META-RULE-stickiness"
+                            score="INFINITY"
+                            boolean-op="or">
+                            <xsl:for-each select="$FailoverDomain/meta_attributes/nvpair[
+                                                    starts-with(@name, 'failoverdomainnode-')
+                                                ]">
+                                <expression id="STICKINESS-{$ResourceGroup}-{@value}"
+                                            attribute="#uname"
+                                            operation="eq"
+                                            value="{@value}">
+                                </expression>
+                            </xsl:for-each>
+                        </rule>
+                    </meta_attributes>
+                </xsl:if>
+                <!--
+                    is-managed=false ~ @autostart in (no, 0)
+                -->
+                <xsl:variable name="Autostart"
+                            select="meta_attributes/nvpair[
+                                        @name = 'autostart'
+                                    ]/@value"/>
+                <xsl:if test="$Autostart = 'no'
+                            or
+                            $Autostart = 0">
+                    <xsl:comment
+                    ><xsl:value-of select="concat(' mimic no-autostart resource group (',
+                                                $ResourceGroup, ')')"
+                    /></xsl:comment>
+                    <meta_attributes id="{$ResourceGroup}-META-ATTRS-autostart">
+                        <nvpair id="{$ResourceGroup}-META-is-managed"
+                                name="is-managed"
+                                value="false"/>
+                    </meta_attributes>
+                </xsl:if>
+            </group>
+        </xsl:if>
 
         <xsl:if test="meta_attributes/nvpair[
                           @name = 'domain'
