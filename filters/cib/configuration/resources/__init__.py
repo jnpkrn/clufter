@@ -213,6 +213,44 @@ pcsprelude2pcscompact = ('''\
                 </xsl:copy>
             </xsl:for-each>
             <!--
+                stickiness=INFINITY for each N in dedicated nodes ~ @nofailback
+             -->
+            <xsl:variable name="FailoverDomain"
+                          select="../template[
+                                @provider = '%(package_name)s'
+                                and
+                                @type = 'temporary-failoverdomain'
+                                and
+                                @id = current()/meta_attributes/nvpair[
+                                    @name = 'domain'
+                                ]/@value
+                            ]"/>
+            <xsl:if test="$FailoverDomain/meta_attributes/nvpair[
+                              @name = 'nofailback'
+                          ]/@value ='1'
+                          and
+                          count(
+                              $FailoverDomain/meta_attributes/nvpair[
+                                  starts-with(@name, 'failoverdomainnode-')
+                              ]
+                          ) != 0">
+                <meta_attributes id="{$ResourceGroup}-META-ATTRS-nofailback">
+                    <rule id="{$ResourceGroup}-META-RULE-stickiness"
+                          score="INFINITY"
+                          boolean-op="or">
+                        <xsl:for-each select="$FailoverDomain/meta_attributes/nvpair[
+                                                  starts-with(@name, 'failoverdomainnode-')
+                                              ]">
+                            <expression id="STICKINESS-{$ResourceGroup}-{@value}"
+                                        attribute="#uname"
+                                        operation="eq"
+                                        value="{@value}">
+                            </expression>
+                        </xsl:for-each>
+                    </rule>
+                </meta_attributes>
+            </xsl:if>
+            <!--
                 is-managed=false ~ @autostart in (no, 0)
              -->
             <xsl:variable name="Autostart"
