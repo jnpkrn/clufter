@@ -212,6 +212,9 @@ pcsprelude2pcscompact = ('''\
                     </xsl:for-each>
                 </xsl:copy>
             </xsl:for-each>
+            <!--
+                is-managed=false ~ @autostart in (no, 0)
+             -->
             <xsl:variable name="Autostart"
                           select="meta_attributes/nvpair[
                                       @name = 'autostart'
@@ -219,7 +222,7 @@ pcsprelude2pcscompact = ('''\
             <xsl:if test="$Autostart = 'no'
                           or
                           $Autostart = 0">
-                <meta_attributes id="{$ResourceGroup}-META">
+                <meta_attributes id="{$ResourceGroup}-META-ATTRS-autostart">
                     <nvpair id="{$ResourceGroup}-META-is-managed"
                             name="is-managed"
                             value="false"/>
