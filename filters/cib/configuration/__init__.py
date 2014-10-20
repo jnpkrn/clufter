@@ -43,10 +43,10 @@ pcscompact2pcs = ('''\
     <xsl:template match="constraints">
         <xsl:copy>
             <xsl:for-each select="../resources/template[
-                                    @provider = '%(package_name)s'
-                                    and
-                                    @type = 'temporary-failoverdomain'
-                                ]">
+                                      @provider = '%(package_name)s'
+                                      and
+                                      @type = 'temporary-failoverdomain'
+                                  ]">
                 <xsl:variable name="FailoverDomain" select="."/>
                 <xsl:for-each select="../template[
                                         @provider = '%(package_name)s'
