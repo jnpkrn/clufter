@@ -383,17 +383,28 @@ class XMLFilter(Filter, MetaPlugin):
         assert validator is not None
 
         def validate_hook(ret):
-            global_msgs = []
-            single_elem = False
+            global_msgs, single_elem, pkg_name = [], False, package_name()
+            pi_comment = pkg_name + '-comment'
 
             # figure out the target element, skip if not any suitable
-            #to_check = (ret.getroot(), )
-            root = ret.getroot()
-            if root.tag == namespaced(CLUFTER_NS, "snippet"):
-                to_check = reversed(root)
+            if ret:
+                # "protected" comments have to be turned to something
+                # else, here a processing instruction
+                cl = ret.xpath("//clufter:comment",
+                               namespaces={'clufter': CLUFTER_NS})
+                for e in cl:
+                    element_juggler.rebind(etree.PI(pi_comment, e.text),
+                                           element_juggler.grab(e))
+                    element_juggler.drop(e)
+                #to_check = (ret.getroot(), )
+                root = ret.getroot()
+                if root.tag == namespaced(CLUFTER_NS, "snippet"):
+                    to_check = reversed(root)
+                else:
+                    to_check = (root, )
+                    single_elem = True
             else:
-                to_check = (root, )
-                single_elem = True
+                to_check = ()
             worklist = list(i for i in to_check
                             if xmltag_get_namespace(i.tag) != XSL_NS)
             use_offset = True
@@ -437,6 +448,13 @@ class XMLFilter(Filter, MetaPlugin):
                 if force == 'block':
                     return ret, ()  # validation for the whole block cancelled
                 use_offset = False
+
+            cl = ret.xpath("//processing-instruction('{0}')".format(pi_comment))
+            for e in cl:
+                element_juggler.rebind(nselem(CLUFTER_NS, 'comment',
+                                              e.text.strip().join((' ', ) * 2)),
+                                       element_juggler.grab(e))
+                element_juggler.drop(e)
             return ret, global_msgs
         return validate_hook
 
