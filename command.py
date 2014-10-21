@@ -10,6 +10,7 @@ from collections import MutableMapping
 from itertools import izip_longest
 from optparse import SUPPRESS_HELP
 from sys import stderr
+from time import time
 
 from .command_context import CommandContext
 from .error import ClufterError, \
@@ -200,24 +201,31 @@ class Command(object):
             self._fnc_defaults_varnames = func_defaults_varnames(fnc, skip=1)
         return self._fnc_defaults_varnames
 
-    def _figure_parser_opt_noop(self, options, shortopts):
-        # add option to NOOPize some filters (those with in_format=out_format)
+    def _figure_parser_opt_dumpnoop(self, options, shortopts):
         choices = []
         for f in apply_intercalate(self.filter_chain):
             if issubclass(f.in_format.__class__, f.out_format.__class__):
                 choices.append(f.__class__.name)
-        optname_used = "noop"
-        short_aliases = shortopts.setdefault(optname_used[0], [])
-        assert optname_used not in \
-               (options[i][0][0] for i in short_aliases)
-        log.debug("choices: {0}".format(choices))
-        opt = dict(
-            action='append',
-            choices=choices,
-            default=[],
-            help="debug only: NOOPize filter (2+: repeat) [none out of %choices]"
+        # XXX NOOPizing doesn't make sense for input filters?
+        debug_opts = (
+            ('noop', False,
+             "debug only: NOOPize filter (2+: repeat) [none out of %choices]"),
+            ('dump', True,
+             "debug only: dump (intermediate) output of the filter (2+: repeat)"
+             " [none out of %choices]"),
         )
-        options.append([["--" + optname_used], opt])
+        for optname_used, universal, help_text in debug_opts:
+            short_aliases = shortopts.setdefault(optname_used[0], [])
+            assert optname_used not in \
+                (options[i][0][0] for i in short_aliases)
+            log.debug("choices: {0}".format(choices))
+            opt = dict(
+                action='append',
+                choices=choices + ['ANY'] if universal else choices,
+                default=[],
+                help=help_text,
+            )
+            options.append([["--" + optname_used], opt])
 
     def _figure_parser_opt_unofficial(self, options, shortopts, fnc_varnames):
         # unofficial/unsupported ones
@@ -282,7 +290,7 @@ class Command(object):
                     break
                 options[alias][0].append(use)
 
-        self._figure_parser_opt_noop(options, shortopts)
+        self._figure_parser_opt_dumpnoop(options, shortopts)
         self._figure_parser_opt_unofficial(options, shortopts, fnc_varnames)
 
         description = description[:-1] if not description[-1] else description
@@ -359,7 +367,7 @@ class Command(object):
                                            partitioner=lambda x:
                                            not (tuplist(x)) or protodecl(x))))
         maxl = sorted(worklist, key=lambda x: len(x[0].__class__.name))[-1][0]
-        maxl, unused = len(maxl.__class__.name), {}
+        maxl, unused, tstmp = len(maxl.__class__.name), {}, hex(int(time()))[2:]
         while worklist:
             flt, io_decl = worklist.pop()
             io_decl_use = protodictval(io_decl)
@@ -417,19 +425,36 @@ class Command(object):
                             ret = flt(in_obj, flt_ctxt)
                     flt_ctxt['out'] = ret
                 if flt not in terminals or not filter_backtrack[flt]:
+                    if (flt.__class__.name in cmd_ctxt['filter_dump']
+                        or 'ANY' in cmd_ctxt['filter_dump']):
+                        try:
+                            fn = 'dump-{0}-{1}-{2}'.format(
+                                flt.__class__.name,
+                                flt_ctxt['in'].hash,
+                                tstmp,
+                            )
+                            ret(SimpleFormat.FILE, fn)
+                        except FormatError:
+                            print >>stderr, "[{0:{1}}] dumping failed".format(
+                                flt.__class__.name, maxl
+                            )
+                        else:
+                            print >>stderr, "[{0:{1}}] dump file: {2}".format(
+                                flt.__class__.name, maxl, fn
+                            )
                     continue
             # output time!  (INFILTER terminal listed twice in io_chain)
             with cmd_ctxt.prevented_taint():
                 io_decl = SimpleFormat.io_decl_specials(io_decl, 0, magic_fds,
                                                         cmd_ctxt['__filters__'])
             log.debug("Run `{0}' filter with `{1}' io decl. as TERMINAL"
-                      .format(flt.__class__.__name__, io_decl))
+                      .format(flt.__class__.name, io_decl))
             # store output somewhere, which even can be useful (use as a lib)
             passout['passout'] = flt_ctxt['out'](*io_decl)
             if not cmd_ctxt['quiet'] and passout is unused:
                 if io_decl[0] == SimpleFormat.FILE:
                     print >>stderr, "[{0:{1}}] output file: {2}".format(
-                        flt.__class__.__name__, maxl, passout['passout']
+                        flt.__class__.name, maxl, passout['passout']
                     )
 
         map(lambda f: f.close(), magic_fds.itervalues())  # close "magic" fds
@@ -478,6 +503,7 @@ class Command(object):
         cmd_ctxt = cmd_ctxt or CommandContext({
             'filter_chain_analysis': self.filter_chain_analysis,
             'filter_noop':           getattr(opts, 'noop', ()),
+            'filter_dump':           getattr(opts, 'dump', ()),
             'system':                getattr(opts, 'sys', ''),
             'system_extra':          getattr(opts, 'dist', '').split(','),
             'quiet':                 getattr(opts, 'quiet', False),
