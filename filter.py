@@ -298,16 +298,16 @@ class XMLFilter(Filter, MetaPlugin):
             "(validating schema), the situation can be resolved by either:",
             "",
             ". realizing and FIXING the issue (and possibly notifying {0}",
-            "  maintainer): directly edit the respective snippet (upon",
+            "  maintainer): directly EDIT the respective snippet (upon",
             "  exiting the editor, the snippet will be inspected again)",
             ". OMITTING the snippet from the result, but be warned, this",
             "  may cause validation error at the level closer to the root",
-            ". TERMINATING the whole conversion: delete everything",
+            ". TERMINATING the whole conversion: DELETE everything",
             "",
             "+ forcing the snippet, empty or not, without validation:",
-            "  turn `:force-this=false` to `:force-this=true`",
+            "  TURN `:force-this=false` to `:force-this=true`",
             "+ forcing the whole block of snippets without validation:",
-            "  change `force-block` attribute in the root element to `true`",
+            "  CHANGE `force-block` attribute in the root element to `true`",
         ]
         offset = len(message) + len(msgs) + 5 if use_offset else 0
         e = '\n  '.join(["[{0}:{1}] {2}".format(m[0] + offset, *m[1:])
