@@ -60,7 +60,7 @@ if [ "${s}" != "__norun__" ]; then
   <quorumd label="qdisk"/>
   <rm central_processing="1">
     <failoverdomains>
-      <failoverdomain name="failover_domain1" ordered="0" restricted="0">
+      <failoverdomain name="failover_domain1" ordered="1" restricted="1" nofailback="1">
         <failoverdomainnode name="rhel6-node1" priority="1"/>
         <failoverdomainnode name="rhel6-node2" priority="1"/>
       </failoverdomain>
@@ -69,6 +69,7 @@ if [ "${s}" != "__norun__" ]; then
       <ip address="192.168.0.128" monitor_link="1"/>
     </resources>
     <service autostart="1" name="mm" domain="failover_domain1">
+    <!-- service exclusive="0" autostart="1" name="mm" -->
       <ip ref="192.168.0.128"/>
     </service>
   </rm>
@@ -85,20 +86,44 @@ EOF
       <node id="NODE-rhel6-node2" uname="rhel6-node2" type="member"/>
     </nodes>
     <resources>
-      <!-- fencing/stonith (+ possibly topology below) -->
+      <!-- FENCING/STONITH (+ POSSIBLY TOPOLOGY BELOW) -->
       <primitive id="FENCEDEV-xvm" class="stonith" type="fence_xvm">
         <instance_attributes id="FENCEDEV-xvm-ATTRS">
           <nvpair id="FENCEDEV-xvm-ATTRS-pcmk_host_map" name="pcmk_host_map" value="rhel6-node1:rhel6-node1,rhel6-node2:rhel6-node2"/>
         </instance_attributes>
       </primitive>
-      <!-- resources+arrangement -->
-      <primitive id="RESOURCE-ip-192.168.0.128" class="ocf" provider="heartbeat" type="IPaddr2">
-        <instance_attributes id="RESOURCE-ip-192.168.0.128-ATTRS">
-          <nvpair id="RESOURCE-ip-192.168.0.128-ATTRS-ip" name="ip" value="192.168.0.128"/>
-        </instance_attributes>
-      </primitive>
+      <!-- RESOURCES+ARRANGEMENT -->
+      <group id="SERVICE-mm-GROUP">
+        <primitive id="RESOURCE-ip-192.168.0.128" description="natively converted from ip RA" class="ocf" provider="heartbeat" type="IPaddr2">
+          <instance_attributes id="RESOURCE-ip-192.168.0.128-ATTRS">
+            <nvpair id="RESOURCE-ip-192.168.0.128-ATTRS-ip" name="ip" value="192.168.0.128"/>
+          </instance_attributes>
+        </primitive>
+        <!-- mimic NOFAILBACK failoverdomain (FAILOVERDOMAIN-failover_domain1)-->
+        <meta_attributes id="SERVICE-mm-META-ATTRS-nofailback">
+          <rule id="SERVICE-mm-META-RULE-stickiness" score="INFINITY" boolean-op="or">
+            <expression id="STICKINESS-SERVICE-mm-rhel6-node1" attribute="#uname" operation="eq" value="rhel6-node1"/>
+            <expression id="STICKINESS-SERVICE-mm-rhel6-node2" attribute="#uname" operation="eq" value="rhel6-node2"/>
+          </rule>
+        </meta_attributes>
+      </group>
     </resources>
-    <constraints/>
+    <constraints>
+      <rsc_location id="CONSTRAINT-LOCATION-SERVICE-mm-GROUP" rsc="SERVICE-mm-GROUP">
+        <!-- mimic failoverdomain (failover_domain1) for SERVICE-mm -->
+        <rule id="CONSTRAINT-LOCATION-SERVICE-mm-GROUP-rhel6-node1" score="INFINITY">
+          <expression id="CONSTRAINT-LOCATION-SERVICE-mm-GROUP-rhel6-node1-expr" attribute="#uname" operation="eq" value="rhel6-node1"/>
+        </rule>
+        <rule id="CONSTRAINT-LOCATION-SERVICE-mm-GROUP-rhel6-node2" score="INFINITY">
+          <expression id="CONSTRAINT-LOCATION-SERVICE-mm-GROUP-rhel6-node2-expr" attribute="#uname" operation="eq" value="rhel6-node2"/>
+        </rule>
+        <!-- mimic RESTRICTED failoverdomain (failover_domain1) for SERVICE-mm -->
+        <rule id="CONSTRAINT-LOCATION-SERVICE-mm-GROUP-RESTRICTED" boolean-op="and" score="-INFINITY">
+          <expression id="CONSTRAINT-LOCATION-SERVICE-mm-GROUP-RESTRICTED-rhel6-node1-expr" attribute="#uname" operation="ne" value="rhel6-node1"/>
+          <expression id="CONSTRAINT-LOCATION-SERVICE-mm-GROUP-RESTRICTED-rhel6-node2-expr" attribute="#uname" operation="ne" value="rhel6-node2"/>
+        </rule>
+      </rsc_location>
+    </constraints>
   </configuration>
   <status/>
 </cib>
