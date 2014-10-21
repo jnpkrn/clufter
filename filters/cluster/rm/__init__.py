@@ -92,6 +92,7 @@ ccs_obfuscate_identifiers = '''\
 
 ###
 
+from ....utils_cib import ResourceSpec
 from .... import package_name
 
 ccsflat2pcsprelude_elems = (
@@ -110,6 +111,12 @@ ccsflat2pcsprelude = ('''\
                                      translate(@address, '/', '_')
                               )"/>
         <primitive id="{$Prefix}">
+
+            <xsl:attribute name="description"
+            ><xsl:value-of select="concat('natively converted from ', name(),
+                                          ' RA')"
+            /></xsl:attribute>
+
             <xsl:choose>
 
                 <!-- the nested snippets should be guarded with
@@ -117,9 +124,31 @@ ccsflat2pcsprelude = ('''\
                 <clufter:descent-mix at="*"/>
 
                 <xsl:otherwise>
-                    <xsl:message terminate="no">
-                        <value-of select="concat('unhandled resource: ', name())"/>
-                    </xsl:message>
+
+                    <xsl:attribute name="description"
+                    ><xsl:value-of select="concat('could not natively convert',
+                                                  ' from ', name(), ' RA')"
+                    /></xsl:attribute>
+''' + \
+                    ResourceSpec('ocf:rgmanager:PLACEHOLDER').xsl_attrs \
++ '''
+                    <xsl:attribute name="type"
+                    ><xsl:value-of select="substring-before(
+                                               @rgmanager-meta-agent,
+                                               '.metadata'
+                                           )"
+                    /></xsl:attribute>
+                    <instance_attributes id="{$Prefix}-ATTRS">
+                        <xsl:for-each select="@*[
+                                                  name() != 'rgmanager-meta-agent'
+                                              ]">
+                            <nvpair id="{$Prefix}-ATTRS-{name()}"
+                                    name="{name()}"
+                                    value="{.}"/>
+                        </xsl:for-each>
+                    </instance_attributes>
+                    <xsl:comment> %(note_unhandled)s </xsl:comment>
+                    <xsl:message>%(note_unhandled)s</xsl:message>
                 </xsl:otherwise>
             </xsl:choose>
 
@@ -205,4 +234,18 @@ ccsflat2pcsprelude = ('''\
     </xsl:for-each>
 
     <clufter:descent at="failoverdomain"/>
-''') % dict(package_name=package_name())
+''') % dict(
+    package_name=package_name(),
+    note_unhandled='''<xsl:value-of select="concat('WARNING: resource ', name(),
+                                                   ' is currently unhandled by',
+                                                   ' the conversion, you are',
+                                                   ' advised to copy ',
+                                                   substring-before(
+                                                       @rgmanager-meta-agent,
+                                                       '.metadata'
+                                                   ),
+                                                   ' RGManager agent (incl.',
+                                                   ' dependencies if any)',
+                                                   ' to /usr/lib/ocf/resource.d',
+                                                   '/rgmanager directory')"/>'''
+)
