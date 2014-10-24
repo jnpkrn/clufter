@@ -86,8 +86,8 @@ aliases_dist = {
 # of particular packages
 aliases_releases = {
     'corosync': {
-        'flatiron':   '1.*',
-        'needle':     '2.*',
+        'flatiron':   '1',
+        'needle':     '2',
     },
     'debian': {  # because of http://bugs.python.org/issue9514 @ 2.6 ?
         'wheezy/sid': '7.999',
@@ -100,17 +100,24 @@ aliases_releases = {
 #
 
 def _parse_ver(s):
-    # NOTE star-wildcard in minor version internally treated as -1
     name, ver = (lambda a, b=None: (a, b))(*s.split('=', 1))
     if ver:
         try:
             ver = aliases_releases[name][ver]
         except KeyError:
             pass
-        ver = (lambda a, b='0': tuple(map(int, (a, b if b != '*' else -1))))(
-                  *ver.split('.', 1)
-        )
+        ver = tuple(map(int, ver.split('.')))
     return name, ver
+
+
+def _cmp_ver(v1, v2):
+    if v1 and v2:
+        v1, v2 = list(reversed(v1)), list(reversed(v2))
+        while v1 and v2:
+            ret = cmp(v1.pop(), v2.pop())
+            if ret:
+                return ret
+    return 0
 
 
 def _parse_extra(s):
@@ -161,9 +168,9 @@ def infere_dist(dist, branches=None):
                 if '__proceeded__' not in d_branches or dist_ver:
                     for i, (dver, dver_branches) in enumerate(d_branches):
                         if dist_ver:
-                            if (dist_ver[1] == -1 and dist_ver[0] == dver[0]
-                            or dist_ver >= dver and (i == len(d_branches) - 1
-                            or dist_ver < d_branches[i+1][0])):
+                            if (_cmp_ver(dist_ver, dver) >= 0 and
+                                (i == len(d_branches) - 1
+                                or _cmp_ver(dist_ver, d_branches[i+1][0]) < 0)):
                                 ret.append(dver_branches)
                                 if '__proceeded__' in dver_branches:
                                     break
@@ -206,14 +213,11 @@ def infere_comp(comp, branches=None):
     for b in branches:
         for c, c_ver in b.iteritems():
             c, c_extra = _parse_extra(c)
-            if c == comp:
-                if comp_extra and set(comp_extra).difference(c_extra):
-                    continue
-                if comp_ver and (comp_ver[1] == -1 and comp_ver[0] != c_ver[0]
-                                 or comp_ver >= c_ver):
-                    continue
-                ret.append(b)
-                break
+            if (c == comp
+                and (not comp_extra or not set(comp_extra).difference(c_extra))
+                and _cmp_ver(comp_ver, c_ver) == 0):
+                    ret.append(b)
+                    break
 
     return ret
 
