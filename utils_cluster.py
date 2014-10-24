@@ -32,43 +32,70 @@ log = getLogger(__name__)
 cluster_map = {
     'linux':
         {
+            'debian': (
+                ((6, ), {
+                    # https://packages.debian.org/squeeze/{corosync,pacemaker}
+                    'corosync':                      (1, 2),
+                    'pacemaker[coro,hb]':            (1, 0, 9),
+                }),
+                ((7, ), {
+                    # https://packages.debian.org/wheezy/{corosync,pacemaker}
+                    'corosync':                      (1, 4),
+                    'pacemaker[coro,hb]':            (1, 1, 7),
+                }),
+                ((8, ), {
+                    # https://packages.debian.org/jessie/corosync (?)
+                    'corosync':                      (1, 4, 6),
+                }),
+            ),
             'fedora': (
-                ((13, 0), {
-                    'corosync':        (1, 3),
-                    'pacemaker[cman]': (1, 1),
+                ((13, ), {
+                    'corosync':                      (1, 3),
+                    'pacemaker[cman]':               (1, 1, 4),
                 }),
-                ((14, 0), {
-                    'corosync':        (1, 4),
+                ((14, ), {
+                    'corosync':                      (1, 4),
+                    'pacemaker[cman]':               (1, 1, 6),
                 }),
-                ((17, 0), {
-                    'corosync':        (2, 3),
-                    'pacemaker[coro]': (1, 1),
+                ((17, ), {
+                    'corosync':                      (2, 3),
+                    'pacemaker[coro]':               (1, 1, 7),
+                }),
+                ((18, ), {
+                    'pacemaker[coro]':               (1, 1, 8),
+                }),
+                ((19, ), {
+                    'pacemaker[coro]':               (1, 1, 9),
+                }),
+                ((21, ), {
+                    'pacemaker[coro]':               (1, 1, 11),
                 }),
             ),
             'redhat': (
                 ((6, 0), {
-                    'corosync':        (1, 2),
+                    'corosync':                      (1, 2),
                 }),
                 ((6, 2), {
-                    'corosync':        (1, 4),
+                    'corosync':                      (1, 4),
                 }),
                 ((6, 5), {
-                    'pacemaker[cman]': (1, 1),
+                    'pacemaker[cman]':               (1, 1, 10),
                 }),
                 ((7, 0), {
-                    'corosync':        (2, 3),
-                    'pacemaker[coro]': (1, 1),
+                    'corosync':                      (2, 3),
+                    'pacemaker[coro]':               (1, 1, 10),
                 }),
             ),
-            # may be inaccurate
             'ubuntu': (
                 ((13, 04), {
-                    'corosync':        (1, 4),
-                    'pacemaker[cman]': (1, 1),
+                    # https://packages.ubuntu.com/raring/{corosync,pacemaker}
+                    'corosync':                      (1, 4),
+                    'pacemaker[coro,hb]':            (1, 1, 7),
                 }),
                 ((13, 10), {
-                    'corosync':        (2, 3),
-                    'pacemaker[coro]': (1, 1),
+                    # https://packages.ubuntu.com/saucy/{corosync,pacemaker}
+                    'corosync':                      (2, 3),
+                    'pacemaker[coro,hb]':            (1, 1, 10),
                 }),
             ),
         },
@@ -90,8 +117,14 @@ aliases_releases = {
         'needle':     '2',
     },
     'debian': {  # because of http://bugs.python.org/issue9514 @ 2.6 ?
+        'squeeze':    '6',
+        'wheezy':     '7',
         'wheezy/sid': '7.999',
     },
+    'ubuntu': {
+        'raring':     '13.04',
+        'saucy':      '13.10',
+    }
 }
 
 
