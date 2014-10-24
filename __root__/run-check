@@ -78,7 +78,7 @@ EOF
     { diff -u -- - "${testcib}" \
       && echo "TEST: cib diff OK" \
       || { echo "TEST: cib diff FAIL"; ret=21; }; }<<EOF
-<cib validate-with="pacemaker-1.2" admin_epoch="1" epoch="1" num_updates="0" update-client="$(${PYTHONEXEC} run-dev --version | head -n1)">
+<cib validate-with="pacemaker-1.2" admin_epoch="0" epoch="0" num_updates="0" update-client="$(${PYTHONEXEC} run-dev --version | head -n1)">
   <configuration>
     <crm_config/>
     <nodes>
