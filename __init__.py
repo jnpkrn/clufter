@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-version = '0.1.5'
+version = '0.1.6-alpha'
 license = 'GPLv2+'
 copyright = """\
 Copyright 2014 Red Hat, Inc.
