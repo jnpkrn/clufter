@@ -64,10 +64,24 @@ except ValueError:
     from ... import package_name, version
 ccsflat2pcsprelude_self_id = "{0} {1}".format(package_name(), version)
 
+# should roughly match the output of:
+# (exec 3>&1; exec >/dev/null; export CIB_shadow=test-shadow;
+#  crm_shadow -bfe "${CIB_shadow}"; cat "$(crm_shadow -bF)">&3;
+#  crm_shadow -bfD "${CIB_shadow}")
+# <cib epoch="0" num_updates="0" admin_epoch="0" validate-with="pacemaker-1.2"
+#      cib-last-written="Wed Oct 22 15:14:04 2014">
+#   <configuration>
+#     <crm_config/>
+#     <nodes/>
+#     <resources/>
+#     <constraints/>
+#   </configuration>
+#   <status/>
+# </cib>
 ccsflat2pcsprelude = ('''\
     <cib validate-with="pacemaker-1.2"
-         admin_epoch="1"
-         epoch="1"
+         admin_epoch="0"
+         epoch="0"
          num_updates="0"
 
          update-client="%(self_id)s">
