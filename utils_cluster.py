@@ -81,6 +81,9 @@ cluster_map = {
                 ((6, 5), {
                     'pacemaker[cman]':               (1, 1, 10),
                 }),
+                ((6, 6), {
+                    'pacemaker[acls,cman]':          (1, 1, 11),
+                }),
                 ((7, 0), {
                     'corosync':                      (2, 3),
                     'pacemaker[coro]':               (1, 1, 10),
