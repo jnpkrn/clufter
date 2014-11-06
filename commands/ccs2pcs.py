@@ -8,7 +8,18 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from ..command import Command, CommandAlias
 from ..filter import XMLFilter
 from ..protocol import protocols
-from ..utils_cluster import cluster_pcs_flatiron
+from ..utils_cluster import cluster_pcs_1_2, cluster_pcs_flatiron
+
+
+def _check_pacemaker_1_2(cmd_ctxt):
+    system = cmd_ctxt.get('system', 'UNKNOWN-SYSTEM')
+    system_extra = cmd_ctxt.get('system_extra', 'UNKNOWN-DISTRO')
+    if not cluster_pcs_1_2(system, system_extra):
+        from sys import stderr
+        print >>stderr, ("Resulting configuration will likely not be applicable"
+                         " to ``{0}'' system as it seems so outdated as far as"
+                         " Pacemaker not supporting validation schema v1.2"
+                        ).format(': '.join((system, system_extra)))
 
 
 @Command.deco(('ccs2ccsflat',
@@ -35,6 +46,8 @@ def ccs2pcs_flatiron(cmd_ctxt,
         ccs_pcmk  output Pacemaker pass-through CMAN configuration
         cib       output Pacemaker-based cluster configuration file
     """
+    _check_pacemaker_1_2(cmd_ctxt)
+
     file_proto = protocols.plugins['file'].ensure_proto
     return (
         file_proto(input),
@@ -77,6 +90,8 @@ def ccs2pcs_needle(cmd_ctxt,
         cib      output Pacemaker-based cluster configuration file
         coro     output Corosync v2 configuration file
     """
+    _check_pacemaker_1_2(cmd_ctxt)
+
     file_proto = protocols.plugins['file'].ensure_proto
     return (
         file_proto(input),
