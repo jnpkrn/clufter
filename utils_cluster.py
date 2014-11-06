@@ -336,6 +336,15 @@ def cluster_pcs_needle(*sys_id):
     return bool(infer("comp:corosync=needle + comp:pacemaker[coro]", *sys_id))
 
 
+def cluster_pcs_1_2(*sys_id):
+    """Whether particular `sys_id` corresponds to pacemaker with 1.2+ schema"""
+    return not any((
+        infer("comp:pacemaker=1.1.0", *sys_id),
+        infer("comp:pacemaker=1.0", *sys_id),
+        infer("comp:pacemaker=0", *sys_id),
+    ))
+
+
 cluster_systems = (cluster_pcs_flatiron, cluster_pcs_needle)
 
 
