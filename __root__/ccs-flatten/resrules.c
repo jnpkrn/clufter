@@ -26,6 +26,7 @@
 #include <sys/stat.h>
 #include <ctype.h>
 #include <dirent.h>
+#include <glob.h>
 #include <libgen.h>
 #include <limits.h>
 #include <stddef.h>
@@ -918,13 +919,19 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
     pathT pathbuf1 = "/proc/self/exe", pathbuf2 = "";
     pathT *path1 = &pathbuf1, *path2 = &pathbuf2;
     struct stat st_buf;
+    glob_t globbuf;
     int i;
 
-    dir = opendir(rpath);
-    if (!dir) {
+    snprintf(path, sizeof(path), "%s/*.%s", rpath, RA_METADATA_EXT);
+    if (!(
+            (dir = opendir(rpath))
+            && (!rawmetadata || !glob(path, GLOB_NOSORT, NULL, &globbuf))
+    )) {
         /* convenient fallback for local/test deployment, rawmetadata only */
         if (!rawmetadata)
             return -1;
+        if (dir)
+            closedir(dir);
         for (i = 0; i < 8; i++) {
             errno = 0;
             if (readlink(*path1, *path2, sizeof(*path2)/sizeof(**path2))
@@ -945,7 +952,7 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
     }
 
     xmlInitParser();
-    while ((de = readdir(dir))) {
+    while ((de = readdir(dir))) {  /* XXX ignoring possible items in globbuf */
 
         fn = basename(de->d_name);
         if (!fn)
@@ -983,7 +990,6 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
 
         if (S_ISDIR(st_buf.st_mode))
             continue;
-
 
         if ((rawmetadata) ? 1 : st_buf.st_mode & (S_IXUSR | S_IXOTH | S_IXGRP))
             load_resource_rulefile(path, rules, rawmetadata);
