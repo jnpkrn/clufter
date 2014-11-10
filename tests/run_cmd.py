@@ -72,4 +72,4 @@ class Main(TestCase):
         #pprint(outputs['coro']['passout'])
 
 
-from os.path import join, dirname as d; execfile(join(d(__file__), '_gone'))
+from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))

@@ -47,4 +47,4 @@ class TestClusterSystem(TestCase):
         self.assertFalse(cluster_pcs_1_2('linux', ('debian', 'squeeze')))
 
 
-from os.path import join, dirname as d; execfile(join(d(__file__), '_gone'))
+from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))

@@ -25,4 +25,4 @@ class TestResourceSpec(TestCase):
         self.assertTrue(rs.res_type == 'smb')
 
 
-from os.path import join, dirname as d; execfile(join(d(__file__), '_gone'))
+from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))
