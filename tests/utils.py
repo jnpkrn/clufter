@@ -40,4 +40,4 @@ class FuncDefaultsVarnames(TestCase):
         self.assertEqual(len(varnames), 2)
 
 
-from os.path import join, dirname as d; execfile(join(d(__file__), '_gone'))
+from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))
