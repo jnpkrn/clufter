@@ -17,7 +17,7 @@ from . import version_text, description_text
 from .command_manager import CommandManager
 from .completion import Completion
 from .error import EC
-from .utils_prog import make_options, set_logging
+from .utils_prog import ExpertOption, make_options, set_logging
 
 
 _system = system()
@@ -25,13 +25,18 @@ _system_extra = linux_distribution(full_distribution_name=0) \
                 if _system == 'Linux' else ()
 
 
-def parser_callback_help(option, opt_str, value, parser):
+def parser_callback_help(option, opt_str, value, parser, arg=False, full=False):
     """Makes 'help' option accept 'optional option arguments'"""
-    rargs, val = parser.rargs, ''
-    if rargs and not rargs[0].startswith('-'):
-        val = rargs[0]
-        del rargs[:1]
+    if arg:
+        rargs, val = parser.rargs, ''
+        if rargs and not rargs[0].startswith('-'):
+            val = rargs[0]
+            del rargs[:1]
+    else:
+        val = True
     setattr(parser.values, 'help', val)
+    setattr(parser.values, 'help_full', full)
+
 
 opts_common = (
     (('-q', '--quiet', ), dict(
@@ -64,11 +69,13 @@ opts_common = (
     (('--sys', ), dict(
         action='store',
         default=_system,
+        expert=True,
         help="override autodetected system [%default]"
     )),
     (('--dist', ), dict(
         action='store',
         default=','.join(_system_extra),
+        expert=True,
         help="override autodetected distro if `sys' is `Linux' [%default]"
     )),
 )
@@ -79,8 +86,16 @@ opts_main = (
         type='string',
         nargs=0,  # <- we take one if suitable
         action='callback',
-        callback=parser_callback_help,
-        help="show this help message (global or command-specific) and exit"
+        callback=lambda *args: parser_callback_help(*args, arg=True),
+        help="show the help message (global or command-specific) and exit"
+    )),
+    (('-H', '--help-full'), dict(
+        metavar="[CMD]",
+        type='string',
+        nargs=0,  # <- we take one if suitable
+        action='callback',
+        callback=lambda *args: parser_callback_help(*args, arg=True, full=True),
+        help="show the full help message (global or command-specific) and exit"
     )),
     (('-v', '--version'), dict(
         action='store_true',
@@ -99,8 +114,14 @@ opts_main = (
 
 opts_nonmain = (
     (('-h', '--help'), dict(
-        action='store_true',
-        help="show this help message and exit"
+        action='callback',
+        callback=parser_callback_help,
+        help="show the help message and exit"
+    )),
+    (('-H', '--help-full'), dict(
+        action='callback',
+        callback=lambda *args: parser_callback_help(*args, full=True),
+        help="show the full help message and exit"
     )),
 )
 
@@ -114,14 +135,28 @@ class SharedHelpFormatter(IndentedHelpFormatter):
         return ret.replace(self.choices_tag, ', '.join(option.choices or []))
 
 
+class SharedHelpFormatterNonExpert(SharedHelpFormatter):
+    """SharedHelpFormatter to filter out expert options"""
+    def format_option(self, option):
+        if not isinstance(option, ExpertOption):
+            ret = SharedHelpFormatter.format_option(self, option)
+        else:
+            ret = ''
+        return ret
+
+
 class SharedOptionParser(OptionParser):
     """OptionParser with a dynamic on-demand help screen customization."""
+
+    formatter_nonexpert = SharedHelpFormatterNonExpert()
+    formatter_expert = SharedHelpFormatter()
 
     # overridden methods
 
     def __init__(self, **kwargs):
+        # a bit awkward, but in place as a sort of memoizing
         if 'formatter' not in kwargs:
-            kwargs['formatter'] = SharedHelpFormatter()
+            kwargs['formatter'] = self.formatter_nonexpert
         OptionParser.__init__(self, **kwargs)
         self.description_raw = ''
 
@@ -138,6 +173,9 @@ class SharedOptionParser(OptionParser):
             v = kwargs.pop(k, None)
             if v:
                 setattr(self, k, v)
+        help_full = getattr(self.values, 'help_full', None)
+        if help_full in (True, False):
+            self.help_full(help_full)
         return self.format_help(**kwargs)
 
     def add_option_group_by_args(self, *args, **kwargs):
@@ -146,6 +184,12 @@ class SharedOptionParser(OptionParser):
         if option_list:
             group.add_options(option_list)
         self.add_option_group(group)
+
+    def help_full(self, expert):
+        assert self.formatter in (self.formatter_nonexpert,
+                                  self.formatter_expert), "explicit formatter"
+        self.formatter = (self.formatter_expert if expert else
+                          self.formatter_nonexpert)
 
 
 def run(argv=None, *args):

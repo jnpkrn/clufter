@@ -8,7 +8,6 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 import logging
 from collections import MutableMapping
 from itertools import izip_longest
-from optparse import SUPPRESS_HELP
 from sys import stderr
 from time import time
 
@@ -223,6 +222,7 @@ class Command(object):
                 action='append',
                 choices=choices + ['ANY'] if universal else choices,
                 default=[],
+                expert=True,
                 help=help_text,
             )
             options.append([["--" + optname_used], opt])
@@ -234,7 +234,10 @@ class Command(object):
             short_aliases = shortopts.setdefault(optname_used[0], [])
             assert optname_used not in \
                    (options[i][0][0] for i in short_aliases)
-            options.append([["--" + optname_used], dict(help=SUPPRESS_HELP)])
+            options.append([["--" + optname_used], dict(\
+                expert=True,
+                help="(undocumented expert option)",
+            )])
 
     def _figure_parser_desc_opts(self, fnc_defaults, fnc_varnames):
         readopts, shortopts, options = False, {}, []

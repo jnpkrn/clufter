@@ -7,7 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
 from collections import Mapping, MutableMapping, MutableSequence, MutableSet
-from optparse import make_option
+from optparse import Option
 from os import environ, pathsep
 from os.path import abspath, dirname, samefile, \
                     isabs as path_isabs, \
@@ -19,6 +19,7 @@ from sys import stderr, stdin
 from . import package_name
 from .error import ClufterError
 from .utils import areinstances, \
+                   filterdict_invkeep, \
                    filterdict_pop, \
                    func_defaults_varnames, \
                    isinstanceexcept, \
@@ -153,7 +154,14 @@ longopt_letters_reprio = \
                                    key=lambda x: int(x.lower() in 'aeiouy')))
         )(filter(lambda c: c.isalpha(), longopt))
 
-# extrapolate optparse.make_option to specifically-encoded "plural"
+class ExpertOption(Option):
+    pass
+
+make_option = \
+    lambda *a, **kw: \
+        (ExpertOption if kw.pop('expert', False) else Option)(*a, **kw)
+
+# extrapolate make_option to specifically-encoded "plural"
 make_options = lambda opt_decl: [make_option(*a, **kw) for a, kw in opt_decl]
 
 
