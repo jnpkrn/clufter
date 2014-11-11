@@ -29,7 +29,7 @@ which ccs_flatten 2>/dev/null || (
     ln -fs -- build/ccs_flatten .
 ) || { ret=$?; echo "ccs_flatten missing, cannot be built"; exit ${ret}; }
 
-if [ "${1}" != "__norun__" ]; then
+run_check() {
     # self-check for sanity usage
     testcib="$(mktemp)" testcoro="$(mktemp)"
     { ${PYTHONEXEC} run-dev ccs2pcs-needle "${@}" -- - "${testcib}" "${testcoro}" \
@@ -153,5 +153,7 @@ totem {
 EOF
     rm -f -- "${testcib}" "${testcoro}"
     unset testcib testcoro
-    f() { return $1; }; f ${ret}
-fi
+    return ${ret}
+}
+
+[ "${1}" == "__norun__" ] || run_check
