@@ -27,13 +27,13 @@ class FuncDefaultsVarnames(TestCase):
         self.assertTrue('a' in varnames)
         self.assertTrue('bar' in varnames)
         self.assertTrue(defaults['bar'] == "ni")
-        self.assertEquals(len(varnames), 2)
+        self.assertEqual(len(varnames), 2)
 
     def test_std_func_skip(self):
         defaults, varnames = func_defaults_varnames(self._fnc, skip=1)
         self.assertTrue("ni" in defaults.values())
         self.assertTrue('bar' in varnames)
-        self.assertEquals(len(varnames), 1)
+        self.assertEqual(len(varnames), 1)
 
     def test_generator(self):
         _, varnames = func_defaults_varnames(self._gen)
