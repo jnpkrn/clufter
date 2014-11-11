@@ -62,6 +62,7 @@ class Completion(object):
 
 @Completion.deco("bash")
 class BashCompletion(Completion):
+    # XXX include expert options?
     def __init__(self, prog, *args):
         prog = basename(prog)
         super(BashCompletion, self).__init__(prog, *args)
