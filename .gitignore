@@ -22,3 +22,4 @@
 !/.gitignore
 !/.travis.yml
 !/tests/XMLFormat-walk/
+!/tests/formats/
