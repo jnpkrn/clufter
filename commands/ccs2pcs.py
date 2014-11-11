@@ -2,7 +2,7 @@
 # Copyright 2014 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
-"""ccs2pcs command"""
+"""ccs2pcs{,-flatiron,-needle} commands"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..command import Command, CommandAlias
