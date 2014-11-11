@@ -66,15 +66,10 @@ while [ $# -gt 0 ]; do
     esac
     shift
 done
-if [ ! -t 0 ]; then
-    TAIL=
-fi
-if [ -z "${ACC}" ]; then
-    ACC=" discover -s tests -p '*.py'"
-    if [ "${VERBOSE}" -eq 1 ]; then
-        ACC="${ACC} --verbose"
-    fi
-fi
+
+[ -n "${ACC}" ] || ACC="discover -s tests -p '*.py'"
+[ "${VERBOSE}" -eq 0 ] || ACC="${ACC} --verbose"
+[ -t 0 ] || TAIL=
 
 # signal-based harness to catch non-zero retval while isolating PWD changes
 # in the subshell
