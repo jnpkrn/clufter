@@ -10,10 +10,6 @@
 /__root__/dist
 /__root__/*.egg-info
 
-!/.gitignore
-!/.travis.yml
-!/tests/XMLFormat-walk/
-
 /README.[!r]*
 /cib.xml
 /corosync.conf
@@ -22,3 +18,7 @@
 .*
 /tests/*/
 /tests/*-archive
+
+!/.gitignore
+!/.travis.yml
+!/tests/XMLFormat-walk/
