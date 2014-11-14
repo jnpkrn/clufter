@@ -19,7 +19,7 @@ from .utils import args2tuple, \
                    classproperty, \
                    filterdict_keep, \
                    filterdict_pop, \
-                   filterdict_invpop_map, \
+                   filterdict_remove, \
                    hybridproperty, \
                    tuplist
 from .utils_prog import ProtectedDict, cli_decor
@@ -265,9 +265,9 @@ class PluginManager(object):
 
         to_discover.difference_update(ret.iterkeys())
         native_plugins = registry.native_plugins
-        ret.update(filterdict_invpop_map(lambda x: native_plugins[x],
-                                         dict(zip(to_discover, to_discover)),
-                                         *native_plugins.keys()))
+        ret.update(filterdict_remove(to_discover,
+                                     fn=lambda x: native_plugins[x],
+                                     *native_plugins.keys()))
         if to_discover:
             log.debug("Couldn't look up everything: {0}".format(', '.join(
                                                                 to_discover)))
