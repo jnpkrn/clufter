@@ -332,14 +332,15 @@ class Command(object):
                         if protodecl(i) else i if any(i) else None
                 )(check)
                 checked_flat = apply_intercalate((checked,))
-                for order, cmd in filter(lambda (i, x): x,
-                                         enumerate(checked_flat)):
+                for order, proto in filter(lambda (i, x): x,
+                                           enumerate(checked_flat)):
                     raise CommandError(me,
                         "filter resolution #{0} of {1}: {2}", order + 1,
                         ('input', 'output')[passno],
-                        "filter/io chain definition (shape) mismatch"
-                        if isinstance(cmd, (type(zip_empty), Filter))
-                        else "`{0}' protocol not suitable".format(cmd)
+                        "`{0}' filter/io chain definition (shape) mismatch"
+                        .format(proto)
+                        if isinstance(proto, (type(zip_empty), Filter))
+                        else "`{0}' protocol not suitable".format(proto)
                     )
         return to_check
 
