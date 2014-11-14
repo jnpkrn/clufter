@@ -10,7 +10,7 @@ from contextlib import contextmanager
 from fnmatch import translate
 from imp import PY_SOURCE, find_module, get_suffixes, load_module
 from os import walk
-from os.path import abspath, dirname, isdir, join, splitext
+from os.path import abspath, dirname, isabs, isdir, join, splitext
 from re import compile as re_compile
 from sys import modules
 
@@ -22,10 +22,14 @@ from .utils import args2tuple, \
                    filterdict_remove, \
                    hybridproperty, \
                    tuplist
-from .utils_prog import ProtectedDict, cli_decor
+from .utils_prog import ProtectedDict, cli_decor, getenv_namespaced
 
 log = logging.getLogger(__name__)
 module_ext = dict((t, s) for s, m, t in get_suffixes())[PY_SOURCE]
+
+EXTPLUGINS = getenv_namespaced('EXTPLUGINS', 'ext-plugins')
+if not isabs(EXTPLUGINS):
+    EXTPLUGINS = join(dirname(abspath(__file__)), EXTPLUGINS)
 
 
 class MetaPlugin(object):
@@ -174,8 +178,11 @@ class PluginRegistry(type):
         if paths is None:
             return  # explictly asked not to use even implicit path
         # inject implicit one
-        implicit = join(dirname(abspath(__file__)), registry.__name__)
-        paths = args2tuple(implicit, *args2sgpl(paths))
+        paths = (p for p in (
+                     join(p, registry.__name__) for p
+                     in args2tuple(dirname(abspath(__file__)),
+                                   *args2sgpl(paths))
+                 ) if isdir(p))
 
         for path in paths:
             with registry._path(path) as context:
@@ -280,7 +287,15 @@ class PluginManager(object):
 
     @classmethod
     def init_lookup(cls, plugin=(), *plugins, **kwargs):
-        plugins = args2tuple(*args2sgpl(plugin)) + plugins
+        plugins = args2sgpl(plugin, *plugins)
+        if kwargs.get('ext_plugins', False):
+            if not isinstance(kwargs.setdefault('paths', []), list):
+                kwargs['paths'] = paths = list(kwargs['paths'])
+            else:
+                paths = kwargs['paths']
+            for root, dirs, _ in walk(EXTPLUGINS, followlinks=True):
+                paths.extend(join(root, d) for d in dirs)
+                break
         kws_lu = filterdict_pop(kwargs, 'paths')
         return cls(plugins=cls.lookup(plugins, **kws_lu), paths=None, **kwargs)
 
