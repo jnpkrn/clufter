@@ -15,15 +15,10 @@ class command(SimpleFormat):
     BYTESTRING = SimpleFormat.BYTESTRING
     MERGED = Protocol('merged')
 
-    @SimpleFormat.producing(BYTESTRING)
+    @SimpleFormat.producing(BYTESTRING, chained=True)
     def get_bytestring(self, *protodecl):
         """Return command as canonical single string"""
-        # try to look (indirectly) if we have a file at hand first
-        ret = super(command, self).get_bytestring(self.BYTESTRING)
-        if ret is not None:
-            return ret
-
-        # fallback
+        # chained fallback
         return ' '.join(self.MERGED(protect_safe=True))
 
     @SimpleFormat.producing(SEPARATED, protect=True)
