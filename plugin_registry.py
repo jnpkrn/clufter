@@ -22,14 +22,16 @@ from .utils import args2tuple, \
                    filterdict_remove, \
                    hybridproperty, \
                    tuplist
+from .utils_func import apply_intercalate
 from .utils_prog import ProtectedDict, cli_decor, getenv_namespaced
 
 log = logging.getLogger(__name__)
 module_ext = dict((t, s) for s, m, t in get_suffixes())[PY_SOURCE]
 
+here = dirname(abspath(__file__))
 EXTPLUGINS = getenv_namespaced('EXTPLUGINS', 'ext-plugins')
 if not isabs(EXTPLUGINS):
-    EXTPLUGINS = join(dirname(abspath(__file__)), EXTPLUGINS)
+    EXTPLUGINS = join(here, EXTPLUGINS)
 
 
 class MetaPlugin(object):
@@ -288,14 +290,23 @@ class PluginManager(object):
     @classmethod
     def init_lookup(cls, plugin=(), *plugins, **kwargs):
         plugins = args2sgpl(plugin, *plugins)
-        if kwargs.get('ext_plugins', False):
+        ext_plugins = []
+        if kwargs.get('ext_plugins', True):
+            for root, dirs, _ in walk(EXTPLUGINS, followlinks=True):
+                ext_plugins.extend(join(root, d) for d in dirs)
+                break
+        ext_plugins.extend(
+            d if isabs(d) else join(here, d) for d in
+            apply_intercalate([d.split(':') for d in
+                kwargs.get('ext_plugins_user') or ()
+            ])
+        )
+        if ext_plugins:
             if not isinstance(kwargs.setdefault('paths', []), list):
                 kwargs['paths'] = paths = list(kwargs['paths'])
             else:
                 paths = kwargs['paths']
-            for root, dirs, _ in walk(EXTPLUGINS, followlinks=True):
-                paths.extend(join(root, d) for d in dirs)
-                break
+            paths.extend(ext_plugins)
         kws_lu = filterdict_pop(kwargs, 'paths')
         return cls(plugins=cls.lookup(plugins, **kws_lu), paths=None, **kwargs)
 
