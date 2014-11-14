@@ -104,7 +104,13 @@ opts_main = (
     (('-s', '--skip-ext'), dict(
         action='store_true',
         dest='skip_ext',
-        help="do not use external plugins"
+        help="do not use standard external plugins"
+    )),
+    (('-e', '--ext'), dict(
+        action='append',
+        dest='ext_user',
+        expert=True,
+        help="specify dir/s (as PATH/multiplied) scanned for plugins"
     )),
     (('-l', '--list'), dict(
         action='store_true',
@@ -233,6 +239,7 @@ def run(argv=None, *args):
     set_logging(opts)
 
     cm = CommandManager.init_lookup(ext_plugins=not opts.skip_ext,
+                                    ext_plugins_user=opts.ext_user,
                                     system=opts.sys, system_extra=opts.dist)
     if not opts.help and (opts.list or opts.completion or not args):
         cmds = cm.pretty_cmds(ind=' ' * parser.formatter.indent_increment,
