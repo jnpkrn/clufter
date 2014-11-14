@@ -276,8 +276,8 @@ class PluginManager(object):
     @classmethod
     def init_lookup(cls, plugin=(), *plugins, **kwargs):
         plugins = args2tuple(*args2sgpl(plugin)) + plugins
-        filterdict_pop(kwargs, 'paths')
-        return cls(plugins=cls.lookup(plugins, **kwargs), paths=None, **kwargs)
+        kws_lu = filterdict_pop(kwargs, 'paths')
+        return cls(plugins=cls.lookup(plugins, **kws_lu), paths=None, **kwargs)
 
     def __init__(self, *args, **kwargs):
         registry = kwargs.pop('registry', None) or self._default_registry
