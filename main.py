@@ -101,6 +101,11 @@ opts_main = (
         action='store_true',
         help="show version details and exit"
     )),
+    (('-s', '--skip-ext'), dict(
+        action='store_true',
+        dest='skip_ext',
+        help="do not use external plugins"
+    )),
     (('-l', '--list'), dict(
         action='store_true',
         help="list commands and exit"
@@ -227,7 +232,8 @@ def run(argv=None, *args):
         pass
     set_logging(opts)
 
-    cm = CommandManager.init_lookup(system=opts.sys, system_extra=opts.dist)
+    cm = CommandManager.init_lookup(ext_plugins=not opts.skip_ext,
+                                    system=opts.sys, system_extra=opts.dist)
     if not opts.help and (opts.list or opts.completion or not args):
         cmds = cm.pretty_cmds(ind=' ' * parser.formatter.indent_increment,
                               linesep_width=2,

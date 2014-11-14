@@ -5,6 +5,11 @@ EDITOR
 editor to use for correcting invalid results, unconditional manual passes, etc.
 (should accept a filename as an argument and block until being quit by user)
 
+{PREFIX}_EXTPLUGINS
+directory containing ext(ernal|ending) plugins to look at along the standard
+locations;  each plugin should have its root directory there carrying the
+standard formats-filters-commands directories hierarchy
+
 {PREFIX}_HASHALGO
 algorithm available from hashlib Python standard library, used to generate
 a fraction of default output filename from the input content (if the command
