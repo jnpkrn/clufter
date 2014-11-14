@@ -10,7 +10,7 @@ from contextlib import contextmanager
 from fnmatch import translate
 from imp import PY_SOURCE, find_module, get_suffixes, load_module
 from os import walk
-from os.path import abspath, dirname, join, splitext
+from os.path import abspath, dirname, isdir, join, splitext
 from re import compile as re_compile
 from sys import modules
 
@@ -212,7 +212,7 @@ class PluginRegistry(type):
         ret = {}
         fname_start_use = args2sgpl(fname_start or '[!_.]')
         fp = re_compile('|'.join(
-            translate(fs + '*' + module_ext)
+            translate(fs + '*')
             for fs in (pfx.split('-', 1)[0] for pfx in fname_start_use)
         ))
         for path, path_plugins in registry._context(paths):
@@ -222,19 +222,24 @@ class PluginRegistry(type):
                 for root, dirs, files in walk(path):
                     if root != path:
                         break  # ATM we only support flat dir (nested ~ private)
-                    for f in files:
-                        name, ext = splitext(f)
-                        if fp.match(f):
+                    for name, ext in filter(
+                        lambda (name, ext):
+                            fp.match(name) and
+                            (ext == module_ext or isdir(join(root, name))),
+                        (splitext(x) for x in files + dirs)
+                    ):
+                        try:
                             mfile, mpath, mdesc = find_module(name, [root])
-                            if not mfile:
-                                log.debug("Omitting `{0}' at `{1}'"
-                                          .format(name, root))
-                                continue
+                        except ImportError:
+                            log.debug("Omitting `{0}' at `{1}'"
+                                      .format(name, root))
+                        else:
                             mname = registry.namespaced(name)
                             try:
                                 load_module(mname, mfile, mpath, mdesc)
                             finally:
-                                mfile.close()
+                                if mfile:
+                                    mfile.close()
                 path_plugins = registry._path_mapping[path]
                 if fname_start:  # not picking everything -> restart next time
                     registry._path_mapping.pop(path)
