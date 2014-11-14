@@ -13,6 +13,7 @@ from .error import ClufterError, ClufterPlainError, \
                    EC
 from .filter_manager import FilterManager
 from .plugin_registry import PluginManager
+from .utils import filterdict_keep
 from .utils_func import apply_intercalate, bifilter
 from .utils_prog import make_options, set_logging
 
@@ -42,7 +43,8 @@ class CommandManager(PluginManager):
                 map(lambda flt: flts.add(flt),
                     apply_intercalate(getattr(cmd, 'filter_chain', ())))
             flt_mgr = FilterManager.init_lookup(flts, **kwargs)
-        return cls._resolve(flt_mgr.filters, commands, *args, **kwargs)
+        return cls._resolve(flt_mgr.filters, commands, *args,
+                            **filterdict_keep(kwargs, 'system', 'system_extra'))
 
     @staticmethod
     def _resolve(filters, commands, system='', system_extra=''):
