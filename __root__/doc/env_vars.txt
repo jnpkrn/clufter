@@ -1,0 +1,20 @@
+Run-time can also be influenced with following environment variables
+({PREFIX} is normally CLUFTER):
+
+EDITOR
+editor to use for correcting invalid results, unconditional manual passes, etc.
+(should accept a filename as an argument and block until being quit by user)
+
+{PREFIX}_HASHALGO
+algorithm available from hashlib Python standard library, used to generate
+a fraction of default output filename from the input content (if the command
+arranges so);  it is not meant as a security-sensitive function
+
+{PREFIX}_NOSALT
+being paranoid by default, usage of HASHALGO is accompanied by mixing some
+additional input in (such as file's mtime) so as to prevent any undesired
+information leak (say, cluster.conf on input of ccs2pcs can contain password
+for a fence device and the digest of original and plaintext modulo obfuscated
+password are known, bruteforce attack might be able to reveal the original
+incl. the password) -- setting this variable to anything but '0' and 'false'
+disables such a paranoid mode (mainly useful for reproducible tests)
