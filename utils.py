@@ -36,22 +36,68 @@ nonetype = type(None)
 
 identity = lambda x: x
 
-filterdict_keep = \
-    lambda src, *which, **kw: \
-        dict((x, src[x]) for x in which if x in src, **kw)
-filterdict_invkeep = \
-    lambda src, *which, **kw: \
-        dict((x, src[x]) for x in src.iterkeys() if x not in which, **kw)
-filterdict_pop = \
-    lambda src, *which, **kw: \
-        dict((x, src.pop(x)) for x in which if x in src, **kw)
 
-filterdict_invpop_map = \
-    lambda fn, src, *which, **kw: \
-        dict((x, fn(src.pop(x))) for x in src.keys() if x in which, **kw)
+#
+# easily mangle with dicts/sets (eventually lists), returning dicts
+#
+
+filterdict_map = \
+    lambda fn, src, *which, **update: \
+        dict((x, fn(x)) for x in which if x in src, **update)
+
+# .copy() so as to allow for in-situ manipulations like .pop() without
+# affecting the running iteration
+filterdict_invmap = \
+    lambda fn, src, *which, **update: \
+        dict((x, fn(x)) for x in src.copy() if x not in which, **update)
+
+#
+
+filterdict_keep = \
+    lambda src, *which, **update: \
+        filterdict_map(
+            lambda x, fn=update.pop('fn', identity): fn(src[x]),
+            src, *which, **update
+        )
+
+filterdict_invkeep = \
+    lambda src, *which, **update: \
+        filterdict_invmap(
+            lambda x, fn=update.pop('fn', identity): fn(src[x]),
+            src, *which, **update
+        )
+
+#
+
+filterdict_pop = \
+    lambda src, *which, **update: \
+        filterdict_map(
+            lambda x, fn=update.pop('fn', identity): fn(src.pop(x)),
+            src, *which, **update
+        )
+
 filterdict_invpop = \
-    lambda src, *which, **kw: \
-        filterdict_invpop_map(identity, src, *which, **kw)
+    lambda src, *which, **update: \
+        filterdict_invmap(
+            lambda x, fn=update.pop('fn', identity): fn(src.pop(x)),
+            src, *which, **update
+        )
+
+# following supposes that remove() returns None (as is the case with set/list)
+
+filterdict_remove = \
+    lambda src, *which, **update: \
+        filterdict_map(
+            lambda x, fn=update.pop('fn', identity): fn(src.remove(x) or x),
+            src, *which, **update
+        )
+
+filterdict_invremove = \
+    lambda src, *which, **update: \
+        filterdict_invmap(
+            lambda x, fn=update.pop('fn', identity): fn(src.remove(x) or x),
+            src, *which, **update
+        )
 
 
 #
