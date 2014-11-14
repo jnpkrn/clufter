@@ -26,6 +26,8 @@ from .utils import areinstances, \
                    selfaware, \
                    tuplist
 
+log = logging.getLogger(__name__)
+
 
 #
 # generics
@@ -182,6 +184,11 @@ def set_logging(opts):
     rootlog.setLevel(logging.getLevelName(opts.loglevel))
 
 
+def PopenLog(cmd, *args, **kwargs):
+    log.debug("Running: {0}".format(' '.join(cmd)))
+    return Popen(cmd, *args, **kwargs)
+
+
 class OneoffWrappedStdinPopen(object):
     """Singleton to watch for atmost one use of stdin in Popen context"""
     def __init__(self):
@@ -195,7 +202,7 @@ class OneoffWrappedStdinPopen(object):
             # only the first '-' substituted
             args[args.index('-')] = '/dev/stdin'
             self._used |= True
-        return Popen(args, **kwargs)
+        return PopenLog(args, **kwargs)
 
 OneoffWrappedStdinPopen = OneoffWrappedStdinPopen()
 
