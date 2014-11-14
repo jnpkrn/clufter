@@ -7,12 +7,14 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..format import SimpleFormat
 from ..protocol import Protocol
+from ..utils import head_tail
 from ..utils_func import apply_intercalate
 
 
 class command(SimpleFormat):
     native_protocol = SEPARATED = Protocol('separated')
     BYTESTRING = SimpleFormat.BYTESTRING
+    DICT = Protocol('dict')
     MERGED = Protocol('merged')
 
     @SimpleFormat.producing(BYTESTRING, chained=True)
@@ -48,6 +50,24 @@ class command(SimpleFormat):
                     ('"' not in lexeme or lexeme.count('"') % 2) and
                     ("'" not in lexeme or lexeme.count("'") % 2)):
                     ret[i:i + 1] = lexeme.split('=')
+        elif self.DICT in self._representations:  # break the possible loop (2)
+            d = self.DICT(protect_safe=True)
+            ret = [(k, v) for k, v in d.iteritems() if k != '__args__']
+            ret.extend(d.get('__args__', ()))
         else:
             ret = self.SEPARATED(protect_safe=True)
         return apply_intercalate(ret)
+
+    @SimpleFormat.producing(DICT, protect=True)
+    # not a perfectly bijective mapping, this is a bit lossy representation,
+    # on the other hand, it canonicalize the notation when turned to other forms
+    def get_dict(self, *protodecl):
+        separated = self.SEPARATED()
+        separated.reverse()
+        ret = {}
+        while separated:
+            head, tail = head_tail(separated.pop())
+            head = head if head.startswith('-') and head != '-' else '__args__'
+            acc = ret.setdefault(head, [])
+            acc.append(tail)
+        return ret
