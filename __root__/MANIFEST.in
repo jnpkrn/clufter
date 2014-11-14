@@ -8,6 +8,6 @@ recursive-exclude ccs-flatten ccs_flatten *.o Makefile.setup config.h .*/*
 graft clufter/tests
 recursive-include clufter tests/*
 
-recursive-include doc cib-ids.txt rgmanager-pacemaker.*
+recursive-include doc cib-ids.txt env_vars.txt rgmanager-pacemaker.*
 
 global-exclude /.*
