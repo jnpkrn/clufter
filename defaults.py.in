@@ -7,3 +7,6 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 EDITOR      = '@EDITOR@'
 CCS_FLATTEN = '@CCS_FLATTEN@'
+
+# also configurable via respective env. variables (see getenv_namespaced)
+HASHALGO    = '@HASHALGO@'  # not for security
