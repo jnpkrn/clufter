@@ -640,7 +640,7 @@ class Command(object):
             attrs = {
                 '__module__': fnc.__module__,  # original
                 '__doc__': wrapped.__doc__,
-                '_filter_chain': args2sgpl(filter_chain),
+                '_filter_chain': filter_chain,
                 '_fnc': staticmethod(wrapped),
                 '_fnc_defaults_varnames': (fnc_defaults, fnc_varnames),
             }
