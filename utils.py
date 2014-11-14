@@ -15,8 +15,9 @@ tuplist = lambda x: isinstance(x, (tuple, list, set))
 # turn args into tuple unless single tuplist arg
 args2sgpl = \
     lambda x=(), *y: x if not y and tuplist(x) else (x, ) + y
-args2combsgpl = arg2wrapped = \
-    lambda x=(), *y: x if not y and tuplist(x) and len(x) > 1 else (x, ) + y
+arg2wrapped = \
+    lambda x=(), *y: \
+        x if not y and isinstance(x, tuple) and len(x) > 1 else (x, ) + y
 args2unwrapped = \
     lambda x=None, *y: x if not y else (x, ) + y
 # turn args into tuple unconditionally
