@@ -16,7 +16,7 @@ class command(SimpleFormat):
     MERGED = Protocol('merged')
 
     @SimpleFormat.producing(BYTESTRING)
-    def get_bytestring(self, protocol):
+    def get_bytestring(self, *protodecl):
         """Return command as canonical single string"""
         # try to look (indirectly) if we have a file at hand first
         ret = super(command, self).get_bytestring(self.BYTESTRING)
@@ -27,7 +27,7 @@ class command(SimpleFormat):
         return ' '.join(self.MERGED(protect_safe=True))
 
     @SimpleFormat.producing(SEPARATED, protect=True)
-    def get_separated(self, protocol):
+    def get_separated(self, *protodecl):
         ret = self.MERGED(protect_safe=True)
         newret, acc = [], []
         for i in ret:
@@ -42,7 +42,7 @@ class command(SimpleFormat):
         return newret
 
     @SimpleFormat.producing(MERGED, protect=True)
-    def get_merged(self, protocol):
+    def get_merged(self, *protodecl):
         # try to look (indirectly) if we have "separated" at hand first
         if self.BYTESTRING in self._representations:  # break the possible loop
             from shlex import split

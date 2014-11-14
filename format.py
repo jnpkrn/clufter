@@ -337,13 +337,14 @@ class SimpleFormat(Format):
         super(SimpleFormat, self).__init__(protocol, *args, **kwargs)
 
     @Format.producing(BYTESTRING)
-    def get_bytestring(self, protocol):
+    def get_bytestring(self, *protodecl):
         if self.FILE in self._representations:  # break the possible loop
             with file(self.FILE(), 'rb') as f:
                 return f.read()
 
     @Format.producing(FILE)
-    def get_file(self, protocol, outfile):
+    def get_file(self, *protodecl):
+        outfile = protodecl[-1]
         if hasattr(outfile, 'write'):
             # assume fileobj out of our control, do not close
             outfile.write(self.BYTESTRING())
@@ -729,7 +730,7 @@ class XML(SimpleFormat):
     etree_validator = etree_rng_validator
 
     @SimpleFormat.producing(BYTESTRING, chained=True)
-    def get_bytestring(self, protocol):
+    def get_bytestring(self, *protodecl):
         # chained fallback
         return etree.tostring(self.ETREE(protect_safe=True),
                               pretty_print=True)
@@ -737,5 +738,5 @@ class XML(SimpleFormat):
     @SimpleFormat.producing(ETREE, protect=True,
                             # pre 2.7 compat:  http://bugs.python.org/issue5982
                             validator=etree_validator.__get__(1).im_func)
-    def get_etree(self, protocol):
+    def get_etree(self, *protodecl):
         return etree.fromstring(self.BYTESTRING()).getroottree()

@@ -45,7 +45,7 @@ class simpleconfig(SimpleFormat):
     BYTESTRING = SimpleFormat.BYTESTRING
 
     @SimpleFormat.producing(BYTESTRING)
-    def get_bytestring(self, protocol):
+    def get_bytestring(self, *protodecl):
         """Externalize 'struct', that is basically, pretty print it
 
         For example above, the result is something like:
@@ -115,6 +115,6 @@ class simpleconfig(SimpleFormat):
         return ret
 
     @SimpleFormat.producing(STRUCT, protect=True)
-    def get_struct(self, protocol):
+    def get_struct(self, *protodecl):
         # TODO parsing struct from string
         raise NotImplementedError
