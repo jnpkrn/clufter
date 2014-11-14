@@ -20,6 +20,10 @@ from warnings import warn
 
 from lxml import etree
 
+try:
+    from .defaults import HASHALGO
+except ImportError:
+    HASHALGO = 'md5'
 from .error import ClufterError
 from .plugin_registry import MetaPlugin, PluginRegistry
 from .protocol import Protocol
@@ -383,7 +387,7 @@ class SimpleFormat(Format):
             # w/o salt:   md5sum $FILE
             # with salt:  { stat --printf "%Y" $FILE; cat $FILE; } | md5sum
             salt = ''
-            hash_algo = getenv_namespaced('HASHALGO', 'md5')
+            hash_algo = getenv_namespaced('HASHALGO', HASHALGO)
             do_salt = getenv_namespaced('NOSALT', '0') in ('0', 'false')
             try:
                 hash_algo = getattr(hashlib, hash_algo)
