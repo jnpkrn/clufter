@@ -113,7 +113,7 @@ class Command(object):
     def analyse_chain(me, filter_chain, analysis_acc=None):
         """Given the filter chain, return filter backtrack and terminal chain
 
-        This is done by recursive traversal.  Also check that the graph is
+        This is done by iterated traversal.  Also check that the graph is
         actually connected wrt. protocols compatibility between each of
         adjacent filters is performed.
 
