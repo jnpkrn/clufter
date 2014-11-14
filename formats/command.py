@@ -41,5 +41,13 @@ class command(SimpleFormat):
         # try to look (indirectly) if we have "separated" at hand first
         if self.BYTESTRING in self._representations:  # break the possible loop
             from shlex import split
-            return split(self.BYTESTRING())
-        return apply_intercalate(self.SEPARATED(protect_safe=True))
+            ret = split(self.BYTESTRING())
+            for i, lexeme in enumerate(ret[:]):
+                # heuristic(!) method to normalize: '-a=b' -> '-a', 'b'
+                if (lexeme.count('=') == 1 and
+                    ('"' not in lexeme or lexeme.count('"') % 2) and
+                    ("'" not in lexeme or lexeme.count("'") % 2)):
+                    ret[i:i + 1] = lexeme.split('=')
+        else:
+            ret = self.SEPARATED(protect_safe=True)
+        return apply_intercalate(ret)
