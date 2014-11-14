@@ -71,8 +71,14 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-[ -n "${ACC}" ] || ACC="discover -s tests -p '*.py'"
-[ "${VERBOSE}" -eq 0 ] || ACC="${ACC} --verbose"
+# "--verbose" game because of "Alternative Usage: unit2 discover [options]"
+[ -n "${ACC}" ] \
+&& { RUNCHECK=0; [ "${VERBOSE}" -eq 0 ] || ACC="--verbose ${ACC}"; } \
+|| {
+    ACC="discover -s tests -p '*.py'"
+    [ "${VERBOSE}" -eq 0 ] || ACC="${ACC} --verbose"
+}
+
 [ -t 0 ] || TAIL=
 
 # signal-based harness to catch non-zero retval while isolating PWD changes
