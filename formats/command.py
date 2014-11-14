@@ -26,7 +26,7 @@ class command(SimpleFormat):
         ret = self.MERGED(protect_safe=True)
         newret, acc = [], []
         for i in ret:
-            if i.startswith('-') and len(i) > 1:
+            if i.startswith('-') and i != '-':
                 if acc:
                     newret.append(tuple(acc))
                 acc = [i]
