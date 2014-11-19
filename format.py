@@ -698,7 +698,7 @@ class XML(SimpleFormat):
         for s in reversed(sorted(spec)):
             fatal, master = [], s
             try:
-                schema, rng = cls._validation_cache.get(s, None)
+                schema, rng = cls._validation_cache.get(s, (None, None))
             except AttributeError:
                 setattr(cls, '_validation_cache', {})
                 schema = None
