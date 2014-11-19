@@ -5,6 +5,14 @@
 """Format representing merged/isolated (1/2 levels) of single command to exec"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
+from logging import getLogger
+
+log = getLogger(__name__)
+
 from ..format import SimpleFormat
 from ..protocol import Protocol
 from ..utils import head_tail
@@ -52,6 +60,10 @@ class command(SimpleFormat):
                     ret[i:i + 1] = lexeme.split('=')
         elif self.DICT in self._representations:  # break the possible loop (2)
             d = self.DICT(protect_safe=True)
+            if not isinstance(d, OrderedDict):
+                log.warning("'{0}' format: not backed by OrderedDict".format(
+                    self.__class__.name
+                ))
             ret = [(k, v) for k, v in d.iteritems() if k != '__args__']
             ret.extend(d.get('__args__', ()))
         else:
@@ -64,7 +76,7 @@ class command(SimpleFormat):
     def get_dict(self, *protodecl):
         separated = self.SEPARATED()
         separated.reverse()
-        ret = {}
+        ret = OrderedDict()
         while separated:
             head, tail = head_tail(separated.pop())
             head = head if head.startswith('-') and head != '-' else '__args__'
