@@ -296,7 +296,7 @@ class PluginManager(object):
                 ext_plugins.extend(join(root, d) for d in dirs)
                 break
         ext_plugins.extend(
-            d if isabs(d) else join(here, d) for d in
+            abspath(d) for d in
             apply_intercalate([d.split(':') for d in
                 kwargs.get('ext_plugins_user') or ()
             ])
