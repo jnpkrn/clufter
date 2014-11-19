@@ -658,7 +658,7 @@ class XML(SimpleFormat):
     BYTESTRING = SimpleFormat.BYTESTRING
 
     validator_specs = {
-        ETREE: '*'  # grab whatever you'll find (with backtrack)
+        ETREE: '*.rng'  # grab whatever you'll find (with backtrack)
     }
 
     @classmethod
