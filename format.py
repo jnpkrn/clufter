@@ -394,7 +394,7 @@ class SimpleFormat(Format):
             try:
                 hash_algo = getattr(hashlib, hash_algo)
             except AttributeError:
-                log.warn("`{0}' hash algorithm unknown".format(hash_algo))
+                log.warning("`{0}' hash algorithm unknown".format(hash_algo))
                 hash_algo = hashlib.md5
             try:
                 h = hash_algo()

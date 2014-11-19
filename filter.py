@@ -426,7 +426,7 @@ class XMLFilter(Filter, MetaPlugin):
                                                      schema, schema_snippet,
                                                      msgs, use_offset, **kws)
                     except FilterError as e:
-                        log.warn(str(e))
+                        log.warning(str(e))
                         elems = ()
                     if elems is not None:  # active change
                         break
@@ -793,8 +793,8 @@ class XMLFilter(Filter, MetaPlugin):
                 scheduled_walk.append(children)
                 if transformer is None or callable(transformer):
                     if callable(transformer):
-                        log.warn("Cannot generate complete XSLT when callable"
-                                 " present")
+                        log.warning("Cannot generate complete XSLT when"
+                                    " callable present")
                     if key in scheduled_subst:
                         for tag in scheduled_subst.pop(key)[:]:
                             for child_tag in children.iterkeys():
