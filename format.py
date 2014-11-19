@@ -156,7 +156,9 @@ class Format(object):
         validator = self.validator(protocol)
         if validator:
             entries, _ = head_tail(validator(*args))
-            if entries:
+            if isinstance(entries, basestring):
+                log.warning(entries)
+            elif entries:
                 raise FormatError(self, "Validation: {0}".format(
                     ', '.join(':'.join(args2tuple(str(e[0]), str(e[1]), *e[2:]))
                               for e in entries))
