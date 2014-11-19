@@ -706,7 +706,7 @@ class XML(SimpleFormat):
                     schema = etree.parse(s)
                     rng = etree.RelaxNG(schema)
                     cls._validation_cache[s] = schema, rng
-                except etree.RelaxNGError:
+                except (etree.RelaxNGError, etree.XMLSyntaxError):
                     log.warning("Problem processing RNG file `{0}'".format(s))
                     continue
             if start is not None:
