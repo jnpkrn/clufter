@@ -536,10 +536,7 @@ class XML(SimpleFormat):
 
     MAX_DEPTH = 1000
 
-    @classproperty
-    def root(self):
-        """Root tag of the XML document"""
-        raise AttributeError  # NotImplemented
+    root = ''  # root tag of the XML document
 
     @staticmethod
     def _walk_schema_step_up(tree_stack):
