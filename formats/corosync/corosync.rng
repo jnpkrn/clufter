@@ -710,6 +710,16 @@ long to wait for join messages in the membership protocol.</a:documentation>
           </attribute>
         </optional>
         <optional>
+          <attribute name="key">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="keyfile">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
           <attribute name="max_messages" a:defaultValue="17">
             <a:documentation>This constant specifies the maximum number
 of messages that may be sent by one processor on receipt of the token.
