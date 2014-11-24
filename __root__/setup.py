@@ -511,6 +511,7 @@ setup(
         pkg_name: [
             pkg_param_defaults,
             'formats/*/*.rng',
+            'ext-plugins/PURPOSE',
         ],
     },
     # Note: See ``data_files'' in options for ``pkg_prepare'' subcommand
