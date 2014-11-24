@@ -94,8 +94,8 @@ ccs2needlexml = ('''\
     key_message='WARNING: secret key used by corosync for encryption/integrity'
                 ' checking is, as a measure to prevent from dropping these'
                 ' security features entirely, stored directly in the main'
-                ' configuration file, possibly readable by arbitrary'
-                ' system-local user',
+                ' configuration file (totem/key), possibly readable by'
+                ' arbitrary system-local user',
 )
 
 ###
