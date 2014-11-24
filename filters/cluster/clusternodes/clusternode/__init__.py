@@ -49,8 +49,10 @@ ccs2ccs_pcmk = '''\
     </xsl:copy>
 '''
 
+# following could be omitted but keep it around if we ever need
+# to add some node attributes in the future
 ccsflat2pcsprelude = '''\
-    <node id="{concat('NODE-', @name)}"
+    <node id="{@nodeid}"
           uname="{@name}"
           type="member"
           />
