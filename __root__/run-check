@@ -83,8 +83,8 @@ EOF
   <configuration>
     <crm_config/>
     <nodes>
-      <node id="NODE-rhel6-node1" uname="rhel6-node1" type="member"/>
-      <node id="NODE-rhel6-node2" uname="rhel6-node2" type="member"/>
+      <node id="1" uname="rhel6-node1" type="member"/>
+      <node id="2" uname="rhel6-node2" type="member"/>
     </nodes>
     <resources>
       <!-- FENCING/STONITH (+ POSSIBLY TOPOLOGY BELOW) -->
@@ -143,6 +143,9 @@ nodelist {
 		quorum_votes: 1
 		nodeid: 2
 	}
+}
+quorum {
+	provider: corosync_votequorum
 }
 logging {
 	debug: on
