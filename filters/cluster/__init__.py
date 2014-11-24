@@ -44,7 +44,7 @@ ccs2needlexml = ('''\
             <xsl:if test="cman/@transport">
                 <xsl:choose>
                     <xsl:when test="cman/@transport[
-''' + ( \
+''' + (
                         xslt_is_member('.', ('udp',
                                              'udpu'))
 ) + ''']">
