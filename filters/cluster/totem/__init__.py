@@ -37,7 +37,7 @@ ccs2needlexml = ('''\
     <xsl:if test="(not(@secauth) or @secauth != 'off') and not(@keyfile)">
         <xsl:message>%(key_message)s</xsl:message>
         <xsl:attribute name="key">
-            <xsl:value-of select="%(key)s"/>
+            <xsl:value-of select="'%(key)s'"/>
         </xsl:attribute>
     </xsl:if>
     <!-- XXX bz1078343 -->
