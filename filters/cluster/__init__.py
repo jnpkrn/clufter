@@ -27,6 +27,13 @@ ccs2needlexml = ('''\
 
         <!-- cman ~ quorum -->
         <clufter:descent at="cman"/>
+        <xsl:if test="not(cman)">
+        <!--
+            to prevent crmd error:
+            cluster_connect_quorum: Corosync quorum is not configured
+        -->
+        <quorum provider="corosync_votequorum"/>
+        </xsl:if>
 
         <!-- logging ~ logging -->
         <clufter:descent at="logging"/>
