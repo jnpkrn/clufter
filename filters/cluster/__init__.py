@@ -12,6 +12,7 @@ except ValueError:  # Value?
 
 ###
 
+from base64 import b64encode
 from hashlib import sha256
 from os import getpid
 from time import time
@@ -78,16 +79,18 @@ ccs2needlexml = ('''\
         <clufter:descent at="uidgid"/>
 
     </corosync>
-''') % dict(key='_NOT_SECRET_' + sha256(
-                    str(getpid()) + '_REALLY_' + str(int(time()))
-                ).hexdigest(),
-            key_message='WARNING: secret key used by corosync for'
-                        ' encryption/integrity checking is, as a measure to'
-                        ' prevent from dropping these security features'
-                        ' entirely, stored directly in the main configuration'
-                        ' file, possibly readable by arbitrary system-local'
-                        ' user',
-       )
+''') % dict(
+    # NB: nothing against second parameter to b64encode, but it seems to be
+    #     slower than simple chained replacement (a la urlsafe_b64encode)
+    key='_NOT_SECRET--' + b64encode(sha256(
+        str(getpid()) + '_REALLY_' + str(int(time()))
+    ).digest()).replace('+', '-').replace('/', '_').rstrip('='),
+    key_message='WARNING: secret key used by corosync for encryption/integrity'
+                ' checking is, as a measure to prevent from dropping these'
+                ' security features entirely, stored directly in the main'
+                ' configuration file, possibly readable by arbitrary'
+                ' system-local user',
+)
 
 ###
 
