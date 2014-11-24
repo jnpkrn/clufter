@@ -9,6 +9,7 @@ from ..format import SimpleFormat
 from ..protocol import Protocol
 from ..utils import tuplist
 from ..utils_func import apply_aggregation_preserving_depth
+from ..utils_prog import getenv_namespaced
 
 
 class simpleconfig(SimpleFormat):
@@ -77,7 +78,7 @@ class simpleconfig(SimpleFormat):
 
         # fallback
         struct = self.STRUCT(protect_safe=True)
-        indent, optindent = ('\t', ) * 2
+        indent, optindent = (getenv_namespaced('COROINDENT', '\t'), ) * 2
         lbrace, rbrace, optsep = '{', '}', ': '
         # XXX previous apply_aggregation_preserving_passing_depth attempt
         #     was unsuccessful

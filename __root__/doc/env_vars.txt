@@ -23,3 +23,11 @@ for a fence device and the digest of original and plaintext modulo obfuscated
 password are known, bruteforce attack might be able to reveal the original
 incl. the password) -- setting this variable to anything but '0' and 'false'
 disables such a paranoid mode (mainly useful for reproducible tests)
+
+-- Plugin specific --
+
+formats/simpleconfig:
+{PREFIX}_COROINDENT
+can override defaults for both section-subsection and section-option
+indentation, which is currently a tabulator for each (i.e., to disable
+indenting, just set to an empty string)
