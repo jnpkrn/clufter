@@ -64,9 +64,8 @@ ccs2needlexml = ('''\
                                   not(@keyfile)
                               ]">
                     <xsl:message>%(key_message)s</xsl:message>
-                    <xsl:attribute name="key">
-                        <xsl:value-of select="'%(key)s'"/>
-                    </xsl:attribute>
+                    <xsl:attribute name="key"
+                    >%(key)s</xsl:attribute>
                 </xsl:if>
             </clufter:descent>
             <!-- XXX bz1078343 -->
