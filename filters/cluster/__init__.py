@@ -81,11 +81,12 @@ ccs2needlexml = ('''\
 ''') % dict(key='_NOT_SECRET_' + sha256(
                     str(getpid()) + '_REALLY_' + str(int(time()))
                 ).hexdigest(),
-            key_message='secret key used by corosync for encryption/integrity'
-                        ' checking is, as a measure to prevent from dropping'
-                        ' these security features entirely, stored directly'
-                        ' in the main configuration file, possibly readable'
-                        ' by arbitrary system-local user',
+            key_message='WARNING: secret key used by corosync for'
+                        ' encryption/integrity checking is, as a measure to'
+                        ' prevent from dropping these security features'
+                        ' entirely, stored directly in the main configuration'
+                        ' file, possibly readable by arbitrary system-local'
+                        ' user',
        )
 
 ###
