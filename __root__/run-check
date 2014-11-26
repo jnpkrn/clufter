@@ -160,4 +160,4 @@ EOF
     return ${ret}
 }
 
-[ "${1}" == "__norun__" ] || run_check
+[ "${1}" == "__norun__" ] || run_check "$@"
