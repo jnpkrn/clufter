@@ -20,7 +20,7 @@ ccs2needlexml_attrs = (
 ccs2needlexml = '''\
     <logging>
         <xsl:copy-of select="@*[
-''' + ( \
+''' + (
             xslt_is_member('name()', ccs2needlexml_attrs)
 ) + ''']"/>
         <!-- XXX: the latter match (if any) should overwrite the former -->

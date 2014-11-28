@@ -19,9 +19,9 @@ ccsflat2pcsprelude = '''\
                     or
                     $system_1 = 'fedora' and $system_2 &gt;= 15
                     )">
-''' + \
-                    ResourceSpec('systemd:smb').xsl_attrs \
-+ '''
+''' + (
+                    ResourceSpec('systemd:smb').xsl_attrs
+) + '''
                 </xsl:when>
                 <xsl:when test="$system = 'linux' and (
                     $system_1 = 'redhat' and $system_2 &lt; 7
@@ -31,9 +31,9 @@ ccsflat2pcsprelude = '''\
                     <!-- XXX could be either lsb, service or upstart
                              (as far as RHEL 6 is concerned),
                              service seems to be most canonical, though -->
-''' + \
-                    ResourceSpec('service:smb').xsl_attrs \
-+ '''
+''' + (
+                    ResourceSpec('service:smb').xsl_attrs
+) + '''
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:message terminate="true"

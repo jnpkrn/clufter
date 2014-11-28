@@ -12,9 +12,9 @@ ccsflat2pcsprelude = '''\
         apache ~ apache
      -->
     <xsl:when test="name() = 'apache'">
-''' + \
-        ResourceSpec('ocf:heartbeat:apache').xsl_attrs \
-+ '''
+''' + (
+        ResourceSpec('ocf:heartbeat:apache').xsl_attrs
+) + '''
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
             <!-- configfile ~ config_file (if present) -->

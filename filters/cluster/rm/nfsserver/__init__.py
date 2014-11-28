@@ -12,9 +12,9 @@ ccsflat2pcsprelude = '''\
         nfsserver ~ nfserver
      -->
     <xsl:when test="name() = 'nfsserver'">
-''' + \
-        ResourceSpec('ocf:heartbeat:nfsserver').xsl_attrs \
-+ '''
+''' + (
+        ResourceSpec('ocf:heartbeat:nfsserver').xsl_attrs
+) + '''
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
             <!-- nfs_shared_infodir ~ nfspath -->

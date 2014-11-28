@@ -37,13 +37,13 @@ ccs_obfuscate_credentials = '''\
     <xsl:copy>
         <xsl:apply-templates select="@*"/>
         <xsl:for-each select="@*[
-''' + ( \
+''' + (
         xslt_is_member('name()', ccs_obfuscate_credentials_password)
 ) + ''']">
             <xsl:attribute name="{name()}">SECRET-PASSWORD</xsl:attribute>
         </xsl:for-each>
         <xsl:for-each select="@*[
-''' + ( \
+''' + (
         xslt_is_member('name()', ccs_obfuscate_credentials_login)
 ) + ''']">
             <xsl:attribute name="{name()}">SECRET-LOGIN</xsl:attribute>

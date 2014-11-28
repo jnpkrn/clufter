@@ -27,9 +27,9 @@ ccsflat2pcsprelude = ('''
      -->
     <xsl:when test="name() = '%(target)s'">
         <xsl:variable name="FsKind" select="name()"/>
-''' + \
-        ResourceSpec('ocf:heartbeat:Filesystem').xsl_attrs \
-+ '''
+''' + (
+        ResourceSpec('ocf:heartbeat:Filesystem').xsl_attrs
+) + '''
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
             <!-- device ~ device -->
@@ -107,7 +107,7 @@ ccsflat2pcsprelude = ('''
             </xsl:if>
             <!-- run_fsck ~ force_fsck -->
             <xsl:if test="
-''' + ( \
+''' + (
                 xslt_is_member('@force_fsck', ('1', 'yes'))
 ) + '''">
             <nvpair id="{concat($Prefix, '-ATTRS-run_fsck')}"
@@ -123,7 +123,7 @@ ccsflat2pcsprelude = ('''
                     name="force_unmount"
                     value="false">
                 <xsl:if test="not(
-''' + ( \
+''' + (
                     xslt_is_member('@force_unmount', ('1', 'yes', 'on', 'true'))
 ) + ''')">
                     <xsl:attribute name="value">

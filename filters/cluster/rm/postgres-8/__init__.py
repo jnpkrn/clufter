@@ -20,9 +20,9 @@ ccsflat2pcsprelude = '''\
         pgsql ~ postgres-8
      -->
     <xsl:when test="name() = 'postgres-8'">
-''' + \
-        ResourceSpec('ocf:heartbeat:pgsql').xsl_attrs \
-+ '''
+''' + (
+        ResourceSpec('ocf:heartbeat:pgsql').xsl_attrs
+) + '''
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
             <!-- config ~ config_file -->

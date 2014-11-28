@@ -12,9 +12,9 @@ ccsflat2pcsprelude = '''\
         LVM ~ lvm
      -->
     <xsl:when test="name() = 'lvm'">
-''' + \
-        ResourceSpec('ocf:heartbeat:LVM').xsl_attrs \
-+ '''
+''' + (
+        ResourceSpec('ocf:heartbeat:LVM').xsl_attrs
+) + '''
         <!-- SHOW-STOPPERS -->
         <xsl:if test="@lv_name">
             <xsl:message terminate="true"
