@@ -98,6 +98,7 @@ class CommandManager(PluginManager):
                 canonical_cmd = command
                 command = self._plugins.get(command, None)
             if not command:
+                # XXX maybe it just hasn't been resolved successfully
                 raise CommandNotFoundError(cmd)
 
             parser.description, options = command.parser_desc_opts
