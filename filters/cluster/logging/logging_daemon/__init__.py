@@ -23,7 +23,7 @@ ccs2needlexml = '''\
     <xsl:if test="@name='corosync' and @subsys">
         <logger_subsys>
             <xsl:copy-of select="@*[
-''' + ( \
+''' + (
                 xslt_is_member('name()', ccs2needlexml_attrs)
 ) + ''']"/>
         </logger_subsys>

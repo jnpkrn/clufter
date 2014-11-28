@@ -12,9 +12,9 @@ ccsflat2pcsprelude = '''\
         VirtualDomain ~ vm
      -->
     <xsl:when test="name() = 'vm'">
-''' + \
-        ResourceSpec('ocf:heartbeat:VirtualDomain').xsl_attrs \
-+ '''
+''' + (
+        ResourceSpec('ocf:heartbeat:VirtualDomain').xsl_attrs
+) + '''
         <!-- SHOW-STOPPERS -->
         <xsl:if test="@use_virsh = '0'">
             <xsl:message terminate="true"

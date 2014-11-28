@@ -15,7 +15,7 @@ ccs2needlexml_attrs = (
 ccs2needlexml = '''\
     <xsl:copy>
         <xsl:copy-of select="@*[
-''' + ( \
+''' + (
             xslt_is_member('name()', ccs2needlexml_attrs)
 ) + ''']"/>
     </xsl:copy>

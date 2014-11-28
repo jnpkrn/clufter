@@ -102,7 +102,7 @@ ccsflat2pcsprelude_elems = (
 
 ccsflat2pcsprelude = ('''\
     <xsl:for-each select="*[
-''' + ( \
+''' + (
     xslt_is_member('name()', ccsflat2pcsprelude_elems)
 ) + ''']/*">
         <xsl:variable name="Prefix"
@@ -129,9 +129,9 @@ ccsflat2pcsprelude = ('''\
                     ><xsl:value-of select="concat('could not natively convert',
                                                   ' from ', name(), ' RA')"
                     /></xsl:attribute>
-''' + \
-                    ResourceSpec('ocf:rgmanager:PLACEHOLDER').xsl_attrs \
-+ '''
+''' + (
+                    ResourceSpec('ocf:rgmanager:PLACEHOLDER').xsl_attrs
+) + '''
                     <xsl:attribute name="type"
                     ><xsl:value-of select="substring-before(
                                                @rgmanager-meta-agent,
@@ -174,7 +174,7 @@ ccsflat2pcsprelude = ('''\
     </xsl:for-each>
 
     <xsl:for-each select="*[
-''' + ( \
+''' + (
     xslt_is_member('name()', ccsflat2pcsprelude_elems)
 ) + ''']">
         <xsl:variable name="ResourceGroup"

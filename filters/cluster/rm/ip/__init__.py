@@ -14,9 +14,9 @@ ccsflat2pcsprelude = '''\
     <xsl:when test="name() = 'ip'">
         <xsl:variable name="IpAddress"
                       select="substring-before(@address, '/')"/>
-''' + \
-        ResourceSpec('ocf:heartbeat:IPaddr2').xsl_attrs \
-+ '''
+''' + (
+        ResourceSpec('ocf:heartbeat:IPaddr2').xsl_attrs
+) + '''
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
             <!-- ip (+ cidr_netmask) ~ address -->

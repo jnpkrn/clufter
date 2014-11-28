@@ -11,9 +11,9 @@ ccsflat2pcsprelude = '''\
         mysql ~ mysql
      -->
     <xsl:when test="name() = 'mysql'">
-''' + \
-        ResourceSpec('ocf:heartbeat:mysql').xsl_attrs \
-+ '''
+''' + (
+        ResourceSpec('ocf:heartbeat:mysql').xsl_attrs
+) + '''
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
             <!-- config ~ config_file -->

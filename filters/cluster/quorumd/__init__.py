@@ -13,7 +13,7 @@ ccs_obfuscate_identifiers = '''\
              and ordering QUORUMD-LABEL-{1, 2}; not scaling well -->
         <xsl:variable name="QuorumdLabel"
                       select="@*[
-''' + ( \
+''' + (
             xslt_is_member('name()', ('cman_label',
                                       'label'))
 ) + ''']"/>
