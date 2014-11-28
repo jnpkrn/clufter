@@ -662,7 +662,7 @@ class XML(SimpleFormat):
     }
 
     @classmethod
-    def etree_rng_validator(cls, et, root_dir=DEFAULT_ROOT_DIR,
+    def etree_rng_validator(cls, et, root_dir=None,
                             spec=validator_specs[ETREE], start=None):
         """RNG-validate `et` ElementTree with schemes as per `root_dir`+`spec`
 
@@ -683,6 +683,8 @@ class XML(SimpleFormat):
         """
         # XXX holds its private cache under cls._validation_cache
         assert spec
+        if not root_dir:
+            root_dir = dirname(modules[cls.__module__].__file__)
         if sep not in spec:
             spec = join(root_dir, cls.root, spec)
         if any(filter(lambda c: c in spec, '?*')):
