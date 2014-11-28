@@ -8,11 +8,11 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 import logging
 from copy import deepcopy
 from os import environ, stat
-from os.path import dirname, join as path_join
+from os.path import dirname, join
 from shlex import split as shlex_split
 from shutil import rmtree
 from subprocess import CalledProcessError, check_call
-from sys import stderr
+from sys import modules, stderr
 from tempfile import mkdtemp, NamedTemporaryFile
 try:
     from collections import OrderedDict
@@ -49,7 +49,7 @@ EDITOR = environ.get('EDITOR', EDITOR)
 
 log = logging.getLogger(__name__)
 
-DEFAULT_ROOT_DIR = path_join(dirname(__file__), 'filters')
+DEFAULT_ROOT_DIR = join(dirname(__file__), 'filters')
 
 # XXX: consult standard/books
 _TOP_LEVEL_XSL = (
@@ -840,8 +840,10 @@ class XMLFilter(Filter, MetaPlugin):
         return (lambda x: x[0] if len(x) == 1 else x)(ret)
 
     @classmethod
-    def proceed(cls, in_obj, root_dir=DEFAULT_ROOT_DIR, **kwargs):
+    def proceed(cls, in_obj, root_dir=None, **kwargs):
         """Push-button to be called from the filter itself"""
+        if not root_dir:
+            root_dir = dirname(modules[cls.__module__].__file__)
         kwargs.setdefault('symbol', cli_undecor(cls.name))
         walk = in_obj.walk_schema(root_dir, **filterdict_pop(kwargs, 'symbol',
                                                                      'sparse'))
@@ -895,8 +897,10 @@ class XMLFilter(Filter, MetaPlugin):
         return self.filter_proceed_xslt(in_obj, **kwargs)
 
     @classmethod
-    def get_template(cls, in_obj, root_dir=DEFAULT_ROOT_DIR, **kwargs):
+    def get_template(cls, in_obj, root_dir=None, **kwargs):
         """Generate the overall XSLT template"""
+        if not root_dir:
+            root_dir = dirname(modules[cls.__module__].__file__)
         kwargs.setdefault('symbol', cli_undecor(cls.name))
         walk = in_obj.walk_schema(root_dir, preprocess=cls._xslt_preprocess,
                                   sparse=False,
