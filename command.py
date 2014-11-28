@@ -19,6 +19,7 @@ from .format import SimpleFormat
 from .plugin_registry import PluginRegistry
 from .protocol import protodictval
 from .utils import any2iter, \
+                   arg2wrapped, \
                    args2sgpl, \
                    args2tuple, \
                    filterdict_keep, \
@@ -136,7 +137,8 @@ class Command(object):
         for i in filter_chain:
             if not i:
                 continue
-            i, i_tail = head_tail(i)
+            i_origin = arg2wrapped(i)
+            i, i_tail = head_tail(*i_origin)
             # bt denotes filters feeding this one
             bt = filter_backtrack.setdefault(i, {})
             if new or not (bt or i_tail):  # preorder
@@ -173,10 +175,20 @@ class Command(object):
                 # preparing a new list here for callee to fill) so it can
                 # move it to the right position afterwards
                 analysis_acc['terminal_chain'].append([])  # not terminal_chain
-                if not new:
-                    me((i, ) + ((head_tail(*i_tail), ), ), analysis_acc)
-                else:
+                # the second part of the condition handles differences between:
+                #    ('A',
+                #        ('B'),
+                #        ('C'))
+                # and
+                #    ('A',
+                #        ('B',
+                #            ('C')))
+                # XXX: rethink whole function to use less kludges
+                if new and (not any(filter(tuplist, i_origin))
+                            or any(filter(tuplist, i_tail))):
                     me((i, ) + i_tail, analysis_acc)
+                else:
+                    me((i, ) + ((head_tail(*i_tail), ), ), analysis_acc)
                 # postorder
                 terminal_chain.append(analysis_acc['terminal_chain'].pop())
             elif new:
