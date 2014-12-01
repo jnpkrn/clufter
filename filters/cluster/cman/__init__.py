@@ -8,7 +8,7 @@ from ....utils_xslt import xslt_is_member
 ###
 
 ccs2needlexml_attrs = (
-    'expected_votes',
+    # 'expected_votes',  # see below
     'two_node',
 )
 
@@ -17,6 +17,15 @@ ccs2needlexml = '''\
 ''' + (
         xslt_is_member('name()', ccs2needlexml_attrs)
 ) + ''']"/>
+    <xsl:if test="@expected_votes">
+        <xsl:message>
+            <xsl:value-of select="concat('WARNING: intentionally omitting',
+                                         ' expected_votes parameter as it',
+                                         ' may be based on assumptions',
+                                         ' no longer true in post-conversion',
+                                         ' environment')"/>
+        </xsl:message>
+    </xsl:if>
 '''
 
 ###

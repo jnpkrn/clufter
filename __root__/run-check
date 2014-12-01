@@ -135,12 +135,10 @@ EOF
 nodelist {
 	node {
 		ring0_addr: rhel6-node1
-		quorum_votes: 1
 		nodeid: 1
 	}
 	node {
 		ring0_addr: rhel6-node2
-		quorum_votes: 1
 		nodeid: 2
 	}
 }
