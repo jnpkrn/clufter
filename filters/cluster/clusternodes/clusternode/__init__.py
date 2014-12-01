@@ -25,9 +25,11 @@ ccs2needlexml = '''\
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:variable>
-            <xsl:attribute name="{$attr_name}">
-                <xsl:value-of select="."/>
-            </xsl:attribute>
+            <xsl:if test="$attr_name != ''">
+                <xsl:attribute name="{$attr_name}">
+                    <xsl:value-of select="."/>
+                </xsl:attribute>
+            </xsl:if>
         </xsl:for-each>
         <xsl:if test="altname/@name">
             <xsl:attribute name="ring1_addr">
