@@ -246,6 +246,10 @@ class PluginRegistry(type):
                             mname = registry.namespaced(name)
                             try:
                                 load_module(mname, mfile, mpath, mdesc)
+                            except StandardError as e:
+                                # non-fatal, just log it and keep going
+                                log.error("Module load error: {0}: {1}"
+                                          .format(mfile or mpath, str(e)))
                             finally:
                                 if mfile:
                                     mfile.close()
