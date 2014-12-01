@@ -471,13 +471,16 @@ class XMLFilter(Filter, MetaPlugin):
             if validator:
                 validate_hook = self._xslt_get_validate_hook(validator, **kws)
         return (lambda ret, error_log=():
-                    self._xslt_atom_hook(ret, error_log, quiet, validate_hook))
+                    self._xslt_atom_hook(ret, error_log, quiet, validate_hook,
+                                         **kws))
 
-    @staticmethod
-    def _xslt_atom_hook(ret, error_log, quiet=False, validate_hook=None):
+    @classmethod
+    def _xslt_atom_hook(cls, ret, error_log, quiet=False, validate_hook=None,
+                        **kws):
         fatal = []
+        maxl = kws.get('maxl', 1)
         for entry in error_log:
-            msg = "XSLT: {0}".format(entry.message)
+            msg = "[{0:{1}}] XSLT: {2}".format(cls.name, maxl, entry.message)
             if entry.type != 0 or not quiet:  # avoid logging (suppression)
                 print >>stderr, msg
                 if entry.type != 0:
@@ -870,7 +873,7 @@ class XMLFilter(Filter, MetaPlugin):
             def_first += '<clufter:descent-mix preserve-rest="true"/>'
 
         xslt_atom_hook = self._xslt_get_atom_hook(**filterdict_pop(kwargs,
-            'editor', 'interactive', 'quiet', 'validator_specs'
+            'editor', 'interactive', 'maxl', 'quiet', 'validator_specs'
         ))
 
         kwargs.setdefault('walk_default_first', def_first)
@@ -890,8 +893,8 @@ class XMLFilter(Filter, MetaPlugin):
     def ctxt_proceed_xslt(self, ctxt, in_obj, **kwargs):
         """The same as `filter_proceed_xslt`, context-aware"""
         kwargs = filterdict_keep(ctxt,
-            'raw', 'system', 'system_extra',                   # proceed_xslt
-            'editor', 'interactive', 'quiet', 'validator_specs',  # atom_hook
+            'raw', 'system', 'system_extra',  # <- proceed_xslt / atom_hook -v
+            'editor', 'interactive', 'maxl', 'quiet', 'validator_specs',
             **kwargs
         )
         return self.filter_proceed_xslt(in_obj, **kwargs)
