@@ -384,6 +384,7 @@ class Command(object):
                                            not (tuplist(x)) or protodecl(x))))
         maxl = sorted(worklist, key=lambda x: len(x[0].__class__.name))[-1][0]
         maxl, unused, tstmp = len(maxl.__class__.name), {}, hex(int(time()))[2:]
+        cmd_ctxt['maxl'] = maxl
         while worklist:
             flt, io_decl = worklist.pop()
             io_decl_use = protodictval(io_decl)
