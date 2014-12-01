@@ -7,12 +7,12 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
 from copy import deepcopy
-from os import environ, stat
+from os import environ, isatty, stat
 from os.path import dirname, join
 from shlex import split as shlex_split
 from shutil import rmtree
 from subprocess import CalledProcessError, check_call
-from sys import modules, stderr
+from sys import modules, stderr, __stdin__
 from tempfile import mkdtemp, NamedTemporaryFile
 try:
     from collections import OrderedDict
@@ -209,7 +209,7 @@ class XMLFilter(Filter, MetaPlugin):
                             bypass=True)
         flt_ctxt.update(
             raw=raw,
-            interactive=not(batch),
+            interactive=not(batch and isatty(__stdin__.fileno())),
             editor=editor
         )
 
