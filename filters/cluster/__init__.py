@@ -32,16 +32,16 @@ ccs2needlexml = ('''\
         -->
         <quorum provider="corosync_votequorum">
             <clufter:descent at="cman"/>
-            <xsl:if test="cman/@expected_votes
+            <!-- xsl:if test="cman/@expected_votes
                           and
                           quorumd/@votes">
-                <!-- un-propagate quorumd votes from overall expected votes -->
+                <! un-propagate quorumd votes from overall expected votes >
                 <xsl:attribute name="expected_votes">
                     <xsl:value-of select="cman/@expected_votes
                                           -
                                           quorumd/@votes"/>
                 </xsl:attribute>
-            </xsl:if>
+            </xsl:if -->
         </quorum>
 
         <!-- logging ~ logging -->

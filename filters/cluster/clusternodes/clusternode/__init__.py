@@ -3,6 +3,7 @@
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
+
 ccs2needlexml = '''\
     <node>
         <xsl:for-each select="@*">
@@ -18,7 +19,27 @@ ccs2needlexml = '''\
                     </xsl:when>
                     <!-- @votes -> @quorum_votes -->
                     <xsl:when test="name() = 'votes'">
-                        <xsl:value-of select="'quorum_votes'"/>
+                        <!-- xsl:value-of select="'quorum_votes'"/ -->
+                        <xsl:value-of select="''"/>
+                        <xsl:message>
+                            <xsl:value-of select="concat('WARNING: node ',
+                                                        ../@nodeid,
+                                                        ' declared with ',
+                                                        .,
+                                                        ' vote(s), which is ')"/>
+                                <xsl:choose>
+                                    <xsl:when test="number(.) = 1">
+                                        <xsl:value-of select="'a default anyway,'"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:value-of select="concat('something not',
+                                                                     ' 100% sane',
+                                                                     ' nor advisable,')"/>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            <xsl:value-of select="concat(' hence not propagated (as',
+                                                         ' quorum_votes property)')"/>
+                        </xsl:message>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:value-of select="''"/>
