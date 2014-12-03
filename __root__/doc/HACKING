@@ -2,9 +2,11 @@ Directly consuming the repo
 ---------------------------
 
 After fetching local repo copy:
-$ make -C __root__/ccs-flatten
+$ ./run-setup build
+$ ln -fs __root__/build/ccs_flatten .
+$ # or ./run-check that should take care on its own
 and you should be ready to go with:
-$ ./main-bootstrap ...
+$ ./run-dev ...
 
 
 High-level Concepts
