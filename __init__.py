@@ -1,5 +1,20 @@
 # -*- coding: UTF-8 -*-
-version = '0.2.1_alpha'  # no dashes
+version, alpha = '0.2.1', True
+
+# https://www.python.org/dev/peps/pep-0440 + git export magic using export-subst
+_git_hash = "$Format:%h$".strip('$').replace("Format:%h", "")
+_git_deco = '$Format:%d$'.strip('$()').replace("Format:%d", "")
+_git_deco_arr = _git_deco.split(', ')
+_git_tags = [i for i in _git_deco_arr if i.startswith("tag: v")]
+_git_branches = [i for i in _git_deco_arr if i not in _git_tags + ['HEAD']]
+if _git_branches and not _git_branches[-1].endswith('master') or alpha:
+    if alpha:  # if not alpha, it is still not a true serving release
+        version += '_alpha'  # no dashes
+    if _git_hash:
+        version += '+git.{0}'.format(_git_hash)
+elif _git_tags:
+    assert any(t.endswith(version) for t in _git_tags), "version != tag"
+
 license = 'GPLv2+'
 copyright = """\
 Copyright 2014 Red Hat, Inc.
