@@ -182,6 +182,10 @@ ccs2needlexml = ('''\
 ) + ''']">
                         <xsl:copy-of select="cman/@transport"/>
                     </xsl:when>
+                    <xsl:when test="cman/@transport = 'rdma'">
+                        <xsl:attribute name="transport">iba</xsl:attribute>
+                    </xsl:when>
+                    <xsl:when test="cman/@transport = 'udpb'"/>
                     <xsl:otherwise>
                         <xsl:message>
                             <xsl:value-of select="concat('Unsupported value for `transport',
