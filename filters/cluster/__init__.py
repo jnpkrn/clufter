@@ -12,6 +12,129 @@ except ValueError:  # Value?
 
 ###
 
+ccs_propagate_cman = '''\
+    <xsl:template match="cman/@*[not(
+''' + (
+                        xslt_is_member('.', ('cman',
+                                             'expected_votes'))
+) + ''')] | cman/altmulticast
+          | cman/multicast"/>
+
+    <xsl:template match="cluster">
+        <xsl:copy>
+            <xsl:copy-of select="@*"/>
+            <totem>
+                <xsl:variable name="SpecBroadcast"
+                            select="/cluster/cman/@broadcast = 'yes'
+                                    or
+                                    /cluster/cman/@transport = 'udpb'"/>
+                <xsl:copy-of select="totem/@*"/>
+                <xsl:apply-templates select="totem/interface[
+                             @ringnumber &lt;
+                                 1 + count(/cluster/clusternodes/clusternode/altname)
+                         ]"/>
+                <xsl:variable name="SpecPrimaryAddr"
+                            select="/cluster/cman/multicast/@addr"/>
+                <xsl:variable name="SpecPrimaryPort"
+                            select="/cluster/cman/@port
+                                    |/cluster/cman/multicast/@port"/>
+                <xsl:variable name="SpecPrimaryTTL"
+                            select="/cluster/cman/multicast/@ttl"/>
+                <xsl:if test="$SpecBroadcast
+                            or
+                            $SpecPrimaryAddr
+                            or
+                            $SpecPrimaryPort
+                            or
+                            $SpecPrimaryTTL != 1">
+                    <xsl:message>OKOK</xsl:message>
+                    <interface ringnumber="0">
+                        <xsl:if test="$SpecBroadcast">
+                            <xsl:attribute name="broadcast">yes</xsl:attribute>
+                        </xsl:if>
+                        <xsl:if test="$SpecPrimaryAddr">
+                            <xsl:attribute name="mcastaddr">
+                                <xsl:value-of select="$SpecPrimaryAddr"/>
+                            </xsl:attribute>
+                        </xsl:if>
+                        <xsl:if test="$SpecPrimaryPort">
+                            <xsl:attribute name="mcastport">
+                                <xsl:value-of select="$SpecPrimaryPort"/>
+                            </xsl:attribute>
+                        </xsl:if>
+                        <xsl:if test="$SpecPrimaryTTL != 0">
+                            <xsl:attribute name="ttl">
+                                <xsl:value-of select="$SpecPrimaryTTL"/>
+                            </xsl:attribute>
+                        </xsl:if>
+                    </interface>
+                </xsl:if>
+                <xsl:variable name="SpecFirstNodeAltnames"
+                            select="count(
+                                        /cluster/clusternodes/clusternode[1]/altname
+                                    )"/>
+                <xsl:variable name="SpecAltnamesSameCount"
+                            select="count(
+                                        /cluster/clusternodes/clusternode
+                                    )
+                                    =
+                                    count(
+                                        /cluster/clusternodes/clusternode[
+                                            count(altname)
+                                            =
+                                            count(following-sibling::clusternode/altname)
+                                        ]
+                                    ) + 1
+                                    "/>
+                <xsl:variable name="SpecAltnamesSameNonzeroCount"
+                            select="$SpecAltnamesSameCount
+                                    and
+                                    /cluster/clusternodes/clusternode/altname"/>
+                <xsl:variable name="SpecSecondaryAddr"
+                            select="/cluster/cman/altmulticast/@addr"/>
+                <xsl:variable name="SpecSecondaryPort"
+                            select="/cluster/cman/@port
+                                    |/cluster/cman/altmulticast/@port"/>
+                <xsl:variable name="SpecSecondaryTTL"
+                            select="/cluster/cman/altmulticast/@ttl"/>
+                <xsl:if test="$SpecAltnamesSameNonzeroCount
+                            and
+                            (
+                                $SpecSecondaryAddr
+                                or
+                                $SpecSecondaryPort
+                                or
+                                $SpecSecondaryTTL != 1
+                            )">
+                    <interface ringnumber="1">
+                        <xsl:if test="$SpecBroadcast">
+                            <xsl:attribute name="broadcast">yes</xsl:attribute>
+                        </xsl:if>
+                        <xsl:if test="$SpecSecondaryAddr">
+                            <xsl:attribute name="mcastaddr">
+                                <xsl:value-of select="$SpecSecondaryAddr"/>
+                            </xsl:attribute>
+                        </xsl:if>
+                        <xsl:if test="$SpecSecondaryPort">
+                            <xsl:attribute name="mcastport">
+                                <xsl:value-of select="$SpecSecondaryPort"/>
+                            </xsl:attribute>
+                        </xsl:if>
+                        <xsl:if test="$SpecSecondaryTTL != 0">
+                            <xsl:attribute name="ttl">
+                                <xsl:value-of select="$SpecSecondaryTTL"/>
+                            </xsl:attribute>
+                        </xsl:if>
+                    </interface>
+                </xsl:if>
+            </totem>
+            <xsl:apply-templates select="*[name() != 'totem']"/>
+        </xsl:copy>
+    </xsl:template>
+'''
+
+###
+
 from base64 import b64encode
 from hashlib import sha256
 from os import getpid
