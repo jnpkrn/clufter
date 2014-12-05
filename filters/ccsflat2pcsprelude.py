@@ -8,8 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from ..filter import XMLFilter
 
 
-@XMLFilter.deco('ccs-flat', 'pcs-prelude')
-def ccsflat2pcsprelude(flt_ctxt, in_obj):
-    # XXX temporary hack with plain ccs;
-    # check that it is indeed ccs-flat, by exploring flt_ctxt?
-    return ('etree', flt_ctxt.ctxt_proceed_xslt(in_obj))
+# XXX temporary hack with plain ccs;
+# check that it is indeed ccs-flat, by exploring flt_ctxt?
+@XMLFilter.deco_xslt('ccs-flat', 'pcs-prelude')
+class ccsflat2pcsprelude: pass
