@@ -8,6 +8,5 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from ..filter import XMLFilter
 
 
-@XMLFilter.deco('ccs', 'ccs')
-def ccs_revitalize(flt_ctxt, in_obj):
-    return ('etree', flt_ctxt.ctxt_proceed_xslt(in_obj))
+@XMLFilter.deco_xslt('ccs', 'ccs')
+class ccs_revitalize: pass

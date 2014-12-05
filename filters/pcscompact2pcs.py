@@ -8,6 +8,5 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from ..filter import XMLFilter
 
 
-@XMLFilter.deco('pcs-compact', 'pcs')
-def pcscompact2pcs(flt_ctxt, in_obj):
-    return ('etree', flt_ctxt.ctxt_proceed_xslt(in_obj))
+@XMLFilter.deco_xslt('pcs-compact', 'pcs')
+class pcscompact2pcs: pass
