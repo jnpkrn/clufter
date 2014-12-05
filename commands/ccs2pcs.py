@@ -72,8 +72,9 @@ def ccs2pcs_flatiron(cmd_ctxt,
                           ('pcsprelude2pcscompact',
                               ('pcscompact2pcs',
                                   ('pcs2pcsfinal'))))),
-                  ('ccs2needlexml',
-                      ('xml2simpleconfig'))))
+                  ('ccs-propagate-cman',
+                      ('ccs2needlexml',
+                          ('xml2simpleconfig')))))
 def ccs2pcs_needle(cmd_ctxt,
                    input="/etc/cluster/cluster.conf",
                    cib="cib-{ccs2ccsflat.in.hash}.xml",
@@ -106,7 +107,9 @@ def ccs2pcs_needle(cmd_ctxt,
                 ),
             ),
             (
-                file_proto(coro),
+                (
+                    file_proto(coro),
+                ),
             ),
         ),
     )
