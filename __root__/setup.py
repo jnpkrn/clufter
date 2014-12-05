@@ -17,7 +17,8 @@ from glob import glob
 from os import getenv
 from os.path import (join as path_join, basename as path_basename,
                      dirname as path_dirname, normpath as path_norm,
-                     isabs as path_isabs, splitext as path_splitext)
+                     isabs as path_isabs, splitext as path_splitext,
+                     sep)
 from shutil import copy, copymode
 from distutils.cmd import Command
 from distutils.errors import DistutilsSetupError
@@ -324,11 +325,15 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                 if src != dst:
                     self._pkg_prepare_file(src, dst)
                 self.pkg_params[filedef['src']] = dst
+            icmd = self.distribution.get_command_obj('install', create=False)
             for filedef in (self.data_files + self.built_files):
                 src_basename = path_basename(self.pkg_params[filedef['src']])
                 no_glob = all(c not in src_basename for c in '?*')
                 self.distribution.data_files.append((
-                    path_dirname(self.pkg_params[filedef['dst']]), [
+                    path_dirname(
+                        path_join(icmd.install_base,
+                                  self.pkg_params[filedef['dst']].lstrip(sep))
+                    ), [
                         path_join(
                             path_dirname(self.pkg_params[filedef['src']]),
                             path_basename(self.pkg_params[filedef['dst']])
