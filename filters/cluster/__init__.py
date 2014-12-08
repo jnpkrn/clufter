@@ -24,29 +24,153 @@ ccs_propagate_cman = '''\
         <xsl:copy>
             <xsl:copy-of select="@*"/>
             <totem>
+                <!-- general variables -->
                 <xsl:variable name="SpecBroadcast"
-                            select="/cluster/cman/@broadcast = 'yes'
-                                    or
-                                    /cluster/cman/@transport = 'udpb'"/>
-                <xsl:copy-of select="totem/@*"/>
-                <xsl:apply-templates select="totem/interface[
-                             @ringnumber &lt;
-                                 1 + count(/cluster/clusternodes/clusternode/altname)
-                         ]"/>
+                              select="cman/@broadcast = 'yes'
+                                      or
+                                      cman/@transport = 'udpb'"/>
+                <xsl:variable name="SpecToken">
+                    <xsl:choose>
+                        <xsl:when test="not(totem/@token)">
+                            <xsl:value-of select="10000"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="totem/@token"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:variable>
+                <!-- primary ring variables -->
                 <xsl:variable name="SpecPrimaryAddr"
-                            select="/cluster/cman/multicast/@addr"/>
+                              select="cman/multicast/@addr"/>
                 <xsl:variable name="SpecPrimaryPort"
-                            select="/cluster/cman/@port
-                                    |/cluster/cman/multicast/@port"/>
+                              select="cman/@port
+                                    |cman/multicast/@port"/>
                 <xsl:variable name="SpecPrimaryTTL"
-                            select="/cluster/cman/multicast/@ttl"/>
-                <xsl:if test="$SpecBroadcast
-                            or
-                            $SpecPrimaryAddr
-                            or
-                            $SpecPrimaryPort
-                            or
-                            $SpecPrimaryTTL != 1">
+                              select="cman/multicast/@ttl"/>
+                <xsl:variable name="SpecPrimaryEmit"
+                              select="$SpecBroadcast
+                                      or
+                                      $SpecPrimaryAddr
+                                      or
+                                      $SpecPrimaryPort
+                                      or
+                                      $SpecPrimaryTTL != 1"/>
+                <!-- secondary ring variables -->
+                <xsl:variable name="SpecFirstNodeAltnames"
+                              select="count(
+                                          clusternodes/clusternode[1]/altname
+                                      )"/>
+                <xsl:variable name="SpecAltnamesSameCount"
+                              select="count(
+                                          clusternodes/clusternode
+                                      )
+                                      =
+                                      count(
+                                          clusternodes/clusternode[
+                                              count(altname)
+                                              =
+                                              count(following-sibling::clusternode/altname)
+                                          ]
+                                      ) + 1
+                                      "/>
+                <xsl:variable name="SpecAltnamesSameNonzeroCount"
+                              select="$SpecAltnamesSameCount
+                                      and
+                                      clusternodes/clusternode/altname"/>
+                <xsl:variable name="SpecSecondaryAddr"
+                              select="cman/altmulticast/@addr"/>
+                <xsl:variable name="SpecSecondaryPort"
+                              select="cman/@port
+                                      |cman/altmulticast/@port"/>
+                <xsl:variable name="SpecSecondaryTTL"
+                              select="cman/altmulticast/@ttl"/>
+                <xsl:variable name="SpecSecondaryEmit"
+                              select="$SpecAltnamesSameNonzeroCount
+                                      and
+                                      (
+                                          $SpecSecondaryAddr
+                                          or
+                                          $SpecSecondaryPort
+                                          or
+                                          $SpecSecondaryTTL != 1
+                                      )"/>
+                <!--
+                    totem attributes
+                 -->
+                <xsl:copy-of select="totem/@*[
+                    not(
+                        name() = 'join' and number(.) = 50
+                        or
+                        name() = 'token' and number(.) = 1000
+                    )]"/>
+                <!-- see also bz214290 (corosync default: 50) -->
+                <xsl:if test="not(totem/@join)">
+                    <xsl:attribute name="join">60</xsl:attribute>
+                </xsl:if>
+                <!-- see also bz1078343 (corosync default: 1000) -->
+                <xsl:attribute name="token">
+                    <xsl:value-of select="$SpecToken"/>
+                </xsl:attribute>
+                <xsl:if test="$SpecSecondaryEmit
+                              or
+                              count(totem/interface) &gt; 1">
+                    <xsl:attribute name="rrp_mode">passive</xsl:attribute>
+                    <xsl:attribute name="rrp_problem_count_threshold">3</xsl:attribute>
+                </xsl:if>
+                <xsl:if test="not(totem/@consensus)">
+                    <xsl:attribute name="consensus">
+                        <xsl:choose>
+                            <xsl:when test="count(clusternodes/clusternode) &gt; 2">
+                                <xsl:variable name="SpecConsensus"
+                                              select="$SpecToken * 0.2"/>
+                                <xsl:choose>
+                                    <xsl:when test="$SpecConsensus &lt; 200">
+                                        <xsl:value-of select="200"/>
+                                    </xsl:when>
+                                    <xsl:when test="$SpecConsensus &gt; 2000">
+                                        <xsl:value-of select="2000"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:value-of select="$SpecConsensus"/>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="$SpecToken + 2000"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:attribute>
+                </xsl:if>
+                <xsl:if test="cman/@transport">
+                    <xsl:choose>
+                        <xsl:when test="cman/@transport = 'udpu'">
+                            <xsl:copy-of select="cman/@transport"/>
+                        </xsl:when>
+                        <xsl:when test="cman/@transport = 'rdma'">
+                            <xsl:attribute name="transport">iba</xsl:attribute>
+                        </xsl:when>
+                        <xsl:when test="cman/@transport[
+    ''' + (
+                            xslt_is_member('.', ('udpb',
+                                                 'udpu'))
+    ) + ''']">
+                            <!-- just drop it -->
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:message>
+                                <xsl:value-of select="concat('Unsupported value for `transport',
+                                                            &quot;'&quot;, ' dropped: ',
+                                                            cman/@transport)"/>
+                            </xsl:message>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:if>
+                <xsl:apply-templates select="totem/interface[
+                        @ringnumber &lt;
+                            1 + count(/cluster/clusternodes/clusternode/altname)
+                    ]"/>
+                <!-- primary ring -->
+                <xsl:if test="$SpecPrimaryEmit">
                     <interface ringnumber="0">
                         <xsl:if test="$SpecBroadcast">
                             <xsl:attribute name="broadcast">yes</xsl:attribute>
@@ -68,43 +192,8 @@ ccs_propagate_cman = '''\
                         </xsl:if>
                     </interface>
                 </xsl:if>
-                <xsl:variable name="SpecFirstNodeAltnames"
-                            select="count(
-                                        /cluster/clusternodes/clusternode[1]/altname
-                                    )"/>
-                <xsl:variable name="SpecAltnamesSameCount"
-                            select="count(
-                                        /cluster/clusternodes/clusternode
-                                    )
-                                    =
-                                    count(
-                                        /cluster/clusternodes/clusternode[
-                                            count(altname)
-                                            =
-                                            count(following-sibling::clusternode/altname)
-                                        ]
-                                    ) + 1
-                                    "/>
-                <xsl:variable name="SpecAltnamesSameNonzeroCount"
-                            select="$SpecAltnamesSameCount
-                                    and
-                                    /cluster/clusternodes/clusternode/altname"/>
-                <xsl:variable name="SpecSecondaryAddr"
-                            select="/cluster/cman/altmulticast/@addr"/>
-                <xsl:variable name="SpecSecondaryPort"
-                            select="/cluster/cman/@port
-                                    |/cluster/cman/altmulticast/@port"/>
-                <xsl:variable name="SpecSecondaryTTL"
-                            select="/cluster/cman/altmulticast/@ttl"/>
-                <xsl:if test="$SpecAltnamesSameNonzeroCount
-                            and
-                            (
-                                $SpecSecondaryAddr
-                                or
-                                $SpecSecondaryPort
-                                or
-                                $SpecSecondaryTTL != 1
-                            )">
+                <!-- secondary ring -->
+                <xsl:if test="$SpecSecondaryEmit">
                     <interface ringnumber="1">
                         <xsl:if test="$SpecBroadcast">
                             <xsl:attribute name="broadcast">yes</xsl:attribute>
@@ -172,28 +261,6 @@ ccs2needlexml = ('''\
         <!-- totem (pieces from cluster=current and cman) ~ totem -->
         <totem version="2"
                cluster_name="{@name}">
-            <xsl:if test="cman/@transport">
-                <xsl:choose>
-                    <xsl:when test="cman/@transport[
-''' + (
-                        xslt_is_member('.', ('udp',
-                                             'udpu'))
-) + ''']">
-                        <xsl:copy-of select="cman/@transport"/>
-                    </xsl:when>
-                    <xsl:when test="cman/@transport = 'rdma'">
-                        <xsl:attribute name="transport">iba</xsl:attribute>
-                    </xsl:when>
-                    <xsl:when test="cman/@transport = 'udpb'"/>
-                    <xsl:otherwise>
-                        <xsl:message>
-                            <xsl:value-of select="concat('Unsupported value for `transport',
-                                                         &quot;'&quot;, ' dropped: ',
-                                                         cman/@transport)"/>
-                        </xsl:message>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:if>
             <clufter:descent at="totem">
                 <!-- see bz1165821 (pcs currently doesn't handle corosync's keyfile) -->
                 <xsl:if test="not(totem) or totem[
@@ -210,10 +277,6 @@ ccs2needlexml = ('''\
                     >%(key)s</xsl:attribute>
                 </xsl:if>
             </clufter:descent>
-            <!-- XXX bz1078343 -->
-            <!-- xsl:if test="not(totem) or not(@token)">
-                <xsl:attribute name="token">10000</xsl:attribute>
-            </xsl:if -->
         </totem>
 
         <!-- uidgid ~ uidgid -->

@@ -151,6 +151,9 @@ logging {
 totem {
 	version: 2
 	cluster_name: one
+	consensus: 12000
+	token: 10000
+	join: 60
 }
 EOF
     rm -f -- "${testcib}" "${testcoro}"
