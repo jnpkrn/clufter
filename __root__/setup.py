@@ -20,6 +20,7 @@ from os.path import (join as path_join, basename as path_basename,
                      isabs as path_isabs, splitext as path_splitext,
                      sep)
 from shutil import copy, copymode
+from sys import prefix as sys_prefix
 from distutils.cmd import Command
 from distutils.errors import DistutilsSetupError
 from distutils.command.build import build
@@ -327,21 +328,21 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                 self.pkg_params[filedef['src']] = dst
             icmd = self.distribution.get_command_obj('install', create=False)
             for filedef in (self.data_files + self.built_files):
-                src_basename = path_basename(self.pkg_params[filedef['src']])
-                no_glob = all(c not in src_basename for c in '?*')
+                src = self.pkg_params[filedef['src']]
+                dst = self.pkg_params[filedef['dst']]
+                no_glob = all(c not in path_basename(src) for c in '?*')
+                if dst.startswith(sys_prefix):
+                    dst = path_join(icmd.install_base, dst[len(sys_prefix)+1:])
                 self.distribution.data_files.append((
-                    path_dirname(
-                        path_join(icmd.install_base,
-                                  self.pkg_params[filedef['dst']].lstrip(sep))
-                    ), [
+                    path_dirname(dst), [
                         path_join(
-                            path_dirname(self.pkg_params[filedef['src']]),
-                            path_basename(self.pkg_params[filedef['dst']])
+                            path_dirname(src),
+                            path_basename(dst)
                         ),
                     ]
                 ) if no_glob else (
-                    self.pkg_params[filedef['dst']],
-                    glob(self.pkg_params[filedef['src']])
+                    dst,
+                    glob(src)
                 ))
                 if DEBUG:
                     print (DBGPFX + "\tinstall data_files: %s"
