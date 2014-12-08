@@ -28,9 +28,9 @@ metadata = (version, copyright, author)
 description = """\
 Tool/library for transforming/analyzing cluster configuration formats
 
-Primarily aimed at (CMAN, rgmanager) -> (Corosync, Pacemaker) cluster
-stacks configuration conversion (following RHEL trend), but the package
-has a more universal use as commands-filters-formats plugin framework.
+Primarily aimed at (CMAN, rgmanager) -> (Corosync, Pacemaker) cluster stacks
+configuration conversion (following RHEL trend), but the package has a more
+universal use as a commands-filters-formats plugin framework supporting XSLT.
 """
 #Native plugins allows also for obfuscation of sensitive data within
 #cluster configuration of supported cluster stacks, and other
