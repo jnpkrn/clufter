@@ -12,6 +12,8 @@
   configuration conversion (following RHEL trend), but the package has a more
   universal use as commands-filters-formats plugin framework.
 
+And nope, the name is not a pun, typo or lisp-pronounced `cluster` per se :-P
+
 
 -------
  Usage
