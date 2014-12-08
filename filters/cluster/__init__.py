@@ -47,7 +47,6 @@ ccs_propagate_cman = '''\
                             $SpecPrimaryPort
                             or
                             $SpecPrimaryTTL != 1">
-                    <xsl:message>OKOK</xsl:message>
                     <interface ringnumber="0">
                         <xsl:if test="$SpecBroadcast">
                             <xsl:attribute name="broadcast">yes</xsl:attribute>
