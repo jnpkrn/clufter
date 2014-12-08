@@ -17,16 +17,14 @@ from glob import glob
 from os import getenv
 from os.path import (join as path_join, basename as path_basename,
                      dirname as path_dirname, normpath as path_norm,
-                     isabs as path_isabs, splitext as path_splitext,
-                     sep)
+                     isabs as path_isabs, splitext as path_splitext)
 from shutil import copy, copymode
 from sys import prefix as sys_prefix
 from distutils.cmd import Command
 from distutils.errors import DistutilsSetupError
 from distutils.command.build import build
 from distutils.command.build_ext import build_ext
-from distutils.command.install import install
-#from setuptools.command.install import install
+from setuptools.command.install import install  # otherwise fails on ...managed
 from setuptools.command.install_scripts import install_scripts
 from distutils.command.install_data import install_data
 from collections import Callable
