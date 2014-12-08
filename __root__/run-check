@@ -134,12 +134,12 @@ EOF
       || { echo "TEST: coro diff FAIL"; ret=22; }; }<<EOF
 nodelist {
 	node {
-		ring0_addr: rhel6-node1
 		nodeid: 1
+		ring0_addr: rhel6-node1
 	}
 	node {
-		ring0_addr: rhel6-node2
 		nodeid: 2
+		ring0_addr: rhel6-node2
 	}
 }
 quorum {
@@ -149,11 +149,11 @@ logging {
 	debug: on
 }
 totem {
-	version: 2
 	cluster_name: one
 	consensus: 12000
-	token: 10000
 	join: 60
+	token: 10000
+	version: 2
 }
 EOF
     rm -f -- "${testcib}" "${testcoro}"

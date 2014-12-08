@@ -25,7 +25,7 @@ def xml2simpleconfig(flt_ctxt, in_obj):
             #print ">>> start", e.tag, root
             current = [e.tag, None, None]
             root.append(current)
-            current[1] = tuple((n, v) for n, v in e.attrib.iteritems())
+            current[1] = tuple((n, v) for n, v in sorted(e.attrib.iteritems()))
             #print "<<< start", e.tag, root
         elif action == 'end':
             #print ">>> end", e.tag, root
