@@ -587,7 +587,7 @@ setup(
 
     entry_points = {
         'console_scripts': (
-            '{0} = {0}.main:run'.format(pkg_name),
+            '{0} = {0}.__main__'.format(pkg_name),
         ),
     },
 )
