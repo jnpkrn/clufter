@@ -54,10 +54,10 @@ bifilter = \
 
 # http://code.activestate.com/recipes/502261-python-distutils-pkg-config/#c1
 def pkgconfig(*packages, **kw):
-    from commands import getoutput
+    from subprocess import check_output
     flag_map = {'-I': 'include_dirs', '-L': 'library_dirs', '-l': 'libraries'}
-    for token in getoutput("pkg-config --libs --cflags {0}".format(
-                               ' '.join(packages))).split():
+    for token in check_output("pkg-config --libs --cflags {0}"
+                              .format(' '.join(packages)), shell=True).split():
         if token[:2] in flag_map:
             kw.setdefault(flag_map.get(token[:2]), []).append(token[2:])
         else:  # throw others to extra_link_args
