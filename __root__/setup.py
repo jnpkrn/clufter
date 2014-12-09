@@ -250,6 +250,9 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
             self.buildonly_files = self.buildonly_files or ()
             self.built_files = self.built_files or ()
 
+        def get_outputs(self):
+            return ()  # called from install command for each subcommand
+
         def run(self):
             if DEBUG: print (DBGPFX + "\trun")
             if getattr(self, self.DEV_SWITCH, 0) \
