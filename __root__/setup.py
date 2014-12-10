@@ -510,7 +510,12 @@ setup(
     # listing each subpackage in package hierarchy
     packages=find_packages(
         exclude=('ez_setup', '__project__', '__project__.*', '*.tests'),
-    ),
+    ) + ['.'.join((pkg_name, 'ext-plugins', libdir, package))
+         for libdir in ('lib-ccs', 'lib-pcs')
+         for package in find_packages(
+           path_join(pkg_name, 'ext-plugins', libdir)
+         )
+    ],
     # Following content is also duplicated (in a simplier/more declarative way)
     # in MANIFEST.in which serves for ``setup.py sdist'' command and is
     # necessary due to http://bugs.python.org/issue2279 fixed as of Python 2.7;
