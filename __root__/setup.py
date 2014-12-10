@@ -25,7 +25,6 @@ from distutils.errors import DistutilsSetupError
 from distutils.command.build import build
 from distutils.command.build_ext import build_ext
 from setuptools.command.install import install  # otherwise fails on ...managed
-from setuptools.command.install_scripts import install_scripts
 from distutils.command.install_data import install_data
 from collections import Callable
 
@@ -534,7 +533,7 @@ setup(
     cmdclass = pkg_prepare.inject_cmdclass(
         develop,
         build=(build, build_binary),
-        install=(install, install_data, install_scripts),
+        install=(install, install_data),
         setuptools_develop=setuptools_develop,
     ),
     options = {
