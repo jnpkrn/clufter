@@ -46,8 +46,10 @@ _deobfuscate_email = (lambda what: what.replace(' @at@ ', '@')
 def package_name():
     global pkg_name
     if pkg_name is None:
-        from os.path import abspath, basename, dirname, realpath
-        pkg_name = basename(dirname(realpath(abspath(__file__))))
+        from os import readlink
+        from os.path import abspath, basename, dirname, islink
+        here = dirname(abspath(__file__))
+        pkg_name = basename(abspath(readlink(here) if islink(here) else here))
     return pkg_name
 
 
