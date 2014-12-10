@@ -12,9 +12,13 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages, Extension
 from setuptools.command.develop import develop as setuptools_develop
+# otherwise fails on
+#   error: option --single-version-externally-managed not recognized...managed
+# with default pip install
+from setuptools.command.install import install as setuptools_install
 
 from glob import glob
-from os import getenv
+from os import getenv, sep
 from os.path import (join as path_join, basename as path_basename,
                      dirname as path_dirname, normpath as path_norm,
                      isabs as path_isabs, splitext as path_splitext)
@@ -24,7 +28,6 @@ from distutils.cmd import Command
 from distutils.errors import DistutilsSetupError
 from distutils.command.build import build
 from distutils.command.build_ext import build_ext
-from setuptools.command.install import install  # otherwise fails on ...managed
 from distutils.command.install_data import install_data
 from collections import Callable
 
@@ -136,6 +139,16 @@ class develop(setuptools_develop):
     def install_for_development(self):
         self.reinitialize_command('pkg_prepare', develop=1)
         self.run_command('pkg_prepare')
+
+
+class install(setuptools_install):
+     def finalize_options(self):
+        self.single_version_externally_managed = True
+        orig_root = self.root  # avoid original install fail on SVEM + not root
+        if not orig_root:
+            self.root = sep
+        setuptools_install.finalize_options(self)
+        self.root = orig_root
 
 
 class install_data(install_data):
