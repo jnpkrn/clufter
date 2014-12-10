@@ -17,7 +17,8 @@ from glob import glob
 from os import getenv, sep
 from os.path import (join as path_join, basename as path_basename,
                      dirname as path_dirname, normpath as path_norm,
-                     isabs as path_isabs, splitext as path_splitext)
+                     isabs as path_isabs, isdir as path_isdir,
+                     splitext as path_splitext)
 from shutil import copy, copymode
 from sys import prefix as sys_prefix
 
@@ -523,11 +524,8 @@ setup(
     # listing each subpackage in package hierarchy
     packages=find_packages(
         exclude=('ez_setup', '__project__', '__project__.*', '*.tests'),
-    ) + ['.'.join((pkg_name, 'ext-plugins', libdir, package))
-         for libdir in ('lib-ccs', 'lib-pcs')
-         for package in find_packages(
-           path_join(pkg_name, 'ext-plugins', libdir)
-         )
+    ) + ['.'.join(lib.split(sep)) for lib in
+         filter(path_isdir, glob(path_join(pkg_name, 'ext-plugins', 'lib-*')))
     ],
     # Following content is also duplicated (in a simplier/more declarative way)
     # in MANIFEST.in which serves for ``setup.py sdist'' command and is
