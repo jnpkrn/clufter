@@ -11,12 +11,8 @@ except ImportError:
     from ez_setup import use_setuptools
     use_setuptools()
     from setuptools import setup, find_packages, Extension
-from setuptools.command.develop import develop as setuptools_develop
-# otherwise fails on
-#   error: option --single-version-externally-managed not recognized...managed
-# with default pip install
-from setuptools.command.install import install as setuptools_install
 
+from collections import Callable
 from glob import glob
 from os import getenv, sep
 from os.path import (join as path_join, basename as path_basename,
@@ -24,12 +20,17 @@ from os.path import (join as path_join, basename as path_basename,
                      isabs as path_isabs, splitext as path_splitext)
 from shutil import copy, copymode
 from sys import prefix as sys_prefix
+
 from distutils.cmd import Command
 from distutils.errors import DistutilsSetupError
 from distutils.command.build import build
 from distutils.command.build_ext import build_ext
 from distutils.command.install_data import install_data
-from collections import Callable
+from setuptools.command.develop import develop as setuptools_develop
+# otherwise fails on
+#   error: option --single-version-externally-managed not recognized...managed
+# with default pip install
+from setuptools.command.install import install as setuptools_install
 
 # bail out if any code is not valid (http://stackoverflow.com/a/2240549)
 import py_compile
