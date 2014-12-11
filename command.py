@@ -15,12 +15,11 @@ from .command_context import CommandContext
 from .error import ClufterError, \
                    EC
 from .filter import Filter
-from .format import SimpleFormat
+from .format import FormatError, SimpleFormat
 from .plugin_registry import PluginRegistry
 from .protocol import protodictval
 from .utils import any2iter, \
                    arg2wrapped, \
-                   args2sgpl, \
                    args2tuple, \
                    filterdict_keep, \
                    func_defaults_varnames, \

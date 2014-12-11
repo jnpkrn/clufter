@@ -19,7 +19,6 @@ from sys import stderr, stdin
 from . import package_name
 from .error import ClufterError
 from .utils import areinstances, \
-                   filterdict_invkeep, \
                    filterdict_pop, \
                    func_defaults_varnames, \
                    isinstanceexcept, \
