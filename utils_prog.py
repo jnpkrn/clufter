@@ -8,13 +8,14 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 import logging
 from collections import Mapping, MutableMapping, MutableSequence, MutableSet
 from optparse import Option
-from os import environ, pathsep
+from os import environ, fdopen, isatty, pathsep
 from os.path import abspath, dirname, samefile, \
                     isabs as path_isabs, \
                     isfile as path_isfile, \
                     join as path_join
+from re import compile as re_compile
 from subprocess import Popen
-from sys import stderr, stdin
+from sys import stderr, stdin, stdout
 
 from . import package_name
 from .error import ClufterError
@@ -294,3 +295,122 @@ def defer_common(me, fnc, skip=0):
 def getenv_namespaced(varname, value=None, namespace=package_name().upper()):
     """Obtain value of environment variable prefixed with `namespace + '_'`"""
     return environ.get('_'.join((namespace, varname)), value)
+
+
+# cf. https://github.com/karelzak/util-linux/blob/master/lib/colors.c#L107
+#     https://github.com/karelzak/util-linux/blob/master/include/colors.h#L14
+class FancyOutput(object):
+    """
+    Mean to produce more fancy output based on a simple tagging
+
+    One can tag particular disjoint parts of the message like this:
+
+        This is |error:error| and this is |warning:warning|.
+
+    which produces
+
+        This is error and this is warning.
+
+    but on a terminal, both annotated words will be colorized as specified.
+    Currently, it is hard-coded with a possibility for overrides through `cfg`
+    collective keyword argument;  in the future terminal-colors.d scheme
+    as introduced by util-linux package, see TERMINAL_COLORS.D(5),
+    will be leveraged.
+
+    Usage is simple, instantiate an object of this class, then pass it
+    around your code and call it with a message to be produced (possibly
+    using the introduced tagging) as a parameter.
+
+    Other per-message-emit, keyword, parameters:
+        base    additionally wrap the whole message with this default markup
+                (only markup is taken into account as such)
+        urgent  produce the message regardless of `quiet` parameter
+                in the constructor
+    """
+    logic_colors = (
+        'error',
+        'header',
+        'highlight',
+        'subheader',
+        'warning',
+    )
+    re_color = re_compile(
+        '\|(?P<logic>' + '|'.join(logic_colors) + '):(?P<msg>[^\|]*)\|'
+    )
+
+    colors = dict(
+        black        = "\033[30m",
+        blue         = "\033[34m",
+        brown        = "\033[33m",
+        cyan         = "\033[36m",
+        darkgray     = "\033[1;30m",
+        gray         = "\033[37m",
+        green        = "\033[32m",
+        lightblue    = "\033[1;34m",
+        lightcyan    = "\033[1;36m",
+        lightgray    = "\033[37m",
+        lightgreen   = "\033[1;32m",
+        lightmagenta = "\033[1;35m",
+        lightred     = "\033[1;31m",
+        magenta      = "\033[35m",
+        red          = "\033[31m",
+        yellow       = "\033[1;33m",
+
+        restore      = '\033[0m',
+    )
+
+    table = dict(
+        error     = 'lightred',
+        header    = 'magenta',
+        highlight = 'green',
+        subheader = 'blue',
+        warning   = 'darkgray',
+    )
+
+    @classmethod
+    def get_color(cls, spec):
+        return cls.colors.get(spec, spec if spec.startswith('\033[') or not spec
+                                    else '\033[' + spec)
+
+    # TODO use /etc/terminal-colors.d/clufter.{enable,disable,scheme}
+    def __init__(self, f=stdout, recheck=False, color=None, quiet=False, **cfg):
+        if not isinstance(f, file):
+            f = fdopen(f, "a")
+        self._f = f
+        self._quiet = quiet
+        self._table = self.table.copy().update(cfg)
+        if color is not None:
+            recheck = False
+        else:
+            color = isatty(f.fileno()) if hasattr(f, 'fileno') else False
+        self._handle = self.handle_recheck if recheck else \
+                       self.handle_color if color else self.handle_std
+
+    def __call__(self, s, **kwargs):
+        if self._quiet and not kwargs.pop('urgent', False):
+            return
+        self._handle(s, **kwargs)
+        self._f.flush()
+
+    def handle_recheck(self, s, **kwargs):
+        (self.handle_color if isatty(self._f) else self.handle_std)(s, **kwargs)
+
+    def handle_std(self, s, **kwargs):
+        self._f.write(self.re_color.sub(lambda m: m.group('msg'), s) + '\n')
+
+    def handle_color(self, s, base=None, **kwargs):
+        end = self.colors['restore']
+        flip = end + self.get_color(self.table.get(base, ''))
+        self._f.write(
+            flip
+            + self.re_color.sub(
+                lambda m:
+                    end
+                    + self.get_color(self.table.get(m.group('logic'), ''))
+                    + m.group('msg')
+                    + flip,
+                s
+            )
+            + end
+            + '\n'
+        )
