@@ -16,10 +16,15 @@ def _check_pacemaker_1_2(cmd_ctxt):
     system_extra = cmd_ctxt.get('system_extra', 'UNKNOWN-DISTRO')
     if not cluster_pcs_1_2(system, system_extra):
         from sys import stderr
-        print >>stderr, ("Resulting configuration will likely not be applicable"
-                         " to ``{0}'' system as it seems so outdated as far as"
-                         " Pacemaker not supporting validation schema v1.2"
-                        ).format(': '.join((system, system_extra)))
+        svc_output = cmd_ctxt.get('svc_output',
+                                  lambda s, **kwargs: stderr.write(s + '\n'))
+        svc_output("Resulting configuration will likely not be applicable to"
+                   " ``{0}'' system as it seems so outdated as far as Pacemaker"
+                   " not supporting validation schema v1.2"
+                    .format(': '.join((system, system_extra))),
+                   base="error",
+                   urgent=True,
+        )
 
 
 @Command.deco(('ccs2ccsflat',

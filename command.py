@@ -35,7 +35,8 @@ from .utils_func import apply_aggregation_preserving_depth, \
                         bifilter, \
                         tailshake, \
                         zip_empty
-from .utils_prog import cli_decor, \
+from .utils_prog import FancyOutput, \
+                        cli_decor, \
                         longopt_letters_reprio, \
                         defer_common
 
@@ -451,12 +452,16 @@ class Command(object):
                             )
                             ret(SimpleFormat.FILE, fn)
                         except FormatError:
-                            print >>stderr, "[{0:{1}}] dumping failed".format(
-                                flt.__class__.name, maxl
+                            cmd_ctxt['svc_output'](
+                                "|header:[{0:{1}}]| dumping failed"
+                                .format(flt.__class__.name, maxl),
+                                base='error',
+                                urgent=True
                             )
                         else:
-                            print >>stderr, "[{0:{1}}] dump file: {2}".format(
-                                flt.__class__.name, maxl, fn
+                            cmd_ctxt['svc_output'](
+                                "|header:[{0:{1}}]| dump file: |highlight:{2}|"
+                                .format(flt.__class__.name, maxl, fn)
                             )
                     continue
             # output time!  (INFILTER terminal listed twice in io_chain)
@@ -467,11 +472,11 @@ class Command(object):
                       .format(flt.__class__.name, io_decl))
             # store output somewhere, which even can be useful (use as a lib)
             passout['passout'] = flt_ctxt['out'](*io_decl)
-            if not cmd_ctxt['quiet'] and passout is unused:
-                if io_decl[0] == SimpleFormat.FILE:
-                    print >>stderr, "[{0:{1}}] output file: {2}".format(
-                        flt.__class__.name, maxl, passout['passout']
-                    )
+            if passout is unused and io_decl[0] == SimpleFormat.FILE:
+                cmd_ctxt['svc_output'](
+                    "|header:[{0:{1}}]| output file: |highlight:{2}|"
+                    .format(flt.__class__.name, maxl, passout['passout'])
+                )
 
         map(lambda f: f.close(), magic_fds.itervalues())  # close "magic" fds
         return EC.EXIT_SUCCESS  # XXX some better decision?
@@ -522,7 +527,17 @@ class Command(object):
             'filter_dump':           getattr(opts, 'dump', ()),
             'system':                getattr(opts, 'sys', ''),
             'system_extra':          getattr(opts, 'dist', '').split(','),
-            'quiet':                 getattr(opts, 'quiet', False),
+            'svc_output':            FancyOutput(f=stderr,
+                                                 quiet=getattr(opts, 'quiet',
+                                                               False),
+                                                 color=dict(auto=None,
+                                                            never=False,
+                                                            always=True)[
+                                                                getattr(opts,
+                                                                        'color',
+                                                                        'auto')
+                                                            ]
+                                     ),
         }, bypass=True)
         cmd_ctxt.ensure_filters(apply_intercalate(self._filter_chain))
         io_driver = any2iter(self._fnc(cmd_ctxt, **kwargs))
