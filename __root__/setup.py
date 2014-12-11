@@ -529,7 +529,8 @@ setup(
     packages=find_packages(
         exclude=('ez_setup', '__project__', '__project__.*', '*.tests'),
     ) + ['.'.join(lib.split(sep)) for lib in
-         filter(path_isdir, glob(path_join(pkg_name, 'ext-plugins', 'lib-*')))
+         filter(path_isdir,
+                glob(path_join(pkg_name, 'ext-plugins', 'lib-*', '*')))
     ],
     # Following content is also duplicated (in a simplier/more declarative way)
     # in MANIFEST.in which serves for ``setup.py sdist'' command and is
