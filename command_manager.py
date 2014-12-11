@@ -133,7 +133,7 @@ class CommandManager(PluginManager):
         return ec
 
     def pretty_cmds(self, text_width=76, linesep_width=1,
-                    ind=' ', itemsep='\n', secsep='\n',
+                    ind='  ', itemsep='\n', secsep='\n',
                     cmds_intro='Commands:', aliases_intro='Aliases:',
                     refer_str='alias for {0}'):
         """Return string containing formatted list of commands (name + desc)"""
