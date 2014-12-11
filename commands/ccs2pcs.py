@@ -39,17 +39,17 @@ def ccs2pcs_flatiron(cmd_ctxt,
                      ccs_pcmk="cluster-{ccs2ccsflat.in.hash}.conf",
                      cib="cib-{ccs2ccsflat.in.hash}.xml",
                      _common=XMLFilter.command_common):
-    """CMAN -> Pacemaker-based cluster config. (corosync v1)
+    """(CMAN,rgmanager)->(Corosync/CMAN,Pacemaker) cluster cfg.
 
     More specifically, the output is suitable for Pacemaker integrated
-    with Corosync ver. 1 (Flatiron) as present, e.g., in el6.{5, ..},
-    and consists of Pacemaker pass-through CMAN configuration (~cluster.conf)
-    along with Pacemaker (~cib.xml) one.
+    with Corosync ver. 1 (Flatiron) as present, e.g., in RHEL 6.{5, ..},
+    and consists of Corosync/CMAN configuration incl. fencing pass-through
+    (~cluster.conf) along with Pacemaker proper one (~cib.xml).
 
     Options:
-        input     input CMAN-based cluster configuration file
-        ccs_pcmk  output Pacemaker pass-through CMAN configuration
-        cib       output Pacemaker-based cluster configuration file
+        input     input (CMAN,rgmanager) cluster config. file
+        ccs_pcmk  output Corosync/CMAN (+fencing pass-through) config. file
+        cib       output proper Pacemaker cluster config. file
     """
     _check_pacemaker_1_2(cmd_ctxt)
 
@@ -72,29 +72,29 @@ def ccs2pcs_flatiron(cmd_ctxt,
 
 
 @Command.deco(('ccs2ccsflat',
+                  ('ccs-propagate-cman',
+                      ('ccs2needlexml',
+                          ('xml2simpleconfig'))),
                   ('ccs-revitalize',
                       ('ccsflat2pcsprelude',
                           ('pcsprelude2pcscompact',
                               ('pcscompact2pcs',
-                                  ('pcs2pcsfinal'))))),
-                  ('ccs-propagate-cman',
-                      ('ccs2needlexml',
-                          ('xml2simpleconfig')))))
+                                  ('pcs2pcsfinal')))))))
 def ccs2pcs_needle(cmd_ctxt,
                    input="/etc/cluster/cluster.conf",
                    cib="cib-{ccs2ccsflat.in.hash}.xml",
                    coro="corosync-{ccs2ccsflat.in.hash}.conf",
                    _common=XMLFilter.command_common):
-    """CMAN -> Pacemaker-based cluster config. (corosync v2)
+    """(CMAN,rgmanager)->(Corosync v2,Pacemaker) cluster cfg.
 
     More specifically, the output is suitable for Pacemaker integrated
-    with Corosync ver. 2 (Needle) as present, e.g., in el7, and consists
-    of Pacemaker (~cib.xml) and corosync (~corosync.conf) configurations.
+    with Corosync ver. 2 (Needle) as present, e.g., in RHEL 7, and consists
+    of Pacemaker (~cib.xml) and Corosync (~corosync.conf) configurations.
 
     Options:
-        input    input CMAN-based cluster configuration file
-        cib      output Pacemaker-based cluster configuration file
-        coro     output Corosync v2 configuration file
+        input     input (CMAN,rgmanager) cluster configuration file
+        coro      output Corosync v2 config. file
+        cib       output proper Pacemaker cluster config. file
     """
     _check_pacemaker_1_2(cmd_ctxt)
 
@@ -104,16 +104,16 @@ def ccs2pcs_needle(cmd_ctxt,
         (
             (
                 (
+                    file_proto(coro),
+                ),
+            ),
+            (
+                (
                     (
                         (
                             file_proto(cib),
                         ),
                     ),
-                ),
-            ),
-            (
-                (
-                    file_proto(coro),
                 ),
             ),
         ),
