@@ -43,11 +43,20 @@ opts_common = (
         action='store_true',
         help="refrain from unnecesary messages (usually on stderr)"
     )),
+    (('--color', ), dict(
+        metavar="[WHEN]",
+        action='store',
+        dest='color',
+        default='auto',
+        type='choice',
+        choices=('auto', 'never', 'always'),
+        help="colorize messages if available [%default out of %choices]"
+    )),
     (('--loglevel', ), dict(
         action='store',
         dest='loglevel',
         default=logging.getLevelName(logging.WARNING),
-        type="choice",
+        type='choice',
         choices=map(logging.getLevelName,
                     xrange(logging.NOTSET, logging.CRITICAL + 1,
                            logging.DEBUG - logging.NOTSET)),

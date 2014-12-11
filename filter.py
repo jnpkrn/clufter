@@ -458,7 +458,7 @@ class XMLFilter(Filter, MetaPlugin):
             return ret, global_msgs
         return validate_hook
 
-    def _xslt_get_atom_hook(self, quiet=False, validator_specs={}, **kws):
+    def _xslt_get_atom_hook(self, validator_specs={}, **kws):
         validate_hook = None
         if issubclass(self._out_format, XML):
             # only when out format is XML-based, we can be quite sure the
@@ -471,20 +471,21 @@ class XMLFilter(Filter, MetaPlugin):
             if validator:
                 validate_hook = self._xslt_get_validate_hook(validator, **kws)
         return (lambda ret, error_log=():
-                    self._xslt_atom_hook(ret, error_log, quiet, validate_hook,
-                                         **kws))
+                    self._xslt_atom_hook(ret, error_log, validate_hook, **kws))
 
     @classmethod
-    def _xslt_atom_hook(cls, ret, error_log, quiet=False, validate_hook=None,
-                        **kws):
+    def _xslt_atom_hook(cls, ret, error_log, validate_hook=None, **kws):
         fatal = []
         maxl = kws.get('maxl', 1)
+        svc_output = kws.get('svc_output',
+                             lambda s, **kwargs: stderr.write(s + '\n'))
         for entry in error_log:
-            msg = "[{0:{1}}] XSLT: {2}".format(cls.name, maxl, entry.message)
-            if entry.type != 0 or not quiet:  # avoid logging (suppression)
-                print >>stderr, msg
-                if entry.type != 0:
-                    fatal.append("XSLT: " + entry.message)
+            msg = ("|header:[{0:{1}}]| |subheader:XSLT|: {2}"
+                   .format(cls.name, maxl, entry.message))
+            svc_output(msg, urgent=entry.type != 0,
+                       base=entry.message.startswith('WARNING:') and 'warning')
+            if entry.type != 0:
+                fatal.append("XSLT: " + entry.message)
         if not fatal and validate_hook:
             ret, entries = validate_hook(ret)
             fatal.extend("RNG: " + ':'.join(args2tuple(str(e[0]), str(e[1]),
@@ -873,7 +874,7 @@ class XMLFilter(Filter, MetaPlugin):
             def_first += '<clufter:descent-mix preserve-rest="true"/>'
 
         xslt_atom_hook = self._xslt_get_atom_hook(**filterdict_pop(kwargs,
-            'editor', 'interactive', 'maxl', 'quiet', 'validator_specs'
+            'editor', 'interactive', 'maxl', 'svc_output', 'validator_specs'
         ))
 
         kwargs.setdefault('walk_default_first', def_first)
@@ -894,7 +895,7 @@ class XMLFilter(Filter, MetaPlugin):
         """The same as `filter_proceed_xslt`, context-aware"""
         kwargs = filterdict_keep(ctxt,
             'raw', 'system', 'system_extra',  # <- proceed_xslt / atom_hook -v
-            'editor', 'interactive', 'maxl', 'quiet', 'validator_specs',
+            'editor', 'interactive', 'maxl', 'svc_output', 'validator_specs',
             **kwargs
         )
         return self.filter_proceed_xslt(in_obj, **kwargs)
