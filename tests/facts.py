@@ -10,7 +10,7 @@ from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
 
 from unittest import TestCase
 
-from .utils_cluster import cluster_pcs_flatiron, cluster_pcs_1_2
+from .facts import cluster_pcs_flatiron, cluster_pcs_1_2
 
 
 class TestClusterSystem(TestCase):

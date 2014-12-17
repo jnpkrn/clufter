@@ -8,7 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from ..command import Command, CommandAlias
 from ..filter import XMLFilter
 from ..protocol import protocols
-from ..utils_cluster import cluster_pcs_1_2, cluster_pcs_flatiron
+from ..facts import cluster_pcs_1_2, cluster_pcs_flatiron
 
 
 def _check_pacemaker_1_2(cmd_ctxt):
