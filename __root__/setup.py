@@ -40,7 +40,7 @@ def doraise_py_compile(file, cfile=None, dfile=None, doraise=False):
     orig_py_compile(file, cfile=cfile, dfile=dfile, doraise=True)
 py_compile.compile = doraise_py_compile
 
-PREFER_GITHUB=True
+PREFER_GITHUB = True
 DEBUG = getenv("SETUPDEBUG")
 DBGPFX = str(__file__)
 
@@ -169,7 +169,7 @@ class develop(setuptools_develop):
 
 
 class install(setuptools_install):
-     def finalize_options(self):
+    def finalize_options(self):
         self.single_version_externally_managed = True
         orig_root = self.root  # avoid original install fail on SVEM + not root
         if not orig_root:
