@@ -183,9 +183,8 @@ class Command(object):
                 #    ('A',
                 #        ('B',
                 #            ('C')))
-                # XXX: rethink whole function to use less kludges
-                if new and (not any(filter(tuplist, i_origin))
-                            or any(filter(tuplist, i_tail))):
+                # XXX: whole function still quite kludgy
+                if new and len(i_origin) > 2:
                     me((i, ) + i_tail, analysis_acc)
                 else:
                     me((i, ) + ((head_tail(*i_tail), ), ), analysis_acc)
