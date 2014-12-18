@@ -6,19 +6,19 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 try:
-    from setuptools import setup, find_packages, Extension
+    from setuptools import setup, Extension
 except ImportError:
     from ez_setup import use_setuptools
     use_setuptools()
-    from setuptools import setup, find_packages, Extension
+    from setuptools import setup, Extension
 
 from collections import Callable
 from glob import glob
-from os import getenv, sep
+from os import getcwd, getenv, sep, walk
 from os.path import (join as path_join, basename as path_basename,
                      dirname as path_dirname, normpath as path_norm,
                      isabs as path_isabs, isdir as path_isdir,
-                     splitext as path_splitext)
+                     isfile as path_isfile, splitext as path_splitext)
 from shutil import copy, copymode
 from sys import prefix as sys_prefix
 
@@ -55,6 +55,27 @@ bifilter = \
     lambda fnc, seq: \
         reduce(lambda acc, x: acc[int(not fnc(x))].append(x) or acc,
                seq, ([], []))
+
+# this is needed to workaround naive approach in recent setuptools
+# (https://bitbucket.org/pypa/setuptools/issue/195/no-longer-follows-symbolic)
+# which follows symlinks but cannot prune the excluded dirs (perhaps
+# declared so as to prevent infinite symlink recursion at the first place!)
+# directly at the point of unfolding the directory tree traversal further
+def find_packages(where=None, exclude=()):
+    ret = []
+    if not where:
+        where = getcwd()
+    excl_set = set(e.strip('*.') for e in exclude)  # rough overapproximation!
+    for root, dirs, files in walk(where, followlinks=True):
+        assert '.' not in root
+        pkg_root = root[len(where):].lstrip(sep).replace(sep, '.')
+        dirs[:] = [d for d in dirs
+                   if d not in excl_set
+                   and '.' not in d
+                   and path_isfile(path_join(root, d, '__init__.py'))]
+        ret.extend('.'.join((pkg_root, d)).lstrip('.') for d in dirs)
+    return ret
+
 
 # http://code.activestate.com/recipes/502261-python-distutils-pkg-config/#c1
 def pkgconfig(*packages, **kw):
