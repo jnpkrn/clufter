@@ -9,7 +9,7 @@ from ..filter import Filter
 from ..facts import cmd_pkg_install
 
 
-@Filter.deco('string-iter', 'SimpleFormat')
+@Filter.deco('string-iter', 'command')
 def pkgs2installcmd(flt_ctxt, in_obj):
     """Outputs installation command for packages on input"""
     return ('bytestring', cmd_pkg_install(in_obj('native', protect_safe=True),
