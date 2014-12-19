@@ -25,7 +25,7 @@ from . import package_name
 from .error import ClufterError, ClufterPlainError
 from .format import CompositeFormat, XML
 from .plugin_registry import MetaPlugin, PluginRegistry
-from .utils import args2tuple, \
+from .utils import args2tuple, arg2wrapped, \
                    filterdict_keep, filterdict_pop, \
                    head_tail, hybridproperty, \
                    tuplist
@@ -161,6 +161,7 @@ class Filter(object):
             flt_ctxt = cmd_ctxt.ensure_filter(self)
         outdecl = self._fnc(flt_ctxt, in_obj)
         outdecl_head, outdecl_tail = head_tail(outdecl)
+        outdecl_tail = arg2wrapped(outdecl_tail)
         fmt_kws = filterdict_keep(flt_ctxt, *self.out_format.context, **fmt_kws)
         return self.out_format(outdecl_head, *outdecl_tail, **fmt_kws)
 
