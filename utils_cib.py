@@ -54,3 +54,11 @@ class ResourceSpec(object):
         ret += ('<xsl:attribute name="type">{0}</xsl:attribute>'
                 .format(self._type))
         return ret
+
+    @property
+    def xsl_attrs_select(self):
+        ret = "@class='{0}'".format(self._class)
+        if self._provider is not None:
+            ret += " and @provider='{0}'".format(self._provider)
+        ret += " and @type='{0}'".format(self._type)
+        return ret

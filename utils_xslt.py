@@ -8,6 +8,9 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from .utils_xml import NAMESPACES, XSL
 
 
+NL = '&#xa;'
+
+
 def xslt_identity(particular_selector=''):
     return '''\
     <xsl:template match="{0}@*|{0}node()"
