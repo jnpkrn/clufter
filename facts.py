@@ -52,6 +52,8 @@ cluster_map = {
                 ((13, ), {
                     'corosync':                      (1, 3),
                     'pacemaker[cman]':               (1, 1, 4),
+                    #---
+                    'pkg::mysql':                   'mysql-server',
                 }),
                 ((14, ), {
                     'corosync':                      (1, 4),
@@ -66,6 +68,9 @@ cluster_map = {
                 }),
                 ((19, ), {
                     'pacemaker[coro]':               (1, 1, 9),
+                    #---
+                    # https://fedoraproject.org/wiki/Features/ReplaceMySQLwithMariaDB
+                    'pkg::mysql':                   'mariadb-server',
                 }),
                 ((21, ), {
                     'pacemaker[coro]':               (1, 1, 11),
@@ -74,6 +79,11 @@ cluster_map = {
             'redhat': (
                 ((6, 0), {
                     'corosync':                      (1, 2),
+                    #---
+                    'pkg::lvm':                     'lvm2',
+                    'pkg::mysql':                   'mysql-server',
+                    'pkg::postgresql':              'postgresql-server',
+                    'pkg::virsh':                   'libvirt-client',
                 }),
                 ((6, 2), {
                     'corosync':                      (1, 4),
@@ -87,6 +97,8 @@ cluster_map = {
                 ((7, 0), {
                     'corosync':                      (2, 3),
                     'pacemaker[coro]':               (1, 1, 10),
+                    #---
+                    'pkg::mysql':                   'mariadb-server',
                 }),
                 ((7, 1), {
                     'pacemaker[acls,coro]':          (1, 1, 12),
@@ -226,10 +238,7 @@ def infere_dist(dist, branches=None):
                                 cur_acc[kk] = "[{0}]".format(','.join(k_extra))
                             cur_acc[k] = v
                         for k, v in cur_acc.iteritems():
-                            if not isinstance(v, basestring):
-                                dver_branches[k] = v
-                                continue
-                            assert v.startswith('[')
+                            dver_branches[k] = v
                         dver_branches['__proceeded__'] = '[true]'
 
                 if dist_ver is None and not ret:  # alt. above: dist_ver = ''
@@ -349,6 +358,20 @@ def cluster_pcs_1_2(*sys_id):
         infer("comp:pacemaker=1.0", *sys_id),
         infer("comp:pacemaker=0", *sys_id),
     ))
+
+
+def _find_meta(meta, which, *sys_id, **kwargs):
+    meta_comp = '::'.join((meta, which))
+    res = infer(':'.join(('comp', meta_comp)), *sys_id)
+    for i in res:
+        if meta_comp in i:
+            return i[meta_comp]
+    else:
+        return kwargs.get('default')
+
+
+def package(which, *sys_id):
+    return _find_meta('pkg', which, *sys_id, default=which)
 
 
 cluster_systems = (cluster_pcs_flatiron, cluster_pcs_needle)
