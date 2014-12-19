@@ -312,9 +312,9 @@ def infer(query, system=None, system_extra=None):
     prev, ret = None, None
     q = [p.strip().split(':', 1) for p in query.split('+')]
     if system:
-        q.append(('sys', system))
+        q.append(('sys', system.lower()))
     if system_extra:
-        q.append(('dist', '='.join(system_extra[:2])))
+        q.append(('dist', '='.join(system_extra[:2]).lower()))
     q.sort(key=lambda t: inference_rules.get(t[0], rule_error)[0])
     level = ''
     for q_type, q_content in q:
