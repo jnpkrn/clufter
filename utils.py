@@ -17,7 +17,7 @@ args2sgpl = \
     lambda x=(), *y: x if not y and tuplist(x) else (x, ) + y
 arg2wrapped = \
     lambda x=(), *y: \
-        x if not y and isinstance(x, tuple) and len(x) > 1 else (x, ) + y
+        x if not y and isinstance(x, tuple) else (x, ) + y
 args2unwrapped = \
     lambda x=None, *y: x if not y else (x, ) + y
 # turn args into tuple unconditionally
