@@ -178,6 +178,7 @@ class SharedOptionParser(OptionParser):
         if 'formatter' not in kwargs:
             kwargs['formatter'] = self.formatter_nonexpert
         OptionParser.__init__(self, **kwargs)
+        self.formatter_expert.set_parser(self)  # ensure %default expansion
         self.description_raw = ''
 
     def format_description(self, formatter):
