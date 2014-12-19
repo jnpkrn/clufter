@@ -39,6 +39,17 @@ def parser_callback_help(option, opt_str, value, parser, arg=False, full=False):
 
 
 opts_common = (
+    (('--sys', ), dict(
+        action='store',
+        default=_system,
+        expert=True,
+        help="override autodetected system [%default]"
+    )),
+    (('--dist', ), dict(
+        action='store',
+        default=','.join(_system_extra),
+        help="override autodetected target distro (for SYS ~ Linux) [%default]"
+    )),
     (('-q', '--quiet', ), dict(
         action='store_true',
         help="refrain from unnecesary messages (usually on stderr)"
@@ -52,6 +63,18 @@ opts_common = (
         choices=('auto', 'never', 'always'),
         help="colorize messages if available [%default out of %choices]"
     )),
+    (('-d', '--debug'), dict(
+        action='store_const',
+        dest='loglevel',
+        const='DEBUG',
+        help="shortcut for --loglevel=DEBUG"
+    )),
+    (('--logfile', ), dict(
+        action='store',
+        dest='logfile',
+        default='',
+        help="log to specified file instead of stderr"
+    )),
     (('--loglevel', ), dict(
         action='store',
         dest='loglevel',
@@ -62,31 +85,7 @@ opts_common = (
                            logging.DEBUG - logging.NOTSET)),
         help="set loglevel to specified value [%default out of %choices]"
     )),
-    (('--logfile', ), dict(
-        action='store',
-        dest='logfile',
-        default='',
-        help="log to specified file instead of stderr"
-    )),
-    # TODO other logging related stuff (file, ...)
-    (('-d', '--debug'), dict(
-        action='store_const',
-        dest='loglevel',
-        const='DEBUG',
-        help="shortcut for --loglevel=DEBUG"
-    )),
-    (('--sys', ), dict(
-        action='store',
-        default=_system,
-        expert=True,
-        help="override autodetected system [%default]"
-    )),
-    (('--dist', ), dict(
-        action='store',
-        default=','.join(_system_extra),
-        expert=True,
-        help="override autodetected distro if `sys' is `Linux' [%default]"
-    )),
+    # TODO other logging related stuff (if any)
 )
 
 opts_main = (
@@ -106,14 +105,13 @@ opts_main = (
         callback=lambda *args: parser_callback_help(*args, arg=True, full=True),
         help="show the full help message (global or command-specific) and exit"
     )),
+    (('-l', '--list'), dict(
+        action='store_true',
+        help="list commands and exit"
+    )),
     (('-v', '--version'), dict(
         action='store_true',
         help="show version details and exit"
-    )),
-    (('-s', '--skip-ext'), dict(
-        action='store_true',
-        dest='skip_ext',
-        help="do not use standard external plugins"
     )),
     (('-e', '--ext'), dict(
         action='append',
@@ -121,9 +119,10 @@ opts_main = (
         expert=True,
         help="specify dir/s (as PATH/multiplied) scanned for plugins"
     )),
-    (('-l', '--list'), dict(
+    (('-s', '--skip-ext'), dict(
         action='store_true',
-        help="list commands and exit"
+        dest='skip_ext',
+        help="do not use standard external plugins"
     )),
     (('--completion-bash', ), dict(
         action='store_const',
