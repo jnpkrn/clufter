@@ -54,6 +54,8 @@ cluster_map = {
                     'pacemaker[cman]':               (1, 1, 4),
                     #---
                     'pkg::mysql':                   'mysql-server',
+                    #---
+                    'cmd::pkg-install':             'yum install -y {packages}',
                 }),
                 ((14, ), {
                     'corosync':                      (1, 4),
@@ -84,6 +86,8 @@ cluster_map = {
                     'pkg::mysql':                   'mysql-server',
                     'pkg::postgresql':              'postgresql-server',
                     'pkg::virsh':                   'libvirt-client',
+                    #---
+                    'cmd::pkg-install':             'yum install -y {packages}',
                 }),
                 ((6, 2), {
                     'corosync':                      (1, 4),
@@ -372,6 +376,13 @@ def _find_meta(meta, which, *sys_id, **kwargs):
 
 def package(which, *sys_id):
     return _find_meta('pkg', which, *sys_id, default=which)
+
+
+def cmd_pkg_install(pkgs, *sys_id):
+    cmd = _find_meta('cmd', 'pkg-install', *sys_id)
+    if cmd:
+        cmd = cmd.format(packages=' '.join(pkgs))
+    return cmd
 
 
 cluster_systems = (cluster_pcs_flatiron, cluster_pcs_needle)
