@@ -10,7 +10,7 @@ from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
 
 from unittest import TestCase
 
-from .facts import cluster_pcs_flatiron, cluster_pcs_1_2
+from .facts import cluster_pcs_flatiron, cluster_pcs_1_2, package
 
 
 class TestClusterSystem(TestCase):
@@ -45,6 +45,21 @@ class TestClusterSystem(TestCase):
         self.assertTrue (cluster_pcs_1_2('linux', ('fedora', '16'     )))
         self.assertTrue (cluster_pcs_1_2('linux', ('fedora', '17'     )))
         self.assertFalse(cluster_pcs_1_2('linux', ('debian', 'squeeze')))
+
+
+class TestPackage(TestCase):
+    def test_package_rhel60(self):
+        sys_id = 'linux', ('redhat', ' 6.0')
+        self.assertEqual(package('lvm',        *sys_id), 'lvm2')
+        self.assertEqual(package('mysql',      *sys_id), 'mysql-server')
+        self.assertEqual(package('postgresql', *sys_id), 'postgresql-server')
+        self.assertEqual(package('virsh',      *sys_id), 'libvirt-client')
+    def test_package_rhel70(self):
+        sys_id = 'linux', ('redhat', ' 7.0')
+        self.assertEqual(package('lvm',        *sys_id), 'lvm2')
+        self.assertEqual(package('mysql',      *sys_id), 'mariadb-server')
+        self.assertEqual(package('postgresql', *sys_id), 'postgresql-server')
+        self.assertEqual(package('virsh',      *sys_id), 'libvirt-client')
 
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))
