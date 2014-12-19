@@ -9,7 +9,8 @@ from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
 
 from unittest import TestCase
 
-from .formats.command import command
+from .format_manager import FormatManager
+command = FormatManager.init_lookup('command').formats['command']
 
 
 class FormatsCommandTestCase(TestCase):
