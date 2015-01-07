@@ -5,14 +5,14 @@
 """Command context, i.e., state distributed along filters chain"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import logging
 from collections import MutableMapping
+from logging import getLogger
 
 from .error import ClufterError
 from .utils import isinstanceexcept
 from .utils_prog import TweakedDict
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 
 class CommandContextError(ClufterError):

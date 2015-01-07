@@ -5,7 +5,7 @@
 """Filter manager"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import logging
+from logging import getLogger
 
 from .error import ClufterError
 from .filter import filters
@@ -13,7 +13,7 @@ from .format import CompositeFormat
 from .format_manager import FormatManager
 from .plugin_registry import PluginManager
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 
 class FilterManagerError(ClufterError):

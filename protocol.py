@@ -5,15 +5,14 @@
 """Base protocol stuff (metaclass, etc.)"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import logging
-
 from collections import MutableMapping
+from logging import getLogger
 
 from .plugin_registry import PluginRegistry
 from .utils import args2sgpl, tuplist
 from .utils_prog import cli_undecor
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 protodict = lambda x: isinstance(x, MutableMapping) and 'passin' in x
 protodictval = lambda x: args2sgpl(x['passin']) if protodict(x) else x
