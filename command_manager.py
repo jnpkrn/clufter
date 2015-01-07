@@ -6,7 +6,9 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
+from os.path import abspath, dirname, join
 from textwrap import wrap
+from sys import modules
 
 from .command import commands, CommandAlias
 from .error import ClufterError, ClufterPlainError, \
@@ -133,13 +135,17 @@ class CommandManager(PluginManager):
         return ec
 
     def pretty_cmds(self, text_width=77, linesep_width=1,
-                    ind='  ', itemsep='\n', secsep='\n',
-                    cmds_intro='Commands:', aliases_intro='Aliases:',
-                    refer_str='alias for {0}'):
+                    ind='  ', itemsep='\n', secsep='\n', intmark=' *',
+                    cmds_intro='Commands', aliases_intro='Aliases:',
+                    ellip_yes='; only built-in ones included:',
+                    ellip_no='; those without star (\'*\') are built-in:',
+                    ref_str='alias for {0}', ellip=False):
         """Return string containing formatted list of commands (name + desc)"""
+        pth = join(dirname(abspath(__file__)), self._registry.__name__)  # int.
         cmds_aliases = [
-            ([(name, refer_str.format(obj) if i else
-                     obj.__doc__.splitlines()[0]) for name, obj in sorted(cat)],
+            ([(name, ref_str.format(obj) if i else obj.__doc__.splitlines()[0],
+               i or dirname(modules[obj.__class__.__module__].__file__) == pth)
+              for name, obj in sorted(cat)],
               max(tuple(len(name) for name, _ in cat)) if cat else 0)
             for i, cat in enumerate(
                 bifilter(lambda (name, obj): not isinstance(obj, basestring),
@@ -148,15 +154,16 @@ class CommandManager(PluginManager):
         ]
         width = max(i[1] for i in cmds_aliases) + linesep_width
         desc_indent = ind + (width * ' ')
-        text_width -= len(desc_indent)
-        text_width = max(text_width, 20)
+        text_width = max(text_width - len(desc_indent), 20)
+        cmds_intro += ellip_yes if ellip else ellip_no
         return secsep.join(
             itemsep.join([header] + [
                 '{0}{1:{width}}{2}'.format(
-                    ind, name, '\n'.join(
+                    ind if internal else intmark + ind[len(intmark):],
+                    name, '\n'.join(
                         wrap(desc,
                              width=text_width, subsequent_indent=desc_indent)
                     ), width=width
-                ) for name, desc in i[0]
+                ) for name, desc, internal in i[0] if internal or not ellip
             ]) for header, i in zip((cmds_intro, aliases_intro), cmds_aliases)
         )
