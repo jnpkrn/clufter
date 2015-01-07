@@ -5,10 +5,10 @@
 """Easy (at least for usage) plugin framework"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import logging
 from contextlib import contextmanager
 from fnmatch import translate
 from imp import PY_SOURCE, find_module, get_suffixes, load_module
+from logging import getLogger
 from os import walk
 from os.path import abspath, dirname, isabs, isdir, join, splitext
 from re import compile as re_compile
@@ -25,7 +25,7 @@ from .utils import args2tuple, \
 from .utils_func import apply_intercalate
 from .utils_prog import ProtectedDict, cli_decor, getenv_namespaced
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 module_ext = dict((t, s) for s, m, t in get_suffixes())[PY_SOURCE]
 
 here = dirname(abspath(__file__))

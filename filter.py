@@ -5,8 +5,8 @@
 """Base filter stuff (metaclass, decorator, etc.)"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import logging
 from copy import deepcopy
+from logging import getLogger
 from os import environ, isatty, stat
 from os.path import dirname, join
 from shlex import split as shlex_split
@@ -47,7 +47,7 @@ except ImportError:
     EDITOR = ''
 EDITOR = environ.get('EDITOR', EDITOR)
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 DEFAULT_ROOT_DIR = join(dirname(__file__), 'filters')
 

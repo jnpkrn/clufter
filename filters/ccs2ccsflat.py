@@ -5,7 +5,7 @@
 """ccs2ccsflat filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import logging
+from logging import getLogger
 from os.path import split as path_split
 from subprocess import PIPE
 
@@ -17,7 +17,7 @@ try:
 except ImportError:
     CCS_FLATTEN = 'ccs_flatten'
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 
 @Filter.deco('ccs', 'ccs-flat')

@@ -5,9 +5,9 @@
 """Base command stuff (TBD)"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import logging
 from collections import MutableMapping
 from itertools import izip_longest
+from logging import getLogger
 from sys import stderr
 from time import time
 
@@ -40,7 +40,7 @@ from .utils_prog import FancyOutput, \
                         longopt_letters_reprio, \
                         defer_common
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 protodecl = lambda x: len(x) == 2 and isinstance(x[0], Filter)
 

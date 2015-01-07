@@ -5,7 +5,7 @@
 """Command manager"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-import logging
+from logging import getLogger
 from os.path import abspath, dirname, join
 from textwrap import wrap
 from sys import modules
@@ -19,7 +19,7 @@ from .utils import filterdict_keep
 from .utils_func import apply_intercalate, bifilter
 from .utils_prog import make_options, set_logging
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 
 class CommandManagerError(ClufterError):
