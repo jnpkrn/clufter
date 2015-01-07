@@ -18,8 +18,10 @@
 .*
 /tests/*/
 /tests/*-archive
+/ext-plugins/*
 
 !/.gitignore
 !/.travis.yml
+!/ext-plugins/lib-{general,ccs,pcs}
 !/tests/XMLFormat-walk/
 !/tests/formats/
