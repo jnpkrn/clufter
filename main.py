@@ -254,9 +254,13 @@ def run(argv=None, *args):
         cmds = cm.pretty_cmds(ind=' ' * parser.formatter.indent_increment,
                               linesep_width=2,
                               cmds_intro="Commands"
-                                         " (as available, but stable):",
+                                         " (as available, but stable)",
                               aliases_intro="Aliases thereof"
-                                            " (environment-specific):")
+                                            " (environment-specific):",
+                              ellip_yes='; built-in only' + (
+                                         ' required:' if opts.skip_ext else
+                                        ', use --list to get all:'),
+                              ellip=opts.skip_ext or not opts.list)
         if opts.list:
             print cmds
         elif opts.completion:
