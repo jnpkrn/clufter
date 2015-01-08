@@ -15,7 +15,7 @@ except ImportError:
 from collections import Callable
 from glob import glob
 from os import chdir, getcwd, getenv, sep, walk
-from os.path import (join as path_join,
+from os.path import (join as path_join, realpath as path_real,
                      basename as path_basename, dirname as path_dirname,
                      abspath as path_abs, normpath as path_norm,
                      isabs as path_isabs, isdir as path_isdir,
@@ -45,8 +45,9 @@ PREFER_GITHUB = True
 DEBUG = getenv("SETUPDEBUG")
 DBGPFX = str(__file__)
 
-here = path_abs(path_dirname(__file__))
-chdir(here)  # memoize the trick in run-setup.py + play better with pip install
+here = path_abs(path_dirname(path_real(__file__)))
+prev_cwd = getcwd()
+chdir(here)  # make setup.py possess expected CWD + play better with pip install
 
 #
 # Custom machinery extending setuptools/distutils with mechanism
@@ -638,3 +639,5 @@ setup(
         ),
     },
 )
+
+chdir(prev_cwd)  # restore original CWD (in case we are eval'd or something)
