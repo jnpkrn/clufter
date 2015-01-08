@@ -4,4 +4,4 @@ use_dir="$(
     ls -l "$(echo "${0}" | sed 's|\./||')" | cut -d'>' -f2 | awk '{print $NF}'
   )"
 )"
-(cd "${use_dir}"; python setup.py "$@")
+python "${use_dir}/setup.py" "$@"  # setup.py now chdir's on its own
