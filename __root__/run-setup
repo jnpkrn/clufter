@@ -1,7 +1,0 @@
-#!/bin/sh
-use_dir="$(
-  dirname "$(pwd)/$(
-    ls -l "$(echo "${0}" | sed 's|\./||')" | cut -d'>' -f2 | awk '{print $NF}'
-  )"
-)"
-python "${use_dir}/setup.py" "$@"  # setup.py now chdir's on its own
