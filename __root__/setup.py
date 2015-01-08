@@ -14,9 +14,10 @@ except ImportError:
 
 from collections import Callable
 from glob import glob
-from os import getcwd, getenv, sep, walk
-from os.path import (join as path_join, basename as path_basename,
-                     dirname as path_dirname, normpath as path_norm,
+from os import chdir, getcwd, getenv, sep, walk
+from os.path import (join as path_join,
+                     basename as path_basename, dirname as path_dirname,
+                     abspath as path_abs, normpath as path_norm,
                      isabs as path_isabs, isdir as path_isdir,
                      isfile as path_isfile, splitext as path_splitext)
 from shutil import copy, copymode
@@ -43,6 +44,9 @@ py_compile.compile = doraise_py_compile
 PREFER_GITHUB = True
 DEBUG = getenv("SETUPDEBUG")
 DBGPFX = str(__file__)
+
+here = path_abs(path_dirname(__file__))
+chdir(here)  # memoize the trick in run-setup.py + play better with pip install
 
 #
 # Custom machinery extending setuptools/distutils with mechanism
@@ -102,7 +106,7 @@ class LazyRead(object):
     Note: only direct use, str methods and '+' operator supported.
     """
     def __init__(self, filename, postproc=lambda c: c):
-        self._filename = filename
+        self._filename = path_norm(path_join(here, filename))  # chdir'd, but...
         self._postproc = postproc
         self._content = None
     @property
