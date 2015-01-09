@@ -27,13 +27,17 @@ Summary:        Tool for transforming/analyzing cluster configuration formats
 License:        GPLv2+
 URL:            %{clufter_url_main}%{clufter_name}
 
-# clufter as such module ccs_flatten
+# autosetup
+BuildRequires:  git
+
+# Python side
+BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 %if %{clufter_check}
 BuildRequires:  python-lxml
 %endif
 Requires:       python-lxml
-# ccs_flatten
+# ccs_flatten helper
 BuildRequires:  libxml2-devel
 Requires:       libxml2
 # "extras"
