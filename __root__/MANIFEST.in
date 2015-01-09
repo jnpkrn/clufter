@@ -5,6 +5,7 @@ include run-check run-dev
 graft ccs-flatten
 recursive-exclude ccs-flatten ccs_flatten *.o Makefile.setup config.h .*/*
 
+exclude clufter/setup.py
 prune clufter/tests
 
 recursive-include doc cib-ids.txt env_vars.txt rgmanager-pacemaker.*
