@@ -72,8 +72,11 @@ def find_packages(where=None, exclude=()):
         where = getcwd()
     excl_set = set(e.strip('*.') for e in exclude)  # rough overapproximation!
     for root, dirs, files in walk(where, followlinks=True):
-        assert '.' not in root
-        pkg_root = root[len(where):].lstrip(sep).replace(sep, '.')
+        pkg_root = root[len(where):].lstrip(sep)
+        if '.' in pkg_root:  # avoid *.egg-info and the like/invalid pkg name
+            dirs[:] = []
+            continue
+        pkg_root = pkg_root.replace(sep, '.')
         dirs[:] = [d for d in dirs
                    if d not in excl_set
                    and '.' not in d
