@@ -6,10 +6,15 @@
 """Machinery entry point -- to be run from in-repo location"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+# influenced with env. variables:
+# - LOGLEVEL:  redefine logging level (default: debug) if LOGSKIP not present
+# - PREFERSYS: whether to prefer site-package upon clash (default: false)
+
+
 import sys
 from inspect import getabsfile
-from os.path import abspath, basename, dirname, join, realpath
-from os import listdir
+from os.path import abspath, basename, dirname, join, realpath, split
+from os import environ, listdir
 
 
 # inspired by http://stackoverflow.com/a/22881871
@@ -27,7 +32,6 @@ real_script_path = realpath(script_path)
 if (basename(real_script_path) != basename(sys.argv[0])
     and 'LOGSKIP' not in globals()):
     # when execfile'd from tests or so, verbose logging desired
-    from os import environ
     import logging
     logging.basicConfig()
     logging.getLogger().setLevel(environ.get('LOGLEVEL') or logging.DEBUG)
@@ -37,16 +41,24 @@ root = dirname(real_script_path)
 # XXX very similar to setup.py, but better
 self_discovery_plan = [join(root, '__project__')]
 while True:
-    pkg = {}
-    maybe_root = self_discovery_plan.pop()
-    maybe_root_real = realpath(maybe_root)
+    pkg, backup_mod, maybe_root = {}, None, self_discovery_plan.pop()
+    maybe_root_real_head, maybe_root_real = split(realpath(maybe_root))
     maybe_root = basename(maybe_root)
     try:
-        sys.path.insert(0, dirname(maybe_root_real))
-        pkg = __import__(basename(maybe_root_real), globals=pkg, level=1)
+        sys.path.insert(0, maybe_root_real_head)
+        backup_mod = sys.modules.get(maybe_root_real)
+        if backup_mod:
+            if not hasattr(backup_mod, '__path__'):  # not the case for builtins
+                continue
+            backup_mod = None
+            if not environ.get('PREFERSYS', 0):
+                backup_mod = sys.modules.pop(maybe_root_real)
+        pkg = __import__(basename(maybe_root_real), globals=pkg, level=-1)
         break
     except ImportError:
         sys.path.pop(0)
+        if backup_mod:
+            sys.modules[maybe_root_real] = backup_mod
         if maybe_root == '__project__':
             from fnmatch import filter as fnfilter
             self_discovery_plan.extend(p[:-len('.egg-info')].split('-', 1)[0]
@@ -57,9 +69,8 @@ while True:
             raise
 
 # set the correct __package__ for relative imports
-__package__ = basename(maybe_root_real)  # XXX optionally strip whole '-..' part
-if __package__ not in sys.modules:
-    sys.modules[__package__] = pkg
+__package__ = maybe_root_real  # XXX optionally strip whole '-..' part
+assert __package__ in sys.modules
 
 if __name__ == '__main__':
     if basename(real_script_path) == basename(sys.argv[0]):  # __file__ undef?
