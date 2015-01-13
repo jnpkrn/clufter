@@ -20,8 +20,21 @@ copyright = """\
 Copyright 2014 Red Hat, Inc.
 Licensed under {0}
 """.format(license).rstrip()
+
+pkg_name = globals().get('__root__')
+
+def package_name():
+    global pkg_name
+    if pkg_name is None:
+        from os import readlink
+        from os.path import abspath, basename, dirname, islink
+        here = dirname(abspath(__file__))
+        pkg_name = basename(abspath(readlink(here) if islink(here) else here))
+    return pkg_name
+
 # XXX eventually there should be precise plugin authorship tracking
-author = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com> and plugin authors"
+author = ("Jan Pokorný <jpokorny+pkg-{0} @at@ Red Hat .dot. com>"
+          " and plugin authors").format(package_name())
 
 metadata = (version, copyright, author)
 
@@ -36,21 +49,10 @@ framework (capable of XSLT) offers also other uses through its plugin library.
 #cluster configuration of supported cluster stacks, and other
 #convenient actions.
 
-pkg_name = globals().get('ROOT')
 
 _deobfuscate_email = (lambda what: what.replace(' @at@ ', '@')
                                        .replace(' .dot. ', '.')
                                        .replace('@Red Hat.', '@redhat.'))
-
-
-def package_name():
-    global pkg_name
-    if pkg_name is None:
-        from os import readlink
-        from os.path import abspath, basename, dirname, islink
-        here = dirname(abspath(__file__))
-        pkg_name = basename(abspath(readlink(here) if islink(here) else here))
-    return pkg_name
 
 
 def author_text(justname=None, first=False):
