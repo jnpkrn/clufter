@@ -209,7 +209,7 @@ fi
 %exclude %{python2_sitelib}/%{clufter_name}/ext-plugins/lib-ccs
 %exclude %{python2_sitelib}/%{clufter_name}/ext-plugins/lib-pcs
 %{python2_sitelib}/%{clufter_name}
-%{python2_sitelib}/%{clufter_name}-%{clufter_version_norm}-*.egg-info
+%{python2_sitelib}/%{clufter_name}-*.egg-info
 %{clufter_ccs_flatten}
 %{clufter_ra_metadata_dir}
 %doc %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
