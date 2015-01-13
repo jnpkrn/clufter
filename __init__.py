@@ -9,7 +9,7 @@ _git_tags = [i for i in _git_deco_arr if i.startswith("tag: v")]
 _git_branches = [i for i in _git_deco_arr if i not in _git_tags + ['HEAD']]
 if _git_branches and not _git_branches[-1].endswith('master') or alpha:
     if alpha:  # if not alpha, it is still not a true serving release
-        version += '_alpha'  # no dashes
+        version += 'a'  # no dashes(?)
     if _git_hash:
         version += '+git.{0}'.format(_git_hash)
 elif _git_tags:
