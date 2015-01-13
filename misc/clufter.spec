@@ -1,5 +1,5 @@
 %{!?clufter_name:    %global clufter_name     clufter}
-%{!?clufter_version: %global clufter_version  0.3.3a}
+%{!?clufter_version: %global clufter_version  0.3.3}
 %{!?clufter_check:   %global clufter_check    1}
 
 %{!?clufter_pylib:   %global clufter_pylib    python-%{clufter_name}}
@@ -246,5 +246,5 @@ fi
 %global cl_jp_r Jan Pokorný <jpokorny+rpm-clufter @at@ fedoraproject .dot. org>
 %global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
-%{cl_entry 2015-01-13 0.3.3a-1 %{cl_jp}
+%{cl_entry 2015-01-13 0.3.3-1 %{cl_jp}
   Initial build}
