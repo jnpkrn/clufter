@@ -201,7 +201,7 @@ fi
 
 %files -n %{clufter_pylib}
 %defattr(-,root,root,-)
-%doc %{_defaultdocdir}/%{clufter_source}/*
+%doc %{_defaultdocdir}/%{clufter_source}
 %exclude %{clufter_script}
 %exclude %{python2_sitelib}/%{clufter_name}/__main__.py*
 %exclude %{python2_sitelib}/%{clufter_name}/main.py*
