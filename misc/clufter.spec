@@ -44,6 +44,7 @@ Requires:       libxml2
 Requires:       %{clufter_editor}
 # dependency of eponymous subpackage on particular Python library subpackage
 Requires:       %{clufter_pylib} = %{version}-%{release}
+BuildArch:      noarch
 
 
 Source0:        %{clufter_url_dist}%{clufter_name}/%{clufter_source}.tar.gz
@@ -76,6 +77,7 @@ This package contains clufter library including built-in plugins.
 Group:          System Environment/Libraries
 Summary:        Extra clufter plugins usable for/as generic/auxiliary products
 Requires:       %{clufter_pylib} = %{version}-%{release}
+BuildArch:      noarch
 
 %description -n %{clufter_extlib}-general
 %{clufter_description}
@@ -91,6 +93,7 @@ Group:          System Environment/Libraries
 Summary:        Extra plugins for transforming/analyzing CMAN configuration
 Requires:       %{clufter_pylib} = %{version}-%{release}
 Requires:       %{clufter_extlib}-general = %{version}-%{release}
+BuildArch:      noarch
 
 %description -n %{clufter_extlib}-ccs
 %{clufter_description}
@@ -105,6 +108,7 @@ Group:          System Environment/Libraries
 Summary:        Extra plugins for transforming/analyzing Pacemaker configuration
 Requires:       %{clufter_pylib} = %{version}-%{release}
 Requires:       %{clufter_extlib}-general = %{version}-%{release}
+BuildArch:      noarch
 
 %description -n %{clufter_extlib}-pcs
 %{clufter_description}
