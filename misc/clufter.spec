@@ -231,7 +231,8 @@ fi
 
 %define cl_entry() %(LC_ALL=C date -d %1 "+* %%a %%b %%e %%Y %(echo "%3") - %2"
                      echo "%*" | sed '1d;s|^\\s\\+\\(.*\\)|- \\1|')
-%global cl_jp %(echo -n 'Jan Pokorný <jpokorny+rpm-clufter @at@ fedoraproject .dot. org>' | sed 's| @at@ |@|;s| \.dot\. |.|g')
+%global cl_jp_r Jan Pokorný <jpokorny+rpm-clufter @at@ fedoraproject .dot. org>
+%global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
 %{cl_entry 2015-01-13 0.3.3a-1 %{cl_jp}
   Initial build}
