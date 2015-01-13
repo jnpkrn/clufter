@@ -3,6 +3,7 @@
 %{!?clufter_check:   %global clufter_check    1}
 
 %{!?clufter_pylib:   %global clufter_pylib    python-%{clufter_name}}
+%{!?clufter_cli:     %global clufter_cli      %{clufter_name}-cli}
 %{!?clufter_extlib:  %global clufter_extlib   %{clufter_name}-lib}
 %{!?clufter_source:  %global clufter_source   %{clufter_name}-%{clufter_version}}
 %{!?clufter_script:  %global clufter_script   %{_bindir}/%{clufter_name}}
@@ -23,7 +24,7 @@ Name:           %{clufter_name}
 Version:        %{clufter_version_norm}
 Release:        1%{?dist}
 Group:          System Environment/Base
-Summary:        Tool for transforming/analyzing cluster configuration formats
+Summary:        Tool/library for transforming/analyzing cluster configuration formats
 License:        GPLv2+
 URL:            %{clufter_url_main}%{clufter_name}
 
@@ -36,16 +37,6 @@ BuildRequires:  python-setuptools
 %if %{clufter_check}
 BuildRequires:  python-lxml
 %endif
-Requires:       python-lxml
-# ccs_flatten helper
-BuildRequires:  libxml2-devel
-Requires:       libxml2
-# "extras"
-Requires:       %{clufter_editor}
-# dependency of eponymous subpackage on particular Python library subpackage
-Requires:       %{clufter_pylib} = %{version}-%{release}
-BuildArch:      noarch
-
 
 Source0:        %{clufter_url_dist}%{clufter_name}/%{clufter_source}.tar.gz
 
@@ -59,6 +50,17 @@ EOF)
 %description
 %{clufter_description}
 
+
+%package -n %{clufter_cli}
+Group:          System Environment/Base
+Summary:        Tool for transforming/analyzing cluster configuration formats
+Requires:       %{clufter_pylib} = %{version}-%{release}
+Provides:       %{clufter_name} = %{version}-%{release}
+BuildArch:      noarch
+
+%description -n %{clufter_cli}
+%{clufter_description}
+
 This package contains clufter command-line interface for the underlying
 library (packaged as (%{clufter_pylib}).
 
@@ -66,6 +68,12 @@ library (packaged as (%{clufter_pylib}).
 %package -n %{clufter_pylib}
 Group:          System Environment/Libraries
 Summary:        Library for transforming/analyzing cluster configuration formats
+Requires:       python-lxml
+# ccs_flatten helper
+BuildRequires:  libxml2-devel
+Requires:       libxml2
+# "extras"
+Requires:       %{clufter_editor}
 
 %description -n %{clufter_pylib}
 %{clufter_description}
@@ -189,7 +197,7 @@ fi
 %endif
 %endif
 
-%files
+%files -n %{clufter_cli}
 %defattr(-,root,root,-)
 %if "x%{clufter_script}" == "x"
 %else
