@@ -21,7 +21,7 @@ from os.path import (join as path_join, realpath as path_real,
                      isabs as path_isabs, isdir as path_isdir,
                      isfile as path_isfile, splitext as path_splitext)
 from shutil import copy, copymode
-from sys import prefix as sys_prefix
+from sys import modules as sys_modules, prefix as sys_prefix
 
 from distutils.cmd import Command
 from distutils.errors import DistutilsSetupError
@@ -449,13 +449,19 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
 
 self_discovery_plan = ['__project__']
 while True:
-    pkg = {}
-    project = self_discovery_plan.pop()
+    pkg, backup_mod, project = {}, None, self_discovery_plan.pop()
     try:
         # XXX check relative import
-        pkg = __import__(project, globals=pkg, level=1)
+        backup_mod = sys_modules.get(project)
+        if backup_mod:
+            if not hasattr(backup_mod, '__path__'):  # not the case for builtins
+                continue
+            backup_mod = sys_modules.pop(project)
+        pkg = __import__(project, globals=pkg)
         break
     except ImportError:
+        if backup_mod:
+            sys_modules[project] = backup_mod
         if project == '__project__':
             from glob import iglob
             self_discovery_plan.extend(p[:-len('.egg-info')].split('-', 1)[0]
