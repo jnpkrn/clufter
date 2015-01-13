@@ -156,8 +156,12 @@ class build_binary(build_ext):
         compiler.link_shared_object = \
             lambda *args, **kwargs: \
                 compiler.link_executable(
-                    *args, **dict((k, v) for k, v in kwargs.iteritems()
-                                  if k not in ('export_symbols', 'build_temp'))
+                    *args, **dict(((k, v) for k, v in kwargs.iteritems()
+                                  if k not in ('build_temp', 'export_symbols',
+                                               'libraries')),
+                                  libraries=[l for l in
+                                             kwargs.get('libraries', ())
+                                             if not l.startswith('python')])
                 )
 
         build_ext.build_extensions(self)
