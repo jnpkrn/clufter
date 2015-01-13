@@ -149,7 +149,7 @@ test -f "%{buildroot}%{clufter_script}" || {
 %if "x%{clufter_bashcomp}" == "x"
 %else
 %{__mkdir_p} "$(dirname "%{buildroot}%{clufter_bashcomp}")"
-%{__install} -- .bashcomp "%{buildroot}%{clufter_bashcomp}"
+%{__install} -m 644 -- .bashcomp "%{buildroot}%{clufter_bashcomp}"
 %endif
 %endif
 %{__mkdir_p} "%{buildroot}%{_defaultdocdir}/%{clufter_source}"
