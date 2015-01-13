@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Setup script/data"""
@@ -532,13 +532,17 @@ def cond_require(package, *packages, **preferred):
     return ()
 
 url_dict = dict(name=pkg_name, ver=pkg.version)
+download_url = ''
 if PREFER_GITHUB:
     url = 'https://github.com/jnpkrn/{name}'
-    download_url = url + '/tarball/v{ver}'
+    if 'git.' in pkg.version:
+        download_url = url + '/tarball/' + pkg.version.partition('git.')[-1]
+    elif pkg.version.split('+')[-1] != 'a':
+        download_url = url + '/tarball/v{ver}'
 else:
     url = 'http://people.redhat.com/jpokorny/pkgs/{name}'
-    download_url = url + '/{name}-{ver}.tar.gz'
-download_url = download_url if '-' not in pkg.version else ''
+    if pkg.version.split('+')[-1] != 'a':
+        download_url = url + '/{name}-{ver}.tar.gz'
 
 setup(
 
