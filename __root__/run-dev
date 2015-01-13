@@ -67,6 +67,7 @@ while True:
         if not self_discovery_plan:
             print "Cannot find myself, please help me with __project__ symlink"
             raise
+sys.path.pop(0)
 
 # set the correct __package__ for relative imports
 __package__ = maybe_root_real  # XXX optionally strip whole '-..' part
