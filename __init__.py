@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-version, alpha = '0.3.3', True
+version, alpha = '0.3.3', False
 
 # https://www.python.org/dev/peps/pep-0440 + git export magic using export-subst
 _git_hash = "$Format:%h$".strip('$').replace("Format:%h", "")
@@ -17,7 +17,7 @@ elif _git_tags:
 
 license = 'GPLv2+'
 copyright = """\
-Copyright 2014 Red Hat, Inc.
+Copyright 2015 Red Hat, Inc.
 Licensed under {0}
 """.format(license).rstrip()
 
