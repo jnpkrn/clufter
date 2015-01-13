@@ -21,7 +21,7 @@ from os.path import (join as path_join, realpath as path_real,
                      isabs as path_isabs, isdir as path_isdir,
                      isfile as path_isfile, splitext as path_splitext)
 from shutil import copy, copymode
-from sys import modules as sys_modules, prefix as sys_prefix
+from sys import modules as sys_modules, path as sys_path, prefix as sys_prefix
 
 from distutils.cmd import Command
 from distutils.errors import DistutilsSetupError
@@ -461,7 +461,9 @@ while True:
             if not hasattr(backup_mod, '__path__'):  # not the case for builtins
                 continue
             backup_mod = sys_modules.pop(project)
+        backup_path, sys_path[:] = sys_path[:], [here]
         pkg = __import__(project, globals=pkg)
+        sys_path[:] = backup_path
         break
     except ImportError:
         if backup_mod:
