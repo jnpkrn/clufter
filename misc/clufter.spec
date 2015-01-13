@@ -30,7 +30,7 @@ URL:            %{clufter_url_main}%{clufter_name}
 # autosetup
 BuildRequires:  git
 
-# Python side
+# Python side (first for python2* macros)
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 %if %{clufter_check}
@@ -118,14 +118,14 @@ formats and filters.
 %autosetup -n %{name}-%{clufter_version} -p1 -S git
 
 ## for some esoteric reason, the line above has to be empty
-%{__python} setup.py saveopts -f setup.cfg pkg_prepare              \
-                     --ccs-flatten="%{clufter_ccs_flatten}"         \
-                     --editor="%{clufter_editor}"                   \
-                     --ra-metadata-dir="%{clufter_ra_metadata_dir}" \
-                     --ra-metadata-ext="%{clufter_ra_metadata_ext}"
+%{__python2} setup.py saveopts -f setup.cfg pkg_prepare              \
+                      --ccs-flatten="%{clufter_ccs_flatten}"         \
+                      --editor="%{clufter_editor}"                   \
+                      --ra-metadata-dir="%{clufter_ra_metadata_dir}" \
+                      --ra-metadata-ext="%{clufter_ra_metadata_ext}"
 
 %build
-%{__python} setup.py build
+%{__python2} setup.py build
 %if "x%{clufter_script}" == "x"
 %else
 %if "x%{clufter_bashcomp}" == "x"
@@ -137,7 +137,7 @@ formats and filters.
 
 %install
 # '--root' implies setuptools involves distutils to do old-style install
-%{__python} setup.py install --skip-build --root "%{buildroot}"
+%{__python2} setup.py install --skip-build --root "%{buildroot}"
 %if "x%{clufter_script}" == "x"
 %else
 # %%{_bindir}/%%{clufter_name} should have been created
@@ -177,8 +177,8 @@ ret=$?
 %else
 %if "x%{clufter_script}" == "x"
 if [ $1 -gt 1 ]; then  # no gain regenerating it w/ fresh install (same result)
-  %{__python} -m %{clufter_name}.__main__ --completion-bash 2>/dev/null \
-    | sed 's|%(basename "%{__python}") [-_]m ||g' > "%{clufter_bashcomp}" || :
+  %{__python2} -m %{clufter_name}.__main__ --completion-bash 2>/dev/null \
+    | sed 's|%(basename "%{__python2}") [-_]m ||g' > "%{clufter_bashcomp}" || :
 fi
 %else
 %{clufter_script} --completion-bash > "%{clufter_bashcomp}" 2>/dev/null || :
