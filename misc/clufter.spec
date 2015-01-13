@@ -17,7 +17,7 @@
 %{!?clufter_url_dist:%global clufter_url_dist https://people.redhat.com/jpokorny/pkgs/}
 
 # derived
-%global clufter_version_norm %(echo %{clufter_version} | tr '-' '_')
+%global clufter_version_norm %(echo '%{clufter_version}' | tr '-' '_')
 
 Name:           %{clufter_name}
 Version:        %{clufter_version_norm}
@@ -212,7 +212,7 @@ fi
 %{python2_sitelib}/%{clufter_name}-*.egg-info
 # /usr/libexec/clufter/ccs_flatten -> /usr/libexec/clufter
 # /usr/libexec/ccs_flatten         -> /usr/libexec/ccs_flatten
-%(echo -n %{clufter_ccs_flatten} | sed 's|\\(%{_libexecdir}/[^/]\\+\\).*|\\1|')
+%(echo '%{clufter_ccs_flatten}' | sed 's|\\(%{_libexecdir}/[^/]\\+\\).*|\\1|')
 %{clufter_ra_metadata_dir}
 %doc %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
 
