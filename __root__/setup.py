@@ -463,9 +463,9 @@ while True:
             backup_mod = sys_modules.pop(project)
         backup_path, sys_path[:] = sys_path[:], [here]
         pkg = __import__(project, globals=pkg)
-        sys_path[:] = backup_path
         break
     except ImportError:
+        sys_path[:] = backup_path
         if backup_mod:
             sys_modules[project] = backup_mod
         if project == '__project__':
@@ -475,6 +475,8 @@ while True:
         if not self_discovery_plan:
             print "Cannot find myself, please help me with __project__ symlink"
             raise
+sys_path[:] = backup_path
+
 #pkg_root = path_real('__project__')
 pkg_name = pkg.package_name()
 
