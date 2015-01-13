@@ -53,7 +53,7 @@ while True:
             backup_mod = None
             if not environ.get('PREFERSYS', 0):
                 backup_mod = sys.modules.pop(maybe_root_real)
-        pkg = __import__(basename(maybe_root_real), globals=pkg, level=-1)
+        pkg = __import__(maybe_root_real, globals=pkg)
         break
     except ImportError:
         sys.path.pop(0)
