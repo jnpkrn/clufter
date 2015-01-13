@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 # Copyright 2014 Red Hat, Inc.
 # Part of clufter project
