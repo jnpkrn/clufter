@@ -13,7 +13,7 @@ from os.path import basename
 from platform import system, linux_distribution
 from sys import version
 
-from . import version_text, description_text
+from . import version_parts, version_text, description_text
 from .command_manager import CommandManager
 from .completion import Completion
 from .error import EC
@@ -237,10 +237,10 @@ def run(argv=None, *args):
         # options that return/exit + don't need plugin resolutions (not help)
         if opts.version:
             loglevel = logging.getLevelName(opts.loglevel)
-            msg = [version_text()]
+            msg = version_parts
             if loglevel <= logging.INFO:
-                msg.append('\n'.join(("Python runtime:", version)))
-            print '\n\n'.join(msg)
+                msg += ('', "Python runtime:", version)
+            print version_text(*msg)
             return ec
 
     logging.basicConfig()
