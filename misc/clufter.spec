@@ -152,6 +152,8 @@ formats and filters.
 %install
 # '--root' implies setuptools involves distutils to do old-style install
 %{__python2} setup.py install --skip-build --root "%{buildroot}"
+# following is needed due to umask 022 not taking effect(?) leading to 775
+%{__chmod} -- g-w '%{buildroot}%{clufter_ccs_flatten}'
 %if "x%{clufter_script}" == "x"
 %else
 # %%{_bindir}/%%{clufter_name} should have been created
