@@ -73,7 +73,7 @@ Summary:        Library for transforming/analyzing cluster configuration formats
 Requires:       python-lxml
 # ccs_flatten helper
 BuildRequires:  libxml2-devel
-Requires:       libxml2
+#autodected# Requires:       libxml2
 # "extras"
 Requires:       %{clufter_editor}
 
