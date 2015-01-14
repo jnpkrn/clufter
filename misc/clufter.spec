@@ -181,8 +181,7 @@ declare ret=0 ccs_flatten_dir="$(dirname "%{buildroot}%{clufter_ccs_flatten}")"
 
 ln -s "%{buildroot}%{clufter_ra_metadata_dir}"/*."%{clufter_ra_metadata_ext}" \
       "${ccs_flatten_dir}"
-PATH="${PATH:+${PATH}:}$(dirname "%{buildroot}%{clufter_ccs_flatten}")" \
-./run-check
+PATH="${PATH:+${PATH}:}${ccs_flatten_dir}" ./run-check
 ret=$?
 %{__rm} -f -- "${ccs_flatten_dir}"/*."%{clufter_ra_metadata_ext}"
 [ ${ret} = 0 ] || exit "${ret}"
