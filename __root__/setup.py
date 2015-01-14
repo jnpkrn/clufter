@@ -349,7 +349,8 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                         self.pkg_params[filedef['dst']]
                     )
             for filedef in (self.data_files + self.buildonly_files):
-                src_basename = path_basename(self.pkg_params[filedef['src']])
+                src = self.pkg_params[filedef['src']]
+                src_basename = path_basename(src)
                 dst_basename = path_basename(self.pkg_params[filedef['dst']])
                 substitute = filedef.get('substitute', False)
                 if all(c not in src_basename for c in '?*'):
@@ -362,6 +363,16 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                             ),
                             substitute
                         )
+                    # eliminate sources from which we prepared files so they
+                    # will not end up at build dir and, in turn, installed;
+                    # consider only one-level of package at maximum
+                    hd, tl = (lambda s, r='': (s, r))(*src.split(sep, 1))
+                    if not tl:
+                        hd, tl = '', filedef['src']
+                    try:
+                        self.distribution.package_data.get(hd, []).remove(tl)
+                    except ValueError:
+                        pass
                 else:
                     assert not substitute
 
