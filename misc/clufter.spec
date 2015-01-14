@@ -7,7 +7,7 @@
 %{!?clufter_extlib:  %global clufter_extlib   %{clufter_name}-lib}
 %{!?clufter_source:  %global clufter_source   %{clufter_name}-%{clufter_version}}
 %{!?clufter_script:  %global clufter_script   %{_bindir}/%{clufter_name}}
-%{!?clufter_bashcomp:%global clufter_bashcomp %{_sysconfdir}/bash_completion.d/%(basename "%{clufter_script}")}
+%{!?clufter_bashcomp:%global clufter_bashcomp %{_sysconfdir}/bash_completion.d/%(basename '%{clufter_script}')}
 
 %{!?clufter_ccs_flatten:     %global clufter_ccs_flatten     %{_libexecdir}/%{clufter_source}/ccs_flatten}
 %{!?clufter_editor:          %global clufter_editor          %{_bindir}/nano}
@@ -36,7 +36,7 @@ BuildRequires:  git
 # Python side (first for python2* macros)
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
-%if %{clufter_check}
+%if "%{clufter_check}"
 BuildRequires:  python-lxml
 %endif
 
@@ -133,10 +133,10 @@ formats and filters.
 
 ## for some esoteric reason, the line above has to be empty
 %{__python2} setup.py saveopts -f setup.cfg pkg_prepare              \
-                      --ccs-flatten="%{clufter_ccs_flatten}"         \
-                      --editor="%{clufter_editor}"                   \
-                      --ra-metadata-dir="%{clufter_ra_metadata_dir}" \
-                      --ra-metadata-ext="%{clufter_ra_metadata_ext}"
+                      --ccs-flatten='%{clufter_ccs_flatten}'         \
+                      --editor='%{clufter_editor}'                   \
+                      --ra-metadata-dir='%{clufter_ra_metadata_dir}' \
+                      --ra-metadata-ext='%{clufter_ra_metadata_ext}'
 
 %build
 %{__python2} setup.py build
@@ -151,40 +151,37 @@ formats and filters.
 
 %install
 # '--root' implies setuptools involves distutils to do old-style install
-%{__python2} setup.py install --skip-build --root "%{buildroot}"
+%{__python2} setup.py install --skip-build --root '%{buildroot}'
 # following is needed due to umask 022 not taking effect(?) leading to 775
 %{__chmod} -- g-w '%{buildroot}%{clufter_ccs_flatten}'
 %if "x%{clufter_script}" == "x"
 %else
 # %%{_bindir}/%%{clufter_name} should have been created
-test -f "%{buildroot}%{clufter_script}" || {
-  %{__mkdir_p} "%{buildroot}$(dirname "%{clufter_script}")"
-  %{__mv} -- "%{buildroot}%{_bindir}/%{clufter_name}" \
-             "%{buildroot}%{clufter_script}"
-}
+test -f '%{buildroot}%{clufter_script}' \
+  || %{__install} -D -m 644 -- '%{buildroot}%{_bindir}/%{clufter_name}' \
+                               '%{buildroot}%{clufter_script}'
 %if "x%{clufter_bashcomp}" == "x"
 %else
-%{__mkdir_p} "$(dirname "%{buildroot}%{clufter_bashcomp}")"
-%{__install} -m 644 -- .bashcomp "%{buildroot}%{clufter_bashcomp}"
+%{__install} -D -m 644 -- .bashcomp '%{buildroot}%{clufter_bashcomp}'
 %endif
 %endif
-%{__mkdir_p} "%{buildroot}%{_defaultdocdir}/%{clufter_source}"
+%{__mkdir_p} -- '%{buildroot}%{_defaultdocdir}/%{clufter_source}'
 %{__install} -m 644 -- gpl-2.0.txt doc/*.txt \
-                       "%{buildroot}%{_defaultdocdir}/%{clufter_source}"
+                       '%{buildroot}%{_defaultdocdir}/%{clufter_source}'
 
 %check || :
-%if %{clufter_check}
+%if "%{clufter_check}"
 # just a basic sanity check
 # we need to massage RA metadata files and PATH so the local run works
 # XXX we could also inject buildroot's site_packages dir to PYTHONPATH
-declare ret=0 ccs_flatten_dir="$(dirname "%{buildroot}%{clufter_ccs_flatten}")"
+declare ret=0 ccs_flatten_dir="$(dirname '%{buildroot}%{clufter_ccs_flatten}')"
 
-ln -s "%{buildroot}%{clufter_ra_metadata_dir}"/*."%{clufter_ra_metadata_ext}" \
+ln -s '%{buildroot}%{clufter_ra_metadata_dir}'/*.'%{clufter_ra_metadata_ext}' \
       "${ccs_flatten_dir}"
 PATH="${PATH:+${PATH}:}${ccs_flatten_dir}" ./run-check
 ret=$?
-%{__rm} -f -- "${ccs_flatten_dir}"/*."%{clufter_ra_metadata_ext}"
-[ ${ret} = 0 ] || exit "${ret}"
+%{__rm} -f -- "${ccs_flatten_dir}"/*.'%{clufter_ra_metadata_ext}'
+[ ${ret} -eq 0 ] || exit "${ret}"
 %endif
 
 %post
@@ -193,10 +190,10 @@ ret=$?
 %if "x%{clufter_script}" == "x"
 if [ $1 -gt 1 ]; then  # no gain regenerating it w/ fresh install (same result)
   %{__python2} -m %{clufter_name}.__main__ --completion-bash 2>/dev/null \
-    | sed 's|%(basename "%{__python2}") [-_]m ||g' > "%{clufter_bashcomp}" || :
+    | sed 's|%(basename '%{__python2}') [-_]m ||g' > '%{clufter_bashcomp}' || :
 fi
 %else
-%{clufter_script} --completion-bash > "%{clufter_bashcomp}" 2>/dev/null || :
+%{clufter_script} --completion-bash > '%{clufter_bashcomp}' 2>/dev/null || :
 %endif
 %endif
 
