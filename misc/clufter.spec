@@ -56,8 +56,8 @@ EOF)
 %package -n %{clufter_cli}
 Group:          System Environment/Base
 Summary:        Tool for transforming/analyzing cluster configuration formats
-Requires:       %{clufter_pylib} = %{version}-%{release}
-Provides:       %{clufter_name} = %{version}-%{release}
+Requires:       %{clufter_pylib}%{?_isa} = %{version}-%{release}
+Provides:       %{clufter_name}          = %{version}-%{release}
 BuildArch:      noarch
 
 %description -n %{clufter_cli}
@@ -76,6 +76,7 @@ BuildRequires:  libxml2-devel
 #autodected# Requires:       libxml2
 # "extras"
 Requires:       %{clufter_editor}
+# this is _arch-specific_
 
 %description -n %{clufter_pylib}
 %{clufter_description}
@@ -86,7 +87,7 @@ This package contains clufter library including built-in plugins.
 %package -n %{clufter_extlib}-general
 Group:          System Environment/Libraries
 Summary:        Extra clufter plugins usable for/as generic/auxiliary products
-Requires:       %{clufter_pylib} = %{version}-%{release}
+Requires:       %{clufter_pylib}%{?_isa} = %{version}-%{release}
 BuildArch:      noarch
 
 %description -n %{clufter_extlib}-general
@@ -101,7 +102,7 @@ reusable formats and filters.
 %package -n %{clufter_extlib}-ccs
 Group:          System Environment/Libraries
 Summary:        Extra plugins for transforming/analyzing CMAN configuration
-Requires:       %{clufter_pylib} = %{version}-%{release}
+Requires:       %{clufter_pylib}%{?_isa}  = %{version}-%{release}
 Requires:       %{clufter_extlib}-general = %{version}-%{release}
 BuildArch:      noarch
 
@@ -116,7 +117,7 @@ formats and filters.
 %package -n %{clufter_extlib}-pcs
 Group:          System Environment/Libraries
 Summary:        Extra plugins for transforming/analyzing Pacemaker configuration
-Requires:       %{clufter_pylib} = %{version}-%{release}
+Requires:       %{clufter_pylib}%{?_isa}  = %{version}-%{release}
 Requires:       %{clufter_extlib}-general = %{version}-%{release}
 BuildArch:      noarch
 
