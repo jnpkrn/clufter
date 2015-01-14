@@ -18,7 +18,7 @@ elif _git_tags:
 license = 'GPLv2+'
 copyright = """\
 Copyright 2015 Red Hat, Inc.
-Licensed under {0}
+Licensed under {0}.
 """.format(license).rstrip()
 
 pkg_name = globals().get('__root__')
@@ -35,8 +35,6 @@ def package_name():
 # XXX eventually there should be precise plugin authorship tracking
 author = ("Jan Pokorný <jpokorny+pkg-{0} @at@ Red Hat .dot. com>"
           " and plugin authors").format(package_name())
-
-metadata = (version, copyright, author)
 
 description = """\
 Tool/library for transforming/analyzing cluster configuration formats
@@ -96,8 +94,9 @@ def description_text(width=76, justhead=None):
     return desc
 
 
-def version_text(name=pkg_name, sep='\n'):
-    if name is None:
-        name = package_name()
-    return (name + ' '
-            + _deobfuscate_email(sep.join(metadata).replace(' \n', '\n')))
+version_parts = (' '.join((package_name(), version)), copyright, '',
+                 lambda: author_text().join(("Written by ", ".")))
+
+def version_text(*args, **kwargs):
+    args, sep = args + tuple(version_parts[len(args):]), kwargs.get('sep', '\n')
+    return sep.join(a() if hasattr(a, '__call__') else a for a in args)
