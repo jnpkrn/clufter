@@ -236,7 +236,11 @@ def run(argv=None, *args):
     if opts.help is None:
         # options that return/exit + don't need plugin resolutions (not help)
         if opts.version:
-            print '\n'.join((version_text(), '-- \nPython runtime:', version))
+            loglevel = logging.getLevelName(opts.loglevel)
+            msg = [version_text()]
+            if loglevel <= logging.INFO:
+                msg.append('\n'.join(("Python runtime:", version)))
+            print '\n\n'.join(msg)
             return ec
 
     logging.basicConfig()
