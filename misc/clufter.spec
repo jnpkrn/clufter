@@ -8,6 +8,7 @@
 %{!?clufter_source:  %global clufter_source   %{clufter_name}-%{clufter_version}}
 %{!?clufter_script:  %global clufter_script   %{_bindir}/%{clufter_name}}
 %{!?clufter_bashcomp:%global clufter_bashcomp %{_sysconfdir}/bash_completion.d/%(basename '%{clufter_script}')}
+%{!?clufter_manpage: %global clufter_manpage  %{_mandir}/man1/%(basename '%{clufter_script}')}
 
 %{!?clufter_ccs_flatten:     %global clufter_ccs_flatten     %{_libexecdir}/%{clufter_source}/ccs_flatten}
 %{!?clufter_editor:          %global clufter_editor          %{_bindir}/nano}
@@ -56,6 +57,13 @@ EOF)
 %package -n %{clufter_cli}
 Group:          System Environment/Base
 Summary:        Tool for transforming/analyzing cluster configuration formats
+%if "x%{clufter_script}" == "x"
+%else
+%if "x%{clufter_manpage}" == "x"
+%else
+BuildRequires:  help2man
+%endif
+%endif
 Requires:       %{clufter_pylib}%{?_isa} = %{version}-%{release}
 Provides:       %{clufter_name}          = %{version}-%{release}
 BuildArch:      noarch
@@ -148,6 +156,11 @@ formats and filters.
 ./run-dev --completion-bash 2>/dev/null \
   | sed 's|run[-_]dev|%(basename %{clufter_bashcomp})|g' > .bashcomp
 %endif
+%if "x%{clufter_manpage}" == "x"
+%else
+help2man -N -h -H -n "$(sed -n '2s|[^(]\+(\([^)]\+\))|\1|p' README)" ./run-dev \
+  | sed 's|run[-_]dev|%(basename %{clufter_manpage})|g' | gzip > .manpage
+%endif
 %endif
 
 %install
@@ -164,6 +177,10 @@ test -f '%{buildroot}%{clufter_script}' \
 %if "x%{clufter_bashcomp}" == "x"
 %else
 %{__install} -D -m 644 -- .bashcomp '%{buildroot}%{clufter_bashcomp}'
+%endif
+%if "x%{clufter_manpage}" == "x"
+%else
+%{__install} -D -m 644 -- .manpage '%{buildroot}%{clufter_manpage}.1.gz'
 %endif
 %endif
 %{__mkdir_p} -- '%{buildroot}%{_defaultdocdir}/%{clufter_source}'
@@ -205,6 +222,10 @@ fi
 %if "x%{clufter_bashcomp}" == "x"
 %else
 %verify(not size md5 mtime) %{clufter_bashcomp}
+%endif
+%if "x%{clufter_manpage}" == "x"
+%else
+%doc %{clufter_manpage}.1.gz
 %endif
 %{clufter_script}
 %endif
