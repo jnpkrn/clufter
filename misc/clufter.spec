@@ -18,11 +18,13 @@
 %{!?clufter_url_dist:%global clufter_url_dist https://people.redhat.com/jpokorny/pkgs/}
 
 # derived
-%global clufter_version_norm %(echo '%{clufter_version}' | tr '-' '_')
+%global clufter_version_norm %(echo '%{clufter_version}' | tr '-' '_' | sed 's|\\([0-9]\\)a\\(_.*\\)\\?$|\\1|')
+# http://fedoraproject.org/wiki/Packaging%3aNamingGuidelines#Pre-Release_packages
+%global clufter_rel %(echo '%{clufter_version}' | tr '-' '_' | sed -n 's|.*[0-9]a\\(_.*\\)\\?$|0.1.a\\1|p;tq;Q1;:q;q' || echo 1)
 
 Name:           %{clufter_name}
 Version:        %{clufter_version_norm}
-Release:        1%{?dist}
+Release:        %{clufter_rel}%{?dist}
 Group:          System Environment/Base
 Summary:        Tool/library for transforming/analyzing cluster configuration formats
 License:        GPLv2+
@@ -246,7 +248,7 @@ fi
 %global cl_jp_r Jan Pokorný <jpokorny+rpm-clufter @at@ fedoraproject .dot. org>
 %global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
-%{cl_entry 2015-01-14 0.3.4a %{cl_jp}
+%{cl_entry 2015-01-14 0.3.4-0.1.a %{cl_jp}
   }
 %{cl_entry 2015-01-13 0.3.3-1 %{cl_jp}
   initial build}
