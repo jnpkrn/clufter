@@ -428,7 +428,7 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                 try:
                     with open(src, "r") as fr:
                         with open(dst, "w") as fw:
-                            content=fr.read()
+                            content = fr.read()
                             for key in filter(
                                 lambda k: not k.startswith("_")
                                           and k not in self.boolean_options,
@@ -501,7 +501,7 @@ pkg_name = pkg.package_name()
 pkg_prepare = setup_pkg_prepare(pkg_name, (
     ('ccs_flatten',     "location of bundled helper ccs_flatten"),
     ('editor',          "which editor to use if EDITOR env variable not set"),
-    ('hashalgo',       "which hash algorithm to use to generate output name"),
+    ('hashalgo',        "which hash algorithm to use to generate output name"),
     ('ra_metadata_dir', "location of RGManager agents/metadata"),
     ('ra_metadata_ext', "extension used for RGManager agents' metadata"),
 ))
@@ -605,13 +605,13 @@ setup(
     # Note: See ``data_files'' in options for ``pkg_prepare'' subcommand
     #data_files=(),
     # Override ``build'' command handler with local specialized one
-    cmdclass = pkg_prepare.inject_cmdclass(
+    cmdclass=pkg_prepare.inject_cmdclass(
         develop,
         build=(build, build_binary),
         install=(install, install_data),
         setuptools_develop=setuptools_develop,
     ),
-    options = {
+    options={
         # Options "passed" to ``pkg_prepare'' subcommand
         pkg_prepare.__name__: dict(
             pkg_params=pkg_params,
@@ -665,7 +665,7 @@ setup(
     test_suite='{0}.tests'.format(pkg_name),
     tests_require=cond_require('unittest2', unittest='runner'),
 
-    entry_points = {
+    entry_points={
         'console_scripts': (
             '{0} = {0}.__main__'.format(pkg_name),
         ),
