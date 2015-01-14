@@ -198,7 +198,6 @@ fi
 %endif
 
 %files -n %{clufter_cli}
-%defattr(-,root,root,-)
 %if "x%{clufter_script}" == "x"
 %else
 %if "x%{clufter_bashcomp}" == "x"
@@ -212,7 +211,6 @@ fi
 %doc %{_defaultdocdir}/%{clufter_source}/*
 
 %files -n %{clufter_pylib}
-%defattr(-,root,root,-)
 %doc %{_defaultdocdir}/%{clufter_source}
 %exclude %{clufter_script}
 %exclude %{python2_sitelib}/%{clufter_name}/__main__.py*
