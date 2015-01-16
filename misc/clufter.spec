@@ -173,20 +173,20 @@ help2man -N -h -H -n "$(sed -n '2s|[^(]\+(\([^)]\+\))|\1|p' README)" ./run-dev \
 %else
 # %%{_bindir}/%%{clufter_name} should have been created
 test -f '%{buildroot}%{clufter_script}' \
-  || %{__install} -D -m 644 -- '%{buildroot}%{_bindir}/%{clufter_name}' \
-                               '%{buildroot}%{clufter_script}'
+  || %{__install} -D -pm 644 -- '%{buildroot}%{_bindir}/%{clufter_name}' \
+                                '%{buildroot}%{clufter_script}'
 %if "x%{clufter_bashcomp}" == "x"
 %else
-%{__install} -D -m 644 -- .bashcomp '%{buildroot}%{clufter_bashcomp}'
+%{__install} -D -pm 644 -- .bashcomp '%{buildroot}%{clufter_bashcomp}'
 %endif
 %if "x%{clufter_manpage}" == "x"
 %else
-%{__install} -D -m 644 -- .manpage '%{buildroot}%{clufter_manpage}.1.gz'
+%{__install} -D -pm 644 -- .manpage '%{buildroot}%{clufter_manpage}.1.gz'
 %endif
 %endif
 %{__mkdir_p} -- '%{buildroot}%{_defaultdocdir}/%{clufter_source}'
-%{__install} -m 644 -- gpl-2.0.txt doc/*.txt \
-                       '%{buildroot}%{_defaultdocdir}/%{clufter_source}'
+%{__install} -pm 644 -- gpl-2.0.txt doc/*.txt \
+                        '%{buildroot}%{_defaultdocdir}/%{clufter_source}'
 
 %check || :
 %if "%{clufter_check}"
