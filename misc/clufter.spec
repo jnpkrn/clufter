@@ -79,7 +79,8 @@ library (packaged as (%{clufter_pylib}).
 Group:          System Environment/Libraries
 Summary:        Library for transforming/analyzing cluster configuration formats
 # ccs_flatten helper
-BuildRequires:  libxml2-devel
+# ~ libxml2-devel
+BuildRequires:  pkgconfig(libxml-2.0)
 #autodected# Requires:       libxml2
 Requires:       python-lxml
 # "extras"
