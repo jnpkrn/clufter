@@ -217,7 +217,7 @@ fi
 %endif
 
 %files -n %{clufter_cli}
-%doc %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
+%license %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
 %if "x%{clufter_script}" == "x"
 %else
 %if "x%{clufter_bashcomp}" == "x"
@@ -235,6 +235,7 @@ fi
 
 %files -n %{clufter_pylib}
 %doc %{_defaultdocdir}/%{clufter_source}
+%license %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
 %exclude %{clufter_script}
 %exclude %{python2_sitelib}/%{clufter_name}/__main__.py*
 %exclude %{python2_sitelib}/%{clufter_name}/main.py*
@@ -249,15 +250,15 @@ fi
 %{clufter_ra_metadata_dir}
 
 %files -n %{clufter_extlib}-general
-%doc %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
+%license %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
 %{python2_sitelib}/%{clufter_name}/ext-plugins/lib-general
 
 %files -n %{clufter_extlib}-ccs
-%doc %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
+%license %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
 %{python2_sitelib}/%{clufter_name}/ext-plugins/lib-ccs
 
 %files -n %{clufter_extlib}-pcs
-%doc %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
+%license %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
 %{python2_sitelib}/%{clufter_name}/ext-plugins/lib-pcs
 
 
