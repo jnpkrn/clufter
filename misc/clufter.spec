@@ -72,7 +72,7 @@ BuildArch:      noarch
 %{clufter_description}
 
 This package contains clufter command-line interface for the underlying
-library (packaged as (%{clufter_pylib}).
+library (packaged as %{clufter_pylib}).
 
 
 %package -n %{clufter_pylib}
