@@ -106,7 +106,7 @@ def squeeze_newlines(s):
                           and (prev[-2].split(':', 1)[0] == new.split(':', 1)[0]
                                or not prev[-2])
                           else prev + [new], s.splitlines(), ['', '']
-    )[2:])
+    )[1:])
 
 
 if __name__ == "__main__":
