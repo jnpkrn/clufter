@@ -1,5 +1,5 @@
 %{!?clufter_name:    %global clufter_name     clufter}
-%{!?clufter_version: %global clufter_version  0.3.5a}
+%{!?clufter_version: %global clufter_version  0.3.5}
 %{!?clufter_check:   %global clufter_check    1}
 
 %{!?clufter_pylib:   %global clufter_pylib    python-%{clufter_name}}
@@ -261,7 +261,8 @@ fi
 %global cl_jp_r Jan Pokorný <jpokorny+rpm-clufter @at@ fedoraproject .dot. org>
 %global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
-%{cl_entry 2015-01-14 0.3.5-0.1.a %{cl_jp}
+%{cl_entry 2015-01-20 0.3.5-1 %{cl_jp}
+  packaging enhancements (pkg-config, license tag)
   }
 %{cl_entry 2015-01-14 0.3.4-1 %{cl_jp}
   packaging enhancements (permissions, ownership)
