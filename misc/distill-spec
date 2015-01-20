@@ -1,0 +1,140 @@
+#!/usr/bin/env python
+# Copyright 2015 Red Hat, Inc.
+# Part of clufter project
+# Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+# Script to distill plain specfile from meta (but still usable!) specfile.
+#
+# TODO:
+# - allow external macro definitions, just like: rpm{,build} --define 'name def'
+
+from base64 import b64encode, b64decode
+from ctypes import cdll, c_char_p, c_int, c_void_p
+from re import compile as re_compile, escape as re_escape, X as re_X
+from sys import argv, stdin
+from tempfile import NamedTemporaryFile
+
+from rpm import RPMSPEC_ANYARCH, RPMSPEC_FORCE, RPMBUILD_NONE, _rpmb, addMacro
+
+
+# ctypes magic
+
+rpmb = cdll[_rpmb.__file__]
+
+rpmSpecParse          = rpmb.rpmSpecParse
+rpmSpecParse.argtypes = [c_char_p, c_int, c_void_p]
+rpmSpecParse.restype  = c_void_p
+
+rpmSpecGetSection          = rpmb.rpmSpecGetSection
+rpmSpecGetSection.argtypes = [c_void_p, c_int]
+rpmSpecGetSection.restype  = c_char_p
+
+
+# re stuff
+
+# temporary wrapping must start with '_' or '/' because of Requires context:
+# error: line 87:
+# Dependency tokens must begin with alpha-numeric, '_' or '/':
+# Requires:       @@_bindir@@/nano
+neutral_mark = "_._"
+nm_parens = ((neutral_mark, ) * 2)
+nm_parens_re = ((re_escape(neutral_mark), ) * 2)
+
+fragile = '_isa', 'name', 'version', 'release'
+fragile_upper = tuple(f.upper() for f in fragile)
+
+re_noexpand_fragile = re_compile("""%({{)?(?P<g>\??(?P<m>(?:{0}
+                                         )))(?=\W)(?(1)}})""".format('|'.join
+                                                                     (fragile)),
+                                 re_X)
+re_noexpand = re_compile("""%({)?(?!\??(?:clufter\w*
+                                         |if|else|endif
+                                         |global|define
+                                         |package|description
+                                         |prep|build|install|check
+                                         |files|defattr|attr|doc|license|exclude
+                                         |pre|post|preun|postun
+                                         |changelog
+                                    )\W)
+                                 (?P<g>\??(?P<m>[^{(\s}]*))
+                            (?(1)})""",
+                         re_X)
+re_nonexpmacro_wrapped = re_compile("(?P<m>\S*?)".join(nm_parens_re))
+re_multiline = re_compile('\n\n+')
+
+
+def get_parsed(f):
+    spec = rpmSpecParse(f, RPMSPEC_ANYARCH | RPMSPEC_FORCE, 0)
+    s = rpmSpecGetSection(spec, RPMBUILD_NONE)
+    return s
+
+#def add_macro(name, spec):
+#    print "adding:", name, spec
+#    addMacro(name, spec)
+
+
+def redef_macros(f):
+    s = None
+    with open(f, 'r') as fo:
+        s = fo.read()
+    s = re_noexpand.sub(
+            lambda m: addMacro(m.group('m'), b64encode(m.group('g'))
+                      .replace('=', '_').join(nm_parens)) or m.group(0),
+            re_noexpand_fragile.sub(lambda m: m.group(0).upper(), s)
+    )
+    with open(f, 'w') as fo:
+        fo.write(s)
+    return f
+
+
+def restore_macros(s):
+    return re_nonexpmacro_wrapped.sub(lambda m: "%{{{0}}}".format(
+                                          tuple(
+                                              n.lower() if any(f in n for f
+                                                               in fragile_upper)
+                                              else n for n in (b64decode(
+                                                  m.group('m').replace('_', '=')
+                                              ), )
+                                          )[0]),
+                                      s)
+
+
+def squeeze_newlines(s):
+    #return re_multiline.sub('\n\n', s).lstrip('\n')
+    return '\n'.join(reduce(
+        lambda prev, new: prev[:-1] + [new] if not prev[-1]
+                          and (prev[-2].split(':', 1)[0] == new.split(':', 1)[0]
+                               or not prev[-2])
+                          else prev + [new], s.splitlines(), ['', '']
+    )[2:])
+
+
+if __name__ == "__main__":
+    f = stdin if len(argv) < 2 else argv[1]
+    if f is not stdin:
+        f = open(f, 'r')
+    s = f.read()
+    if f is not stdin:
+        f.close()
+    with NamedTemporaryFile('w') as f:
+        f.write(s)
+        f.flush()
+        f.seek(0)
+        # first redefine macros in following way:
+        # 1. replace name, version, ... with upper-cased version, because
+        #    the are the automatic macros that's get (re)defined when parsing
+        #    the specfile -- this way we can preserve them in combinarion w/ 2.
+        # 2. redefine macros to be preserved (i.e., not native directives/tags
+        #    and clufter* macros that we wan't to expand right now) with
+        #    base64-encoded original macro declaration (i.e., with initial
+        #    question mark, etc.) so that it will be replaced like this
+        #    in the specfile preprocessing phase (XXX why not to replace it
+        #    right away then?)
+        #s = open(redef_macros(f.name)).read()
+        # second, preprocess the specfile (with new macros)
+        #s = get_parsed(redef_macros(f.name))
+        # third, restore those now base64-encoded macros
+        #s = restore_macros(get_parsed(redef_macros(f.name)))
+        # fourth, smart-squeeze the newlines (2+ x \n --> 2 x \n, ...)
+        s = squeeze_newlines(restore_macros(get_parsed(redef_macros(f.name))))
+    print s
