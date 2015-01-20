@@ -100,8 +100,6 @@ Requires:       %{clufter_pylib}%{?_isa} = %{version}-%{release}
 BuildArch:      noarch
 
 %description -n %{clufter_extlib}-general
-%{clufter_description}
-
 This package contains set of additional plugins targeting variety of generic
 formats often serving as a byproducts in the intermediate steps of the overall
 process arrangement: either experimental commands or internally unused,
@@ -116,8 +114,6 @@ Requires:       %{clufter_extlib}-general = %{version}-%{release}
 BuildArch:      noarch
 
 %description -n %{clufter_extlib}-ccs
-%{clufter_description}
-
 This package contains set of additional plugins targeting CMAN cluster
 configuration: either experimental commands or internally unused, reusable
 formats and filters.
@@ -131,8 +127,6 @@ Requires:       %{clufter_extlib}-general = %{version}-%{release}
 BuildArch:      noarch
 
 %description -n %{clufter_extlib}-pcs
-%{clufter_description}
-
 This package contains set of additional plugins targeting Pacemaker cluster
 configuration: either experimental commands or internally unused, reusable
 formats and filters.
