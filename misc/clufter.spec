@@ -154,7 +154,7 @@ formats and filters.
 %if "x%{clufter_manpage}" == "x"
 %else
 help2man -N -h -H -n "$(sed -n '2s|[^(]\+(\([^)]\+\))|\1|p' README)" ./run-dev \
-  | sed 's|run[-_]dev|%(basename %{clufter_manpage})|g' | gzip > .manpage
+  | sed 's|run[-_]dev|%(basename %{clufter_manpage})|g' > .manpage
 %endif
 %endif
 
@@ -175,7 +175,7 @@ test -f '%{buildroot}%{clufter_script}' \
 %endif
 %if "x%{clufter_manpage}" == "x"
 %else
-%{__install} -D -pm 644 -- .manpage '%{buildroot}%{clufter_manpage}.1.gz'
+%{__install} -D -pm 644 -- .manpage '%{buildroot}%{clufter_manpage}.1'
 %endif
 %endif
 %{__mkdir_p} -- '%{buildroot}%{_defaultdocdir}/%{clufter_source}'
@@ -220,7 +220,7 @@ fi
 %endif
 %if "x%{clufter_manpage}" == "x"
 %else
-%doc %{clufter_manpage}.1.gz
+%doc %{clufter_manpage}.1*
 %endif
 %{clufter_script}
 %endif
