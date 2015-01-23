@@ -230,7 +230,6 @@ fi
 %files -n %{clufter_pylib}
 %doc %{_defaultdocdir}/%{clufter_source}
 %license %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
-%exclude %{clufter_script}
 %exclude %{python2_sitelib}/%{clufter_name}/__main__.py*
 %exclude %{python2_sitelib}/%{clufter_name}/main.py*
 %exclude %{python2_sitelib}/%{clufter_name}/ext-plugins/lib-general
