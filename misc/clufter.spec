@@ -234,9 +234,7 @@ fi
 %license %{_defaultdocdir}/%{clufter_source}/fdl-1.3.txt
 %exclude %{python2_sitelib}/%{clufter_name}/__main__.py*
 %exclude %{python2_sitelib}/%{clufter_name}/main.py*
-%exclude %{python2_sitelib}/%{clufter_name}/ext-plugins/lib-general
-%exclude %{python2_sitelib}/%{clufter_name}/ext-plugins/lib-ccs
-%exclude %{python2_sitelib}/%{clufter_name}/ext-plugins/lib-pcs
+%exclude %{python2_sitelib}/%{clufter_name}/ext-plugins/*
 %{python2_sitelib}/%{clufter_name}
 %{python2_sitelib}/%{clufter_name}-*.egg-info
 # /usr/libexec/clufter/ccs_flatten -> /usr/libexec/clufter
