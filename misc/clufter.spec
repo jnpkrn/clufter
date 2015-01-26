@@ -245,15 +245,12 @@ fi
 %{clufter_ra_metadata_dir}
 
 %files -n %{clufter_extlib}-general
-%license %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
 %{python2_sitelib}/%{clufter_name}/ext-plugins/lib-general
 
 %files -n %{clufter_extlib}-ccs
-%license %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
 %{python2_sitelib}/%{clufter_name}/ext-plugins/lib-ccs
 
 %files -n %{clufter_extlib}-pcs
-%license %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
 %{python2_sitelib}/%{clufter_name}/ext-plugins/lib-pcs
 
 
