@@ -78,6 +78,7 @@ library (packaged as %{clufter_pylib}).
 %package -n %{clufter_pylib}
 Group:          System Environment/Libraries
 Summary:        Library for transforming/analyzing cluster configuration formats
+License:        GPLv2+ and GFDL
 # ccs_flatten helper
 # ~ libxml2-devel
 BuildRequires:  pkgconfig(libxml-2.0)
