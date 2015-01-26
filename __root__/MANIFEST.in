@@ -8,6 +8,6 @@ recursive-exclude ccs-flatten ccs_flatten *.o Makefile.setup config.h .*/*
 exclude clufter/setup.py
 prune clufter/tests
 
-recursive-include doc cib-ids.txt env_vars.txt rgmanager-pacemaker.*
+recursive-include doc cib-ids.txt env_vars.txt fdl-1.3.txt rgmanager-pacemaker.*
 
 global-exclude /.*
