@@ -137,9 +137,9 @@ formats and filters.
 %autosetup -n %{name}-%{clufter_version} -p1 -S git
 
 ## for some esoteric reason, the line above has to be empty
-%{__python2} setup.py saveopts -f setup.cfg pkg_prepare              \
-                      --ccs-flatten='%{clufter_ccs_flatten}'         \
-                      --editor='%{clufter_editor}'                   \
+%{__python2} setup.py saveopts -f setup.cfg pkg_prepare \
+                      --ccs-flatten='%{clufter_ccs_flatten}' \
+                      --editor='%{clufter_editor}' \
                       --ra-metadata-dir='%{clufter_ra_metadata_dir}' \
                       --ra-metadata-ext='%{clufter_ra_metadata_ext}'
 
