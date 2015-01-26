@@ -258,14 +258,14 @@ fi
 %global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
 %{cl_entry 2015-01-20 0.3.6-0.1.a %{cl_jp}
-  TBD
-}
+  TBD}
+
 %{cl_entry 2015-01-20 0.3.5-1 %{cl_jp}
-  packaging enhancements (pkg-config, license tag)
-}
+  packaging enhancements (pkg-config, license tag)}
+
 %{cl_entry 2015-01-14 0.3.4-1 %{cl_jp}
   packaging enhancements (permissions, ownership)
-  man page for CLI frontend now included
-}
+  man page for CLI frontend now included}
+
 %{cl_entry 2015-01-13 0.3.3-1 %{cl_jp}
   initial build}
