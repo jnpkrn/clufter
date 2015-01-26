@@ -19,9 +19,11 @@
 %{!?clufter_url_dist:%global clufter_url_dist https://people.redhat.com/jpokorny/pkgs/}
 
 # derived
-%global clufter_version_norm %(echo '%{clufter_version}' | tr '-' '_' | sed 's|\\([0-9]\\)a\\(_.*\\)\\?$|\\1|')
-# http://fedoraproject.org/wiki/Packaging%3aNamingGuidelines#Pre-Release_packages
-%global clufter_rel %(echo '%{clufter_version}' | tr '-' '_' | sed -n 's|.*[0-9]a\\(_.*\\)\\?$|0.1.a\\1|p;tq;Q1;:q;q' || echo 1)
+%global clufter_version_norm %(echo '%{clufter_version}' | tr '-' '_' \\
+  | sed 's|\\([0-9]\\)a\\(_.*\\)\\?$|\\1|')
+# http://fedoraproject.org/wiki/Packaging:NamingGuidelines#Pre-Release_packages
+%global clufter_rel %(echo '%{clufter_version}' | tr '-' '_' \\
+  | sed -n 's|.*[0-9]a\\(_.*\\)\\?$|0.1.a\\1|p;tq;Q1;:q;q' || echo 1)
 
 Name:           %{clufter_name}
 Version:        %{clufter_version_norm}
