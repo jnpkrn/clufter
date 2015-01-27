@@ -39,7 +39,7 @@ BuildRequires:  git
 # Python side (first for python2* macros)
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
-%if "%{clufter_check}"
+%if "0%{clufter_check}"
 BuildRequires:  python-lxml
 %endif
 
@@ -186,7 +186,7 @@ test -f '%{buildroot}%{clufter_script}' \
                         '%{buildroot}%{_defaultdocdir}/%{clufter_source}'
 
 %check
-%if "%{clufter_check}"
+%if "0%{clufter_check}"
 # just a basic sanity check
 # we need to massage RA metadata files and PATH so the local run works
 # XXX we could also inject buildroot's site_packages dir to PYTHONPATH
