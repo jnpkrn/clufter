@@ -185,7 +185,7 @@ test -f '%{buildroot}%{clufter_script}' \
 %{__install} -pm 644 -- gpl-2.0.txt doc/*.txt \
                         '%{buildroot}%{_defaultdocdir}/%{clufter_source}'
 
-%check || :
+%check
 %if "%{clufter_check}"
 # just a basic sanity check
 # we need to massage RA metadata files and PATH so the local run works
