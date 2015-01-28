@@ -2,11 +2,11 @@
 %{!?clufter_version: %global clufter_version  0.3.6a}
 %{!?clufter_check:   %global clufter_check    1}
 
-%{!?clufter_pylib:   %global clufter_pylib    python-%{clufter_name}}
-%{!?clufter_cli:     %global clufter_cli      %{clufter_name}-cli}
-%{!?clufter_extlib:  %global clufter_extlib   %{clufter_name}-lib}
-%{!?clufter_source:  %global clufter_source   %{clufter_name}-%{clufter_version}}
-%{!?clufter_script:  %global clufter_script   %{_bindir}/%{clufter_name}}
+%{!?clufter_pylib:   %global clufter_pylib    python-%{name}}
+%{!?clufter_cli:     %global clufter_cli      %{name}-cli}
+%{!?clufter_extlib:  %global clufter_extlib   %{name}-lib}
+%{!?clufter_source:  %global clufter_source   %{name}-%{clufter_version}}
+%{!?clufter_script:  %global clufter_script   %{_bindir}/%{name}}
 %{!?clufter_bashcomp:%global clufter_bashcomp %{_sysconfdir}/bash_completion.d/%(basename '%{clufter_script}')}
 %{!?clufter_manpage: %global clufter_manpage  %{_mandir}/man1/%(basename '%{clufter_script}')}
 
@@ -31,7 +31,7 @@ Release:        %{clufter_rel}%{?dist}
 Group:          System Environment/Base
 Summary:        Tool/library for transforming/analyzing cluster configuration formats
 License:        GPLv2+
-URL:            %{clufter_url_main}%{clufter_name}
+URL:            %{clufter_url_main}%{name}
 
 # autosetup
 BuildRequires:  git
@@ -43,7 +43,7 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-lxml
 %endif
 
-Source0:        %{clufter_url_dist}%{clufter_name}/%{clufter_source}.tar.gz
+Source0:        %{clufter_url_dist}%{name}/%{name}-%{version}.tar.gz
 
 
 %global clufter_description %(cat <<EOF
@@ -67,7 +67,7 @@ BuildRequires:  help2man
 %endif
 %endif
 Requires:       %{clufter_pylib} = %{version}-%{release}
-Provides:       %{clufter_name} = %{version}-%{release}
+Provides:       %{name} = %{version}-%{release}
 BuildArch:      noarch
 
 %description -n %{clufter_cli}
@@ -168,9 +168,9 @@ help2man -N -h -H -n "$(sed -n '2s|[^(]\+(\([^)]\+\))|\1|p' README)" ./run-dev \
 %{__chmod} -- g-w '%{buildroot}%{clufter_ccs_flatten}'
 %if "x%{clufter_script}" == "x"
 %else
-# %%{_bindir}/%%{clufter_name} should have been created
+# %%{_bindir}/%%{name} should have been created
 test -f '%{buildroot}%{clufter_script}' \
-  || %{__install} -D -pm 644 -- '%{buildroot}%{_bindir}/%{clufter_name}' \
+  || %{__install} -D -pm 644 -- '%{buildroot}%{_bindir}/%{name}' \
                                 '%{buildroot}%{clufter_script}'
 %if "x%{clufter_bashcomp}" == "x"
 %else
@@ -205,7 +205,7 @@ ret=$?
 %else
 %if "x%{clufter_script}" == "x"
 if [ $1 -gt 1 ]; then  # no gain regenerating it w/ fresh install (same result)
-  %{__python2} -m %{clufter_name}.__main__ --completion-bash 2>/dev/null \
+  %{__python2} -m %{name}.__main__ --completion-bash 2>/dev/null \
     | sed 's|%(basename '%{__python2}') [-_]m ||g' > '%{clufter_bashcomp}' || :
 fi
 %else
@@ -227,31 +227,31 @@ fi
 %endif
 %{clufter_script}
 %endif
-%{python2_sitelib}/%{clufter_name}/__main__.py*
-%{python2_sitelib}/%{clufter_name}/main.py*
+%{python2_sitelib}/%{name}/__main__.py*
+%{python2_sitelib}/%{name}/main.py*
 
 %files -n %{clufter_pylib}
 %doc %{_defaultdocdir}/%{clufter_source}
 %license %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
 %license %{_defaultdocdir}/%{clufter_source}/fdl-1.3.txt
-%exclude %{python2_sitelib}/%{clufter_name}/__main__.py*
-%exclude %{python2_sitelib}/%{clufter_name}/main.py*
-%exclude %{python2_sitelib}/%{clufter_name}/ext-plugins/*
-%{python2_sitelib}/%{clufter_name}
-%{python2_sitelib}/%{clufter_name}-*.egg-info
+%exclude %{python2_sitelib}/%{name}/__main__.py*
+%exclude %{python2_sitelib}/%{name}/main.py*
+%exclude %{python2_sitelib}/%{name}/ext-plugins/*
+%{python2_sitelib}/%{name}
+%{python2_sitelib}/%{name}-*.egg-info
 # /usr/libexec/clufter/ccs_flatten -> /usr/libexec/clufter
 # /usr/libexec/ccs_flatten         -> /usr/libexec/ccs_flatten
 %(echo '%{clufter_ccs_flatten}' | sed 's|\(%{_libexecdir}/[^/]\+\).*|\1|')
 %{clufter_ra_metadata_dir}
 
 %files -n %{clufter_extlib}-general
-%{python2_sitelib}/%{clufter_name}/ext-plugins/lib-general
+%{python2_sitelib}/%{name}/ext-plugins/lib-general
 
 %files -n %{clufter_extlib}-ccs
-%{python2_sitelib}/%{clufter_name}/ext-plugins/lib-ccs
+%{python2_sitelib}/%{name}/ext-plugins/lib-ccs
 
 %files -n %{clufter_extlib}-pcs
-%{python2_sitelib}/%{clufter_name}/ext-plugins/lib-pcs
+%{python2_sitelib}/%{name}/ext-plugins/lib-pcs
 
 
 %define cl_entry() %(LC_ALL=C date -d %1 "+* %%a %%b %%e %%Y %(echo "%3") - %2"
