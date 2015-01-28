@@ -16,3 +16,5 @@ ret=${PIPESTATUS[0]}
 test ${ret} -eq 0 \
   && echo "[$(basename "${0}")] inferred and plain version of spec matches" \
   || echo "[$(basename "${0}")] inferred and plain version of spec mismatch"
+
+r() { return ${1}; }; r ${ret}
