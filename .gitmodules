@@ -1,0 +1,3 @@
+[submodule "misc/git-distill-spec"]
+	path = misc/git-distill-spec
+	url = ../distill-spec
