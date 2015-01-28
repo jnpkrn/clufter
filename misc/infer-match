@@ -1,0 +1,15 @@
+#!/bin/bash
+# Copyright 2015 Red Hat, Inc.
+# Part of clufter project
+# Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+DISTILLER=./distill-spec
+SPEC=clufter.spec
+
+DIFFER=${DIFFER:=$(which colordiff || echo -n diff) -u}
+PAGER=${PAGER:=$(which less || echo -n cat)}
+
+{ ${DIFFER} <(${DISTILLER} -d "infer 1" "${SPEC}") <(${DISTILLER} "${SPEC}") \
+  && echo "[$(basename "${0}")] inferred and plain version of spec matches" \
+  || echo "[$(basename "${0}")] inferred and plain version of spec mismatch"
+} | ${PAGER}
