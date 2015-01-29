@@ -93,6 +93,7 @@ EOF)}%{?infer:%(../run-dev -h | sed '5,8p;d')}
 Group:          System Environment/Base
 Summary:        Tool for transforming/analyzing cluster configuration formats
 %if %{with bashcomp}
+# for pkg-config file to be inspected during install phase
 BuildRequires:  bash-completion
 %endif
 %if %{with manpage}
