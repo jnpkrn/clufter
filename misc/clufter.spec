@@ -5,15 +5,27 @@
                                                 python ../setup.py --name)}}
 %{!?clufter_license: %global clufter_license  %{?!infer:GPLv2+}%{?infer:%(
                                                 python ../setup.py --license)}}
+%{!?clufter_check:   %global clufter_check    1}
 
+# special vars wrt. version
+%global clufter_version_norm %(echo '%{clufter_version}' | tr '-' '_' \\
+  | sed 's|\\([0-9]\\)a\\(_.*\\)\\?$|\\1|')
+# http://fedoraproject.org/wiki/Packaging:NamingGuidelines#Pre-Release_packages
+%global clufter_rel %(echo '%{clufter_version}' | tr '-' '_' \\
+  | sed -n 's|.*[0-9]a\\(_.*\\)\\?$|0.1.a\\1|p;tq;Q1;:q;q' || echo 1)
+
+%if "%{clufter_version}" == "%{clufter_version_norm}"
+%{!?clufter_source:  %global clufter_source   %{name}-%{version}}
+%else
 %{!?clufter_source:  %global clufter_source   %{name}-%{clufter_version}}
+%endif
 %{!?clufter_url_main:%global clufter_url_main https://github.com/jnpkrn/}
 %{!?clufter_url_dist:%global clufter_url_dist https://people.redhat.com/jpokorny/pkgs/}
 
-%{!?clufter_check:   %global clufter_check    1}
 %{!?clufter_pylib:   %global clufter_pylib    python-%{name}}
 %{!?clufter_extlib:  %global clufter_extlib   %{name}-lib}
 
+# Python package customizations
 %{!?clufter_ccs_flatten:     %global clufter_ccs_flatten     %{_libexecdir}/%{clufter_source}/ccs_flatten}
 %{!?clufter_editor:          %global clufter_editor          %{_bindir}/nano}
 %{!?clufter_ra_metadata_dir: %global clufter_ra_metadata_dir %{_datadir}/cluster}
@@ -42,12 +54,6 @@
   %endif
 %endif
 
-# derived
-%global clufter_version_norm %(echo '%{clufter_version}' | tr '-' '_' \\
-  | sed 's|\\([0-9]\\)a\\(_.*\\)\\?$|\\1|')
-# http://fedoraproject.org/wiki/Packaging:NamingGuidelines#Pre-Release_packages
-%global clufter_rel %(echo '%{clufter_version}' | tr '-' '_' \\
-  | sed -n 's|.*[0-9]a\\(_.*\\)\\?$|0.1.a\\1|p;tq;Q1;:q;q' || echo 1)
 
 Name:           %{clufter_name}
 Version:        %{clufter_version_norm}
