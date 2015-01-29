@@ -74,11 +74,12 @@ Source0:        %{clufter_source}.tar.gz
 %endif
 
 
-%global clufter_description %(cat <<EOF
+%global clufter_description %{!?infer:%(
+cat <<EOF
 While primarily aimed at (CMAN,rgmanager)->(Corosync/CMAN,Pacemaker) cluster
 stacks configuration conversion (as per RHEL trend), the command-filter-format
 framework (capable of XSLT) offers also other uses through its plugin library.
-EOF)
+EOF)}%{?infer:%(../run-dev -h | sed '5,8p;d')}
 
 %description
 %{clufter_description}
