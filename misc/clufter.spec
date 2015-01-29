@@ -73,8 +73,11 @@ EOF)
 %{clufter_description}
 
 
+%define pkgsimple() %(echo "%1" \\
+  | sed -n 's|^%{name}-\\(.*\\)|\\1|p;tE;s|\\(.*\\)|-n \\1|p;:E')
+
 %if %{with script}
-%package -n %{clufter_cli}
+%package %{pkgsimple %{clufter_cli}}
 Group:          System Environment/Base
 Summary:        Tool for transforming/analyzing cluster configuration formats
 %if %{with manpage}
@@ -84,7 +87,7 @@ Requires:       %{clufter_pylib} = %{version}-%{release}
 Provides:       %{name} = %{version}-%{release}
 BuildArch:      noarch
 
-%description -n %{clufter_cli}
+%description %{pkgsimple %{clufter_cli}}
 %{clufter_description}
 
 This package contains clufter command-line interface for the underlying
@@ -92,7 +95,7 @@ library (packaged as %{clufter_pylib}).
 %endif
 
 
-%package -n %{clufter_pylib}
+%package %{pkgsimple %{clufter_pylib}}
 Group:          System Environment/Libraries
 Summary:        Library for transforming/analyzing cluster configuration formats
 License:        GPLv2+ and GFDL
@@ -105,46 +108,46 @@ Requires:       python-lxml
 Requires:       %{clufter_editor}
 # this is _arch-specific_
 
-%description -n %{clufter_pylib}
+%description %{pkgsimple %{clufter_pylib}}
 %{clufter_description}
 
 This package contains clufter library including built-in plugins.
 
 
-%package -n %{clufter_extlib}-general
+%package %{pkgsimple %{clufter_extlib}-general}
 Group:          System Environment/Libraries
 Summary:        Extra %{name} plugins usable for/as generic/auxiliary products
 Requires:       %{clufter_pylib} = %{version}-%{release}
 BuildArch:      noarch
 
-%description -n %{clufter_extlib}-general
+%description %{pkgsimple %{clufter_extlib}-general}
 This package contains set of additional plugins targeting variety of generic
 formats often serving as a byproducts in the intermediate steps of the overall
 process arrangement: either experimental commands or internally unused,
 reusable formats and filters.
 
 
-%package -n %{clufter_extlib}-ccs
+%package %{pkgsimple %{clufter_extlib}-ccs}
 Group:          System Environment/Libraries
 Summary:        Extra plugins for transforming/analyzing CMAN configuration
 Requires:       %{clufter_pylib} = %{version}-%{release}
 Requires:       %{clufter_extlib}-general = %{version}-%{release}
 BuildArch:      noarch
 
-%description -n %{clufter_extlib}-ccs
+%description %{pkgsimple %{clufter_extlib}-ccs}
 This package contains set of additional plugins targeting CMAN cluster
 configuration: either experimental commands or internally unused, reusable
 formats and filters.
 
 
-%package -n %{clufter_extlib}-pcs
+%package %{pkgsimple %{clufter_extlib}-pcs}
 Group:          System Environment/Libraries
 Summary:        Extra plugins for transforming/analyzing Pacemaker configuration
 Requires:       %{clufter_pylib} = %{version}-%{release}
 Requires:       %{clufter_extlib}-general = %{version}-%{release}
 BuildArch:      noarch
 
-%description -n %{clufter_extlib}-pcs
+%description %{pkgsimple %{clufter_extlib}-pcs}
 This package contains set of additional plugins targeting Pacemaker cluster
 configuration: either experimental commands or internally unused, reusable
 formats and filters.
@@ -230,9 +233,9 @@ fi
 
 %if %{with script}
 %if %{with bashcomp}
-%files -n %{clufter_cli} -f .bashcomp-files
+%files %{pkgsimple %{clufter_cli}} -f .bashcomp-files
 %else
-%files -n %{clufter_cli}
+%files %{pkgsimple %{clufter_cli}}
 %endif
 %license %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
 %if %{with manpage}
@@ -243,7 +246,7 @@ fi
 %{python2_sitelib}/%{name}/main.py*
 %endif
 
-%files -n %{clufter_pylib}
+%files %{pkgsimple %{clufter_pylib}}
 %doc %{_defaultdocdir}/%{clufter_source}
 %license %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
 %license %{_defaultdocdir}/%{clufter_source}/fdl-1.3.txt
@@ -257,13 +260,13 @@ fi
 %(echo '%{clufter_ccs_flatten}' | sed 's|\(%{_libexecdir}/[^/]\+\).*|\1|')
 %{clufter_ra_metadata_dir}
 
-%files -n %{clufter_extlib}-general
+%files %{pkgsimple %{clufter_extlib}-general}
 %{python2_sitelib}/%{name}/ext-plugins/lib-general
 
-%files -n %{clufter_extlib}-ccs
+%files %{pkgsimple %{clufter_extlib}-ccs}
 %{python2_sitelib}/%{name}/ext-plugins/lib-ccs
 
-%files -n %{clufter_extlib}-pcs
+%files %{pkgsimple %{clufter_extlib}-pcs}
 %{python2_sitelib}/%{name}/ext-plugins/lib-pcs
 
 
