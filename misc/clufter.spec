@@ -100,7 +100,7 @@ BuildArch:      noarch
 %description %{pkgsimple %{clufter_cli}}
 %{clufter_description}
 
-This package contains clufter command-line interface for the underlying
+This package contains %{name} command-line interface for the underlying
 library (packaged as %{clufter_pylib}).
 %endif
 
@@ -121,7 +121,7 @@ Requires:       %{clufter_editor}
 %description %{pkgsimple %{clufter_pylib}}
 %{clufter_description}
 
-This package contains clufter library including built-in plugins.
+This package contains %{name} library including built-in plugins.
 
 
 %package %{pkgsimple %{clufter_extlib}-general}
