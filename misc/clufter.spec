@@ -3,6 +3,8 @@
                                                 python ../setup.py --version)}}
 %{!?clufter_name:    %global clufter_name     %{?!infer:clufter}%{?infer:%(
                                                 python ../setup.py --name)}}
+%{!?clufter_license: %global clufter_license  %{?!infer:GPLv2+}%{?infer:%(
+                                                python ../setup.py --license)}}
 
 %{!?clufter_source:  %global clufter_source   %{name}-%{clufter_version}}
 %{!?clufter_url_main:%global clufter_url_main https://github.com/jnpkrn/}
@@ -52,7 +54,7 @@ Version:        %{clufter_version_norm}
 Release:        %{clufter_rel}%{?dist}
 Group:          System Environment/Base
 Summary:        Tool/library for transforming/analyzing cluster configuration formats
-License:        GPLv2+
+License:        %{clufter_license}
 URL:            %{clufter_url_main}%{name}
 
 # autosetup
@@ -110,7 +112,7 @@ library (packaged as %{clufter_pylib}).
 %package %{pkgsimple %{clufter_pylib}}
 Group:          System Environment/Libraries
 Summary:        Library for transforming/analyzing cluster configuration formats
-License:        GPLv2+ and GFDL
+License:        %{clufter_license} and GFDL
 # ccs_flatten helper
 # ~ libxml2-devel
 BuildRequires:  pkgconfig(libxml-2.0)
