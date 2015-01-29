@@ -1,23 +1,35 @@
 # distill-spec-prefix: clufter
-%{!?clufter_name:    %global clufter_name     clufter}
 %{!?clufter_version: %global clufter_version  0.3.6a}
-%{!?clufter_check:   %global clufter_check    1}
+%{!?clufter_name:    %global clufter_name     clufter}
 
-%{!?clufter_pylib:   %global clufter_pylib    python-%{name}}
-%{!?clufter_cli:     %global clufter_cli      %{name}-cli}
-%{!?clufter_extlib:  %global clufter_extlib   %{name}-lib}
 %{!?clufter_source:  %global clufter_source   %{name}-%{clufter_version}}
-%{!?clufter_script:  %global clufter_script   %{_bindir}/%{name}}
-%{!?clufter_bashcomp:%global clufter_bashcomp %{_sysconfdir}/bash_completion.d/%(basename '%{clufter_script}')}
-%{!?clufter_manpage: %global clufter_manpage  %{_mandir}/man1/%(basename '%{clufter_script}')}
+%{!?clufter_url_main:%global clufter_url_main https://github.com/jnpkrn/}
+%{!?clufter_url_dist:%global clufter_url_dist https://people.redhat.com/jpokorny/pkgs/}
+
+%{!?clufter_check:   %global clufter_check    1}
+%{!?clufter_pylib:   %global clufter_pylib    python-%{name}}
+%{!?clufter_extlib:  %global clufter_extlib   %{name}-lib}
 
 %{!?clufter_ccs_flatten:     %global clufter_ccs_flatten     %{_libexecdir}/%{clufter_source}/ccs_flatten}
 %{!?clufter_editor:          %global clufter_editor          %{_bindir}/nano}
 %{!?clufter_ra_metadata_dir: %global clufter_ra_metadata_dir %{_datadir}/cluster}
 %{!?clufter_ra_metadata_ext: %global clufter_ra_metadata_ext metadata}
 
-%{!?clufter_url_main:%global clufter_url_main https://github.com/jnpkrn/}
-%{!?clufter_url_dist:%global clufter_url_dist https://people.redhat.com/jpokorny/pkgs/}
+%bcond_without script
+%if %{with script}
+  %bcond_without bashcomp
+  %bcond_without manpage
+%endif
+%if %{with script}
+  %{!?clufter_cli:     %global clufter_cli      %{name}-cli}
+  %{!?clufter_script:  %global clufter_script   %{_bindir}/%{name}}
+  %if %{with bashcomp}
+    %{!?clufter_bashcompdir:%global clufter_bashcompdir %{_sysconfdir}/bash_completion.d}
+  %endif
+  %if %{with manpage}
+    %{!?clufter_manpagesec: %global clufter_manpagesec  1}
+  %endif
+%endif
 
 # derived
 %global clufter_version_norm %(echo '%{clufter_version}' | tr '-' '_' \\
@@ -57,15 +69,12 @@ EOF)
 %{clufter_description}
 
 
+%if %{with script}
 %package -n %{clufter_cli}
 Group:          System Environment/Base
 Summary:        Tool for transforming/analyzing cluster configuration formats
-%if "x%{clufter_script}" == "x"
-%else
-%if "x%{clufter_manpage}" == "x"
-%else
+%if %{with manpage}
 BuildRequires:  help2man
-%endif
 %endif
 Requires:       %{clufter_pylib} = %{version}-%{release}
 Provides:       %{name} = %{version}-%{release}
@@ -76,6 +85,7 @@ BuildArch:      noarch
 
 This package contains clufter command-line interface for the underlying
 library (packaged as %{clufter_pylib}).
+%endif
 
 
 %package -n %{clufter_pylib}
@@ -99,7 +109,7 @@ This package contains clufter library including built-in plugins.
 
 %package -n %{clufter_extlib}-general
 Group:          System Environment/Libraries
-Summary:        Extra clufter plugins usable for/as generic/auxiliary products
+Summary:        Extra %{name} plugins usable for/as generic/auxiliary products
 Requires:       %{clufter_pylib} = %{version}-%{release}
 BuildArch:      noarch
 
@@ -148,18 +158,15 @@ formats and filters.
 
 %build
 %{__python2} setup.py build
-%if "x%{clufter_script}" == "x"
-%else
-%if "x%{clufter_bashcomp}" == "x"
-%else
-./run-dev --completion-bash 2>/dev/null \
-  | sed 's|run[-_]dev|%(basename %{clufter_bashcomp})|g' > .bashcomp
+%if %{with bashcomp}
+./run-dev --skip-ext --completion-bash 2>/dev/null \
+  | sed 's|run[-_]dev|%{name}|g' > .bashcomp
 %endif
-%if "x%{clufter_manpage}" == "x"
-%else
+%if %{with manpage}
+%{__mkdir_p} -- .manpages/man%{clufter_manpagesec}
 help2man -N -h -H -n "$(sed -n '2s|[^(]\+(\([^)]\+\))|\1|p' README)" ./run-dev \
-  | sed 's|run[-_]dev|%(basename %{clufter_manpage})|g' > .manpage
-%endif
+  | sed 's|run[-_]dev|%{name}|g' \
+  > .manpages/man%{clufter_manpagesec}/%{name}.%{clufter_manpagesec}
 %endif
 
 %install
@@ -167,19 +174,22 @@ help2man -N -h -H -n "$(sed -n '2s|[^(]\+(\([^)]\+\))|\1|p' README)" ./run-dev \
 %{__python2} setup.py install --skip-build --root '%{buildroot}'
 # following is needed due to umask 022 not taking effect(?) leading to 775
 %{__chmod} -- g-w '%{buildroot}%{clufter_ccs_flatten}'
-%if "x%{clufter_script}" == "x"
-%else
+%if %{with script}
 # %%{_bindir}/%%{name} should have been created
 test -f '%{buildroot}%{clufter_script}' \
   || %{__install} -D -pm 644 -- '%{buildroot}%{_bindir}/%{name}' \
                                 '%{buildroot}%{clufter_script}'
-%if "x%{clufter_bashcomp}" == "x"
-%else
-%{__install} -D -pm 644 -- .bashcomp '%{buildroot}%{clufter_bashcomp}'
+%if %{with bashcomp}
+declare bashcomp='%{clufter_bashcompdir}/%{name}'
+%{__install} -D -pm 644 -- .bashcomp "%{buildroot}${bashcomp}"
+cat >.bashcomp-files <<-EOF
+	%{clufter_bashcompdir}
+	%%verify(not size md5 mtime) ${bashcomp}
+EOF
 %endif
-%if "x%{clufter_manpage}" == "x"
-%else
-%{__install} -D -pm 644 -- .manpage '%{buildroot}%{clufter_manpage}.1'
+%if %{with manpage}
+%{__mkdir_p} -- '%{buildroot}%{_mandir}'
+%{__cp} -a -- .manpages/* '%{buildroot}%{_mandir}'
 %endif
 %endif
 %{__mkdir_p} -- '%{buildroot}%{_defaultdocdir}/%{clufter_source}'
@@ -201,35 +211,29 @@ ret=$?
 [ ${ret} -eq 0 ] || exit "${ret}"
 %endif
 
+%if %{with bashcomp}
 %post
-%if "x%{clufter_bashcomp}" == "x"
-%else
-%if "x%{clufter_script}" == "x"
 if [ $1 -gt 1 ]; then  # no gain regenerating it w/ fresh install (same result)
-  %{__python2} -m %{name}.__main__ --completion-bash 2>/dev/null \
-    | sed 's|%(basename '%{__python2}') [-_]m ||g' > '%{clufter_bashcomp}' || :
+%{clufter_script} --completion-bash > '%{clufter_bashcompdir}/%{name}' \
+  2>/dev/null || :
 fi
-%else
-%{clufter_script} --completion-bash > '%{clufter_bashcomp}' 2>/dev/null || :
-%endif
 %endif
 
+
+%if %{with script}
+%if %{with bashcomp}
+%files -n %{clufter_cli} -f .bashcomp-files
+%else
 %files -n %{clufter_cli}
-%license %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
-%if "x%{clufter_script}" == "x"
-%else
-%if "x%{clufter_bashcomp}" == "x"
-%else
-%verify(not size md5 mtime) %{clufter_bashcomp}
 %endif
-%if "x%{clufter_manpage}" == "x"
-%else
-%doc %{clufter_manpage}.1*
+%license %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
+%if %{with manpage}
+%{_mandir}/man%{clufter_manpagesec}/*.%{clufter_manpagesec}*
 %endif
 %{clufter_script}
-%endif
 %{python2_sitelib}/%{name}/__main__.py*
 %{python2_sitelib}/%{name}/main.py*
+%endif
 
 %files -n %{clufter_pylib}
 %doc %{_defaultdocdir}/%{clufter_source}
