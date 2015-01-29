@@ -1,6 +1,8 @@
 # distill-spec-prefix: clufter
-%{!?clufter_version: %global clufter_version  0.3.6a}
-%{!?clufter_name:    %global clufter_name     clufter}
+%{!?clufter_version: %global clufter_version  %{?!infer:0.3.6a}%{?infer:%(
+                                                python ../setup.py --version)}}
+%{!?clufter_name:    %global clufter_name     %{?!infer:clufter}%{?infer:%(
+                                                python ../setup.py --name)}}
 
 %{!?clufter_source:  %global clufter_source   %{name}-%{clufter_version}}
 %{!?clufter_url_main:%global clufter_url_main https://github.com/jnpkrn/}
