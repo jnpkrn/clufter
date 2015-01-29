@@ -282,7 +282,6 @@ EOF)
 %else
 %files %{pkgsimple %{clufter_cli}}
 %endif
-%license %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
 %if %{with manpage}
 %{_mandir}/man%{clufter_manpagesec}/*.%{clufter_manpagesec}*
 %endif
