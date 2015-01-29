@@ -248,13 +248,32 @@ ret=$?
 %endif
 
 %if %{with bashcomp}
-%post
+%post %{pkgsimple %{clufter_cli}}
 if [ $1 -gt 1 ]; then  # no gain regenerating it w/ fresh install (same result)
 declare bashcomp="$(pkg-config --variable=completionsdir bash-completion \
                     2>/dev/null || echo '%{clufter_bashcompdir}')/%{name}"
 %{clufter_script} --completion-bash > "${bashcomp}" 2>/dev/null || :
 fi
 %endif
+
+
+%global clufter_post_ext %(
+cat <<EOF
+declare bashcomp="\\$(pkg-config --variable=completionsdir bash-completion \\\\
+                    2>/dev/null || echo '%{clufter_bashcompdir}')/%{name}"
+# if the completion file is not present, suppose it is not desired
+test -x '%{clufter_script}' && test -f "\\${bashcomp}" \
+  && %{clufter_script} --completion-bash > "\\${bashcomp}" 2>/dev/null || :
+EOF)
+
+%post %{pkgsimple %{clufter_extlib}-general}
+%{clufter_post_ext}
+
+%post %{pkgsimple %{clufter_extlib}-ccs}
+%{clufter_post_ext}
+
+%post %{pkgsimple %{clufter_extlib}-pcs}
+%{clufter_post_ext}
 
 
 %if %{with script}
