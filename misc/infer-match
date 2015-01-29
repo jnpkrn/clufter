@@ -9,7 +9,7 @@ SPEC=clufter.spec
 DIFFER=${DIFFER:=$(which colordiff || echo -n diff) -u}
 PAGER=${PAGER:=$(which less || echo -n cat)}
 
-${DIFFER} <(${DISTILLER} -d "infer 1" "${SPEC}") <(${DISTILLER} "${SPEC}") \
+${DIFFER} <(${DISTILLER} -D "infer 1" "${SPEC}") <(${DISTILLER} "${SPEC}") \
   | ${PAGER}
 ret=${PIPESTATUS[0]}
 
