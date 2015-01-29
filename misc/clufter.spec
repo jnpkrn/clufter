@@ -97,6 +97,9 @@ BuildRequires:  bash-completion
 %endif
 %if %{with manpage}
 BuildRequires:  help2man
+# for /usr/share/man/man*
+# https://fedoraproject.org/wiki/Packaging:Guidelines#The_directory_is_owned_by_a_package_which_is_not_required_for_your_package_to_function
+Requires:       filesystem
 %endif
 Requires:       %{clufter_pylib} = %{version}-%{release}
 Provides:       %{name} = %{version}-%{release}
