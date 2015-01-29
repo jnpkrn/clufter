@@ -305,7 +305,7 @@ EOF)
 %license %{_defaultdocdir}/%{clufter_source}/fdl-1.3.txt
 %exclude %{python2_sitelib}/%{name}/__main__.py*
 %exclude %{python2_sitelib}/%{name}/main.py*
-%exclude %{python2_sitelib}/%{name}/ext-plugins/*
+%exclude %{python2_sitelib}/%{name}/ext-plugins/*/
 %{python2_sitelib}/%{name}
 %{python2_sitelib}/%{name}-*.egg-info
 # /usr/libexec/clufter/ccs_flatten -> /usr/libexec/clufter
