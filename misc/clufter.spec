@@ -18,13 +18,20 @@
 %bcond_without script
 %if %{with script}
   %bcond_without bashcomp
+  %if %{with bashcomp}
+    %bcond_without bashcomplink
+  %endif
   %bcond_without manpage
 %endif
 %if %{with script}
   %{!?clufter_cli:     %global clufter_cli      %{name}-cli}
   %{!?clufter_script:  %global clufter_script   %{_bindir}/%{name}}
   %if %{with bashcomp}
-    %{!?clufter_bashcompdir:%global clufter_bashcompdir %{_sysconfdir}/bash_completion.d}
+    # may be overriden by pkg-config data of bash-completion
+    %{!?clufter_bashcompdir:%global clufter_bashcompdir %{_datadir}/bash-completion/completions}
+    %if %{with bashcomplink}
+      %{!?clufter_bashcompreal:%global clufter_bashcompreal %{_sysconfdir}/%{name}/bash-completion}
+    %endif
   %endif
   %if %{with manpage}
     %{!?clufter_manpagesec: %global clufter_manpagesec  1}
@@ -80,6 +87,9 @@ EOF)
 %package %{pkgsimple %{clufter_cli}}
 Group:          System Environment/Base
 Summary:        Tool for transforming/analyzing cluster configuration formats
+%if %{with bashcomp}
+BuildRequires:  bash-completion
+%endif
 %if %{with manpage}
 BuildRequires:  help2man
 %endif
@@ -191,11 +201,26 @@ test -f '%{buildroot}%{clufter_script}' \
   || %{__install} -D -pm 644 -- '%{buildroot}%{_bindir}/%{name}' \
                                 '%{buildroot}%{clufter_script}'
 %if %{with bashcomp}
-declare bashcomp='%{clufter_bashcompdir}/%{name}'
+declare bashcompdir="$(pkg-config --variable=completionsdir bash-completion \
+                       || echo '%{clufter_bashcompdir}')"
+declare bashcomp="${bashcompdir}/%{name}"
+%if %{with bashcomplink}
+%{__install} -D -pm 644 -- \
+  .bashcomp '%{buildroot}%{clufter_bashcompreal}'
+%{__mkdir_p} -- "%{buildroot}${bashcompdir}"
+ln -s '%{clufter_bashcompreal}' "%{buildroot}${bashcomp}"
+%else
 %{__install} -D -pm 644 -- .bashcomp "%{buildroot}${bashcomp}"
+%endif
 cat >.bashcomp-files <<-EOF
-	%{clufter_bashcompdir}
+	${bashcompdir}
+%if %{with bashcomplink}
+	${bashcomp}
+	%(dirname '%{clufter_bashcompreal}')
+	%%verify(not size md5 mtime) %{clufter_bashcompreal}
+%else
 	%%verify(not size md5 mtime) ${bashcomp}
+%endif
 EOF
 %endif
 %if %{with manpage}
@@ -225,8 +250,9 @@ ret=$?
 %if %{with bashcomp}
 %post
 if [ $1 -gt 1 ]; then  # no gain regenerating it w/ fresh install (same result)
-%{clufter_script} --completion-bash > '%{clufter_bashcompdir}/%{name}' \
-  2>/dev/null || :
+declare bashcomp="$(pkg-config --variable=completionsdir bash-completion \
+                    2>/dev/null || echo '%{clufter_bashcompdir}')/%{name}"
+%{clufter_script} --completion-bash > "${bashcomp}" 2>/dev/null || :
 fi
 %endif
 
