@@ -1,3 +1,4 @@
+# distill-spec-prefix: clufter
 %{!?clufter_name:    %global clufter_name     clufter}
 %{!?clufter_version: %global clufter_version  0.3.6a}
 %{!?clufter_check:   %global clufter_check    1}
