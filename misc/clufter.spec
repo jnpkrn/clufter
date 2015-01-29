@@ -56,7 +56,11 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-lxml
 %endif
 
+%if "%{clufter_version}" == "%{clufter_version_norm}"
 Source0:        %{clufter_url_dist}%{name}/%{name}-%{version}.tar.gz
+%else
+Source0:        %{clufter_source}.tar.gz
+%endif
 
 
 %global clufter_description %(cat <<EOF
@@ -147,7 +151,11 @@ formats and filters.
 
 
 %prep
-%autosetup -n %{name}-%{clufter_version} -p1 -S git
+%if "%{clufter_version}" == "%{clufter_version_norm}"
+%autosetup -p1 -S git
+%else
+%autosetup -n %{clufter_source} -p1 -S git
+%endif
 
 ## for some esoteric reason, the line above has to be empty
 %{__python2} setup.py saveopts -f setup.cfg pkg_prepare \
