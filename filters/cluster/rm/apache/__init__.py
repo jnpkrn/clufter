@@ -25,7 +25,7 @@ ccsflat2pcsprelude = '''\
             </xsl:if>
             <!-- options ~ httpd_options (if present; + name, server_root) -->
             <nvpair id="{concat($Prefix, '-ATTRS-options')}"
-                    name="options"/>
+                    name="options">
                 <xsl:attribute name="value">
                     <xsl:value-of select="concat(
                         ' -D\&quot;', @name, '\&quot;'
@@ -41,6 +41,7 @@ ccsflat2pcsprelude = '''\
                         )"/>
                     </xsl:if>
                 </xsl:attribute>
+            </nvpair>
         </instance_attributes>
 
         <!-- OPERATIONS -->
