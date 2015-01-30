@@ -25,7 +25,7 @@ ccsflat2pcsprelude = '''\
             <!-- additional_parameters ~ listen_address + mysqld_options -->
             <xsl:if test="@listen_address or @mysqld_options">
             <nvpair id="{concat($Prefix, '-ATTRS-additional_parameters')}"
-                    name="additional_parameters"/>
+                    name="additional_parameters">
                 <xsl:attribute name="value">
                     <xsl:if test="@listen_address">
                         <xsl:value-of select="concat(
@@ -36,6 +36,7 @@ ccsflat2pcsprelude = '''\
                     </xsl:if>
                     <xsl:value-of select="@mysqld_options"/>
                 </xsl:attribute>
+            </nvpair>
             </xsl:if>
         </instance_attributes>
     </xsl:when>
