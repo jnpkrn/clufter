@@ -1,5 +1,6 @@
 #/bin/sh
-# for locally-commited-only round-trip
+# for locally-commited-only round-trip,
+# for pushed-code round-trip, see REPO/misc/run-sdist-per-commit
 pushd "$(git rev-parse --show-toplevel)"
 git archive --format=tar HEAD | (
   cd $(mktemp -d '/var/tmp/pkg-XXXXX') \
