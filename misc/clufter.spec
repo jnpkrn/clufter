@@ -77,6 +77,9 @@ BuildRequires:  python-lxml
 Source0:        %{clufter_url_dist}%{name}/%{name}-%{version}.tar.gz
 %else
 Source0:        %{clufter_source}.tar.gz
+# Source0 is created by Source1, just pass particular commit hash
+# via GITHASH env. variable
+Source1:        https://raw.githubusercontent.com/jnpkrn/clufter/master/misc/run-sdist-per-commit
 %endif
 
 
