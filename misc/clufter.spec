@@ -306,9 +306,10 @@ EOF)
 %endif
 
 %files %{pkgsimple %{clufter_pylib}}
-%doc %{_defaultdocdir}/%{clufter_source}
-%license %{_defaultdocdir}/%{clufter_source}/gpl-2.0.txt
-%license %{_defaultdocdir}/%{clufter_source}/fdl-1.3.txt
+# following few paths will get marked as doc automatically based on location
+%dir %{_defaultdocdir}/%{clufter_source}
+%{_defaultdocdir}/%{clufter_source}/*[^[:digit:]].txt
+%license %{_defaultdocdir}/%{clufter_source}/*[[:digit:]].txt
 %exclude %{python2_sitelib}/%{name}/__main__.py*
 %exclude %{python2_sitelib}/%{name}/main.py*
 %exclude %{python2_sitelib}/%{name}/ext-plugins/*/
