@@ -227,6 +227,9 @@ ln -s '%{clufter_bashcompreal}' "%{buildroot}${bashcomp}"
 %else
 %{__install} -D -pm 644 -- .bashcomp "%{buildroot}${bashcomp}"
 %endif
+# own %%%%{_datadir}/bash-completion in case of ...bash-completion/completions
+rpm -qf -- "$(dirname "${bashcompdir}")" | grep -q -- bash-completion \
+  && bashcompdir="$(dirname "${bashcompdir}")" || :
 cat >.bashcomp-files <<-EOF
 	${bashcompdir}
 %if %{with bashcomplink}
