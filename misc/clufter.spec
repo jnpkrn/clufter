@@ -280,7 +280,7 @@ cat <<EOF
 declare bashcomp="\\$(pkg-config --variable=completionsdir bash-completion \\\\
                     2>/dev/null || echo '%{clufter_bashcompdir}')/%{name}"
 # if the completion file is not present, suppose it is not desired
-test -x '%{clufter_script}' && test -f "\\${bashcomp}" \
+test -x '%{clufter_script}' && test -f "\\${bashcomp}" \\\\
   && %{clufter_script} --completion-bash > "\\${bashcomp}" 2>/dev/null || :
 EOF)
 
