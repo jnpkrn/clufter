@@ -4,7 +4,7 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from ...utils_xslt import xslt_is_member
+from ....utils_xslt import xslt_is_member
 
 ccs_subst_nodes = '''\
     <xsl:key name="node-old-to-new"
