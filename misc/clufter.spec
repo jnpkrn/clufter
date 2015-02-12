@@ -230,7 +230,6 @@ ln -s '%{clufter_bashcompreal}' "%{buildroot}${bashcomp}"
 cat >.bashcomp-files <<-EOF
 	${bashcompdir}
 %if %{with bashcomplink}
-	${bashcomp}
 	%(dirname '%{clufter_bashcompreal}')
 	%%verify(not size md5 mtime) %{clufter_bashcompreal}
 %else
