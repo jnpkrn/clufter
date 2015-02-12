@@ -211,7 +211,7 @@ help2man -N -h -H -n "$(sed -n '2s|[^(]\+(\([^)]\+\))|\1|p' README)" ./run-dev \
 # following is needed due to umask 022 not taking effect(?) leading to 775
 %{__chmod} -- g-w '%{buildroot}%{clufter_ccs_flatten}'
 %if %{with script}
-# %%{_bindir}/%%{name} should have been created
+# %%%%{_bindir}/%%%%{name} should have been created
 test -f '%{buildroot}%{clufter_script}' \
   || %{__install} -D -pm 644 -- '%{buildroot}%{_bindir}/%{name}' \
                                 '%{buildroot}%{clufter_script}'
