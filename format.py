@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Base format stuff (metaclass, classes, etc.)"""
@@ -631,7 +631,7 @@ class XML(SimpleFormat):
                     try:
                         mod = load_module(mname, mfile, mpath, mdesc)
                     except ImportError:
-                        log.debug("Cannot load `{0}'".format(mpath))
+                        log.warning("Cannot load `{0}'".format(mpath))
                         continue
                     finally:
                         if mfile:
