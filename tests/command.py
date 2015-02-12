@@ -26,7 +26,8 @@ class ChainResolve(TestCase):
     def testShapeAndProtocolMatch(self):
         filters = FilterManager.init_lookup('ccs2ccsflat',
                                             'ccsflat2pcsprelude',
-                                            'ccs2needlexml').plugins
+                                            'ccs2needlexml',
+                                            ext_plugins=False).plugins
         from tempfile import mktemp
         testfile = join(dirname(__file__), 'empty.conf')
         testoutput = mktemp(prefix='out', suffix='.conf',

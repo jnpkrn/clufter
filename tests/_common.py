@@ -16,7 +16,7 @@ from .filter_manager import FilterManager
 
 class CommonFilterTestCase(TestCase):
     def setUp(self):
-        self.flt_mgr = FilterManager.init_lookup()
+        self.flt_mgr = FilterManager.init_lookup(ext_plugins=False)
 
     #def tearDown(self):
     #    self.flt_mgr.registry.setup(True)  # start from scratch
