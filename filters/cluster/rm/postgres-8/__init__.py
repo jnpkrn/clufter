@@ -13,7 +13,7 @@ ccs_artefacts = ''.join((
 
 ###
 
-from ...utils_cib import ResourceSpec
+from ....utils_cib import ResourceSpec
 
 ccsflat2pcsprelude = '''\
     <!--
