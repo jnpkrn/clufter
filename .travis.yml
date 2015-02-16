@@ -15,6 +15,9 @@ install:
                              --ccs-flatten="$(dirname $(pwd))/ccs_flatten"
         #- cat setup.cfg
         - pip install -qe .[test]
-          || { ret=$?; cat ~/.pip/pip.log; f() { return $1; }; f $ret; }
+          || { ret=$?;
+               echo "LOGS>"; cat ~/.pip/pip.log ~/.cache/pip/log/debug.log 2>/dev/null;
+               f() { return $1; }; f $ret;
+          }
 
 script: ./run-tests
