@@ -84,6 +84,23 @@ def find_packages(where=None, exclude=()):
         ret.extend('.'.join((pkg_root, d)).lstrip('.') for d in dirs)
     return ret
 
+# this is needed to workaround naive approach in recent setuptools
+# (https://bitbucket.org/pypa/setuptools/issue/277/files-in-a-symbol-link-dir)
+# which also(!) now follows symlinks (but apparently cannot detect traversal
+# infloops!)
+from os import curdir
+from distutils import filelist
+def findall(dir=curdir):
+    all_files = []
+    for base, dirs, files in walk(dir, followlinks=False):
+        if base == curdir or base.startswith(curdir + sep):
+            base = base[2:]
+        if base:
+            files = [path_join(base, f) for f in files]
+        all_files.extend(filter(path_isfile, files))
+    return all_files
+filelist.findall = findall  # fix findall bug in distutils (+ setuptools)
+
 
 # http://code.activestate.com/recipes/502261-python-distutils-pkg-config/#c1
 def pkgconfig(*packages, **kw):
