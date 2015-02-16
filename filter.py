@@ -285,7 +285,7 @@ class XMLFilter(Filter, MetaPlugin):
 
     @classmethod
     def _try_edit(cls, res_snippet, schema_path, schema_snippet, msgs,
-                  use_offset=True, editor=''):
+                  use_offset=True, editor='', **ignored):
         editor = editor.strip() or EDITOR
         pkg_name = package_name()
         message = [
@@ -475,11 +475,10 @@ class XMLFilter(Filter, MetaPlugin):
                     self._xslt_atom_hook(ret, error_log, validate_hook, **kws))
 
     @classmethod
-    def _xslt_atom_hook(cls, ret, error_log, validate_hook=None, **kws):
+    def _xslt_atom_hook(cls, ret, error_log, validate_hook=None, maxl=1,
+                        svc_output=lambda s, **kwargs: stderr.write(s + '\n'),
+                        **ignored):
         fatal = []
-        maxl = kws.get('maxl', 1)
-        svc_output = kws.get('svc_output',
-                             lambda s, **kwargs: stderr.write(s + '\n'))
         for entry in error_log:
             msg = ("|header:[{0:{1}}]| |subheader:XSLT|: {2}"
                    .format(cls.name, maxl, entry.message))
