@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Base filter stuff (metaclass, decorator, etc.)"""
@@ -343,10 +343,10 @@ class XMLFilter(Filter, MetaPlugin):
                 editor_args = shlex_split(editor) + [tmp.name]
                 assert len(editor_args) >= 2
                 editor_args[0] = which(editor_args[0])
-                log.info("running `{0}'".format(' '.join(editor_args)))
                 try:
                     # pty.spawn doesn't work as nicely
                     with open('/dev/tty') as f_tty:
+                        log.info("running `{0}'".format(' '.join(editor_args)))
                         check_call(editor_args, stdin=f_tty)
                 except (CalledProcessError, IOError) as e:
                     raise FilterError(cls, str(e))
