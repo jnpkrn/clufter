@@ -1,0 +1,13 @@
+<corosync>
+  <nodelist>
+    <node nodeid="1" ring0_addr="ju"/>
+    <node nodeid="2" ring0_addr="hele"/>
+  </nodelist>
+  <quorum provider="corosync_votequorum" two_node="1"/>
+  <logging>
+    <logger_subsys debug="on" subsys="CONFDB"/>
+  </logging>
+  <totem version="2" cluster_name="test" consensus="200" token="5000" token_retransmits_before_loss_const="4" join="100" key="_NOT_SECRET_">
+    <interface ttl="1"/>
+  </totem>
+</corosync>
