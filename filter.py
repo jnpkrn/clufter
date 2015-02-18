@@ -28,7 +28,7 @@ from .plugin_registry import MetaPlugin, PluginRegistry
 from .utils import args2tuple, arg2wrapped, \
                    filterdict_keep, filterdict_pop, \
                    head_tail, hybridproperty, \
-                   tuplist
+                   lazystring, tuplist
 from .utils_func import apply_preserving_depth, \
                         apply_aggregation_preserving_depth, \
                         apply_intercalate, \
@@ -514,6 +514,8 @@ class XMLFilter(Filter, MetaPlugin):
         # in top-down manner
         if isinstance(sym, tuple):
             return sym  # already proceeded
+        if isinstance(sym, lazystring):
+            sym = str(sym)
         if isinstance(sym, basestring):
             log.debug("preprocessing {0}".format(sym))
             # XXX <xsl:output method="xml"
