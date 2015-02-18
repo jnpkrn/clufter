@@ -183,3 +183,29 @@ class hybridproperty(property):
 
     def __get__(self, this, owner):
         return self.fget.__get__(None, this if this else owner)()
+
+
+# inspired from speaklater: http://pypi.python.org/pypi/speaklater
+class lazystring(object):
+    """Mimic string that in fact is on-off constructed on-demand
+
+    Note: only direct use, str methods and '+' operator supported.
+    """
+    def __init__(self, fnc, cache=True):
+        self._fnc = fnc
+        self._cache = cache
+
+    @property
+    def content(self):
+        ret = self._cache
+        if ret is False or ret is True:
+            ret = self._fnc()
+            if ret is True:
+                self._cache = ret
+        return ret
+
+    def __str__(self):           return str(self.content)
+    def __repr__(self):          return repr(self.content)
+    def __getattr__(self, what): return getattr(self.content, what)
+    def __add__(self, other):    return self.content + other
+    def __radd__(self, other):   return other + self.content
