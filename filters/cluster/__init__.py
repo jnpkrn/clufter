@@ -228,8 +228,17 @@ from hashlib import sha256
 from os import getpid
 from time import time
 
+# following 2nd chance import is to allow direct usage context (testing, etc.)
+try:
+    from ....utils import lazystring
+    from ....utils_prog import getenv_namespaced
+except ValueError:  # Value?
+    from ...utils import lazystring
+    from ...utils_prog import getenv_namespaced
+
+
 # yield corosync v.2/needle configuration compatible with el7
-ccs2needlexml = ('''\
+ccs2needlexml = lazystring(lambda: ('''\
     <!-- cluster=current ~ corosync -->
     <corosync>
 
@@ -286,15 +295,18 @@ ccs2needlexml = ('''\
 ''') % dict(
     # NB: nothing against second parameter to b64encode, but it seems to be
     #     slower than simple chained replacement (a la urlsafe_b64encode)
-    key='_NOT_SECRET--' + b64encode(sha256(
-        str(getpid()) + '_REALLY_' + str(int(time()))
-    ).digest()).replace('+', '-').replace('/', '_').rstrip('='),
+    key='_NOT_SECRET' + (
+        '--' + b64encode(sha256(
+            str(getpid()) + '_REALLY_' + str(int(time()))
+        ).digest()).replace('+', '-').replace('/', '_').rstrip('=')
+        if getenv_namespaced('NOSALT', '0') in ('0', 'false') else '_'
+    ),
     key_message='WARNING: secret key used by corosync for encryption/integrity'
                 ' checking is, as a measure to prevent from dropping these'
                 ' security features entirely, stored directly in the main'
                 ' configuration file (totem/key), possibly readable by'
                 ' arbitrary system-local user',
-)
+), cache=False)
 
 ###
 
