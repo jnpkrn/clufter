@@ -154,15 +154,16 @@ class Filter(object):
         """Output format identifier/class for the filter"""
         return this._out_format
 
-    def __call__(self, in_obj, flt_ctxt=None, **fmt_kws):
+    def __call__(self, in_obj, flt_ctxt=None, **kws):
         """Default is to use a function decorated with `deco`"""
+        fmt_kws = filterdict_pop(kws, *self.out_format.context)
         if flt_ctxt is None:  # when estranged (not under Command control)
-            cmd_ctxt = CommandContext()
+            cmd_ctxt = CommandContext(kws)
             flt_ctxt = cmd_ctxt.ensure_filter(self)
+        fmt_kws = filterdict_keep(flt_ctxt, *self.out_format.context, **fmt_kws)
         outdecl = self._fnc(flt_ctxt, in_obj)
         outdecl_head, outdecl_tail = head_tail(outdecl)
         outdecl_tail = arg2wrapped(outdecl_tail)
-        fmt_kws = filterdict_keep(flt_ctxt, *self.out_format.context, **fmt_kws)
         return self.out_format(outdecl_head, *outdecl_tail, **fmt_kws)
 
     @classmethod
