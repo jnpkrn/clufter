@@ -297,6 +297,11 @@ def getenv_namespaced(varname, value=None, namespace=package_name().upper()):
     return environ.get('_'.join((namespace, varname)), value)
 
 
+def setenv_namespaced(varname, value=None, namespace=package_name().upper()):
+    """Set value of environment variable prefixed with `namespace + '_'`"""
+    environ['_'.join((namespace, varname))] = value
+
+
 # cf. https://github.com/karelzak/util-linux/blob/master/lib/colors.c#L107
 #     https://github.com/karelzak/util-linux/blob/master/include/colors.h#L14
 class FancyOutput(object):
