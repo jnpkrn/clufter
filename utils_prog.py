@@ -211,6 +211,7 @@ OneoffWrappedStdinPopen = OneoffWrappedStdinPopen()
 # misc
 #
 
+# NB: distutils.spawn.find_executable
 def which(name, single='', *paths, **redefine_check):
     """Mimic `which' UNIX utility
 
