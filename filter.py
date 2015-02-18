@@ -355,8 +355,11 @@ class XMLFilter(Filter, MetaPlugin):
                                             .format(editor))
                 if orig_mtime == stat(tmp.name).st_mtime:
                     return None, force  # no change occurred
-                tmpfile.seek(0)
-                reply = tmpfile.read().strip()
+                # do not trust editors/sed/whatever to do a _real in-place_
+                # modifications (sed definitely doesn't), otherwise
+                # tmpfile.seek(0) would be enough
+                with open(tmp.name, 'r') as tmpfile:
+                    reply = tmpfile.read().strip()
         finally:
             rmtree(tmpdir)
         if not reply:
