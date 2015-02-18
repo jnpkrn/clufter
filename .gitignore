@@ -25,3 +25,4 @@
 !/ext-plugins/lib-{general,ccs,pcs}
 !/tests/XMLFormat-walk/
 !/tests/formats/
+!/tests/functional/
