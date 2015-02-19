@@ -65,7 +65,7 @@ class command(SimpleFormat):
                     self.__class__.name
                 ))
             ret = list(d.get('__cmd__', ()))
-            ret.extend((k, v) for k, vs in d.iteritems() for v in vs
+            ret.extend((k, v) for k, vs in d.iteritems() for v in (vs or ((), ))
                                   if k not in ('__cmd__', '__args__'))
             ret.extend(d.get('__args__', ()))
         else:
