@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Format representing merged/isolated (1/2 levels) of single command to exec"""
@@ -64,7 +64,9 @@ class command(SimpleFormat):
                 log.warning("'{0}' format: not backed by OrderedDict".format(
                     self.__class__.name
                 ))
-            ret = [(k, v) for k, v in d.iteritems() if k != '__args__']
+            ret = list(d.get('__cmd__', ()))
+            ret.extend((k, v) for k, vs in d.iteritems() for v in vs
+                                  if k not in ('__cmd__', '__args__'))
             ret.extend(d.get('__args__', ()))
         else:
             ret = self.SEPARATED(protect_safe=True)
@@ -72,14 +74,16 @@ class command(SimpleFormat):
 
     @SimpleFormat.producing(DICT, protect=True)
     # not a perfectly bijective mapping, this is a bit lossy representation,
-    # on the other hand, it canonicalize the notation when turned to other forms
+    # on the other hand it canonicalizes the notation when turned to other forms
     def get_dict(self, *protodecl):
         separated = self.SEPARATED()
         separated.reverse()
         ret = OrderedDict()
+        arg_bucket = '__cmd__'
         while separated:
             head, tail = head_tail(separated.pop())
-            head = head if head.startswith('-') and head != '-' else '__args__'
+            head = head if head.startswith('-') and head != '-' else arg_bucket
+            arg_bucket = arg_bucket if not head.startswith('-') else '__args__'
             acc = ret.setdefault(head, [])
             acc.append(tail)
         return ret
