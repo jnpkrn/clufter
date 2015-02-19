@@ -82,8 +82,9 @@ class command(SimpleFormat):
         arg_bucket = '__cmd__'
         while separated:
             head, tail = head_tail(separated.pop())
-            head = head if head.startswith('-') and head != '-' else arg_bucket
-            arg_bucket = arg_bucket if not head.startswith('-') else '__args__'
-            acc = ret.setdefault(head, [])
-            acc.append(tail)
+            if head.startswith('-') and head != '-':
+                arg_bucket = '__args__'
+            else:
+                head, tail = arg_bucket, head
+            ret.setdefault(head, []).append(tail)
         return ret
