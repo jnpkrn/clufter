@@ -200,7 +200,7 @@ class Format(object):
             validators[p] = (self._validators[p][0], spec)
         if validators:  # force per-instance customization
             self._validators = dict(self._validators, **validators)
-        # XXX self._dict = kwargs
+        self._dict = kwargs
         # supercharge protocol objects with callability to provide
         # a syntactic sugar: self(self.PROTO, ...) -> self.PROTO(...))
         for attr in self._protocol_attrs:
