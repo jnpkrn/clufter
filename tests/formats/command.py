@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing format"""
@@ -46,6 +46,13 @@ class FormatsCommandTestCase(TestCase):
     def testSeparatedToMerged(self):
         c = command('separated',
                     [('cut',), ('-f', '1'), ('-d', '@'), ('emails.txt', )])
+        #print c('merged')
+        self.assertEqual(c.MERGED(),
+                         ['cut', '-f', '1', '-d', '@', 'emails.txt'])
+
+    def testDictToMerged(self):
+        c = command('dict', {'__cmd__': ('cut', ), '-f': ('1', ), '-d': ('@', ),
+                             '__args__': ('emails.txt', )})
         #print c('merged')
         self.assertEqual(c.MERGED(),
                          ['cut', '-f', '1', '-d', '@', 'emails.txt'])
