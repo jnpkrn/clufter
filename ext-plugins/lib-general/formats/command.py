@@ -33,18 +33,20 @@ class command(SimpleFormat):
 
     @SimpleFormat.producing(SEPARATED, protect=True)
     def get_separated(self, *protodecl):
-        ret = self.MERGED(protect_safe=True)
-        newret, acc = [], []
-        for i in ret:
-            if i.startswith('-') and i != '-':
+        merged = self.MERGED()
+        merged.reverse()
+        ret, acc = [], []
+        while merged:
+            i = merged.pop()
+            if acc == ['--'] or i is None or i.startswith('-') and i != '-':
                 if acc:
-                    newret.append(tuple(acc))
-                acc = [i]
+                    ret.append(tuple(acc))
+                acc = [] if i is None else [i]
             else:
                 acc.append(i)
         # expect that, by convention, option takes at most a single argument
-        newret.extend(filter(bool, (tuple(acc[:2]), tuple(acc[2:]))))
-        return newret
+        ret.extend(filter(bool, (tuple(acc[:2]), tuple(acc[2:]))))
+        return ret
 
     @SimpleFormat.producing(MERGED, protect=True)
     def get_merged(self, *protodecl):
