@@ -13,6 +13,7 @@ install:
         - python setup.py -q saveopts -f setup.cfg pkg_prepare
                              --ra-metadata-dir="$(pwd)/cluster"
                              --ccs-flatten="$(dirname $(pwd))/ccs_flatten"
+                             --editor="sed -i 's|\(force-block=\"\)false|\1true|;w /dev/stdout"
         #- cat setup.cfg
         # make following robust enough to deal with pip pre-6.0(?)
         - true;{
