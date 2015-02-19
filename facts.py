@@ -181,12 +181,12 @@ def _parse_extra(s):
     return name, extra
 
 
-def infere_error(smth, branches):
+def infer_error(smth, branches):
     raise RuntimeError("This should not be called")
 
 
-def infere_sys(sys, branches=None):
-    log.debug("infere_sys: {0}: {1}".format(sys, branches))
+def infer_sys(sys, branches=None):
+    log.debug("infer_sys: {0}: {1}".format(sys, branches))
     # lists of system-level dicts
     # -> list of dist-level dicts pertaining the specified system(s)
     if branches is None:
@@ -196,13 +196,13 @@ def infere_sys(sys, branches=None):
     return [b[sys] for b in branches if sys in b]
 
 
-def infere_dist(dist, branches=None):
+def infer_dist(dist, branches=None):
     # list of dist-level dicts
     # -> list of component-level dicts pertaining the specified dist(s)
     # incl. dist alias resolution
-    log.debug("infere_dist: {0}: {1}".format(dist, branches))
+    log.debug("infer_dist: {0}: {1}".format(dist, branches))
     if branches is None:
-        branches = infere_sys('*')  # alt.: branches = [cluster_map.values()]
+        branches = infer_sys('*')  # alt.: branches = [cluster_map.values()]
     if dist == '*':
         return apply_intercalate([c[1] for b in branches
                                   for c in b.itervalues()])
@@ -250,13 +250,13 @@ def infere_dist(dist, branches=None):
     return ret
 
 
-def infere_comp(comp, branches=None):
-    log.debug("infere_comp: {0}: {1}".format(comp, branches))
+def infer_comp(comp, branches=None):
+    log.debug("infer_comp: {0}: {1}".format(comp, branches))
     # list of component-level dicts
     # -> list of component-level dicts pertaining the specified comp(s)
     # incl. component version alias resolution
     if branches is None:
-        branches = infere_dist('*')  # alt.: branches = [cluster_map.values()]
+        branches = infer_dist('*')  # alt.: branches = [cluster_map.values()]
     if comp == '*':
         return branches
     ret = []
@@ -273,13 +273,13 @@ def infere_comp(comp, branches=None):
 
     return ret
 
-rule_error = (0, infere_error)
+rule_error = (0, infer_error)
 inference_rules = {
     # type (of clause): (handling priority, handler)
     'error': rule_error,
-    'sys':   (1, infere_sys),
-    'dist':  (2, infere_dist),
-    'comp':  (3, infere_comp),
+    'sys':   (1, infer_sys),
+    'dist':  (2, infer_dist),
+    'comp':  (3, infer_comp),
 }
 
 
