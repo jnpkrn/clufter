@@ -7,6 +7,10 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
 
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 from unittest import TestCase
 
 from .format_manager import FormatManager
@@ -56,6 +60,17 @@ class FormatsCommandTestCase(TestCase):
         #print c('merged')
         self.assertEqual(c.MERGED(),
                          ['cut', '-f', '1', '-d', '@', 'emails.txt'])
+
+
+    def testMagicBytestringToDict(self):
+        c = command('bytestring',
+                    'gpg -k 60BCBB4F5CD7F9EF::~/.gnupg/pubring.gpg',
+                    magic_split=True)
+        #print c('merged')
+        self.assertEqual(c.DICT(),
+                         OrderedDict([('__cmd__', ['gpg']),
+                                      ('-k', [('60BCBB4F5CD7F9EF',
+                                               '~/.gnupg/pubring.gpg')])]))
 
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))

@@ -42,6 +42,9 @@ class command(SimpleFormat):
                 if acc:
                     ret.append(tuple(acc))
                 acc = [] if i is None else [i]
+            elif self._dict.get('magic_split', False):
+                acc.extend(i.split('::'))  # magic "::"-split
+                merged.append(None)
             else:
                 acc.append(i)
         # expect that, by convention, option takes at most a single argument
