@@ -16,10 +16,10 @@ install:
         #- cat setup.cfg
         # make following robust enough to deal with pip pre-6.0(?)
         - true;{
-               pip install --disable-pip-version-check -- pip
+               pip install --disable-pip-version-check -- pip >/dev/null
                && pip install --disable-pip-version-check -qe .[test];
           } || {
-               pip install --disable-pip-version-check -- pip 2>/dev/null
+               pip install --disable-pip-version-check -- pip 2>/dev/null >&2
                || pip install -qe .[test];
           } || {
                ret=$?;
