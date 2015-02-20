@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """pcs-resource-deps filter"""
@@ -14,7 +14,7 @@ def map_resource_to_pkgs(spec, *pkgs):
     pkgs = args2sgpl(pkgs)
     return (
         '<xsl:if test="' + ResourceSpec(spec).xsl_attrs_select + '">'
-            '<xsl:value-of select="\'' + (NL.join(pkgs)) +  '\'"/>'
+            '<xsl:value-of select="\'' + (NL.join(pkgs)) + NL + '\'"/>'
         '</xsl:if>'
     )
 
