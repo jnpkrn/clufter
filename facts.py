@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Utility functions wrt. cluster systems in general"""
@@ -379,12 +379,10 @@ def package(which, *sys_id):
 
 
 def cmd_pkg_install(pkgs, *sys_id):
-    cmd = ''
-    if pkgs:
-        cmd = _find_meta('cmd', 'pkg-install', *sys_id) or ''
-        if cmd:
-            cmd = cmd.format(packages=' '.join(pkgs))
-    return cmd
+    # ready to deal with pkgs being a generator
+    cmd = _find_meta('cmd', 'pkg-install', *sys_id)
+    packages = ' '.join(pkgs)
+    return cmd.format(packages=packages) if cmd and packages else ''
 
 
 cluster_systems = (cluster_pcs_flatiron, cluster_pcs_needle)
