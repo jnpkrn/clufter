@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Base command stuff (TBD)"""
@@ -8,7 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from collections import MutableMapping
 from itertools import izip_longest
 from logging import getLogger
-from sys import stderr
+from sys import stderr, stdin, stdout
 from time import time
 
 from .command_context import CommandContext
@@ -376,7 +376,8 @@ class Command(object):
 
         terminal_chain = cls._iochain_check_terminals(io_chain, terminal_chain)
 
-        magic_fds = {}
+        native_fds = dict((f.fileno(), f) for f in (stderr, stdin, stdout))
+        magic_fds = native_fds.copy()
         input_cache = cmd_ctxt.setdefault('input_cache', {}, bypass=True)
         worklist = list(reversed(tailshake(terminal_chain,
                                            partitioner=lambda x:
@@ -477,7 +478,8 @@ class Command(object):
                     .format(flt.__class__.name, maxl, passout['passout'])
                 )
 
-        map(lambda f: f.close(), magic_fds.itervalues())  # close "magic" fds
+        # close "magic" fds
+        map(lambda (k, f): k in native_fds or f.close(), magic_fds.iteritems())
         return EC.EXIT_SUCCESS  # XXX some better decision?
 
     def __call__(self, opts, args=None, cmd_ctxt=None):

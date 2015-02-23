@@ -14,9 +14,8 @@ from imp import find_module, load_module
 from logging import getLogger
 from os import extsep, fdopen, stat, walk
 from os.path import basename, commonprefix, dirname, exists, join, sep, splitext
-from sys import modules, stdout
+from sys import modules
 from time import time
-from warnings import warn
 
 from lxml import etree
 
@@ -345,7 +344,13 @@ class SimpleFormat(Format):
     @Format.producing(BYTESTRING)
     def get_bytestring(self, *protodecl):
         if self.FILE in self._representations:  # break the possible loop
-            with file(self.FILE(), 'rb') as f:
+            infile = self.FILE()
+            if hasattr(infile, 'read'):
+                # assume fileobj out of our control, do not close
+                return infile.read()
+
+            assert isinstance(infile, basestring)
+            with file(infile, 'rb') as f:
                 return f.read()
 
     @Format.producing(FILE)
@@ -357,17 +362,8 @@ class SimpleFormat(Format):
             return outfile.name
 
         assert isinstance(outfile, basestring)
-        if outfile == '-' or outfile.rstrip('0123456789') == '@':
-            if outfile == '-':
-                stdout.write(self.BYTESTRING())
-            else:
-                warn("@DIGIT+ in get_file deprecated, implicit handling fail?",
-                     DeprecationWarning)
-                with fdopen(int(outfile[1:]), 'ab') as f:
-                    f.write(self.BYTESTRING())
-        else:
-            with file(outfile, 'wb') as f:
-                f.write(self.BYTESTRING())
+        with file(outfile, 'wb') as f:
+            f.write(self.BYTESTRING())
         return outfile
 
     @property
@@ -405,7 +401,7 @@ class SimpleFormat(Format):
                 if do_salt:
                     try:
                         salt = str(int(stat(self.FILE()).st_mtime))
-                    except OSError:
+                    except (OSError, TypeError):  # TypeError~coerce to Unicode
                         pass
                 self.BYTESTRING()  # ensure bytestring repr (assumed "cheap")
 
@@ -438,19 +434,22 @@ class SimpleFormat(Format):
                                      *io_decl[2:])
             except (ValueError, KeyError):
                 pass
-            # XXX handle also '-', but be careful about not duplicating?
-            #     maybe even nothing should be duplicated at all?
-            if io_decl[1].rstrip('0123456789') == '@':
-                fd = int(io_decl[1][1:])
+            fdef = io_decl[1]
+            fdef = "@{0}".format(int(not(in_mode))) if fdef == '-' else fdef
+            if fdef.rstrip('0123456789') == '@':
+                fd = int(fdef[1:])
                 if fd not in magic_fds:
+                    # XXX be careful about not duplicating? (especially '-')
+                    #     maybe even nothing should be duplicated at all?
                     try:
                         magic_fds[fd] = fdopen(fd, 'r+b' if in_mode else 'ab')
                     except (OSError, IOError):
                         # keep untouched
                         pass
                     else:
-                        io_decl = args2sgpl(io_decl[0], magic_fds[fd],
-                                            *io_decl[2:])
+                        return io_decl
+                io_decl = args2sgpl(io_decl[0], magic_fds[fd],
+                                    *io_decl[2:])
         return io_decl
 
 
