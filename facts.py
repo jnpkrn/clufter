@@ -379,9 +379,11 @@ def package(which, *sys_id):
 
 
 def cmd_pkg_install(pkgs, *sys_id):
-    cmd = _find_meta('cmd', 'pkg-install', *sys_id)
-    if cmd:
-        cmd = cmd.format(packages=' '.join(pkgs))
+    cmd = ''
+    if pkgs:
+        cmd = _find_meta('cmd', 'pkg-install', *sys_id) or ''
+        if cmd:
+            cmd = cmd.format(packages=' '.join(pkgs))
     return cmd
 
 
