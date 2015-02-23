@@ -142,6 +142,7 @@ ccsflat2pcsprelude = ('''
             - this should cause no signal is ever sent to FS users -
             <op id="{concat($Prefix, '-OPS-shutdown')}"
                 name="stop"
+                interval="0"
                 timeout="1"/>
         </operations>
         </xsl:if -->
