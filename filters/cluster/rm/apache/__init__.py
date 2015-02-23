@@ -28,11 +28,11 @@ ccsflat2pcsprelude = '''\
                     name="options">
                 <xsl:attribute name="value">
                     <xsl:value-of select="concat(
-                        ' -D\&quot;', @name, '\&quot;'
+                        ' -D', @name
                     )"/>
                     <xsl:if test="@server_root">
                         <xsl:value-of select="concat(
-                            ' -d \&quot;', @server_root, '\&quot;'
+                            ' -d &quot;', @server_root, '&quot;'
                         )"/>
                     </xsl:if>
                     <xsl:if test="@httpd_options">
