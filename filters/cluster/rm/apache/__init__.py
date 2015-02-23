@@ -49,6 +49,7 @@ ccsflat2pcsprelude = '''\
             <xsl:if test="@shutdown_wait">
             <op id="{concat($Prefix, '-OPS-shutdown')}"
                 name="stop"
+                interval="0"
                 timeout="{concat(@shutdown_wait, 's')}"/>
             </xsl:if>
         </operations>
