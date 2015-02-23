@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """ccs2ccsflat filter"""
@@ -8,6 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from logging import getLogger
 from os.path import split as path_split
 from subprocess import PIPE
+from sys import stdin
 
 from ..filter import Filter, FilterError
 from ..utils_prog import OneoffWrappedStdinPopen, dirname_x, which
@@ -37,6 +38,11 @@ def ccs2ccsflat(flt_ctxt, in_obj):
     # XXX conversion is not idempotent, should prevent using ccs-flat as input
     #     (specifically, explicit ordering will get borken in subsequent round)
     in_file = in_obj('file')
+    if not isinstance(in_file, basestring):
+        # convert '-'/'@0' already converted to fileobj back to '-'
+        if in_file is not stdin:
+            raise RuntimeError("Only stdin ('-') supported")
+        in_file = '-'
     command = [ccs_flatten, in_file]
     log.info("running `{0}'".format(' '.join(command)))
     try:
