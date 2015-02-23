@@ -63,7 +63,7 @@ class TestPackage(TestCase):
         self.assertEqual(package('virsh',      *sys_id), 'libvirt-client')
 
 
-class TestCommand(TestCase):
+class TestPkgInstall(TestCase):
     def test_pkg_install_rhel60(self):
         sys_id = 'linux', ('redhat', ' 6.0')
         self.assertEqual(cmd_pkg_install(('mc', 'vim'), *sys_id),
@@ -76,6 +76,12 @@ class TestCommand(TestCase):
         sys_id = 'linux', ('fedora', ' 19')
         self.assertEqual(cmd_pkg_install(('mc', 'vim'), *sys_id),
                          'yum install -y mc vim')
+    def test_pkg_install_unknown(self):
+        sys_id = 'linux', ('frobnical', ' 21')
+        self.assertEqual(cmd_pkg_install(('gnomovision', ), *sys_id), '')
+    def test_pkg_install_empty(self):
+        sys_id = 'linux', ('fedora', ' 21')
+        self.assertEqual(cmd_pkg_install((), *sys_id), '')
 
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))
