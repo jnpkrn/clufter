@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing general cluster helpers"""
@@ -82,6 +82,13 @@ class TestPkgInstall(TestCase):
     def test_pkg_install_empty(self):
         sys_id = 'linux', ('fedora', ' 21')
         self.assertEqual(cmd_pkg_install((), *sys_id), '')
+    def test_pkg_install_generator(self):
+        sys_id = 'linux', ('fedora', ' 21')
+        self.assertEqual(cmd_pkg_install(iter(('mc', 'vim')), *sys_id),
+                         'yum install -y mc vim')
+    def test_pkg_install_generator_empty(self):
+        sys_id = 'linux', ('fedora', ' 21')
+        self.assertEqual(cmd_pkg_install(iter(()), *sys_id), '')
 
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))
