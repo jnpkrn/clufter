@@ -7,12 +7,15 @@
                                                 python ../setup.py --license)}}
 %{!?clufter_check:   %global clufter_check    1}
 
-# special vars wrt. version
+# special vars wrt. versioning
+%global clufter_b    1
 %global clufter_version_norm %(echo '%{clufter_version}' | tr '-' '_' \\
   | sed 's|\\([0-9]\\)a\\(_.*\\)\\?$|\\1|')
 # http://fedoraproject.org/wiki/Packaging:NamingGuidelines#Pre-Release_packages
-%global clufter_rel %(echo '%{clufter_version}' | tr '-' '_' \\
-  | sed -n 's|.*[0-9]a\\(_.*\\)\\?$|0.1.a\\1|p;tq;Q1;:q;q' || echo 1)
+%global clufter_githash %(echo '%{clufter_version}' | tr '-' '_' \\
+  | sed -n 's|.*[0-9]a_git\\.\\(.*\\)|\\1|p')
+%global clufter_rel %(echo '%{clufter_githash}' \\
+  | sed -n 'bS;:E;n;:S;s|\\(.\\+\\)|0.%{clufter_b}.a_\\1|p;tE;c\\%{clufter_b}')
 
 %if "%{clufter_version}" == "%{clufter_version_norm}"
 %{!?clufter_source:  %global clufter_source   %{name}-%{version}}
@@ -20,6 +23,7 @@
 %{!?clufter_source:  %global clufter_source   %{name}-%{clufter_version}}
 %endif
 %{!?clufter_url_main:%global clufter_url_main https://github.com/jnpkrn/}
+%{!?clufter_url_raw: %global clufter_url_raw  https://raw.githubusercontent.com/jnpkrn/}
 %{!?clufter_url_dist:%global clufter_url_dist https://people.redhat.com/jpokorny/pkgs/}
 
 %{!?clufter_pylib:   %global clufter_pylib    python-%{name}}
@@ -79,7 +83,7 @@ Source0:        %{clufter_url_dist}%{name}/%{name}-%{version}.tar.gz
 Source0:        %{clufter_source}.tar.gz
 # Source0 is created by Source1, just pass particular commit hash
 # via GITHASH env. variable
-Source1:        https://raw.githubusercontent.com/jnpkrn/clufter/master/misc/run-sdist-per-commit
+Source1:        %{clufter_url_raw}%{name}/%{clufter_githash}/misc/run-sdist-per-commit
 %endif
 
 
