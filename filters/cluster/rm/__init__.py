@@ -119,8 +119,11 @@ ccsflat2pcsprelude = ('''\
 
             <xsl:choose>
 
+                <!-- make sure there is at least a single "when" -->
+                <xsl:when test="false()"/>
+
                 <!-- the nested snippets should be guarded with
-                     xsl:when name="foo" -->
+                     xsl:when test="name() = 'foo'" -->
                 <clufter:descent-mix at="*"/>
 
                 <xsl:otherwise>
