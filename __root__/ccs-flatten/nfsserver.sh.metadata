@@ -56,6 +56,21 @@
 	    <content type="string" default=".clumanager/nfs"/>
         </parameter>
 
+        <parameter name="statdport">
+            <longdesc lang="en">
+		Specifies the port number used for RPC listener sockets. If
+		this option is not specified, rpc.statd chooses a random
+		ephemeral port for each listener socket. This option can be
+		used to fix the port value of its listeners when SM_NOTIFY
+		requests must traverse a firewall between
+		clients and servers.
+            </longdesc>
+            <shortdesc lang="en">
+                This is the port where rpc.statd should listen on.
+            </shortdesc>
+	    <content type="integer" default=""/>
+        </parameter>
+
     </parameters>
 
     <actions>

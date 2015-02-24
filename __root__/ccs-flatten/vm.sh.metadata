@@ -251,6 +251,17 @@
 	    <content type="string" default="auto" />
 	</parameter>
 
+	<parameter name="no_kill">
+            <longdesc lang="en">
+		Do not force kill vm during stop, instead
+		fail after the timeout expires.
+            </longdesc>
+            <shortdesc lang="en">
+		Don't force kill vm on stop.
+            </shortdesc >
+	    <content type="boolean" default="false" />
+	</parameter>
+
     </parameters>
 
     <actions>
