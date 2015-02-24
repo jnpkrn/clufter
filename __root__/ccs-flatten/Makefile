@@ -49,7 +49,7 @@ ${SETUP_MAKEFILE}: $(wildcard ${SETUP_CFG}) | /dev/null
 metadata:
 	for f in $$(find ${ra_metadata} -maxdepth 1 -type f -name '*.sh' \
 		    -printf '%f\n'); do \
-	    /bin/bash ${ra_metadata/$$f meta-data > $$f.${ra_metadata_ext}.tmp \
+	    /bin/bash ${ra_metadata}/$$f meta-data > $$f.${ra_metadata_ext}.tmp \
 	    && test -s $$f.${ra_metadata_ext}.tmp \
 	    && mv $$f.${ra_metadata_ext}{.tmp,} \
 	    || ${RM} -- $$f.${ra_metadata_ext}.tmp; \
