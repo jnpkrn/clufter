@@ -25,8 +25,9 @@ PYTHONEXEC="python -Es"
 echo "Current path: ${PATH}"
 which ccs_flatten 2>/dev/null || (
     cd __root__ 2>/dev/null || :
-    ${PYTHONEXEC} setup.py pkg_prepare --build-develop  #&& make -C ccs-flatten symlink
-    ln -fs -- build/ccs_flatten .
+    ${PYTHONEXEC} setup.py pkg_prepare --build-develop
+    ln -frs -- ccs-flatten/*.metadata build
+    ln -fs -- build/ccs_flatten .  # or: make -C ccs-flatten symlink
 ) || { ret=$?; echo "ccs_flatten missing, cannot be built"; exit ${ret}; }
 
 run_check() {
