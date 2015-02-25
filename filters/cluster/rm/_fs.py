@@ -78,6 +78,12 @@ ccsflat2pcsprelude = ('''
             <nvpair id="{concat($Prefix, '-ATTRS-directory')}"
                     name="directory"
                     value="{@mountpoint}"/>
+            <!-- fstype ~ fstype -->
+            <xsl:if test="@fstype">
+            <nvpair id="{concat($Prefix, '-ATTRS-fstype')}"
+                    name="fstype"
+                    value="{@fstype}"/>
+            </xsl:if>
             <!-- options ~ options -->
             <xsl:if test="@options or $FsKind = 'netfs'">
             <nvpair id="{concat($Prefix, '-ATTRS-options')}"
