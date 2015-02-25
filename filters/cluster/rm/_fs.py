@@ -68,6 +68,9 @@ ccsflat2pcsprelude = ('''
                                                       '/',
                                                       @export)"/>
                         </xsl:when>
+                        <xsl:when test="$FsKind = 'bind-mountpoint'">
+                            <xsl:value-of select="@source"/>
+                        </xsl:when>
                         <xsl:otherwise>
                             <xsl:value-of select="@device"/>
                         </xsl:otherwise>
@@ -79,10 +82,20 @@ ccsflat2pcsprelude = ('''
                     name="directory"
                     value="{@mountpoint}"/>
             <!-- fstype ~ fstype -->
-            <xsl:if test="@fstype">
+            <xsl:if test="@fstype or $FsKind = 'bind-mountpoint'">
             <nvpair id="{concat($Prefix, '-ATTRS-fstype')}"
-                    name="fstype"
-                    value="{@fstype}"/>
+                    name="fstype">
+                <xsl:attribute name="value">
+                    <xsl:choose>
+                        <xsl:when test="$FsKind = 'bind-mountpoint'">
+                            <xsl:value-of select="'none'"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="@fstype"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:attribute>
+            </nvpair>
             </xsl:if>
             <!-- options ~ options -->
             <xsl:if test="@options or $FsKind = 'netfs'">
@@ -100,7 +113,12 @@ ccsflat2pcsprelude = ('''
                                         starts-with(@fstype, 'cifs')">
                             <xsl:value-of select="'guest'"/>
                         </xsl:when>
-                        <xsl:when test="$FsKind != 'netfs'">
+                        <xsl:when test="$FsKind = 'bind-mountpoint'">
+                            <xsl:value-of select="'bind'"/>
+                        </xsl:when>
+                        <xsl:when test="$FsKind != 'netfs'
+                                        and
+                                        $FsKind != 'bind-mountpoint'">
                             <xsl:value-of select="@options"/>
                         </xsl:when>
                         <xsl:otherwise>
@@ -112,7 +130,8 @@ ccsflat2pcsprelude = ('''
             </nvpair>
             </xsl:if>
             <!-- run_fsck ~ force_fsck -->
-            <xsl:if test="
+            <xsl:if test="$FsKind != 'bind-mountpoint'
+                          and
 ''' + (
                 xslt_is_member('@force_fsck', ('1', 'yes'))
 ) + '''">
