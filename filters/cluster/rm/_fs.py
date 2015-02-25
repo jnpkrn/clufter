@@ -117,7 +117,7 @@ ccsflat2pcsprelude = ('''
             <!-- force_unmount (true|safe|false) ~ force_unmount (true...|false...)
                  - this depends on
                    https://github.com/ClusterLabs/resource-agents/pull/423
-                 - alternatively the comment out part below might be used
+                 - alternatively the commented out part below might be used
                    to achieve similar behavior (no signal ever sent) -->
             <nvpair id="{concat($Prefix, '-ATTRS-force_unmount')}"
                     name="force_unmount"
