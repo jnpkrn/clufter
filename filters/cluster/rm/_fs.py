@@ -68,7 +68,7 @@ ccsflat2pcsprelude = ('''
                                                       '/',
                                                       @export)"/>
                         </xsl:when>
-                        <xsl:when test="$FsKind = 'bind-mountpoint'">
+                        <xsl:when test="$FsKind = 'bind-mount'">
                             <xsl:value-of select="@source"/>
                         </xsl:when>
                         <xsl:otherwise>
@@ -82,12 +82,12 @@ ccsflat2pcsprelude = ('''
                     name="directory"
                     value="{@mountpoint}"/>
             <!-- fstype ~ fstype -->
-            <xsl:if test="@fstype or $FsKind = 'bind-mountpoint'">
+            <xsl:if test="@fstype or $FsKind = 'bind-mount'">
             <nvpair id="{concat($Prefix, '-ATTRS-fstype')}"
                     name="fstype">
                 <xsl:attribute name="value">
                     <xsl:choose>
-                        <xsl:when test="$FsKind = 'bind-mountpoint'">
+                        <xsl:when test="$FsKind = 'bind-mount'">
                             <xsl:value-of select="'none'"/>
                         </xsl:when>
                         <xsl:otherwise>
@@ -113,12 +113,12 @@ ccsflat2pcsprelude = ('''
                                         starts-with(@fstype, 'cifs')">
                             <xsl:value-of select="'guest'"/>
                         </xsl:when>
-                        <xsl:when test="$FsKind = 'bind-mountpoint'">
+                        <xsl:when test="$FsKind = 'bind-mount'">
                             <xsl:value-of select="'bind'"/>
                         </xsl:when>
                         <xsl:when test="$FsKind != 'netfs'
                                         and
-                                        $FsKind != 'bind-mountpoint'">
+                                        $FsKind != 'bind-mount'">
                             <xsl:value-of select="@options"/>
                         </xsl:when>
                         <xsl:otherwise>
@@ -130,7 +130,7 @@ ccsflat2pcsprelude = ('''
             </nvpair>
             </xsl:if>
             <!-- run_fsck ~ force_fsck -->
-            <xsl:if test="$FsKind != 'bind-mountpoint'
+            <xsl:if test="$FsKind != 'bind-mount'
                           and
 ''' + (
                 xslt_is_member('@force_fsck', ('1', 'yes'))
