@@ -8,7 +8,7 @@
 %{!?clufter_check:   %global clufter_check    1}
 
 # special vars wrt. versioning
-%global clufter_b    1
+%{!?clufter_b:       %global clufter_b        1}
 %global clufter_version_norm %(echo '%{clufter_version}' | tr '-' '_' \\
   | sed 's|\\([0-9]\\)a\\(_.*\\)\\?$|\\1|')
 # http://fedoraproject.org/wiki/Packaging:NamingGuidelines#Pre-Release_packages
