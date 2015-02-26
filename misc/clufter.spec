@@ -51,6 +51,8 @@
     %{!?clufter_bashcompdir:%global clufter_bashcompdir %{_datadir}/bash-completion/completions}
     %if %{with bashcomplink}
       %{!?clufter_bashcompreal:%global clufter_bashcompreal %{_sysconfdir}/%{name}/bash-completion}
+    %else
+      %undefine clufter_bashcompreal
     %endif
   %endif
   %if %{with manpage}
@@ -278,8 +280,9 @@ ret=$?
 %if %{with bashcomp}
 %post %{pkgsimple %{clufter_cli}}
 if [ $1 -gt 1 ]; then  # no gain regenerating it w/ fresh install (same result)
-declare bashcomp="$(pkg-config --variable=completionsdir bash-completion \
-                    2>/dev/null || echo '%{clufter_bashcompdir}')/%{name}"
+declare bashcomp="%{?clufter_bashcompreal}%{?!clufter_bashcompreal:$(
+    pkg-config --variable=completionsdir bash-completion 2>/dev/null \
+    || echo '%{clufter_bashcompdir}')/%{name}}"
 %{clufter_script} --completion-bash > "${bashcomp}" 2>/dev/null || :
 fi
 %endif
@@ -287,8 +290,9 @@ fi
 
 %global clufter_post_ext %(
 cat <<EOF
-declare bashcomp="\\$(pkg-config --variable=completionsdir bash-completion \\\\
-                    2>/dev/null || echo '%{clufter_bashcompdir}')/%{name}"
+declare bashcomp="%{?clufter_bashcompreal}%{?!clufter_bashcompreal:\\$(
+    pkg-config --variable=completionsdir bash-completion 2>/dev/null \\\\
+    || echo '%{clufter_bashcompdir}')/%{name}}"
 # if the completion file is not present, suppose it is not desired
 test -x '%{clufter_script}' && test -f "\\${bashcomp}" \\\\
   && %{clufter_script} --completion-bash > "\\${bashcomp}" 2>/dev/null || :
