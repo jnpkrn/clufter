@@ -352,6 +352,9 @@ EOF)
 %global cl_jp_r Jan Pokorný <jpokorny+rpm-clufter @at@ fedoraproject .dot. org>
 %global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
+%{cl_entry 2015-02-26 0.10.1-0.1.a %{cl_jp}
+  TBD
+}
 %{cl_entry 2015-02-26 0.10.0-1 %{cl_jp}
   packaging enhacements (structure, redundancy, ownership, scriptlets, symlink)
   version bump so as not to collide with python-clufter co-packaged with pcs}
