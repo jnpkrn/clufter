@@ -1,5 +1,5 @@
 # distill-spec-prefix: clufter
-%{!?clufter_version: %global clufter_version  %{?!infer:0.3.6a}%{?infer:%(
+%{!?clufter_version: %global clufter_version  %{?!infer:0.10.0}%{?infer:%(
                                                 python ../setup.py --version)}}
 %{!?clufter_name:    %global clufter_name     %{?!infer:clufter}%{?infer:%(
                                                 python ../setup.py --name)}}
@@ -352,8 +352,9 @@ EOF)
 %global cl_jp_r Jan Pokorný <jpokorny+rpm-clufter @at@ fedoraproject .dot. org>
 %global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
-%{cl_entry 2015-01-20 0.3.6-0.1.a %{cl_jp}
-  TBD}
+%{cl_entry 2015-02-26 0.10.0-1 %{cl_jp}
+  packaging enhacements (structure, redundancy, ownership, scriptlets, symlink)
+  version bump so as not to collide with python-clufter co-packaged with pcs}
 
 %{cl_entry 2015-01-20 0.3.5-1 %{cl_jp}
   packaging enhancements (pkg-config, license tag)}
