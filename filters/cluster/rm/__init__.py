@@ -100,10 +100,14 @@ ccsflat2pcsprelude_elems = (
     'vm',
 )
 
+ccsflat2pcsprelude_elems_with_res = ccsflat2pcsprelude_elems + (
+    'resources',
+)
+
 ccsflat2pcsprelude = ('''\
     <xsl:for-each select="*[
 ''' + (
-    xslt_is_member('name()', ccsflat2pcsprelude_elems)
+    xslt_is_member('name()', ccsflat2pcsprelude_elems_with_res)
 ) + ''']/*">
         <xsl:variable name="Prefix"
                       select="concat('RESOURCE-', name(), '-',
