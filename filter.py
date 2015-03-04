@@ -398,7 +398,8 @@ class XMLFilter(Filter, MetaPlugin):
                 cl = ret.xpath("//clufter:comment",
                                namespaces={'clufter': CLUFTER_NS})
                 for e in cl:
-                    element_juggler.rebind(etree.PI(pi_comment, e.text),
+                    element_juggler.rebind(etree.PI(pi_comment,
+                                                    etree.tostring(e)),
                                            element_juggler.grab(e))
                     element_juggler.drop(e)
                 #to_check = (ret.getroot(), )
@@ -456,8 +457,11 @@ class XMLFilter(Filter, MetaPlugin):
 
             cl = ret.xpath("//processing-instruction('{0}')".format(pi_comment))
             for e in cl:
-                element_juggler.rebind(nselem(CLUFTER_NS, 'comment',
-                                              e.text.strip().join((' ', ) * 2)),
+                # XXX could be done better?  (e.text.strip().join((' ', ) * 2))
+                reverted = etree.fromstring(e.text)
+                element_juggler.rebind(nselem(CLUFTER_NS, 'comment', *tuple(
+                                              reverted if len(reverted) else
+                                              args2tuple(reverted.text))),
                                        element_juggler.grab(e))
                 element_juggler.drop(e)
             return ret, global_msgs
