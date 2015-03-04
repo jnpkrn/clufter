@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """XML helpers"""
@@ -42,7 +42,7 @@ def namespaced(ns, ident):
 def nselem(ns, tag, *args, **kwargs):
     ret = etree.Element(namespaced(ns, tag), **kwargs)
     strings, nonstrings = bifilter(lambda x: isinstance(x, basestring), args)
-    ret.extend(nonstrings)
+    ret.extend(ns for ns in nonstrings if ns is not None)
     # conditionally assigned so as to support self-closed tags where possible
     text = ' '.join(strings)
     if text:
