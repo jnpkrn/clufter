@@ -1,5 +1,5 @@
 # distill-spec-prefix: clufter
-%{!?clufter_version: %global clufter_version  %{?!infer:0.10.1}%{?infer:%(
+%{!?clufter_version: %global clufter_version  %{?!infer:0.10.2}%{?infer:%(
                                                 python ../setup.py --version)}}
 %{!?clufter_name:    %global clufter_name     %{?!infer:clufter}%{?infer:%(
                                                 python ../setup.py --name)}}
@@ -352,6 +352,9 @@ EOF)
 %global cl_jp_r Jan Pokorný <jpokorny+rpm-clufter @at@ fedoraproject .dot. org>
 %global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
+%{cl_entry 2015-02-26 0.10.2-0.1.a %{cl_jp}
+  TBD}
+
 %{cl_entry 2015-03-04 0.10.1-1 %{cl_jp}
   bump upstream package
 }
