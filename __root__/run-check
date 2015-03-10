@@ -26,7 +26,9 @@ echo "Current path: ${PATH}"
 which ccs_flatten 2>/dev/null || (
     cd __root__ 2>/dev/null || :
     ${PYTHONEXEC} setup.py pkg_prepare --build-develop
-    ln -frs -- ccs-flatten/*.metadata build
+    # can drop the latter when reasonably recent coreutils spread around (8.22?)
+    ln -frs -- ccs-flatten/*.metadata build 2>/dev/null \
+    || ( cd build; ln -fs -- ../ccs-flatten/*.metadata . )
     ln -fs -- build/ccs_flatten .
     make -C ccs-flatten symlink
 ) || { ret=$?; echo "ccs_flatten missing, cannot be built"; exit ${ret}; }
