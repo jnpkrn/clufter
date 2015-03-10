@@ -83,7 +83,7 @@ static int
 replace_resource(xmlNodePtr rm, char *restype, char *primattr, char *ident, xmlNodePtr n)
 {
     xmlNodePtr o, r = NULL;
-    char *p;
+    char *p = NULL;
 
     for (o = rm->xmlChildrenNode; o; o = o->next) {
         if (o->type != XML_ELEMENT_NODE)
@@ -96,6 +96,8 @@ replace_resource(xmlNodePtr rm, char *restype, char *primattr, char *ident, xmlN
             }
         }
     }
+    if (p)
+        xmlFree(p);
 
     if (!r)
         return -1;
