@@ -919,7 +919,7 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
     pathT pathbuf1 = "/proc/self/exe", pathbuf2 = "";
     pathT *path1 = &pathbuf1, *path2 = &pathbuf2;
     struct stat st_buf;
-    glob_t globbuf;
+    glob_t globbuf, *globbuf_ptr = &globbuf;
     int i;
 
     /* jump to "convenient fallback" if there are no _own_ metadata present
@@ -932,13 +932,14 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
 #endif
     if (!(
             (dir = opendir(rpath))
-            && (!rawmetadata || !glob(path, GLOB_NOSORT, NULL, &globbuf))
+            && (!rawmetadata || !glob(path, GLOB_NOSORT, NULL, globbuf_ptr))
     )) {
         /* convenient fallback for local/test deployment, rawmetadata only */
         if (dir)
             closedir(dir);
         if (!rawmetadata)
             return -1;
+        globbuf_ptr = NULL;
         for (i = 0; i < 8; i++) {
             errno = 0;
             if (readlink(*path1, *path2, sizeof(*path2)/sizeof(**path2))
@@ -1001,6 +1002,9 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
         if ((rawmetadata) ? 1 : st_buf.st_mode & (S_IXUSR | S_IXOTH | S_IXGRP))
             load_resource_rulefile(path, rules, rawmetadata);
     }
+
+    if (rawmetadata && globbuf_ptr)
+        globfree(globbuf_ptr);
 
     closedir(dir);
 
