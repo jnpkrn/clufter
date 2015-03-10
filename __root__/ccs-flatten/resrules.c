@@ -920,7 +920,7 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
     pathT *path1 = &pathbuf1, *path2 = &pathbuf2;
     struct stat st_buf;
     glob_t globbuf, *globbuf_ptr = &globbuf;
-    int i;
+    size_t i, n;
 
     /* jump to "convenient fallback" if there are no _own_ metadata present
        XXX: this relies on _own_ metadata files ending with
@@ -960,11 +960,19 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
     }
 
     xmlInitParser();
-    while ((de = readdir(dir))) {  /* XXX ignoring possible items in globbuf */
-
-        fn = basename(de->d_name);
-        if (!fn)
-            continue;
+    for (de = readdir(dir)
+#ifdef RA_METADATA_EXT
+         , n = globbuf_ptr ? globbuf_ptr->gl_pathc : 0
+#endif
+         ;
+         de ? !!(fn = de->d_name)
+#ifdef RA_METADATA_EXT
+            : strcmp(".", (fn = basename(n ? globbuf_ptr->gl_pathv[--n] : "")))
+#else
+            : 0
+#endif
+         ;
+         fn = NULL /*just invalidate*/, de = readdir(dir)) {
 
         /* Ignore files with common backup extension */
         if ((strlen(fn) > 0) && (fn[strlen(fn) - 1] == '~'))
@@ -985,13 +993,23 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
             }
         }
 
+        snprintf(path, sizeof(path), "%s/%s", rpath, fn);
+
 #ifdef RA_METADATA_EXT
         /* when only raw metadata accepted */
-        if (rawmetadata && (!dot || strcmp(dot + 1, RA_METADATA_EXT)))
-            continue;
+        if (rawmetadata) {
+            if (!dot || strcmp(dot + 1, RA_METADATA_EXT))
+                continue;
+            /* make sure raw metadata are handled last, possibly skip now */
+            if (de && globbuf_ptr) {
+                for (i = globbuf_ptr->gl_pathc; i > 0; i--)
+                    if (!strcmp(globbuf_ptr->gl_pathv[i], path))
+                        break;
+                if (i > 0)
+                    continue;  /* skip for now, handle later (from globbuf) */
+            }
+        }
 #endif
-
-        snprintf(path, sizeof(path), "%s/%s", rpath, fn);
 
         if (stat(path, &st_buf) < 0)
             continue;
