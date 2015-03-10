@@ -914,7 +914,7 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
 {
     DIR *dir;
     struct dirent *de;
-    char *fn, *dot, path[2048];
+    char *fn, *dot, path[2048] = "";
     typedef char pathT[PATH_MAX];
     pathT pathbuf1 = "/proc/self/exe", pathbuf2 = "";
     pathT *path1 = &pathbuf1, *path2 = &pathbuf2;
@@ -922,16 +922,19 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
     glob_t globbuf;
     int i;
 
+    /* jump to "convenient fallback" if there are no metadata present
+#ifdef RA_METADATA_EXT
     snprintf(path, sizeof(path), "%s/*.%s", rpath, RA_METADATA_EXT);
+#endif
     if (!(
             (dir = opendir(rpath))
             && (!rawmetadata || !glob(path, GLOB_NOSORT, NULL, &globbuf))
     )) {
         /* convenient fallback for local/test deployment, rawmetadata only */
-        if (!rawmetadata)
-            return -1;
         if (dir)
             closedir(dir);
+        if (!rawmetadata)
+            return -1;
         for (i = 0; i < 8; i++) {
             errno = 0;
             if (readlink(*path1, *path2, sizeof(*path2)/sizeof(**path2))
@@ -959,7 +962,7 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
             continue;
 
         /* Ignore files with common backup extension */
-        if ((fn != NULL) && (strlen(fn) > 0) && (fn[strlen(fn) - 1] == '~'))
+        if ((strlen(fn) > 0) && (fn[strlen(fn) - 1] == '~'))
             continue;
 
         /* Ignore hidden files */
@@ -972,7 +975,7 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
                diffs, etc. */
             if (!strncasecmp(dot, ".rpm", 4)) {
                 fprintf(stderr, "Warning: "
-                        "Ignoring %s/%s: Bad extension %s\n", rpath, de->d_name, dot);
+                        "Ignoring %s/%s: Bad extension %s\n", rpath, fn, dot);
                 continue;
             }
         }
@@ -983,7 +986,7 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
             continue;
 #endif
 
-        snprintf(path, sizeof(path), "%s/%s", rpath, de->d_name);
+        snprintf(path, sizeof(path), "%s/%s", rpath, fn);
 
         if (stat(path, &st_buf) < 0)
             continue;
