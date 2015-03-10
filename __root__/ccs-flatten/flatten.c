@@ -151,7 +151,9 @@ flatten(int argc, char **argv)
         load_resource_rules(agentpath, &rulelist, rawmetadata);
         if (rulelist)
             break;
+#ifdef RA_METADATA_EXT
         rawmetadata = !rawmetadata;
+#endif
     } while (rawmetadata);
     if (!rulelist) {
         fprintf(stderr, "No resource rules available\n");
