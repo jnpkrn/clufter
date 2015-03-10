@@ -922,9 +922,13 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
     glob_t globbuf;
     int i;
 
-    /* jump to "convenient fallback" if there are no metadata present
+    /* jump to "convenient fallback" if there are no _own_ metadata present
+       XXX: this relies on _own_ metadata files ending with
+            ".sh.RA_METADATA_EXT" (corollary of original agents always
+            having "sh" extension, at least at the moment), but we can keep
+            an eye on that for the bundled metadata */
 #ifdef RA_METADATA_EXT
-    snprintf(path, sizeof(path), "%s/*.%s", rpath, RA_METADATA_EXT);
+    snprintf(path, sizeof(path), "%s/*.sh.%s", rpath, RA_METADATA_EXT);
 #endif
     if (!(
             (dir = opendir(rpath))
