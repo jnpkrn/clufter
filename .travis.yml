@@ -31,4 +31,18 @@ install:
                f() { return $1; }; f $ret;
           }
 
+before_script:
+        - ulimit -S -c unlimited  # ensure cores are generated (~after_failure)
+
 script: ./run-tests
+
+after_failure:
+        - sudo apt-get install -qq gdb libc6-dbg
+        # examine core files
+        # TODO: eu-readelf -n binary|sed -n 's/^.*Build ID: //p'
+        #       etc. to ensure build-id match
+        - find -name 'core*' -print0
+          | xargs -0I@ -- sh -xc
+            'file "@";
+             gdb -se $(file "@" | sed -n "s|.* core file .* from \x27\([^\x27 ]*\).*|\1|p")
+                 -c "@" -batch -ex "t a a bt f" -ex "set pagination 0"'
