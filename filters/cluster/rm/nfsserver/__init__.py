@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -9,7 +9,7 @@ from ....utils_cib import ResourceSpec
 
 ccsflat2pcsprelude = '''\
     <!--
-        nfsserver ~ nfserver
+        nfsserver ~ nfsserver
      -->
     <xsl:when test="name() = 'nfsserver'">
 ''' + (
@@ -18,10 +18,10 @@ ccsflat2pcsprelude = '''\
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
             <!-- nfs_shared_infodir ~ nfspath -->
-            <xsl:if test="@nfsserver">
+            <xsl:if test="@nfspath">
             <nvpair id="{concat($Prefix, '-ATTRS-nfs_shared_infodir')}"
                     name="nfs_shared_infodir"
-                    value="{@nfsserver}"/>
+                    value="{@nfspath}"/>
             </xsl:if>
         </instance_attributes>
     </xsl:when>
