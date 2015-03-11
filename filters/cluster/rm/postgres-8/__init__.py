@@ -45,5 +45,15 @@ ccsflat2pcsprelude = '''\
                  re-parsed into respective RA params
                  (-h $OCF_RESKEY_pghost) -->
         </instance_attributes>
+
+        <!-- OPERATIONS -->
+        <operations>
+            <xsl:if test="@startup_wait">
+            <op id="{concat($Prefix, '-OPS-start')}"
+                name="start"
+                interval="0"
+                timeout="{concat(@startup_wait, 's')}"/>
+            </xsl:if>
+        </operations>
     </xsl:when>
 '''
