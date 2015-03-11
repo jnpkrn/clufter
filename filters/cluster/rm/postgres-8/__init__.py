@@ -31,13 +31,13 @@ ccsflat2pcsprelude = '''\
                     value="{@config_file}"/>
             <!-- start_opt ~ postmaster_options -->
             <xsl:if test="postmaster_options">
-            <nvpair id="{concat($Prefix, '-ATTRS-config')}"
+            <nvpair id="{concat($Prefix, '-ATTRS-start_opt')}"
                     name="start_opt"
                     value="{@postmaster_options}"/>
             </xsl:if>
             <!-- pgdba ~ postmaster_user -->
             <xsl:if test="postmaster_user">
-            <nvpair id="{concat($Prefix, '-ATTRS-config')}"
+            <nvpair id="{concat($Prefix, '-ATTRS-pgdba')}"
                     name="pgdba"
                     value="{@postmaster_user}"/>
             </xsl:if>
