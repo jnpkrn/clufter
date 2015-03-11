@@ -1003,7 +1003,7 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
             /* make sure raw metadata are handled last, possibly skip now */
             if (de && globbuf_ptr) {
                 for (i = globbuf_ptr->gl_pathc; i > 0; i--)
-                    if (!strcmp(globbuf_ptr->gl_pathv[i], path))
+                    if (!strcmp(globbuf_ptr->gl_pathv[i-1], path))
                         break;
                 if (i > 0)
                     continue;  /* skip for now, handle later (from globbuf) */
