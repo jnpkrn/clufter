@@ -51,6 +51,8 @@ def ccs2ccsflat(flt_ctxt, in_obj):
         raise FilterError(self, "error running ccs_flatten binary")
     out, err = proc.communicate()
     if proc.returncode != 0 or out == '' and err != '':
-        raise FilterError(self, "ccs_flatten exit code: {0}\n\t{1}",
-                          proc.returncode, err)
+        raise FilterError(self, "ccs_flatten {0}\n\t{1}",
+                          ("exit code: {0}" if proc.returncode > 0 else
+                           "killing signal: {0}").format(abs(proc.returncode)),
+                          err)
     return ('bytestring', out)
