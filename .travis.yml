@@ -4,6 +4,9 @@ python:
         # cf. https://github.com/travis-ci/travis-ci/issues/2219
         - "2.7_with_system_site_packages"
 before_install:
+        # http://docs.travis-ci.com/user/installing-dependencies/#Installing-Ubuntu-packages
+        # https://github.com/travis-ci/travis-ci/issues/2124#issuecomment-38992012
+        - sudo apt-get update -qq
         # speed the run up
         - python -c
           'from sys import exit, version_info as v; exit(v[:2] in ((2, 7), (3, 2)))'
