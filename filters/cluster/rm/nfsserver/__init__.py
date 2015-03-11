@@ -23,6 +23,13 @@ ccsflat2pcsprelude = '''\
                     name="nfs_shared_infodir"
                     value="{@nfspath}"/>
             </xsl:if>
+            <!-- statd_port ~ statdport (if present, see rhbz#918315
+                                                       + rhbz#1096376/7) -->
+            <xsl:if test="@statdport">
+            <nvpair id="{concat($Prefix, '-ATTRS-statd_port')}"
+                    name="statd_port"
+                    value="{@statdport}"/>
+            </xsl:if>
         </instance_attributes>
     </xsl:when>
 '''
