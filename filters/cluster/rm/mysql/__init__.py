@@ -36,6 +36,15 @@ ccsflat2pcsprelude = '''\
             </nvpair>
             </xsl:if>
         </instance_attributes>
+
+        <!-- OPERATIONS -->
+        <operations>
+''' + (
+            rg2hb_xsl('start', 'startup_wait', op=True)
+            +
+            rg2hb_xsl('stop', 'shutdown_wait', op=True)
+) + '''\
+        </operations>
     </xsl:when>
 '''
 
