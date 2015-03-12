@@ -64,22 +64,22 @@ class ResourceSpec(object):
         return ret
 
 
-def rg2hb_xsl(dst, src, required=False, op=False):
+def rg2hb_xsl(dst, src, req=False, op=False):
     """Emit XSL snippet yielding nvpair-encoded HB RA parameter from RG one
 
     Parameters:
-        required    valid values: False, True, abs (use raw `src` instead)
+        req    valid values: False, True, abs (use raw `src` instead)
     """
-    assert required in (False, True, abs), "Invalid `required` param"
+    assert req in (False, True, abs), "Invalid `req` param"
     return (('''\
             <xsl:if test="@{src}">
-''' if not required else '') + (('''\
+''' if not req else '') + (('''\
             <!-- {dst} ~ {src} -->
             <nvpair id="{{concat($Prefix, '-ATTRS-{dst}')}}"
                     name="{dst}"
 ''' + ('''\
                     value="{{@{src}}}"/>
-''' if required is not abs else '''\
+''' if req is not abs else '''\
                     value="{src}"/>
 ''')) if not op else ('''\
             <!-- op:{dst} ~ {src} -->
@@ -88,8 +88,8 @@ def rg2hb_xsl(dst, src, required=False, op=False):
                 interval="0"
 ''' + ('''\
                 timeout="{{concat(@{src}, 's')}}"/>
-''' if required is not abs else '''\
+''' if req is not abs else '''\
                 timeout="{src}"/>
 '''))) + ('''\
             </xsl:if>
-''' if not required else '')).format(dst=dst, src=src)
+''' if not req else '')).format(dst=dst, src=src)

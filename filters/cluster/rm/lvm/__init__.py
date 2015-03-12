@@ -24,9 +24,9 @@ ccsflat2pcsprelude = '''\
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
 ''' + (
-            rg2hb_xsl('volgrpname', 'vg_name', required=True)
+            rg2hb_xsl('volgrpname', 'vg_name', req=True)
             +
-            rg2hb_xsl('exclusive', 'true', required=abs)
+            rg2hb_xsl('exclusive', 'true', req=abs)
 ) + '''\
         </instance_attributes>
     </xsl:when>
