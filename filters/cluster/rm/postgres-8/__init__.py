@@ -13,7 +13,7 @@ ccs_artefacts = ''.join((
 
 ###
 
-from ....utils_cib import ResourceSpec
+from ....utils_cib import ResourceSpec, rg2hb_xsl
 
 ccsflat2pcsprelude = '''\
     <!--
@@ -25,22 +25,13 @@ ccsflat2pcsprelude = '''\
 ) + '''
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
-            <!-- config ~ config_file -->
-            <nvpair id="{concat($Prefix, '-ATTRS-config')}"
-                    name="config"
-                    value="{@config_file}"/>
-            <!-- start_opt ~ postmaster_options -->
-            <xsl:if test="postmaster_options">
-            <nvpair id="{concat($Prefix, '-ATTRS-start_opt')}"
-                    name="start_opt"
-                    value="{@postmaster_options}"/>
-            </xsl:if>
-            <!-- pgdba ~ postmaster_user -->
-            <xsl:if test="postmaster_user">
-            <nvpair id="{concat($Prefix, '-ATTRS-pgdba')}"
-                    name="pgdba"
-                    value="{@postmaster_user}"/>
-            </xsl:if>
+''' + (
+            rg2hb_xsl('config', 'config_file', required=True)
+            +
+            rg2hb_xsl('start_opt', 'postmaster_options')
+            +
+            rg2hb_xsl('pgdba', 'postmaster_user')
+) + '''\
             <!-- XXX some items from postmaster_options could be
                  re-parsed into respective RA params
                  (-h $OCF_RESKEY_pghost) -->
@@ -48,12 +39,9 @@ ccsflat2pcsprelude = '''\
 
         <!-- OPERATIONS -->
         <operations>
-            <xsl:if test="@startup_wait">
-            <op id="{concat($Prefix, '-OPS-start')}"
-                name="start"
-                interval="0"
-                timeout="{concat(@startup_wait, 's')}"/>
-            </xsl:if>
+''' + (
+            rg2hb_xsl('start', 'startup_wait', op=True)
+) + '''\
         </operations>
     </xsl:when>
 '''

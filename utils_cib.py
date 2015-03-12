@@ -62,3 +62,34 @@ class ResourceSpec(object):
             ret += " and @provider='{0}'".format(self._provider)
         ret += " and @type='{0}'".format(self._type)
         return ret
+
+
+def rg2hb_xsl(dst, src, required=False, op=False):
+    """Emit XSL snippet yielding nvpair-encoded HB RA parameter from RG one
+
+    Parameters:
+        required    valid values: False, True, abs (use raw `src` instead)
+    """
+    assert required in (False, True, abs), "Invalid `required` param"
+    return (('''\
+            <xsl:if test="@{src}">
+''' if not required else '') + (('''\
+            <!-- {dst} ~ {src} -->
+            <nvpair id="{{concat($Prefix, '-ATTRS-{dst}')}}"
+                    name="{dst}"
+''' + ('''\
+                    value="{{@{src}}}"/>
+''' if required is not abs else '''\
+                    value="{src}"/>
+''')) if not op else ('''\
+            <!-- op:{dst} ~ {src} -->
+            <op id="{{concat($Prefix, '-OP-{dst}')}}"
+                name="{dst}"
+                interval="0"
+''' + ('''\
+                timeout="{{concat(@{src}, 's')}}"/>
+''' if required is not abs else '''\
+                timeout="{src}"/>
+'''))) + ('''\
+            </xsl:if>
+''' if not required else '')).format(dst=dst, src=src)

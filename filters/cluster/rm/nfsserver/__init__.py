@@ -4,7 +4,7 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from ....utils_cib import ResourceSpec
+from ....utils_cib import ResourceSpec, rg2hb_xsl
 
 
 ccsflat2pcsprelude = '''\
@@ -17,19 +17,12 @@ ccsflat2pcsprelude = '''\
 ) + '''
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
-            <!-- nfs_shared_infodir ~ nfspath -->
-            <xsl:if test="@nfspath">
-            <nvpair id="{concat($Prefix, '-ATTRS-nfs_shared_infodir')}"
-                    name="nfs_shared_infodir"
-                    value="{@nfspath}"/>
-            </xsl:if>
-            <!-- statd_port ~ statdport (if present, see rhbz#918315
-                                                       + rhbz#1096376/7) -->
-            <xsl:if test="@statdport">
-            <nvpair id="{concat($Prefix, '-ATTRS-statd_port')}"
-                    name="statd_port"
-                    value="{@statdport}"/>
-            </xsl:if>
+''' + (
+            rg2hb_xsl('nfs_shared_infodir', 'nfspath')
+            +
+            # see rhbz#918315 + rhbz#1096376/7
+            rg2hb_xsl('statd_port', 'statdport')
+) + '''\
         </instance_attributes>
     </xsl:when>
 '''

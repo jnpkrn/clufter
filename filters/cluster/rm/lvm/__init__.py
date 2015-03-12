@@ -1,10 +1,10 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from ....utils_cib import ResourceSpec
+from ....utils_cib import ResourceSpec, rg2hb_xsl
 
 
 ccsflat2pcsprelude = '''\
@@ -23,14 +23,11 @@ ccsflat2pcsprelude = '''\
 
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
-            <!-- volgrpname ~ vg_name -->
-            <nvpair id="{concat($Prefix, '-ATTRS-volgrpname')}"
-                    name="volgrpname"
-                    value="{@vg_name}"/>
-            <!-- exclusive: implied -->
-            <nvpair id="{concat($Prefix, '-ATTRS-exclusive')}"
-                    name="exclusive"
-                    value="true"/>
+''' + (
+            rg2hb_xsl('volgrpname', 'vg_name', required=True)
+            +
+            rg2hb_xsl('exclusive', 'true', required=abs)
+) + '''\
         </instance_attributes>
     </xsl:when>
 '''
