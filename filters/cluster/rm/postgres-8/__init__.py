@@ -26,7 +26,7 @@ ccsflat2pcsprelude = '''\
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
 ''' + (
-            rg2hb_xsl('config', 'config_file', required=True)
+            rg2hb_xsl('config', 'config_file', req=True)
             +
             rg2hb_xsl('start_opt', 'postmaster_options')
             +
