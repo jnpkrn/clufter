@@ -1,10 +1,10 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from ....utils_cib import ResourceSpec
+from ....utils_cib import ResourceSpec, rg2hb_xsl
 
 ccsflat2pcsprelude = '''\
     <!--
@@ -16,12 +16,9 @@ ccsflat2pcsprelude = '''\
 ) + '''
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
-            <!-- config ~ config_file -->
-            <xsl:if test="@config_file">
-            <nvpair id="{concat($Prefix, '-ATTRS-config')}"
-                    name="config"
-                    value="{@config_file}"/>
-            </xsl:if>
+''' + (
+            rg2hb_xsl('config', 'config_file')
+) + '''\
             <!-- additional_parameters ~ listen_address + mysqld_options -->
             <xsl:if test="@listen_address or @mysqld_options">
             <nvpair id="{concat($Prefix, '-ATTRS-additional_parameters')}"

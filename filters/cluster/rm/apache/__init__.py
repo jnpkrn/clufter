@@ -4,7 +4,7 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from ....utils_cib import ResourceSpec
+from ....utils_cib import ResourceSpec, rg2hb_xsl
 
 
 ccsflat2pcsprelude = '''\
@@ -17,12 +17,9 @@ ccsflat2pcsprelude = '''\
 ) + '''
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
-            <!-- configfile ~ config_file (if present) -->
-            <xsl:if test="@config_file">
-                <nvpair id="{concat($Prefix, '-ATTRS-configfile')}"
-                        name="configfile"
-                        value="{@config_file}"/>
-            </xsl:if>
+''' + (
+            rg2hb_xsl('configfile', 'config_file')
+) + '''\
             <!-- options ~ httpd_options (if present; + name, server_root) -->
             <nvpair id="{concat($Prefix, '-ATTRS-options')}"
                     name="options">
@@ -42,22 +39,17 @@ ccsflat2pcsprelude = '''\
                     </xsl:if>
                 </xsl:attribute>
             </nvpair>
-            <!-- httpd ~ httpd (if present, see rhbz#952132) -->
-            <xsl:if test="@httpd">
-                <nvpair id="{concat($Prefix, '-ATTRS-httpd')}"
-                        name="httpd"
-                        value="{@httpd}"/>
-            </xsl:if>
+''' + (
+            # see rhbz#952132
+            rg2hb_xsl('httpd', 'httpd')
+) + '''\
         </instance_attributes>
 
         <!-- OPERATIONS -->
         <operations>
-            <xsl:if test="@shutdown_wait">
-            <op id="{concat($Prefix, '-OPS-stop')}"
-                name="stop"
-                interval="0"
-                timeout="{concat(@shutdown_wait, 's')}"/>
-            </xsl:if>
+''' + (
+            rg2hb_xsl('stop', 'shutdown_wait', op=True)
+) + '''\
         </operations>
     </xsl:when>
 '''
