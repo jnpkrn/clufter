@@ -20,7 +20,7 @@ from os.path import (join as path_join, realpath as path_real,
                      abspath as path_abs, normpath as path_norm,
                      isabs as path_isabs, isdir as path_isdir,
                      isfile as path_isfile, splitext as path_splitext)
-from shutil import copy, copymode
+from shutil import copy, copystat
 from sys import modules as sys_modules, path as sys_path, prefix as sys_prefix
 
 from distutils.cmd import Command
@@ -459,7 +459,7 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                                               self.pkg_params[key]
                                 )
                             fw.write(content)
-                    copymode(src, dst)
+                    copystat(src, dst)
                 except IOError, e:
                     raise DistutilsSetupError(str(e))
             else:
@@ -469,7 +469,7 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                     return
                 try:
                     copy(src, dst)
-                    copymode(src, dst)
+                    copystat(src, dst)
                 except IOError, e:
                     raise DistutilsSetupError(str(e))
     # class pkg_prepare
