@@ -1,5 +1,5 @@
 /*
-  Copyright Red Hat, Inc. 2004
+  Copyright 2015 Red Hat, Inc.
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -183,7 +183,6 @@ void deconstruct_domains(fod_t ** domains);
    Handy functions
  */
 resource_t *find_resource_by_ref(resource_t ** reslist, char *type, char *ref);
-resource_rule_t *find_rule_by_type(resource_rule_t ** rulelist, char *type);
 void res_build_name(char *, size_t, resource_t *);
 
 /*

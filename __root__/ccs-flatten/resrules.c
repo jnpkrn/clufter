@@ -1,5 +1,5 @@
 /*
-  Copyright 2014 Red Hat, Inc.
+  Copyright 2015 Red Hat, Inc.
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -1027,25 +1027,4 @@ load_resource_rules(const char *rpath, resource_rule_t ** rules,
     closedir(dir);
 
     return 0;
-}
-
-/**
-   Find a resource rule given its type.
-
-   @param rulelist      Rule list to search
-   @param type          Rule type identifier
-   @return              Resource rule or NULL if not found.
- */
-resource_rule_t *
-find_rule_by_type(resource_rule_t ** rulelist, char *type)
-{
-    resource_rule_t *curr = NULL;
-
-    list_do(rulelist, curr) {
-        if (!strcmp(curr->rr_type, type))
-            return curr;
-    }
-    while (!list_done(rulelist, curr)) ;
-
-    return NULL;
 }
