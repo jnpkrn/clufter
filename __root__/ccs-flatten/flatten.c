@@ -1,5 +1,5 @@
 /*
-  Copyright 2014 Red Hat, Inc.
+  Copyright 2015 Red Hat, Inc.
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -211,7 +211,7 @@ flatten(int argc, char **argv)
     xmlDocFormatDump(f, d, 1);
 
   out:
-    if (f != stdout)
+    if (f && f != stdout)
         fclose(f);
 
     conf_close();
