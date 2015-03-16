@@ -1,5 +1,5 @@
 /*
-  Copyright Red Hat, Inc. 2004
+  Copyright 2015 Red Hat, Inc.
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -505,10 +505,10 @@ load_resources(resource_t ** reslist, resource_rule_t ** rulelist)
                 fprintf(stderr, "Error storing %s resource\n", newres->r_rule->rr_type);
 
                 destroy_resource(newres);
+            } else {
+                /* Just information */
+                newres->r_flags = RF_DEFINED;
             }
-
-            /* Just information */
-            newres->r_flags = RF_DEFINED;
         }
     }
     while (!list_done(rulelist, currule)) ;
