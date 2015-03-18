@@ -1,5 +1,5 @@
 /*
-  Copyright Red Hat, Inc. 2004
+  Copyright 2015 Red Hat, Inc.
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -17,7 +17,6 @@
   MA 02110-1301 USA
 */
 #include <stdio.h>
-#include <assert.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
