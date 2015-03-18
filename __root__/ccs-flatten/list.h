@@ -54,14 +54,14 @@ do { \
 
 /*
 list_do(list, node) {
-	stuff;
+	stuff;  // redefining "node" (as well as "list) unsafe!
 } while (!list_done(list, node));
  */
 #  define list_do(list, curr) \
-	if (*list && (curr = *list)) do
+	if ((curr = *list)) do
 
 #  define list_done(list, curr) \
-	(curr && (((curr = (void *)le(curr)->le_next)) && (curr == *list)))
+	((curr = (void *)le(curr)->le_next) && (curr == *list))
 
 /*
  * list_for(list, tmp, counter) {
