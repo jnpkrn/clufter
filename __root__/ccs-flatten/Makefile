@@ -1,4 +1,4 @@
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -11,6 +11,8 @@ OBJS    = flatten.o reslist.o resrules.o restree.o xmlconf.o
 CFLAGS  += -Wall
 ifdef DEBUG
 	CFLAGS  += -g -ggdb
+else
+	CFLAGS  += -DNDEBUG
 endif
 
 SETUP_MAKEFILE  = Makefile.setup
