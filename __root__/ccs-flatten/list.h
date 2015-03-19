@@ -55,13 +55,16 @@ do { \
 /*
 list_do(list, node) {
 	stuff;  // redefining "node" (as well as "list) unsafe!
+	// NOTE: running list_remove(list, node) possible, but you have to call
+	//       "if (list && (node = (void *)le(*list)->le_next)) continue;"
+	//       afterwards (after node-related resources cleanup if needed)
 } while (!list_done(list, node));
  */
 #  define list_do(list, curr) \
 	if ((curr = *list)) do
 
 #  define list_done(list, curr) \
-	((curr = (void *)le(curr)->le_next) && (curr == *list))
+	((curr = (void *)le(curr)->le_next) == *list)
 
 /*
  * list_for(list, tmp, counter) {
