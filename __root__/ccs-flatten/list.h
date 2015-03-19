@@ -78,14 +78,14 @@ list_do(list, node) {
  *   there must be at least one item in the list
  */
 #  define list_for(list, curr, cnt) \
-	if (!(cnt=0) && (list != NULL) && (*list != NULL)) \
+	if (!(cnt=0) && *list) \
 		for (curr = *list; \
 		     (cnt == 0) || (curr != *list); \
 		     curr = (void*)le(curr)->le_next, \
 		     cnt++)
 
 #  define list_for_rev(list, curr, cnt) \
-	if (!(cnt=0) && list && *list) \
+	if (!(cnt=0) && *list) \
 		for (curr = (void *)(le(*list)->le_prev); \
 		     (cnt == 0) || ((void *)curr != le(*list)->le_prev); \
 		     curr = (void*)(le(curr)->le_prev), \
