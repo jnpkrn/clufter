@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -39,7 +39,7 @@ while [ $# -gt 0 ]; do
     case "$1" in
         -a)  # alternative && all
             ret=0
-            for f in $(ls -1 tests/[!_]*.py); do
+            for f in tests/[!_]*.py; do
                 ${PYTHONEXEC} "$f" >/dev/null 2>&1 \
                   && echo OK \
                   || { echo FAIL; ret=1; }
