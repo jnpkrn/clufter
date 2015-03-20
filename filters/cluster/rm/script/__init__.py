@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -29,7 +29,7 @@ ccsflat2pcsprelude = ('''\
                     not(starts-with(@file, '/etc/init.d/'))">
         <xsl:attribute name="class">lsb</xsl:attribute>
         <xsl:attribute name="type">
-            <xsl:value-of select="concat('../..', @file)"/>
+            <xsl:value-of select="concat('../../../', @file)"/>
         </xsl:attribute>
         <xsl:comment><xsl:value-of select="concat(' ', %(note)s, ' ')"/></xsl:comment>
         <xsl:message><xsl:value-of select="concat(%(note)s)"/></xsl:message>
