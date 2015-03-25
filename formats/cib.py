@@ -1,17 +1,17 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
-"""Pacemaker configuration system (pcs) format"""
+"""Pacemaker configuration system/Cluster Information Base (CIB) format"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..format import XML
 
 
-class pcs(XML):
+class cib(XML):
     """Pacemaker-based cluster stack configuration (as XML/CIB)
 
-    Also known as Pacemaker Configuration System (pcs).
+    Also known as Pacemaker Configuration System (cib).
     """
     # XML
     root = 'cib'
@@ -20,22 +20,22 @@ class pcs(XML):
     }
 
 
-class pcs_prelude(pcs):
+class cib_prelude(cib):
     """Private, "unfinished" pacemaker-based cluster stack configuration
 
-    This is a result of ccsflat2pcsprelude filter.
+    This is a result of ccsflat2cibprelude filter.
     """
 
 
-class pcs_compact(pcs):
+class cib_compact(cib):
     """Private, "unfinished" pacemaker-based cluster stack configuration
 
-    This is a result of pcsprelude2pcscompact filter.
+    This is a result of cibprelude2cibcompact filter.
     """
 
 
-class pcs_final(pcs):
+class cib_final(cib):
     """Public, "finished" pacemaker-based cluster stack configuration
 
-    This is a result of pcs2pcsfinal filter.
+    This is a result of cib2cibfinal filter.
     """

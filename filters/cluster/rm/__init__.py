@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -95,19 +95,19 @@ ccs_obfuscate_identifiers = '''\
 from ....utils_cib import ResourceSpec
 from .... import package_name
 
-ccsflat2pcsprelude_elems = (
+ccsflat2cibprelude_elems = (
     'service',
     'vm',
 )
 
-ccsflat2pcsprelude_elems_with_res = ccsflat2pcsprelude_elems + (
+ccsflat2cibprelude_elems_with_res = ccsflat2cibprelude_elems + (
     'resources',
 )
 
-ccsflat2pcsprelude = ('''\
+ccsflat2cibprelude = ('''\
     <xsl:for-each select="*[
 ''' + (
-    xslt_is_member('name()', ccsflat2pcsprelude_elems_with_res)
+    xslt_is_member('name()', ccsflat2cibprelude_elems_with_res)
 ) + ''']/*">
         <xsl:variable name="Prefix"
                       select="concat('RESOURCE-', name(), '-',
@@ -182,7 +182,7 @@ ccsflat2pcsprelude = ('''\
 
     <xsl:for-each select="*[
 ''' + (
-    xslt_is_member('name()', ccsflat2pcsprelude_elems)
+    xslt_is_member('name()', ccsflat2cibprelude_elems)
 ) + ''']">
         <xsl:variable name="ResourceGroup"
                       select="concat(

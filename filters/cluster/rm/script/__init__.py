@@ -8,7 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ....utils_xml import squote
 
-ccsflat2pcsprelude = ('''\
+ccsflat2cibprelude = ('''\
     <!--
         lsb:<script> ~ script;  starts-with(@file, '/etc/init.d/')
      -->

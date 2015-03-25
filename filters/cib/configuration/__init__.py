@@ -1,11 +1,11 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 
-pcsprelude2pcscompact = '''\
+cibprelude2cibcompact = '''\
     <clufter:descent-mix preserve-rest="true"/>
     <!-- strip empty optional elements -->
     <xsl:template match="fencing-topology[count(*) = 0]"/>
@@ -15,7 +15,7 @@ pcsprelude2pcscompact = '''\
 
 from .... import package_name
 
-pcscompact2pcs = ('''\
+cibcompact2cib = ('''\
     <xsl:template match="crm_config[
                              not(
                                  following-sibling::resources/primitive[

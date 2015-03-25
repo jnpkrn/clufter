@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -74,7 +74,7 @@ ccs2ccs_pcmk = '''\
 
 # following could be omitted but keep it around if we ever need
 # to add some node attributes in the future
-ccsflat2pcsprelude = '''\
+ccsflat2cibprelude = '''\
     <node id="{@nodeid}"
           uname="{@name}"
           type="member"

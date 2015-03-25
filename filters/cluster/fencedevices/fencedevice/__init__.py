@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -7,7 +7,7 @@ from ....utils_xslt import xslt_is_member
 
 ###
 
-ccsflat2pcsprelude = '''\
+ccsflat2cibprelude = '''\
     <template id="{concat('FENCEDEV-', @name)}"
               class="stonith"
               type="{@agent}">

@@ -7,7 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from ....utils_cib import ResourceSpec, rg2hb_xsl
 
 
-ccsflat2pcsprelude = '''\
+ccsflat2cibprelude = '''\
     <!--
         nfsserver ~ nfsserver
      -->

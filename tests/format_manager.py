@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing format manager"""
@@ -13,7 +13,7 @@ from unittest import TestCase
 from .format_manager import FormatManager
 from .formats.ccs import ccs
 from .formats.ccs import ccs_flat
-from .formats.pcs import pcs
+from .formats.cib import cib
 
 
 class FormatManagerTestCase(TestCase):
@@ -29,7 +29,7 @@ class Default(FormatManagerTestCase):
     def test_default(self):
         formats = self.fmt_mgr.formats
         #print formats
-        for cls in ccs, ccs_flat, pcs:
+        for cls in ccs, ccs_flat, cib:
             self.assertTrue(cls.__name__ in formats)
             # the first was needed in the past, but now the more restrictive
             # one is ok

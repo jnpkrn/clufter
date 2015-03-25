@@ -16,7 +16,7 @@ ccs_artefacts = ''.join((
 from ....utils_cib import ResourceSpec, rg2hb_xsl
 from ....utils_xml import squote
 
-ccsflat2pcsprelude = ('''\
+ccsflat2cibprelude = ('''\
     <!--
         tomcat ~ tomcat-6
      -->
