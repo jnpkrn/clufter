@@ -26,14 +26,15 @@ def _check_pacemaker_1_2(cmd_ctxt):
                    urgent=True,
         )
 
+ccsflat2cibfinal_chain = ('ccs-revitalize',
+                             ('ccsflat2cibprelude',
+                                 ('cibprelude2cibcompact',
+                                     ('cibcompact2cib',
+                                         ('cib2cibfinal')))))
 
 @Command.deco(('ccs2ccsflat',
                   ('ccs2ccs-pcmk'),
-                  ('ccs-revitalize',
-                      ('ccsflat2cibprelude',
-                          ('cibprelude2cibcompact',
-                              ('cibcompact2cib',
-                                  ('cib2cibfinal')))))))
+                  (ccsflat2cibfinal_chain)))
 def ccs2pcs_flatiron(cmd_ctxt,
                      input="/etc/cluster/cluster.conf",
                      ccs_pcmk="cluster-{ccs2ccsflat.in.hash}.conf",
@@ -75,11 +76,7 @@ def ccs2pcs_flatiron(cmd_ctxt,
                   ('ccs-propagate-cman',
                       ('ccs2needlexml',
                           ('xml2simpleconfig'))),
-                  ('ccs-revitalize',
-                      ('ccsflat2cibprelude',
-                          ('cibprelude2cibcompact',
-                              ('cibcompact2cib',
-                                  ('cib2cibfinal')))))))
+                  (ccsflat2cibfinal_chain)))
 def ccs2pcs_needle(cmd_ctxt,
                    input="/etc/cluster/cluster.conf",
                    cib="cib-{ccs2ccsflat.in.hash}.xml",
