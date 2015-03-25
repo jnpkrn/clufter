@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing filter manager"""
@@ -35,10 +35,10 @@ class Default(FilterManagerTestCase):
         # NOTE imports has to be just there due to environment changed
         #      by "starting from scratch" + plugin discovery elsewhere
         from .filters.ccs2ccsflat import ccs2ccsflat
-        from .filters.ccsflat2pcsprelude import ccsflat2pcsprelude
+        from .filters.ccsflat2cibprelude import ccsflat2cibprelude
         filters = self.flt_mgr.filters
         #print filters
-        for cls in ccs2ccsflat, ccsflat2pcsprelude:
+        for cls in ccs2ccsflat, ccsflat2cibprelude:
             # CHECK selected built-in plugin is auto-discovered
             self.assertTrue(cls.name in filters)
             # CHECK it's class matches the class of natively imported one

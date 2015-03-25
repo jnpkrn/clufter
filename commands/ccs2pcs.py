@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """ccs2pcs{,-flatiron,-needle} commands"""
@@ -30,10 +30,10 @@ def _check_pacemaker_1_2(cmd_ctxt):
 @Command.deco(('ccs2ccsflat',
                   ('ccs2ccs-pcmk'),
                   ('ccs-revitalize',
-                      ('ccsflat2pcsprelude',
-                          ('pcsprelude2pcscompact',
-                              ('pcscompact2pcs',
-                                  ('pcs2pcsfinal')))))))
+                      ('ccsflat2cibprelude',
+                          ('cibprelude2cibcompact',
+                              ('cibcompact2cib',
+                                  ('cib2cibfinal')))))))
 def ccs2pcs_flatiron(cmd_ctxt,
                      input="/etc/cluster/cluster.conf",
                      ccs_pcmk="cluster-{ccs2ccsflat.in.hash}.conf",
@@ -76,10 +76,10 @@ def ccs2pcs_flatiron(cmd_ctxt,
                       ('ccs2needlexml',
                           ('xml2simpleconfig'))),
                   ('ccs-revitalize',
-                      ('ccsflat2pcsprelude',
-                          ('pcsprelude2pcscompact',
-                              ('pcscompact2pcs',
-                                  ('pcs2pcsfinal')))))))
+                      ('ccsflat2cibprelude',
+                          ('cibprelude2cibcompact',
+                              ('cibcompact2cib',
+                                  ('cib2cibfinal')))))))
 def ccs2pcs_needle(cmd_ctxt,
                    input="/etc/cluster/cluster.conf",
                    cib="cib-{ccs2ccsflat.in.hash}.xml",

@@ -19,7 +19,7 @@ def map_resource_to_pkgs(spec, *pkgs):
     )
 
 
-@XMLFilter.deco('pcs', 'string-list')
+@XMLFilter.deco('cib', 'string-list')
 def pcs_resource_deps(flt_ctxt, in_obj):
     """Outputs set of logical dependencies based on configured resources"""
     return ('bytestring', flt_ctxt.ctxt_proceed_xslt(in_obj, textmode=True))

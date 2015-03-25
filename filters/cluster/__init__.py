@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -314,7 +314,7 @@ try:
     from .... import package_name, version
 except ValueError:
     from ... import package_name, version
-ccsflat2pcsprelude_self_id = "{0} {1}".format(package_name(), version)
+ccsflat2cibprelude_self_id = "{0} {1}".format(package_name(), version)
 
 # should roughly match the output of:
 # (exec 3>&1; exec >/dev/null; export CIB_shadow=test-shadow;
@@ -330,7 +330,7 @@ ccsflat2pcsprelude_self_id = "{0} {1}".format(package_name(), version)
 #   </configuration>
 #   <status/>
 # </cib>
-ccsflat2pcsprelude = ('''\
+ccsflat2cibprelude = ('''\
     <cib validate-with="pacemaker-1.2"
          admin_epoch="0"
          epoch="0"
@@ -468,7 +468,7 @@ ccsflat2pcsprelude = ('''\
         </configuration>
         <status/>
     </cib>
-''') % dict(self_id=ccsflat2pcsprelude_self_id)
+''') % dict(self_id=ccsflat2cibprelude_self_id)
 
 ###
 

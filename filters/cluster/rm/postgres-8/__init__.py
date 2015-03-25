@@ -15,7 +15,7 @@ ccs_artefacts = ''.join((
 
 from ....utils_cib import ResourceSpec, rg2hb_xsl
 
-ccsflat2pcsprelude = '''\
+ccsflat2cibprelude = '''\
     <!--
         pgsql ~ postgres-8
      -->

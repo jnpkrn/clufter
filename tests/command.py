@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing command"""
@@ -25,7 +25,7 @@ formats = formats.plugins
 class ChainResolve(TestCase):
     def testShapeAndProtocolMatch(self):
         filters = FilterManager.init_lookup('ccs2ccsflat',
-                                            'ccsflat2pcsprelude',
+                                            'ccsflat2cibprelude',
                                             'ccs2needlexml',
                                             ext_plugins=False).plugins
         from tempfile import mktemp
@@ -34,7 +34,7 @@ class ChainResolve(TestCase):
                             dir=join(dirname(__file__), 'tmp'))
 
         @Command.deco(('ccs2ccsflat',
-                          ('ccsflat2pcsprelude'),
+                          ('ccsflat2cibprelude'),
                           ('ccs2needlexml')))
         def cmd_chain_match_01(cmd_ctxt,
                                input=testfile,
@@ -69,7 +69,7 @@ class ChainResolve(TestCase):
                 )
             )
         @Command.deco(('ccs2ccsflat',
-                          ('ccsflat2pcsprelude'),
+                          ('ccsflat2cibprelude'),
                           ('ccs2needlexml'),
                           ('ccs2needlexml')))
         def cmd_chain_nonmatch_02(cmd_ctxt,
@@ -85,7 +85,7 @@ class ChainResolve(TestCase):
             )
         # malformed protocol name
         @Command.deco(('ccs2ccsflat',
-                          ('ccsflat2pcsprelude'),
+                          ('ccsflat2cibprelude'),
                           ('ccs2needlexml')))
         def cmd_chain_nonmatch_03(cmd_ctxt,
                                   input=testfile,
