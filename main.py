@@ -256,6 +256,8 @@ def run(argv=None, *args):
     except AttributeError:
         pass
     set_logging(opts)
+    log = logging.getLogger(__name__)
+    map(lambda args: log.log(*args), getattr(opts, '_deferred_log', ()))
 
     cm = CommandManager.init_lookup(ext_plugins=not opts.skip_ext,
                                     ext_plugins_user=opts.ext_user,
