@@ -11,12 +11,19 @@ from optparse import OptionParser, \
                      IndentedHelpFormatter
 from os.path import basename
 from platform import system, linux_distribution
+try:
+    from platform import _supported_dists
+except ImportError:
+    _supported_dists = ()
+_supported_dists += ('fedora', 'redhat')  # actively used in the templates
 from sys import version
 
 from . import version_parts, version_text, description_text
 from .command_manager import CommandManager
 from .completion import Completion
 from .error import EC
+from .facts import aliases_dist
+from .utils import args2sgpl, head_tail, identity
 from .utils_prog import ExpertOption, make_options, set_logging
 
 
@@ -42,6 +49,27 @@ def parser_callback_sys(option, opt_str, value, parser, *args, **kwargs):
     setattr(parser.values, option.dest, value.lower())
 
 
+def parser_callback_dist(option, opt_str, value, parser, *args, **kwargs):
+    orig_distro, orig_version = head_tail(value.split(',', 1))
+    distro = orig_distro
+    for fn in (lambda x: x.lower(), lambda x: aliases_dist.get(x, x), identity):
+        if distro in _supported_dists:
+            if distro != orig_distro:
+                parser.values._deferred_log = dl = getattr(parser.values,
+                                                           '_deferred_log', [])
+                dl.append((logging.INFO, "Distro `{0}' recognized as `{1}'"
+                                         .format(orig_distro, distro)))
+            break
+        distro = fn(distro)
+    else:
+        parser.values._deferred_log = dl = getattr(parser.values,
+                                                   '_deferred_log', [])
+        dl.append((logging.WARNING, "Unrecognized distro `{0}' may lead to"
+                                    " unexpected results".format(orig_distro)))
+    setattr(parser.values, option.dest, ','.join(args2sgpl(distro,
+                                                           *orig_version)))
+
+
 opts_common = (
     (('--sys', ), dict(
         type='string',  # for dest -> default
@@ -52,7 +80,9 @@ opts_common = (
         help="override autodetected system [%default]"
     )),
     (('--dist', ), dict(
-        action='store',
+        type='string',  # for dest -> default
+        action='callback',
+        callback=parser_callback_dist,
         default=','.join(_system_extra),
         help="override autodetected target distro (for SYS ~ linux) [%default]"
     )),
