@@ -124,11 +124,18 @@ cluster_map = {
 }
 
 # mere aliases of the distributions (packages remain the same),
-# i.e., downstream rebuilders
+# i.e., downstream rebuilders;
+# values in this dict should correspond to output of
+# `platform.linux_distribution(full_distribution_name=0)`
+# and the dict can contain also associate keys obtained as
+# `platform.linux_distribution(full_distribution_name=1).lower()`
 aliases_dist = {
-    'centos': 'redhat',
+    # aliases
     # XXX platform.linux_distribution(full_distribution_name=0), i.e.,
     #     short distro names of Scientific Linux et al. needed
+    'centos': 'redhat',
+    # full_distribution_name=1 (lower-cased) -> full_distribution_name=0
+    'red hat enterprise linux server': 'redhat',
 }
 
 # in the queries, one can use following aliases to wildcard versions
