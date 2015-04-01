@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Machinery entry point"""
@@ -20,9 +20,9 @@ from .error import EC
 from .utils_prog import ExpertOption, make_options, set_logging
 
 
-_system = system()
+_system = system().lower()
 _system_extra = linux_distribution(full_distribution_name=0) \
-                if _system == 'Linux' else ()
+                if _system == 'linux' else ()
 
 
 def parser_callback_help(option, opt_str, value, parser, arg=False, full=False):
@@ -38,9 +38,15 @@ def parser_callback_help(option, opt_str, value, parser, arg=False, full=False):
     setattr(parser.values, 'help_full', full)
 
 
+def parser_callback_sys(option, opt_str, value, parser, *args, **kwargs):
+    setattr(parser.values, option.dest, value.lower())
+
+
 opts_common = (
     (('--sys', ), dict(
-        action='store',
+        type='string',  # for dest -> default
+        action='callback',
+        callback=parser_callback_sys,
         default=_system,
         expert=True,
         help="override autodetected system [%default]"
@@ -48,7 +54,7 @@ opts_common = (
     (('--dist', ), dict(
         action='store',
         default=','.join(_system_extra),
-        help="override autodetected target distro (for SYS ~ Linux) [%default]"
+        help="override autodetected target distro (for SYS ~ linux) [%default]"
     )),
     (('-q', '--quiet', ), dict(
         action='store_true',
