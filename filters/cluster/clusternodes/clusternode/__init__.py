@@ -75,8 +75,27 @@ ccs2ccs_pcmk = '''\
 # following could be omitted but keep it around if we ever need
 # to add some node attributes in the future
 ccsflat2cibprelude = '''\
-    <node id="{@nodeid}"
-          uname="{@name}"
-          type="member"
-          />
+    <!-- differentiate be tween RHEL 6 and higher (rhbz#1207345) -->
+    <node>
+        <xsl:attribute name="id">
+            <xsl:choose>
+                <xsl:when test="$system = 'linux' and (
+                    $system_1 = 'redhat' and $system_2 &lt; 7
+                    or
+                    $system_1 = 'fedora' and $system_2 &lt; 15
+                )">
+                    <!-- pacemaker + cman -->
+                    <xsl:value-of select="@name"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <!-- pacemaker + corosync/needle -->
+                    <xsl:value-of select="@nodeid"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:attribute>
+        <xsl:attribute name="uname">
+            <xsl:value-of select="@name"/>
+        </xsl:attribute>
+        <xsl:attribute name="type">member</xsl:attribute>
+    </node>
 '''
