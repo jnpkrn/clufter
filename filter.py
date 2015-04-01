@@ -221,9 +221,17 @@ class XMLFilter(Filter, MetaPlugin):
                   preprocess=lambda s, n, r: s, proceed=lambda *x: x,
                   postprocess=lambda x: x[0] if len(x) == 1 else x):
         """Generic traverse through XML as per symbols within schema tree"""
-        tree_stack = [('', (None, walk), OrderedDict())]
         default = walk_default_first
         default = default if default is not None else walk_default
+
+
+        default_sym = etree.XML('<clufter:snippet'
+               ' xmlns:xsl="{0}"'
+               ' xmlns:clufter="{1}">'
+               ' {2}'
+               ' </clufter:snippet>'.format(XSL_NS, CLUFTER_NS, default))
+
+        tree_stack = [('', ((default_sym, None, 2), walk), OrderedDict())]
         skip_until = []
         if default is None:
             skip_until = [('start', tag) for tag in walk]
@@ -583,7 +591,7 @@ class XMLFilter(Filter, MetaPlugin):
             # to the parent template (1 if not preserve-rest required,
             # 2 otherwise)
             do_mix = parent[1].get(name, parent[1].get('*', (None, None)))[1] \
-                     if parent else will_mix
+                     if parent and parent[1] is not None else will_mix
             if do_mix is None:
                 raise RuntimeError("Parent does not expect `{0}' nor wildcard"
                                    .format(name))
