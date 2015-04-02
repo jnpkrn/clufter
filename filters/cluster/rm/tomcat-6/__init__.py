@@ -60,6 +60,7 @@ ccsflat2cibprelude = ('''\
                     rg2hb_xsl('catalina_home', '/usr/share/tomcat6', req=abs)
 ) + '''\
                 </xsl:otherwise>
+            </xsl:choose>
         </instance_attributes>
 
         <!-- OPERATIONS -->
