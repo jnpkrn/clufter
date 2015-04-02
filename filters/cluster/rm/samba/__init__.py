@@ -11,36 +11,35 @@ ccsflat2cibprelude = '''\
         native initscript/systemd unitfile ~ samba
      -->
     <xsl:when test="name() = 'samba'">
-            <xsl:choose>
-                <!-- NOTE we rely on atmost single dot separator
-                     in the version, hence conformity with IEEE 754 -->
-                <xsl:when test="$system = 'linux' and (
-                    $system_1 = 'redhat' and $system_2 &gt;= 7
-                    or
-                    $system_1 = 'fedora' and $system_2 &gt;= 15
-                    )">
+        <xsl:choose>
+            <!-- NOTE we rely on atmost single dot separator
+                 in the version, hence conformity with IEEE 754 -->
+            <xsl:when test="$system = 'linux' and (
+                $system_1 = 'redhat' and $system_2 &gt;= 7
+                or
+                $system_1 = 'fedora' and $system_2 &gt;= 15
+            )">
 ''' + (
-                    ResourceSpec('systemd:smb').xsl_attrs
+                ResourceSpec('systemd:smb').xsl_attrs
 ) + '''
-                </xsl:when>
-                <xsl:when test="$system = 'linux' and (
-                    $system_1 = 'redhat' and $system_2 &lt; 7
-                    or
-                    $system_1 = 'fedora' and $system_2 &lt; 15
-                    ">
-                    <!-- XXX could be either lsb, service or upstart
-                             (as far as RHEL 6 is concerned),
-                             service seems to be most canonical, though -->
+            </xsl:when>
+            <xsl:when test="$system = 'linux' and (
+                $system_1 = 'redhat' and $system_2 &lt; 7
+                or
+                $system_1 = 'fedora' and $system_2 &lt; 15
+            )">
+                <!-- XXX could be either lsb, service or upstart
+                         (as far as RHEL 6 is concerned),
+                         service seems to be most canonical, though -->
 ''' + (
-                    ResourceSpec('service:smb').xsl_attrs
+                ResourceSpec('service:smb').xsl_attrs
 ) + '''
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:message terminate="true"
-                    >Knowledge of how to start samba on your system missing</xsl:message>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:attribute>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:message terminate="true"
+                >Knowledge of how to start samba on your system missing</xsl:message>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:when>
 '''
 
