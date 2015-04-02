@@ -98,11 +98,21 @@ ccsflat2cibprelude = ('''
             </nvpair>
             </xsl:if>
             <!-- options ~ options -->
-            <xsl:if test="@options or $FsKind = 'netfs'">
+            <xsl:if test="@options
+                          or
+''' + (
+                          xslt_is_member('$FsKind', ('netfs', 'bind-mount'))
+) + '''">
             <nvpair id="{concat($Prefix, '-ATTRS-options')}"
                     name="options">
                 <xsl:attribute name="value">
                     <xsl:choose>
+                        <xsl:when test="$FsKind = 'bind-mount'">
+                            <xsl:value-of select="'bind'"/>
+                        </xsl:when>
+                        <xsl:when test="@options">
+                            <xsl:value-of select="@options"/>
+                        </xsl:when>
                         <xsl:when test="$FsKind = 'netfs'
                                         and
                                         starts-with(@fstype, 'nfs')">
@@ -112,14 +122,6 @@ ccsflat2cibprelude = ('''
                                         and
                                         starts-with(@fstype, 'cifs')">
                             <xsl:value-of select="'guest'"/>
-                        </xsl:when>
-                        <xsl:when test="$FsKind = 'bind-mount'">
-                            <xsl:value-of select="'bind'"/>
-                        </xsl:when>
-                        <xsl:when test="$FsKind != 'netfs'
-                                        and
-                                        $FsKind != 'bind-mount'">
-                            <xsl:value-of select="@options"/>
                         </xsl:when>
                         <xsl:otherwise>
                             <xsl:message terminate="true"
