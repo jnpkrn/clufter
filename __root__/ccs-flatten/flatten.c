@@ -166,6 +166,7 @@ flatten(int argc, char **argv)
     }
 
     load_resources(&reslist, &rulelist);
+    load_resource_defaults(&rulelist);
     build_resource_tree(&tree, &rulelist, &reslist);
     if (!tree) {
         fprintf(stderr, "No resource trees defined; nothing to do\n");
