@@ -64,23 +64,23 @@ res_do_flatten(xmlNode ** xpp, xmlNode * rmp, resource_node_t * node, const char
     char buf[256];
     int x, y;
 
-    n = xmlNewNode(NULL, (xmlChar *) node->rn_resource->r_rule->rr_type);
+    n = xmlNewNode(NULL, (xmlChar *) res->r_rule->rr_type);
 
     xmlSetProp(n, (xmlChar *) "rgmanager-meta-agent",
-               (xmlChar *) basename(node->rn_resource->r_rule->rr_agent));
+               (xmlChar *) basename(res->r_rule->rr_agent));
 
     /* Multiple-instance resources must be decomposed into separate
        resources */
-    if (node->rn_resource->r_refs > 1) {
+    if (res->r_refs > 1) {
         snprintf(buf, sizeof(buf), "%s_%d",
-                 primary_attr_value(node->rn_resource), node->rn_resource->r_incarnations);
-        ++node->rn_resource->r_incarnations;
+                 primary_attr_value(res), res->r_incarnations);
+        ++res->r_incarnations;
     } else {
-        snprintf(buf, sizeof(buf), "%s", primary_attr_value(node->rn_resource));
+        snprintf(buf, sizeof(buf), "%s", primary_attr_value(res));
     }
 
-    for (x = 0; node->rn_resource->r_attrs && node->rn_resource->r_attrs[x].ra_name; x++) {
-        ra = &node->rn_resource->r_attrs[x];
+    for (x = 0; res->r_attrs && res->r_attrs[x].ra_name; x++) {
+        ra = &res->r_attrs[x];
 
         if (ra->ra_flags & RA_PRIMARY) {
             xmlSetProp(n, (xmlChar *) ra->ra_name, (xmlChar *) buf);
@@ -107,8 +107,8 @@ res_do_flatten(xmlNode ** xpp, xmlNode * rmp, resource_node_t * node, const char
         if (!rmp) {
             xmlAddChild(*xpp, n);
         } else {
-            r = xmlNewNode(NULL, (xmlChar *) node->rn_resource->r_rule->rr_type);
-            xmlSetProp(r, (xmlChar *) "ref", (xmlChar *) primary_attr_value(node->rn_resource));
+            r = xmlNewNode(NULL, (xmlChar *) res->r_rule->rr_type);
+            xmlSetProp(r, (xmlChar *) "ref", (xmlChar *) primary_attr_value(res));
             xmlAddChild(rmp, n);
             xmlAddChild(*xpp, r);
         }
