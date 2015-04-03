@@ -62,6 +62,7 @@
 #  define RESOURCE_ROOTDIR	RA_METADATA_DIR
 #  define RESOURCE_TREE_ROOT	"//rm"
 #  define RESOURCE_BASE		RESOURCE_TREE_ROOT "/resources"
+#  define RESOURCE_DEFAULTS	RESOURCE_TREE_ROOT "/resource-defaults"
 #  define RESOURCE_ROOT_FMT 	RESOURCE_TREE_ROOT "/%s[%d]"
 
 #  define RESOURCE_MAX_LEVELS	100
@@ -157,6 +158,7 @@ int store_action(resource_act_t ** actsp, char *name, int depth, int timeout, in
    Load/kill resource rule sets
  */
 int load_resource_rules(const char *rpath, resource_rule_t ** rules, int rawmetadata);
+int load_resource_defaults(resource_rule_t **rules);
 void destroy_resource_rules(resource_rule_t ** rules);
 
 /*

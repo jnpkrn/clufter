@@ -515,3 +515,94 @@ load_resources(resource_t ** reslist, resource_rule_t ** rulelist)
 
     return 0;
 }
+
+
+/**
+   Try to load all the attributes in our rule set.  If none are found,
+   or an error occurs, return NULL and move on to the next one.
+
+   @param rule          Resource rule set to use when looking for data
+   @param base          Base XPath path to start with.
+   @return              New resource if legal or NULL on failure/error
+ */
+static int
+load_defaults(resource_rule_t *rule, char *base)
+{
+    char ccspath[1024];
+    char *attrname, *attr;
+    int x, flags;
+
+    for (x = 0; rule->rr_attrs && rule->rr_attrs[x].ra_name; x++) {
+
+        flags = rule->rr_attrs[x].ra_flags;
+
+        /* Defaults for primary/unique may not be assigned */
+        if (flags & (RA_PRIMARY | RA_UNIQUE))
+            continue;
+        attrname = strdup(rule->rr_attrs[x].ra_name);
+        if (!attrname)
+            return -1;
+
+        attr = NULL;
+        snprintf(ccspath, sizeof(ccspath), "%s/@%s", base, attrname);
+
+        if (conf_get(ccspath, &attr) != 0) {
+            free(attrname);
+            continue;
+        }
+
+        if (rule->rr_attrs[x].ra_value &&
+            !strcmp(rule->rr_attrs[x].ra_value, attr)) {
+            free(attrname);
+            free(attr);
+            continue;
+        }
+
+        if (rule->rr_attrs[x].ra_value) {
+        printf("changing default for %s attr %s from %s to %s\n", rule->rr_type,
+               rule->rr_attrs[x].ra_name, rule->rr_attrs[x].ra_value,
+               attr);
+        } else {
+        printf("setting default for %s attr %s to %s\n", rule->rr_type,
+               rule->rr_attrs[x].ra_name, attr);
+        }
+
+        flags &= ~RA_INHERIT;
+
+        /*
+         * Overwrite defaults
+         */
+        if (attrname && attr)
+            store_attribute(&rule->rr_attrs, attrname, attr, flags);
+    }
+
+    /* FIXME - add action support */
+
+    return 0;
+}
+
+
+/**
+   Read all resources in the resource manager block in CCS.
+
+   @param rulelist      List of rules to use when searching CCS.
+   @return              0 on success, nonzero on failure.
+ */
+int
+load_resource_defaults(resource_rule_t **rulelist)
+{
+    int rid = 0;
+    resource_rule_t *currule;
+    char tok[256];
+
+    list_for(rulelist, currule, rid) {
+
+        snprintf(tok, sizeof(tok), RESOURCE_DEFAULTS "/%s",
+             currule->rr_type);
+
+        if (load_defaults(currule, tok) != 0)
+            return -1;
+    }
+
+    return 0;
+}
