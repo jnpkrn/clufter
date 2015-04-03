@@ -93,8 +93,10 @@ res_do_flatten(xmlNode ** xpp, xmlNode * rmp, resource_node_t * node, const char
                 if (strcmp(ra->ra_name, res->r_rule->rr_attrs[y].ra_name))
                     continue;
 
+#if 0
                 if (!res->r_rule->rr_attrs[y].ra_value ||
                     strcmp(val, res->r_rule->rr_attrs[y].ra_value))
+#endif
                     xmlSetProp(n, (xmlChar *) ra->ra_name, (xmlChar *) val);
             }
         }
