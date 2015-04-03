@@ -72,7 +72,8 @@ ccsflat2cibprelude = ('''\
     </xsl:when>
 ''') % dict(
     note=', '.join((
-        squote("NOTE: cannot convert directly, prefilling defaults; "),
+        squote("NOTE: cannot convert tomcat-6 resource directly,"
+               " prefilling defaults; "),
         squote("consider manual completion based on /etc/tomcat6/tomcat6.conf ("),
         "@config_file",
         squote(") file (or switching to LSB/systemd)")
