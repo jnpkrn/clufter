@@ -4,7 +4,7 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from ....utils_cib import ResourceSpec
+from ....utils_cib import ResourceSpec, rg2hb_xsl
 
 ccsflat2cibprelude = ('''\
     <!--
@@ -43,6 +43,13 @@ ccsflat2cibprelude = ('''\
                 <xsl:message>%(msg_provider_guess)s</xsl:message>
             </xsl:otherwise>
         </xsl:choose>
+
+        <!-- OPERATIONS -->
+        <operations>
+''' + (
+            rg2hb_xsl('stop', 'shutdown_wait', op=True)
+) + '''\
+        </operations>
     </xsl:when>
 ''') % dict(
     msg_provider_guess="WARNING: knowledge of how to start samba on the target"
