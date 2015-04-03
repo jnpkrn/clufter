@@ -44,6 +44,11 @@ ccsflat2cibprelude = ('''\
             </xsl:otherwise>
         </xsl:choose>
 
+        <xsl:if test="@config_file or @smbd_options or @nmbd_options">
+            <xsl:comment> %(msg_ignored_params)s </xsl:comment>
+            <xsl:message>%(msg_ignored_params)s</xsl:message>
+        </xsl:if>
+
         <!-- OPERATIONS -->
         <operations>
 ''' + (
@@ -54,6 +59,9 @@ ccsflat2cibprelude = ('''\
 ''') % dict(
     msg_provider_guess="WARNING: knowledge of how to start samba on the target"
                        " system missing, assuming `service' provider",
+    msg_ignored_params="NOTE: cannot convert samba resource directly, hence"
+                       " some configuration bits can be lost"
+                       " (config_file,smbd_options, nmbd_options)",
 )
 
 ###
