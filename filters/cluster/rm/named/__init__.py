@@ -32,3 +32,12 @@ ccsflat2cibprelude = '''\
         </operations>
     </xsl:when>
 '''
+
+###
+
+from ....filters.ccs_artefacts import artefact_cond_ra
+
+ccs_artefacts = ''.join((
+    artefact_cond_ra('@config_file',
+                     kind='A', desc='configuration file'),
+))
