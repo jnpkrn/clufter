@@ -20,7 +20,7 @@ PATH="${PATH:+${PATH}:}$(
 )"
 unset s
 
-PYTHONEXEC="python -Es"
+PYTHONEXEC="python2 -Es"
 
 echo "Current path: ${PATH}"
 which ccs_flatten 2>/dev/null || (

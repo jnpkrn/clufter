@@ -5,6 +5,6 @@ pushd "$(git rev-parse --show-toplevel)"
 git archive --format=tar HEAD | (
   cd $(mktemp -d '/var/tmp/pkg-XXXXX') \
     && tar xf - \
-    && python setup.py sdist -d "${OLDPWD}/__root__/dist")
+    && python2 setup.py sdist -d "${OLDPWD}/__root__/dist")
 echo "New source tarball created: $(ls -1t __root__/dist | head -n1)"
 popd

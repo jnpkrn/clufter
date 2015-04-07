@@ -1,10 +1,10 @@
 # distill-spec-prefix: clufter
 %{!?clufter_version: %global clufter_version  %{?!infer:0.10.4}%{?infer:%(
-                                                python ../setup.py --version)}}
+                                                python2 ../setup.py --version)}}
 %{!?clufter_name:    %global clufter_name     %{?!infer:clufter}%{?infer:%(
-                                                python ../setup.py --name)}}
+                                                python2 ../setup.py --name)}}
 %{!?clufter_license: %global clufter_license  %{?!infer:GPLv2+}%{?infer:%(
-                                                python ../setup.py --license)}}
+                                                python2 ../setup.py --license)}}
 %{!?clufter_check:   %global clufter_check    1}
 
 # special vars wrt. versioning

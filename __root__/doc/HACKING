@@ -2,7 +2,7 @@ Directly consuming the repo
 ---------------------------
 
 After fetching local repo copy:
-$ python setup.py build
+$ python setup.py build  # or python2 if it matters
 $ ln -fs __root__/build/ccs_flatten .
 $ # or ./run-check that should take care on its own
 and you should be ready to go with:
