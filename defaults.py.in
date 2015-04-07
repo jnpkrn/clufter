@@ -1,12 +1,14 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Some usage-agnostic constants"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-EDITOR      = '''@EDITOR@'''
-CCS_FLATTEN = '''@CCS_FLATTEN@'''
+# trailing bang subsequently removed, prevents premature ''' lex. match in value
+
+EDITOR      = '''@EDITOR@!'''[:-1]
+CCS_FLATTEN = '''@CCS_FLATTEN@!'''[:-1]
 
 # also configurable via respective env. variables (see getenv_namespaced)
-HASHALGO    = '''@HASHALGO@'''  # not for security
+HASHALGO    = '''@HASHALGO@!'''[:-1]  # not for security
