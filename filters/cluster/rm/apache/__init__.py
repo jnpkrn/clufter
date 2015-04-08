@@ -17,9 +17,23 @@ ccsflat2cibprelude = '''\
 ) + '''
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
+
+            <!-- configfile ~ (server_root + '/' +) config_file -->
+            <xsl:choose>
+                <xsl:when test="starts-with(@config_file, '/')">
 ''' + (
-            rg2hb_xsl('configfile', 'config_file')
+                    rg2hb_xsl('configfile', 'config_file', req=True)
 ) + '''\
+                </xsl:when>
+                <xsl:otherwise>
+''' + (
+                    rg2hb_xsl('configfile',
+                              "{concat(@server_root, '/', @config_file)}",
+                              req=abs)
+) + '''\
+                </xsl:otherwise>
+            </xsl:choose>
+
             <!-- options ~ httpd_options (if present; + name, server_root) -->
             <nvpair id="{concat($Prefix, '-ATTRS-options')}"
                     name="options">
