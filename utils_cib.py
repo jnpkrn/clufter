@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """CIB helpers, mainly used in the filter definitions"""
@@ -64,13 +64,17 @@ class ResourceSpec(object):
         return ret
 
 
-def rg2hb_xsl(dst, src, req=False, op=False):
+def rg2hb_xsl(dst, src=None, req=False, op=False):
     """Emit XSL snippet yielding nvpair-encoded HB RA parameter from RG one
 
     Parameters:
+        dst    destination parameter (name in the nvpair)
+        src    source parameter (if not provided, use dst ~ 1:1 match)
         req    valid values: False, True, abs (use raw `src` instead)
+        op     whether this is relevant for "operations" section
     """
     assert req in (False, True, abs), "Invalid `req` param"
+    src = src or dst
     return (('''\
             <xsl:if test="@{src}">
 ''' if not req else '') + (('''\
