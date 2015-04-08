@@ -20,7 +20,7 @@ ccsflat2cibprelude = '''\
 ''' + (
             rg2hb_xsl('named_config', 'config_file')
             +
-            rg2hb_xsl('named_options', 'named_options')
+            rg2hb_xsl('named_options')
 ) + '''\
         </instance_attributes>
 
