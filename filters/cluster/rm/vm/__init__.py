@@ -4,7 +4,7 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from ....utils_cib import ResourceSpec
+from ....utils_cib import ResourceSpec, rg2hb_xsl
 
 
 ccsflat2cibprelude = '''\
@@ -36,18 +36,11 @@ ccsflat2cibprelude = '''\
                 </xsl:if>
             </nvpair>
             </xsl:if>
-            <!-- hypervisor ~ hypervisor_uri -->
-            <xsl:if test="@hypervisor_uri">
-            <nvpair id="{concat($Prefix, '-ATTRS-hypervisor')}"
-                    name="hypervisor"
-                    value="{@hypervisor_uri}"/>
-            </xsl:if>
-            <!-- snapshot ~ snapshot -->
-            <xsl:if test="@snapshot">
-            <nvpair id="{concat($Prefix, '-ATTRS-snapshot')}"
-                    name="snapshot"
-                    value="{@snapshot}"/>
-            </xsl:if>
+''' + (
+            rg2hb_xsl('hypervisor', 'hypervisor_uri')
+            +
+            rg2hb_xsl('snapshot')
+) + '''\
         </instance_attributes>
     </xsl:when>
 '''
