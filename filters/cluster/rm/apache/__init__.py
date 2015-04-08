@@ -55,7 +55,7 @@ ccsflat2cibprelude = '''\
             </nvpair>
 ''' + (
             # see rhbz#952132
-            rg2hb_xsl('httpd', 'httpd')
+            rg2hb_xsl('httpd')
 ) + '''\
         </instance_attributes>
 
