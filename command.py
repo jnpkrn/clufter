@@ -699,9 +699,12 @@ class CommandAlias(object):
                 pass
             else:
                 assert issubclass(use_obj, (Command, CommandAlias))
-                if use_obj in ic:
+                if use_obj in ic and ic[use_obj] in cmds:
                     use_obj = cmds[ic[use_obj]]
                 else:
+                    if use_obj in ic:
+                        log.warning("Resolve at `{0}' command: already proved"
+                                    " unresolvable(?)".format(use_obj.name))
                     name = '_' + use_obj.name
                     assert name not in cmds
                     ic[use_obj] = name
