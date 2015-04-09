@@ -106,12 +106,14 @@ opts_common = (
         help="shortcut for --loglevel=DEBUG"
     )),
     (('--logfile', ), dict(
+        metavar="FILE",
         action='store',
         dest='logfile',
         default='',
-        help="log to specified file instead of stderr"
+        help="specify log file (instead of stderr)"
     )),
     (('--loglevel', ), dict(
+        metavar="LEVEL",
         action='store',
         dest='loglevel',
         default=logging.getLevelName(logging.WARNING),
@@ -119,7 +121,7 @@ opts_common = (
         choices=map(logging.getLevelName,
                     xrange(logging.NOTSET, logging.CRITICAL + 1,
                            logging.DEBUG - logging.NOTSET)),
-        help="set loglevel to specified value [%default out of %choices]"
+        help="specify log level [%default out of %choices]"
     )),
     # TODO other logging related stuff (if any)
 )
@@ -131,7 +133,7 @@ opts_main = (
         nargs=0,  # <- we take one if suitable
         action='callback',
         callback=lambda *args: parser_callback_help(*args, arg=True),
-        help="show the help message (global or command-specific) and exit"
+        help="show help message (can be command-specific) and exit"
     )),
     (('-H', '--help-full'), dict(
         metavar="[CMD]",
@@ -139,7 +141,7 @@ opts_main = (
         nargs=0,  # <- we take one if suitable
         action='callback',
         callback=lambda *args: parser_callback_help(*args, arg=True, full=True),
-        help="show the full help message (global or command-specific) and exit"
+        help="full help message (can be command-specific) and exit"
     )),
     (('-l', '--list'), dict(
         action='store_true',
@@ -171,12 +173,12 @@ opts_nonmain = (
     (('-h', '--help'), dict(
         action='callback',
         callback=parser_callback_help,
-        help="show the help message and exit"
+        help="show help message and exit"
     )),
     (('-H', '--help-full'), dict(
         action='callback',
         callback=lambda *args: parser_callback_help(*args, full=True),
-        help="show the full help message and exit"
+        help="full help message and exit"
     )),
 )
 
@@ -325,7 +327,7 @@ def run(argv=None, *args):
     map(parser.remove_option, map(lambda x: x[0][0], opts_main))
     modify_group.set_title("Command options")
     modify_group.set_description(None)
-    modify_group.add_options(make_options(opts_nonmain))
+    parser.add_options(make_options(opts_nonmain))
     parser.epilog = ("Arguments to value-based `command options' can go"
                      " without labels when the order wrt. parsing logic"
                      " respected;"
