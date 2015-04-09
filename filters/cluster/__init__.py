@@ -620,3 +620,22 @@ ccs_obfuscate_identifiers = '''\
         </xsl:attribute>
     </xsl:template>
 '''
+
+###
+
+# XXX output + strip-space should rather be present from beginning?
+ccspcmk2pcscmd = '''\
+    <xsl:output method="text"/>
+    <xsl:strip-space elements="*"/>
+
+    <xsl:value-of select="'pcs cluster setup'"/>
+    <xsl:value-of select="concat(' --name ', @name)"/>
+    <xsl:for-each select="clusternodes/clusternode">
+        <xsl:value-of select="concat(' ', @name)"/>
+        <xsl:if test="altname/@name">
+            <xsl:value-of select="concat(',', altname/@name)"/>
+        </xsl:if>
+    </xsl:for-each>
+    <clufter:descent-mix at="cman"/>
+    <clufter:descent-mix at="totem"/>
+'''
