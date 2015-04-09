@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -33,3 +33,20 @@ ccs2needlexml = '''\
 from ....filters.ccs_artefacts import artefact_cond
 
 ccs_artefacts = artefact_cond('@keyfile', kind='F', desc='CMAN keyfile')
+
+###
+
+# NOTE pcs doesn't support udpb directly via --transport (unless forced),
+#      one has to specify --broadcast0 parameter instead and transport
+#      will get silently switched to udpb
+
+ccspcmk2pcscmd_transports = ('udp', 'udpu')
+
+ccspcmk2pcscmd = '''\
+    <xsl:if test="
+''' + (
+    xslt_is_member('@transport', ccspcmk2pcscmd_transports)
+) + '''">
+        <xsl:value-of select="concat(' --transport ', @transport)"/>
+    </xsl:if>
+'''

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -37,3 +37,25 @@ ccs2needlexml = '''\
 from ....filters.ccs_artefacts import artefact_cond
 
 ccs_artefacts = artefact_cond('@keyfile', kind='F', desc='totem keyfile')
+
+###
+
+# for the time being, there is 1:1 mapping of supported params to pcs arguments
+ccspcmk2pcscmd_supported = (
+    'consensus',
+    'join',
+    'token',
+    'fail_recv_const',
+    'miss_count_const',
+)
+
+ccspcmk2pcscmd = '''\
+    <xsl:for-each select="@*[
+''' + (
+        xslt_is_member('name()', ccspcmk2pcscmd_supported)
+) + ''']">
+        <xsl:if test=".">
+            <xsl:value-of select="concat(' --', name(), ' ', .)"/>
+        </xsl:if>
+    </xsl:for-each>
+'''
