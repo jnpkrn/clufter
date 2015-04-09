@@ -733,8 +733,8 @@ class XMLFilter(Filter, MetaPlugin):
                 #print "ee", etree.tostring(xslt_root)
 
             # append "identities" to preserve application
-            # XXX needs clarification
-                if do_mix == 1 and elem.getparent() is not None:
+            # XXX needs clarification!
+                if do_mix == 1 and elem.getparent() is None:
                     e = nselem(XSL_NS, 'apply-templates',
                             select="*")
                     template.append(e)
