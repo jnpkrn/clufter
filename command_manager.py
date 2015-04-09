@@ -145,8 +145,12 @@ class CommandManager(PluginManager):
         cmds_aliases = [
             ([(name, ref_str.format(obj) if i else obj.__doc__.splitlines()[0],
                i or dirname(modules[obj.__class__.__module__].__file__) == pth)
-              for name, obj in sorted(cat)],
-              max(tuple(len(name) for name, _ in cat)) if cat else 0)
+              for name, obj in sorted(cat) if obj],
+              max((0, ) + tuple(len(name) for name, obj in cat
+                                if obj and (not ellip or i or dirname(
+                                    modules[obj.__class__.__module__].__file__
+                                ) == pth)))
+            )
             for i, cat in enumerate(
                 bifilter(lambda (name, obj): not isinstance(obj, basestring),
                          self._plugins.iteritems())
@@ -164,6 +168,6 @@ class CommandManager(PluginManager):
                         wrap(desc,
                              width=text_width, subsequent_indent=desc_indent)
                     ), width=width
-                ) for name, desc, internal in i[0] if internal or not ellip
+                ) for name, desc, internal in i[0] if not ellip or internal
             ]) for header, i in zip((cmds_intro, aliases_intro), cmds_aliases)
         )
