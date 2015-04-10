@@ -49,4 +49,7 @@ ccspcmk2pcscmd = '''\
 ) + '''">
         <xsl:value-of select="concat(' --transport ', @transport)"/>
     </xsl:if>
+
+    <clufter:descent-mix at="multicast"/>
+    <clufter:descent-mix at="altmulticast"/>
 '''
