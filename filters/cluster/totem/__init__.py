@@ -61,4 +61,5 @@ ccspcmk2pcscmd = '''\
     <xsl:if test="@rrp_mode">
         <xsl:value-of select="concat(' --rrpmode ', @rrp_mode)"/>
     </xsl:if>
+    <clufter:descent-mix at="interface"/>
 '''
