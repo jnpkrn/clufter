@@ -99,3 +99,12 @@ ccsflat2cibprelude = '''\
         <xsl:attribute name="type">member</xsl:attribute>
     </node>
 '''
+
+###
+
+ccspcmk2pcscmd = '''\
+    <xsl:value-of select="concat(' ', @name)"/>
+    <xsl:if test="altname/@name">
+        <xsl:value-of select="concat(',', altname/@name)"/>
+    </xsl:if>
+'''

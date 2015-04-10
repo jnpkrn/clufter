@@ -630,12 +630,8 @@ ccspcmk2pcscmd = '''\
 
     <xsl:value-of select="'pcs cluster setup'"/>
     <xsl:value-of select="concat(' --name ', @name)"/>
-    <xsl:for-each select="clusternodes/clusternode">
-        <xsl:value-of select="concat(' ', @name)"/>
-        <xsl:if test="altname/@name">
-            <xsl:value-of select="concat(',', altname/@name)"/>
-        </xsl:if>
-    </xsl:for-each>
+
+    <clufter:descent-mix at="clusternode"/>
     <clufter:descent-mix at="cman"/>
     <clufter:descent-mix at="totem"/>
 '''
