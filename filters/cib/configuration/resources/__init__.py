@@ -264,8 +264,8 @@ cibprelude2cibcompact = ('''\
                                         @name = 'autostart'
                                     ]/@value"/>
                 <xsl:if test="$Autostart = 'no'
-                            or
-                            $Autostart = 0">
+                              or
+                              $Autostart = 0">
                     <xsl:comment
                     ><xsl:value-of select="concat(' mimic no-autostart resource group (',
                                                 $ResourceGroup, ')')"
