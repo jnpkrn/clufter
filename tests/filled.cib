@@ -1,0 +1,57 @@
+<cib validate-with="pacemaker-1.2" admin_epoch="0" epoch="0" num_updates="0" update-client="clufter 0.10.5a">
+  <configuration>
+    <crm_config/>
+    <nodes>
+      <node id="virt-063" uname="virt-063" type="member"/>
+      <node id="virt-064" uname="virt-064" type="member"/>
+      <node id="virt-069" uname="virt-069" type="member"/>
+    </nodes>
+    <resources>
+      <!-- FENCING/STONITH (+ POSSIBLY TOPOLOGY BELOW) -->
+      <primitive id="FENCEDEV-fence-virt-063" class="stonith" type="fence_xvm">
+        <instance_attributes id="FENCEDEV-fence-virt-063-ATTRS">
+          <nvpair id="FENCEDEV-fence-virt-063-ATTRS-auth" name="auth" value="sha256"/>
+          <nvpair id="FENCEDEV-fence-virt-063-ATTRS-hash" name="hash" value="sha256"/>
+          <nvpair id="FENCEDEV-fence-virt-063-ATTRS-key_file" name="key_file" value="/etc/cluster/fence_xvm.key"/>
+          <nvpair id="FENCEDEV-fence-virt-063-ATTRS-timeout" name="timeout" value="5"/>
+          <nvpair id="FENCEDEV-fence-virt-063-ATTRS-pcmk_host_map" name="pcmk_host_map" value="virt-063:virt-063.cluster-qe.lab.eng.brq.redhat.com"/>
+        </instance_attributes>
+      </primitive>
+      <primitive id="FENCEDEV-fence-virt-064" class="stonith" type="fence_xvm">
+        <instance_attributes id="FENCEDEV-fence-virt-064-ATTRS">
+          <nvpair id="FENCEDEV-fence-virt-064-ATTRS-auth" name="auth" value="sha256"/>
+          <nvpair id="FENCEDEV-fence-virt-064-ATTRS-hash" name="hash" value="sha256"/>
+          <nvpair id="FENCEDEV-fence-virt-064-ATTRS-key_file" name="key_file" value="/etc/cluster/fence_xvm.key"/>
+          <nvpair id="FENCEDEV-fence-virt-064-ATTRS-timeout" name="timeout" value="5"/>
+          <nvpair id="FENCEDEV-fence-virt-064-ATTRS-pcmk_host_map" name="pcmk_host_map" value="virt-064:virt-064.cluster-qe.lab.eng.brq.redhat.com"/>
+        </instance_attributes>
+      </primitive>
+      <primitive id="FENCEDEV-fence-virt-069" class="stonith" type="fence_xvm">
+        <instance_attributes id="FENCEDEV-fence-virt-069-ATTRS">
+          <nvpair id="FENCEDEV-fence-virt-069-ATTRS-auth" name="auth" value="sha256"/>
+          <nvpair id="FENCEDEV-fence-virt-069-ATTRS-hash" name="hash" value="sha256"/>
+          <nvpair id="FENCEDEV-fence-virt-069-ATTRS-key_file" name="key_file" value="/etc/cluster/fence_xvm.key"/>
+          <nvpair id="FENCEDEV-fence-virt-069-ATTRS-timeout" name="timeout" value="5"/>
+          <nvpair id="FENCEDEV-fence-virt-069-ATTRS-pcmk_host_map" name="pcmk_host_map" value="virt-069:virt-069.cluster-qe.lab.eng.brq.redhat.com"/>
+        </instance_attributes>
+      </primitive>
+      <!-- RESOURCES+ARRANGEMENT -->
+      <group id="SERVICE-svc-GROUP">
+        <primitive id="RESOURCE-ip-10.34.71.234" description="natively converted from ip RA" class="ocf" provider="heartbeat" type="IPaddr2">
+          <instance_attributes id="RESOURCE-ip-10.34.71.234-ATTRS">
+            <nvpair id="RESOURCE-ip-10.34.71.234-ATTRS-ip" name="ip" value="10.34.71.234"/>
+          </instance_attributes>
+        </primitive>
+        <primitive id="RESOURCE-apache-webserver" description="natively converted from apache RA" class="ocf" provider="heartbeat" type="apache">
+          <instance_attributes id="RESOURCE-apache-webserver-ATTRS">
+            <nvpair id="RESOURCE-apache-webserver-ATTRS-configfile" name="configfile" value="/etc/httpd/sconf/httpd.conf"/>
+            <nvpair id="RESOURCE-apache-webserver-ATTRS-options" name="options" value=" -Dwebserver -d &quot;/etc/httpd&quot;"/>
+          </instance_attributes>
+          <operations/>
+        </primitive>
+      </group>
+    </resources>
+    <constraints/>
+  </configuration>
+  <status/>
+</cib>

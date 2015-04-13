@@ -314,3 +314,75 @@ cibprelude2cibcompact = ('''\
                          ]"/>
 
 ''') % dict(package_name=package_name())
+
+###
+
+from ....utils_xslt import NL
+
+cib2pcscmd = ('''\
+    <!-- STONITH -->
+    <xsl:for-each select=".//primitive[@class = 'stonith']">
+        <xsl:value-of select="concat('pcs stonith create',
+                                     ' ', @id,
+                                     ' ', @type)"/>
+        <xsl:for-each select="instance_attributes/nvpair">
+            <xsl:value-of select='" &apos;"'/>
+            <xsl:value-of select="concat(@name, '=', @value)"/>
+            <xsl:value-of select='"&apos;"'/>
+        </xsl:for-each>
+        <xsl:value-of select="'%(NL)s'"/>
+    </xsl:for-each>
+
+    <!--
+        ORDINARY CLUSTER RESOURCES
+     -->
+
+    <!-- primitives -->
+    <xsl:for-each select=".//primitive[@class != 'stonith']">
+        <xsl:variable name="ResourceSpec">
+            <xsl:choose>
+                <xsl:when test="@class = 'ocf'">
+                    <xsl:value-of select="concat(@class, ':', @provider, ':', @type)"/>
+                </xsl:when>
+                <xsl:when test="@class">
+                    <xsl:value-of select="concat(@class, ':', @type)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="@type"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <xsl:value-of select="concat('pcs resource create',
+                                     ' ', @id,
+                                     ' ', $ResourceSpec)"/>
+        <xsl:for-each select="instance_attributes/nvpair">
+            <xsl:value-of select='" &apos;"'/>
+            <xsl:value-of select="concat(@name, '=', @value)"/>
+            <xsl:value-of select='"&apos;"'/>
+        </xsl:for-each>
+        <xsl:if test="operations/op">
+            <xsl:value-of select="' op'"/>
+            <xsl:for-each select="operations/op">
+                <xsl:value-of select="concat(' ', @name)"/>
+                <xsl:for-each select="@*">
+                    <xsl:value-of select='" &apos;"'/>
+                    <xsl:value-of select="concat(name(), '=', .)"/>
+                    <xsl:value-of select='"&apos;"'/>
+                </xsl:for-each>
+            </xsl:for-each>
+        </xsl:if>
+        <xsl:value-of select="'%(NL)s'"/>
+    </xsl:for-each>
+
+    <!-- groups -->
+    <xsl:for-each select="group">
+        <xsl:value-of select="concat('pcs group add ', @id)"/>
+        <xsl:for-each select="primitive">
+            <xsl:value-of select="concat(' ', @id)"/>
+        </xsl:for-each>
+        <xsl:value-of select="'%(NL)s'"/>
+    </xsl:for-each>
+
+''') % dict(
+    NL=NL
+)
