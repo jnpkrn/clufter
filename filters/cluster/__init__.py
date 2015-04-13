@@ -628,8 +628,8 @@ ccspcmk2pcscmd = '''\
     <xsl:output method="text"/>
     <xsl:strip-space elements="*"/>
 
-    <xsl:value-of select="'pcs cluster setup'"/>
-    <xsl:value-of select="concat(' --name ', @name)"/>
+    <xsl:value-of select="concat('pcs cluster setup',
+                                 ' --name ', @name)"/>
 
     <clufter:descent-mix at="clusternode"/>
     <clufter:descent-mix at="cman"/>
