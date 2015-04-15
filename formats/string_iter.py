@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Format representing a list of strings (new-line delimited)"""
@@ -17,7 +17,11 @@ class string_iter(SimpleFormat):
     def get_bytestring(self, *protodecl):
         """Return command as canonical single string"""
         # chained fallback
-        return '\n'.join(s for s in self.STRINGITER(protect_safe=True) if s)
+        return (
+            # add a trailing new-line as per conventions
+            # XXX should there be a knob for that?
+            '\n'.join(s for s in self.STRINGITER(protect_safe=True) if s) + '\n'
+        )
 
     @SimpleFormat.producing(STRINGITER, protect=True)
     def get_stringiter(self, *protodecl):
