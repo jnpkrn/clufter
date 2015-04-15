@@ -95,17 +95,25 @@ ccs_obfuscate_identifiers = '''\
 from ....utils_cib import ResourceSpec
 from .... import package_name
 
-ccsflat2cibprelude_elems = (
-    'service',
+ccsflat2cibprelude_elems_res_hybrid = (
     'vm',
 )
 
-ccsflat2cibprelude_elems_with_res = ccsflat2cibprelude_elems + (
+ccsflat2cibprelude_elems_res_toplevel = ccsflat2cibprelude_elems_res_hybrid + (
+    'service',
+)
+
+ccsflat2cibprelude_elems_with_res = ccsflat2cibprelude_elems_res_toplevel + (
     'resources',
 )
 
 ccsflat2cibprelude = ('''\
     <xsl:for-each select="*[
+''' + (
+    xslt_is_member('name()', ccsflat2cibprelude_elems_res_hybrid)
+) + ''']
+    |
+    *[
 ''' + (
     xslt_is_member('name()', ccsflat2cibprelude_elems_with_res)
 ) + ''']/*">
@@ -182,7 +190,7 @@ ccsflat2cibprelude = ('''\
 
     <xsl:for-each select="*[
 ''' + (
-    xslt_is_member('name()', ccsflat2cibprelude_elems)
+    xslt_is_member('name()', ccsflat2cibprelude_elems_res_toplevel)
 ) + ''']">
         <xsl:variable name="ResourceGroup"
                       select="concat(
