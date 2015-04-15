@@ -11,6 +11,11 @@ from logging import getLogger
 from sys import stderr, stdin, stdout
 from time import time
 
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
+
 from .command_context import CommandContext
 from .error import ClufterError, \
                    EC
@@ -140,7 +145,7 @@ class Command(object):
             i_origin = arg2wrapped(i)
             i, i_tail = head_tail(*i_origin)
             # bt denotes filters feeding this one
-            bt = filter_backtrack.setdefault(i, {})
+            bt = filter_backtrack.setdefault(i, OrderedDict())
             if new or not (bt or i_tail):  # preorder
                 # new for UPFILTERs, which are also terminals (input ones)
                 terminal_chain.append(i)
