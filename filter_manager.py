@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Filter manager"""
@@ -9,7 +9,6 @@ from logging import getLogger
 
 from .error import ClufterError
 from .filter import filters
-from .format import CompositeFormat
 from .format_manager import FormatManager
 from .plugin_registry import PluginManager
 
@@ -38,16 +37,6 @@ class FilterManager(PluginManager):
 
     @staticmethod
     def _resolve(formats, filters):
-        def get_composite_onthefly(formats):
-            # XXX should rather be implemented by CompositeFormat itself?
-            composite_onthefly = \
-                lambda protocol, *args: \
-                    CompositeFormat(protocol, formats=formats, *args)
-            # XXX currently instantiation only (no match for composite classes)
-            composite_onthefly.as_instance = composite_onthefly
-            composite_onthefly.context = CompositeFormat.context
-            return composite_onthefly
-
         for flt_name, flt_cls in filters.items():
             ret = flt_cls(formats)
             if ret is not None:
