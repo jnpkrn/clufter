@@ -23,7 +23,7 @@ from lxml import etree
 
 from . import package_name
 from .error import ClufterError, ClufterPlainError
-from .format import CompositeFormat, XML
+from .format import CompositeFormat, Format, XML
 from .plugin_registry import MetaPlugin, PluginRegistry
 from .utils import args2tuple, arg2wrapped, \
                    filterdict_keep, filterdict_pop, \
@@ -100,10 +100,16 @@ class Filter(object):
     def _resolve_formats_composite(formats):
         # XXX should rather be implemented by CompositeFormat itself?
         composite_onthefly = \
-            lambda protocol, *args: \
-                CompositeFormat(protocol, formats=formats, *args)
+            lambda protocol, *args, **kwargs: \
+                CompositeFormat(protocol, *args,**dict(kwargs.iteritems(),
+                                                       **{'formats': formats}))
         # XXX currently instantiation only (no match for composite classes)
-        composite_onthefly.as_instance = composite_onthefly
+        composite_onthefly.as_instance = \
+            lambda *decl_or_instance, **kwargs: \
+                composite_onthefly(('composite', ('native', ) * len(decl_or_instance)),
+                                   *(di('native') for di in decl_or_instance), **kwargs) \
+                if decl_or_instance and isinstance(decl_or_instance[0], Format)\
+                else composite_onthefly(*decl_or_instance, **kwargs)
         composite_onthefly.context = CompositeFormat.context
         return composite_onthefly
 
