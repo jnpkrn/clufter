@@ -6,9 +6,9 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..command import Command, CommandAlias
+from ..facts import cluster_pcs_1_2, cluster_pcs_flatiron
 from ..filter import XMLFilter
 from ..protocol import protocols
-from ..facts import cluster_pcs_1_2, cluster_pcs_flatiron
 
 
 def _check_pacemaker_1_2(cmd_ctxt):
@@ -79,8 +79,8 @@ def ccs2pcs_flatiron(cmd_ctxt,
                   (ccsflat2cibfinal_chain)))
 def ccs2pcs_needle(cmd_ctxt,
                    input="/etc/cluster/cluster.conf",
-                   cib="cib-{ccs2ccsflat.in.hash}.xml",
                    coro="corosync-{ccs2ccsflat.in.hash}.conf",
+                   cib="cib-{ccs2ccsflat.in.hash}.xml",
                    _common=XMLFilter.command_common):
     """(CMAN,rgmanager)->(Corosync v2,Pacemaker) cluster cfg.
 
