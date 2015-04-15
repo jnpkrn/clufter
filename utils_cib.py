@@ -7,6 +7,10 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from .error import ClufterError
 
+
+PATH_CIB = '/var/lib/pacemaker/cib/cib.xml'
+
+
 class ResourceSpecError(ClufterError):
     pass
 
