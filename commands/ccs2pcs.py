@@ -9,6 +9,7 @@ from ..command import Command, CommandAlias
 from ..facts import cluster_pcs_1_2, cluster_pcs_flatiron
 from ..filter import XMLFilter
 from ..protocol import protocols
+from ..utils_cman import PATH_CLUSTERCONF
 
 
 def _check_pacemaker_1_2(cmd_ctxt):
@@ -36,7 +37,7 @@ ccsflat2cibfinal_chain = ('ccs-revitalize',
                   ('ccs2ccs-pcmk'),
                   (ccsflat2cibfinal_chain)))
 def ccs2pcs_flatiron(cmd_ctxt,
-                     input="/etc/cluster/cluster.conf",
+                     input=PATH_CLUSTERCONF,
                      ccs_pcmk="cluster-{ccs2ccsflat.in.hash}.conf",
                      cib="cib-{ccs2ccsflat.in.hash}.xml",
                      _common=XMLFilter.command_common):
@@ -78,7 +79,7 @@ def ccs2pcs_flatiron(cmd_ctxt,
                           ('xml2simpleconfig'))),
                   (ccsflat2cibfinal_chain)))
 def ccs2pcs_needle(cmd_ctxt,
-                   input="/etc/cluster/cluster.conf",
+                   input=PATH_CLUSTERCONF,
                    coro="corosync-{ccs2ccsflat.in.hash}.conf",
                    cib="cib-{ccs2ccsflat.in.hash}.xml",
                    _common=XMLFilter.command_common):
