@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Easy (at least for usage) plugin framework"""
@@ -219,7 +219,7 @@ class PluginRegistry(type):
         Returns `{plugin_name: plugin_cls}` mapping of plugins found.
         """
         ret = {}
-        fname_start_use = args2sgpl(fname_start or '[!_.]')
+        fname_start_use = apply_intercalate(args2sgpl(fname_start or '[!_.]'))
         fp = re_compile('|'.join(
             translate(fs + '*')
             for fs in (pfx.split('-', 1)[0] for pfx in fname_start_use)
@@ -286,6 +286,7 @@ class PluginManager(object):
         ret.update(filterdict_remove(to_discover,
                                      fn=lambda x: native_plugins[x],
                                      *native_plugins.keys()))
+        to_discover = apply_intercalate(tuple(to_discover))
         if to_discover:
             log.debug("Couldn't look up everything: {0}".format(', '.join(
                                                                 to_discover)))

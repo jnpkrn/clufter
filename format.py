@@ -499,7 +499,8 @@ class CompositeFormat(Format, MetaPlugin):
         assert tuplist(protocol[1]) and len(protocol[1]) > 1
         assert tuplist(formats) and len(protocol[1]) == len(formats)
         assert len(args) == len(formats)
-        assert all(p in f._protocols for (f, p) in zip(formats, protocol[1]))
+        assert all(p in f._protocols or p == 'native'
+                   for (f, p) in zip(formats, protocol[1]))
         self._protocols[protocol] = lambda *_: args  # just to pass the assert
         self.native_protocol = (self.__class__.native_protocol,
                                 tuple(f.native_protocol for f in formats))

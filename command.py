@@ -133,11 +133,12 @@ class Command(object):
         filter_backtrack = analysis_acc['filter_backtrack']
         terminal_chain = analysis_acc['terminal_chain'][-1]
 
-        assert tuplist(filter_chain)
+        assert tuplist(filter_chain) and filter_chain
         # PASSDOWN or FILTERS
         pass_through, filter_chain = head_tail(*filter_chain) \
-                                     if isinstance(filter_chain, tuple) \
-                                     and len(filter_chain) > 1 \
+                                     if len(filter_chain) > 1 \
+                                     and( not isinstance(filter_chain[0], tuple) \
+                                     or len(filter_chain[0]) < 2) \
                                      else (None, filter_chain)
         for i in filter_chain:
             if not i:
@@ -155,22 +156,25 @@ class Command(object):
                         "filter `{0}' is feeded by `{1}' more than once",
                         i.__class__.__name__, pass_through.__class__.__name__
                     )
-                common_protocols = sorted(
-                    reduce(
-                        set.intersection,
-                        map(set, (pass_through.out_format._protocols,
-                                  i.in_format._protocols))
-                    ),
-                    key=lambda x:
-                        int(x == pass_through.out_format.native_protocol)
-                        + int(x == i.in_format.native_protocol)
-                )
-                if not common_protocols:
-                    raise CommandError(me,
-                        "filter `{0}' and its feeder `{1}' have no protocol"
-                        " in common",
-                        i.__class__.__name__, pass_through.__class__.__name__
+                common_protocols = None  # for when CompositeFormat involved
+                if (hasattr(pass_through.out_format, '_protocols')
+                    and hasattr(i.in_format, '_protocols')):
+                    common_protocols = sorted(
+                        reduce(
+                            set.intersection,
+                            map(set, (pass_through.out_format._protocols,
+                                    i.in_format._protocols))
+                        ),
+                        key=lambda x:
+                            int(x == pass_through.out_format.native_protocol)
+                            + int(x == i.in_format.native_protocol)
                     )
+                    if not common_protocols:
+                        raise CommandError(me,
+                            "filter `{0}' and its feeder `{1}' have no protocol"
+                            " in common",
+                            i.__class__.__name__, pass_through.__class__.__name__
+                        )
                 bt[pass_through] = common_protocols
             if i_tail:
                 # PASSDOWN
@@ -350,6 +354,8 @@ class Command(object):
                 checked_flat = apply_intercalate((checked,))
                 for order, proto in filter(lambda (i, x): x,
                                            enumerate(checked_flat)):
+                    if proto is zip_empty:
+                        continue
                     raise CommandError(me,
                         "filter resolution #{0} of {1}: {2}", order + 1,
                         ('input', 'output')[passno],
@@ -387,11 +393,17 @@ class Command(object):
         worklist = list(reversed(tailshake(terminal_chain,
                                            partitioner=lambda x:
                                            not (tuplist(x)) or protodecl(x))))
-        maxl = sorted(worklist, key=lambda x: len(x[0].__class__.name))[-1][0]
-        maxl, unused, tstmp = len(maxl.__class__.name), {}, hex(int(time()))[2:]
+        # if any "EMPTY" (zip_empty) value present, respective class name ~ str
+        maxl = len(sorted(worklist, key=lambda x: len(x[0].__class__.__name__)
+                         )[-1][0].__class__.__name__)
+        unused, tstmp = {}, hex(int(time()))[2:]
         cmd_ctxt['maxl'] = maxl
         while worklist:
-            flt, io_decl = worklist.pop()
+            workitem = worklist.pop()
+            if workitem == zip_empty:
+                log.debug("Worklist: EMPTY value observed, skipped")
+                continue
+            flt, io_decl = workitem
             io_decl_use = protodictval(io_decl)
             io_decl, passout = (io_decl_use, unused if io_decl_use is io_decl
                                              else io_decl)
