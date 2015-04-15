@@ -304,8 +304,8 @@ class Command(object):
                         use = '-' + c
                         break
                 else:
-                    log.warning("Could not find short option for `{0}'"
-                                .format(options[alias][0]))
+                    log.info("Could not find short option for `{0}'"
+                             .format(options[alias][0]))
                     break
                 options[alias][0].append(use)
 
