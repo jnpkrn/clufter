@@ -416,9 +416,6 @@ class Command(object):
                 # not INFILTER in either mode (nor output already precomputed?)
                 log.debug("Run `{0}' filter with `{1}' io decl. as DOWNFILTER"
                           .format(flt.__class__.__name__, io_decl))
-                inputs = map(lambda x: cmd_ctxt.filter(x.__class__.__name__)
-                                       .get('out'),
-                             filter_backtrack[flt])
                 ok, notyet = bifilter(lambda x: 'out' in
                                         cmd_ctxt.filter(x.__class__.__name__),
                                       filter_backtrack[flt])
@@ -434,6 +431,9 @@ class Command(object):
                                              for ny in notyet)))
                     continue
 
+                inputs = map(lambda x: cmd_ctxt.filter(x.__class__.__name__)
+                                       .get('out'),
+                             filter_backtrack[flt])
                 assert all(inputs)
                 with cmd_ctxt.prevented_taint():
                     in_obj = flt.in_format.as_instance(*inputs, **fmt_kws)
