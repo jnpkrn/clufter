@@ -371,8 +371,9 @@ class XMLFilter(Filter, MetaPlugin):
                 if orig_mtime == stat(tmp.name).st_mtime:
                     return None, force  # no change occurred
                 # do not trust editors/sed/whatever to do a _real in-place_
-                # modifications (sed definitely doesn't), otherwise
-                # tmpfile.seek(0) would be enough
+                # modifications (sed definitely doesn't; see also
+                # http://www.pixelbeat.org/docs/unix_file_replacement.html),
+                # otherwise tmpfile.seek(0) would be enough
                 with open(tmp.name, 'r') as tmpfile:
                     reply = tmpfile.read().strip()
         finally:
