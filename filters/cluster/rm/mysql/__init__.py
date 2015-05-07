@@ -26,7 +26,7 @@ ccsflat2cibprelude = '''\
                 <xsl:attribute name="value">
                     <xsl:if test="@listen_address">
                         <xsl:value-of select="concat(
-                            '--bind-address=&quot;',
+                            '&quot;--bind-address=',
                             @listen_address,
                             '&quot; '
                         )"/>
