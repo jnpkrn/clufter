@@ -26,9 +26,9 @@ ccsflat2cibprelude = '''\
                 <xsl:attribute name="value">
                     <xsl:if test="@listen_address">
                         <xsl:value-of select="concat(
-                            '&quot;--bind-address=',
+                            '--bind-address=',
                             @listen_address,
-                            '&quot; '
+                            ' '
                         )"/>
                     </xsl:if>
                     <xsl:value-of select="@mysqld_options"/>
