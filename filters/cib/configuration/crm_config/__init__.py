@@ -12,7 +12,7 @@ cib2pcscmd = ('''\
     <xsl:for-each select="cluster_property_set">
         <xsl:for-each select="nvpair">
             <!-- unfortunately pcs will throw away the rest of name-value
-                 pairs when first unknown observe; alternatively a single
+                 pairs when first unknown observed; alternatively a single
                  command with "force" -->
             <xsl:value-of select="'pcs property set'"/>
             <xsl:value-of select='" &apos;"'/>

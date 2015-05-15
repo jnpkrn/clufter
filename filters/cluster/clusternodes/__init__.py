@@ -13,5 +13,4 @@ ccsflat2cibprelude = '''\
     <nodes>
         <clufter:descent at="clusternode"/>
     </nodes>
-
 '''
