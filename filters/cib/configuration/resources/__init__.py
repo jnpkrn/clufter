@@ -385,13 +385,7 @@ cib2pcscmd = ('''\
     </xsl:for-each>
 
     <!-- groups -->
-    <xsl:for-each select="group">
-        <xsl:value-of select="concat('pcs group add ', @id)"/>
-        <xsl:for-each select="primitive">
-            <xsl:value-of select="concat(' ', @id)"/>
-        </xsl:for-each>
-        <xsl:value-of select="'%(NL)s'"/>
-    </xsl:for-each>
+    <clufter:descent at="group"/>
 
 ''') % dict(
     NL=NL
