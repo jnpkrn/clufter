@@ -326,9 +326,9 @@ cib2pcscmd = ('''\
                                      ' ', @id,
                                      ' ', @type)"/>
         <xsl:for-each select="instance_attributes/nvpair">
-            <xsl:value-of select='" &apos;"'/>
-            <xsl:value-of select="concat(@name, '=', @value)"/>
-            <xsl:value-of select='"&apos;"'/>
+            <xsl:value-of select='concat(" &apos;",
+                                         @name, "=", @value,
+                                         "&apos;")'/>
         </xsl:for-each>
         <xsl:value-of select="'%(NL)s'"/>
     </xsl:for-each>
@@ -356,9 +356,9 @@ cib2pcscmd = ('''\
                                      ' ', @id,
                                      ' ', $ResourceSpec)"/>
         <xsl:for-each select="instance_attributes/nvpair">
-            <xsl:value-of select='" &apos;"'/>
-            <xsl:value-of select="concat(@name, '=', @value)"/>
-            <xsl:value-of select='"&apos;"'/>
+            <xsl:value-of select='concat(" &apos;",
+                                         @name, "=", @value,
+                                         "&apos;")'/>
         </xsl:for-each>
         <!-- operations -->
         <xsl:if test="operations/op">
@@ -366,9 +366,9 @@ cib2pcscmd = ('''\
             <xsl:for-each select="operations/op">
                 <xsl:value-of select="concat(' ', @name)"/>
                 <xsl:for-each select="@*">
-                    <xsl:value-of select='" &apos;"'/>
-                    <xsl:value-of select="concat(name(), '=', .)"/>
-                    <xsl:value-of select='"&apos;"'/>
+                    <xsl:value-of select='concat(" &apos;",
+                                                 name(), "=", .,
+                                                 "&apos;")'/>
                 </xsl:for-each>
             </xsl:for-each>
         </xsl:if>
@@ -376,9 +376,9 @@ cib2pcscmd = ('''\
         <xsl:if test="meta_attributes/nvpair">
             <xsl:value-of select="' meta'"/>
             <xsl:for-each select="meta_attributes/nvpair">
-                <xsl:value-of select='" &apos;"'/>
-                <xsl:value-of select="concat(@name, '=', @value)"/>
-                <xsl:value-of select='"&apos;"'/>
+                <xsl:value-of select='concat(" &apos;",
+                                             @name, "=", @value,
+                                             "&apos;")'/>
             </xsl:for-each>
         </xsl:if>
         <xsl:value-of select="'%(NL)s'"/>
