@@ -57,13 +57,26 @@ cib2pcscmd = ('''\
             >WARNING: skipping location rule provided via reference</xsl:message>
         </xsl:for-each>
         <xsl:for-each select="rule[not(@id-ref)]">
-            <xsl:value-of select="concat(
-                                      'pcs constraint location',
-                                      ' ', $Resource,
-                                      ' ', 'rule',
-                                      ' ', 'id=', @id,
-                                      ' ', 'constraint-id=', $ConstraintId
-                                  )"/>
+            <xsl:choose>
+                <xsl:when test="position() = 1">
+                    <xsl:value-of select="concat(
+                                              'pcs constraint location',
+                                              ' ', $Resource,
+                                              ' ', 'rule',
+                                              ' ', 'id=', @id,
+                                              ' ', 'constraint-id=', $ConstraintId
+                                          )"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <!-- subsequent per-constraint rules;
+                         see https://bugzilla.redhat.com/1223404 -->
+                    <xsl:value-of select="concat(
+                                              'pcs constraint rule add',
+                                              ' ', $ConstraintId,
+                                              ' ', 'id=', @id
+                                          )"/>
+                </xsl:otherwise>
+            </xsl:choose>
             <xsl:if test="
 ''' + (
             xslt_is_member('@role', ('master', 'slave'))
