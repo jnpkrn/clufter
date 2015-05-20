@@ -102,8 +102,14 @@ cib2pcscmd = ('''\
                                     </xsl:when>
                                     <xsl:otherwise>
                                         <xsl:value-of select='concat(" &apos;", @attribute, "&apos;",
-                                                                     " ", @operation
-                                                                     " &apos;", @value, "&apos;")'/>
+                                                                     " ", @operation)'/>
+                                        <xsl:if test="
+''' + (
+                                        xslt_is_member('@type', ('string', 'number', 'version'))
+) + '''">
+                                            <xsl:value-of select="concat(' ', @type)"/>
+                                        </xsl:if>
+                                        <xsl:value-of select='concat(" &apos;", @value, "&apos;")'/>
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </xsl:when>
