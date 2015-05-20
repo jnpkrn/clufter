@@ -51,112 +51,109 @@ cib2pcscmd = ('''\
         <xsl:variable name="Resource" select="@rsc"/>
         <xsl:variable name="ConstraintId" select="@id"/>
         <xsl:variable name="BooleanOp" select="@boolean-op"/>
-        <xsl:for-each select="rule">
+        <xsl:for-each select="rule[@id-ref]">
+            <!-- XXX: could eventually be unfolded in-place if found -->
+            <xsl:message
+            >WARNING: skipping location rule provided via reference</xsl:message>
+        </xsl:for-each>
+        <xsl:for-each select="rule[not(@id-ref)]">
+            <xsl:value-of select="concat(
+                                      'pcs constraint location',
+                                      ' ', $Resource,
+                                      ' ', 'rule',
+                                      ' ', 'id=', @id,
+                                      ' ', 'constraint-id=', $ConstraintId
+                                  )"/>
+            <xsl:if test="
+''' + (
+            xslt_is_member('@role', ('master', 'slave'))
+) + '''">
+                <xsl:value-of select="concat(' ', 'role=', @role)"/>
+            </xsl:if>
             <xsl:choose>
-                <xsl:when test="@id-ref">
-                    <!-- XXX: could eventually be unfolded in-place if found -->
-                    <xsl:message
-                    >WARNING: skipping location rule provided via reference</xsl:message>
+                <xsl:when test="@score">
+                    <xsl:value-of select="concat(' score=', @score)"/>
                 </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="concat('pcs constraint location',
-                                                 ' ', $Resource,
-                                                 ' ', 'rule',
-                                                 ' ', 'id=', @id)"/>
-                    <xsl:if test="
-''' + (
-                    xslt_is_member('@role', ('master', 'slave'))
-) + '''">
-                        <xsl:value-of select="concat(' ', 'role=', @role)"/>
-                    </xsl:if>
-                    <xsl:value-of select="concat(' constraint-id=',
-                                                 $ConstraintId)"/>
-                    <xsl:choose>
-                        <xsl:when test="@score">
-                            <xsl:value-of select="concat(' score=', @score)"/>
-                        </xsl:when>
-                        <xsl:when test="@score-attribute">
-                            <xsl:value-of select="concat(' score-attribute=',
-                                                         @score-attribute)"/>
-                        </xsl:when>
-                    </xsl:choose>
+                <xsl:when test="@score-attribute">
+                    <xsl:value-of select="concat(' score-attribute=',
+                                                 @score-attribute)"/>
+                </xsl:when>
+            </xsl:choose>
 
-                    <xsl:if test="rule">
-                        <xsl:message
-                        >WARNING: cannot handle nested rules (yet)</xsl:message>
-                    </xsl:if>
+            <xsl:if test="rule">
+                <xsl:message
+                >WARNING: cannot handle nested rules (yet)</xsl:message>
+            </xsl:if>
 
-                    <xsl:for-each select="descendant::expression|descendant::date_expression">
-                        <xsl:if test="count(preceding-sibling::expression|preceding-sibling::date_expression) &gt; 0">
-                            <xsl:value-of select="concat(' ', $BooleanOp, ' ')"/>
-                        </xsl:if>
+            <xsl:for-each select="descendant::expression|descendant::date_expression">
+                <xsl:if test="count(preceding-sibling::expression|preceding-sibling::date_expression) &gt; 0">
+                    <xsl:value-of select="concat(' ', $BooleanOp, ' ')"/>
+                </xsl:if>
+                <xsl:choose>
+                    <xsl:when test="name() = 'expression'">
                         <xsl:choose>
-                            <xsl:when test="name() = 'expression'">
+                            <xsl:when test="
+''' + (
+                            xslt_is_member('@operation', ('defined', 'not_defined'))
+) + '''">
+                                <xsl:value-of select='concat(" ", @operation,
+                                                             " &apos;", @attribute, "&apos;")'/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select='concat(" &apos;", @attribute, "&apos;",
+                                                             " ", @operation)'/>
+                                <xsl:if test="
+''' + (
+                                xslt_is_member('@type', ('string', 'number', 'version'))
+) + '''">
+                                    <xsl:value-of select="concat(' ', @type)"/>
+                                </xsl:if>
+                                <xsl:value-of select='concat(" &apos;", @value, "&apos;")'/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:when>
+                    <xsl:when test="name() = 'date_expression'">
+                        <xsl:choose>
+                            <xsl:when test="@operation = 'in_range'">
+                                <xsl:value-of select="' date in_range '"/>
                                 <xsl:choose>
-                                    <xsl:when test="
-''' + (
-                                    xslt_is_member('@operation', ('defined', 'not_defined'))
-) + '''">
-                                        <xsl:value-of select='concat(" ", @operation,
-                                                                     " &apos;", @attribute, "&apos;")'/>
-                                    </xsl:when>
-                                    <xsl:otherwise>
-                                        <xsl:value-of select='concat(" &apos;", @attribute, "&apos;",
-                                                                     " ", @operation)'/>
-                                        <xsl:if test="
-''' + (
-                                        xslt_is_member('@type', ('string', 'number', 'version'))
-) + '''">
-                                            <xsl:value-of select="concat(' ', @type)"/>
+                                    <xsl:when test="@end">
+                                        <!-- see https://bugzilla.redhat.com/1182358 -->
+                                        <xsl:if test="@start">
+                                            <xsl:value-of select="@start"/>
                                         </xsl:if>
-                                        <xsl:value-of select='concat(" &apos;", @value, "&apos;")'/>
-                                    </xsl:otherwise>
+                                        <xsl:value-of select="concat(' to ', @end)"/>
+                                    </xsl:when>
+                                    <xsl:when test="duration">
+                                        <xsl:value-of select="concat(@start, ' to ')"/>
+                                        <xsl:for-each select="duration/@*[
+''' + (
+                                        xslt_is_member('name()', cib2pcscmd_datespec)
+) + ''']">
+                                            <xsl:value-of select="concat(' ', name(), '=', .)"/>
+                                        </xsl:for-each>
+                                    </xsl:when>
                                 </xsl:choose>
                             </xsl:when>
-                            <xsl:when test="name() = 'date_expression'">
-                                <xsl:choose>
-                                    <xsl:when test="@operation = 'in_range'">
-                                        <xsl:value-of select="' date in_range '"/>
-                                        <xsl:choose>
-                                            <xsl:when test="@end">
-                                                <!-- see https://bugzilla.redhat.com/1182358 -->
-                                                <xsl:if test="@start">
-                                                    <xsl:value-of select="@start"/>
-                                                </xsl:if>
-                                                <xsl:value-of select="concat(' to ', @end)"/>
-                                            </xsl:when>
-                                            <xsl:when test="duration">
-                                                <xsl:value-of select="concat(@start, ' to ')"/>
-                                                <xsl:for-each select="duration/@*[
+                            <xsl:when test="@operation = 'gt'">
+                                <xsl:value-of select="concat(' date gt ', @start)"/>
+                            </xsl:when>
+                            <xsl:when test="@operation = 'lt'">
+                                <xsl:value-of select="concat(' date lt ', @end)"/>
+                            </xsl:when>
+                            <xsl:when test="@operation = 'date_spec'">
+                                <xsl:value-of select="' date-spec '"/>
+                                    <xsl:for-each select="date_spec/@*[
 ''' + (
-                                                xslt_is_member('name()', cib2pcscmd_datespec)
+                                    xslt_is_member('name()', cib2pcscmd_datespec)
 ) + ''']">
-                                                    <xsl:value-of select="concat(' ', name(), '=', .)"/>
-                                                </xsl:for-each>
-                                            </xsl:when>
-                                        </xsl:choose>
-                                    </xsl:when>
-                                    <xsl:when test="@operation = 'gt'">
-                                        <xsl:value-of select="concat(' date gt ', @start)"/>
-                                    </xsl:when>
-                                    <xsl:when test="@operation = 'lt'">
-                                        <xsl:value-of select="concat(' date lt ', @end)"/>
-                                    </xsl:when>
-                                    <xsl:when test="@operation = 'date_spec'">
-                                        <xsl:value-of select="' date-spec '"/>
-                                            <xsl:for-each select="date_spec/@*[
-''' + (
-                                            xslt_is_member('name()', cib2pcscmd_datespec)
-) + ''']">
-                                                <xsl:value-of select="concat(' ', name(), '=', .)"/>
-                                            </xsl:for-each>
-                                    </xsl:when>
-                                </xsl:choose>
+                                        <xsl:value-of select="concat(' ', name(), '=', .)"/>
+                                    </xsl:for-each>
                             </xsl:when>
                         </xsl:choose>
-                    </xsl:for-each>
-                </xsl:otherwise>
-            </xsl:choose>
+                    </xsl:when>
+                </xsl:choose>
+            </xsl:for-each>
             <xsl:value-of select="'%(NL)s'"/>
         </xsl:for-each>
     </xsl:for-each>
