@@ -97,10 +97,13 @@ cib2pcscmd = ('''\
 ''' + (
                                     xslt_is_member('@operation', ('defined', 'not_defined'))
 ) + '''">
-                                        <xsl:value-of select="concat(' ', @operation, ' ', @attribute)"/>
+                                        <xsl:value-of select='concat(" ", @operation,
+                                                                     " &apos;", @attribute, "&apos;")'/>
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <xsl:value-of select="concat(' ', @attribute, ' ', @operation, ' ', @value)"/>
+                                        <xsl:value-of select='concat(" &apos;", @attribute, "&apos;",
+                                                                     " ", @operation
+                                                                     " &apos;", @value, "&apos;")'/>
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </xsl:when>
