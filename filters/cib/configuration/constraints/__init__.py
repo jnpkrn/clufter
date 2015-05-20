@@ -91,23 +91,23 @@ cib2pcscmd = ('''\
                             <xsl:value-of select="concat(' ', $BooleanOp, ' ')"/>
                         </xsl:if>
                         <xsl:choose>
-                            <xsl:when test="expression">
+                            <xsl:when test="name() = 'expression'">
                                 <xsl:choose>
                                     <xsl:when test="
 ''' + (
                                     xslt_is_member('@operation', ('defined', 'not_defined'))
 ) + '''">
-                                        <xsl:value-of select="concat(@operation, ' ', @attribute)"/>
+                                        <xsl:value-of select="concat(' ', @operation, ' ', @attribute)"/>
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <xsl:value-of select="concat(@attribute, ' ', @operation, ' ', @value)"/>
+                                        <xsl:value-of select="concat(' ', @attribute, ' ', @operation, ' ', @value)"/>
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </xsl:when>
-                            <xsl:when test="date_expression">
+                            <xsl:when test="name() = 'date_expression'">
                                 <xsl:choose>
                                     <xsl:when test="@operation = 'in_range'">
-                                        <xsl:value-of select="'date in_range '"/>
+                                        <xsl:value-of select="' date in_range '"/>
                                         <xsl:choose>
                                             <xsl:when test="@end">
                                                 <!-- see https://bugzilla.redhat.com/1182358 -->
@@ -128,13 +128,13 @@ cib2pcscmd = ('''\
                                         </xsl:choose>
                                     </xsl:when>
                                     <xsl:when test="@operation = 'gt'">
-                                        <xsl:value-of select="concat('date gt ', @start)"/>
+                                        <xsl:value-of select="concat(' date gt ', @start)"/>
                                     </xsl:when>
                                     <xsl:when test="@operation = 'lt'">
-                                        <xsl:value-of select="concat('date lt ', @end)"/>
+                                        <xsl:value-of select="concat(' date lt ', @end)"/>
                                     </xsl:when>
                                     <xsl:when test="@operation = 'date_spec'">
-                                        <xsl:value-of select="'date-spec '"/>
+                                        <xsl:value-of select="' date-spec '"/>
                                             <xsl:for-each select="date_spec/@*[
 ''' + (
                                             xslt_is_member('name()', cib2pcscmd_datespec)
