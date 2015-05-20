@@ -86,7 +86,6 @@ cib2pcscmd = ('''\
                         >WARNING: cannot handle nested rules (yet)</xsl:message>
                     </xsl:if>
 
-                    <!-- xsl:value-of select="'&apos;'"/ -->
                     <xsl:for-each select="descendant::expression|descendant::date_expression">
                         <xsl:if test="count(preceding-sibling::expression|preceding-sibling::date_expression) &gt; 0">
                             <xsl:value-of select="concat(' ', $BooleanOp, ' ')"/>
@@ -147,7 +146,6 @@ cib2pcscmd = ('''\
                             </xsl:when>
                         </xsl:choose>
                     </xsl:for-each>
-                    <!-- xsl:value-of select="'&apos;'"/ -->
                 </xsl:otherwise>
             </xsl:choose>
             <xsl:value-of select="'%(NL)s'"/>
