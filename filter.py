@@ -674,8 +674,7 @@ class XMLFilter(Filter, MetaPlugin):
                 for s in substitutes:
                     #assert s.tag == namespaced(CLUFTER_NS, 'snippet')
                     log.debug("before extension: {0}".format(etree.tostring(s)))
-                    if (s.tag == namespaced(CLUFTER_NS, 'snippet')
-                        and (len(s) or not s.text)):
+                    if s.tag == namespaced(CLUFTER_NS, 'snippet'):
                         # only single root "detached" supported (first == last)
                         dst = parent
                         dst.attrib.update(dict(s.attrib))
