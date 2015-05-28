@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Program-specific commons"""
@@ -420,3 +420,15 @@ class FancyOutput(object):
             + end
             + '\n'
         )
+
+
+def docformat(*args, **kwargs):
+    """Workaround unability to set __doc__ as an evaluated (subst) expression"""
+    def deco(fnc):
+        if hasattr(fnc, '__doc__'):
+            try:
+                fnc.__doc__ = fnc.__doc__.format(*args, **kwargs)
+            except IndexError:
+                pass
+        return fnc
+    return deco
