@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Shell completion formatters"""
@@ -87,7 +87,7 @@ class BashCompletion(Completion):
     def handle_script(self, cmd):
         clsname = cmd.__class__.__name__
         handle = self._namespaced_identifier(self._name, clsname)
-        _, opts = cmd.parser_desc_opts
+        _, opts = cmd.parser_desc_opts()  # XXX not accurate without other opts
         main = """\
 local opts="{0}"
 

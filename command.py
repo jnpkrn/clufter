@@ -8,6 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from collections import MutableMapping
 from itertools import izip_longest
 from logging import getLogger
+from optparse import OptionParser
 from sys import stderr, stdin, stdout
 from time import time
 
@@ -259,10 +260,12 @@ class Command(object):
                 help="(undocumented expert option)",
             )])
 
-    def _figure_parser_desc_opts(self, fnc_defaults, fnc_varnames):
+    def _figure_parser_desc_opts(self, fnc_defaults, fnc_varnames,
+                                 opt_group=None):
         readopts, shortopts, options = False, {}, []
         description = []
         fnc_varnames = set(fnc_varnames)
+        opt_group = opt_group or OptionParser()
 
         for line in self.__doc__.splitlines():
             line = line.lstrip()
@@ -304,8 +307,10 @@ class Command(object):
         for short, aliases in shortopts.iteritems():  # foreach in ideal shorts
             for i, alias in enumerate(aliases):  # foreach in conflicting ones
                 for c in longopt_letters_reprio(options[alias][0][0]):
+                    use = '-' + c
+                    if opt_group.has_option(use):
+                        continue
                     if c not in shortopts or i == 0:
-                        use = '-' + c
                         break
                 else:
                     log.info("Could not find short option for `{0}'"
@@ -320,12 +325,11 @@ class Command(object):
         description = '\n'.join(description)
         return description, options
 
-    @property
-    def parser_desc_opts(self):
+    def parser_desc_opts(self, opt_group=None):
         """Parse docstring as description + Option constructor args list"""
         if self._desc_opts is None:
             self._desc_opts = self._figure_parser_desc_opts(
-                *self._figure_fnc_defaults_varnames()
+                *self._figure_fnc_defaults_varnames(), opt_group=opt_group
             )
         return self._desc_opts
 
