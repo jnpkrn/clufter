@@ -608,22 +608,13 @@ class XMLFilter(Filter, MetaPlugin):
             elif do_mix > 1 and will_mix:  # and not parent
                 do_mix = 1
 
-            #toplevel = []
-            #if len(ret) and parent:
-            #    top = filter(lambda x: x.tag in TOP_LEVEL_XSL, ret)
-            #    for e in top:
-            #        toplevel.append(e)
-            #        ret.remove(e)
-
             # note that when do_mix, nested top_levels are actually propagated
             # back, which is the inverse of what we are doing here
             if parent and isinstance(parent[0], etree._Element) and not do_mix:
                 top = filter(lambda x: x.tag in TOP_LEVEL_XSL, parent[0])
                 for e in top:
-                    #print "at", sym, "appending", etree.tostring(e)
+                    #print "at", etree.tostring(ret), "appending", etree.tostring(e)
                     ret.append(deepcopy(e))
-                #for e in toplevel:
-                #    parent[0].append(e)
 
             log.debug("hooks {0}".format(hooks))
             return (ret, hooks, do_mix)
