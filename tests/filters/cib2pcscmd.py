@@ -30,7 +30,7 @@ pcs stonith create FENCEDEV-fence-virt-064 fence_xvm 'auth=sha256' 'hash=sha256'
 pcs stonith create FENCEDEV-fence-virt-069 fence_xvm 'auth=sha256' 'hash=sha256' 'key_file=/etc/cluster/fence_xvm.key' 'timeout=5' 'pcmk_host_map=virt-069:virt-069.cluster-qe.lab.eng.brq.redhat.com'
 pcs resource create RESOURCE-ip-10.34.71.234 ocf:heartbeat:IPaddr2 'ip=10.34.71.234'
 pcs resource create RESOURCE-apache-webserver ocf:heartbeat:apache 'configfile=/etc/httpd/sconf/httpd.conf' 'options= -Dwebserver -d "/etc/httpd"'
-pcs group add SERVICE-svc-GROUP RESOURCE-ip-10.34.71.234 RESOURCE-apache-webserver
+pcs resource group add SERVICE-svc-GROUP RESOURCE-ip-10.34.71.234 RESOURCE-apache-webserver
 '''
         )
 

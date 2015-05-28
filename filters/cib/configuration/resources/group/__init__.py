@@ -7,7 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from ....utils_xslt import NL
 
 cib2pcscmd = ('''\
-    <xsl:value-of select="concat('pcs group add ', @id)"/>
+    <xsl:value-of select="concat('pcs resource group add ', @id)"/>
     <xsl:for-each select="primitive">
         <xsl:value-of select="concat(' ', @id)"/>
     </xsl:for-each>
