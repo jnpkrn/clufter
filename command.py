@@ -50,6 +50,9 @@ log = getLogger(__name__)
 
 protodecl = lambda x: len(x) == 2 and isinstance(x[0], Filter)
 
+# expected to be lowercase for more straightforward case-insensitive comparison
+CMD_HELP_OPTSEP_PRIMARY = 'options:'
+
 
 class CommandError(ClufterError):
     pass
@@ -299,7 +302,7 @@ class Command(object):
                             opt['help'] += " [%default]"
                         opt['default'] = default
                     options.append([["--" + optname_used], opt])
-            elif line.lower().startswith('options:'):
+            elif line.lower().startswith(CMD_HELP_OPTSEP_PRIMARY):
                 readopts = True
             else:
                 description.append(line)
