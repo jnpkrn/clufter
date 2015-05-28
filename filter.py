@@ -687,6 +687,11 @@ class XMLFilter(Filter, MetaPlugin):
                         tag.append(s)
                     log.debug("as extended contains: {0}".format(etree.tostring(tag)))
 
+                at = tag.attrib.get('at', '*')
+                if mix == 1 and at != '*':  #and elem.getparent() is None:
+                    e = nselem(XSL_NS, 'apply-templates', select=".//{0}".format(at))
+                    tag.append(e)
+
             cl = snippet.xpath("//clufter:descent|//clufter:descent-mix",
                                  namespaces={'clufter': CLUFTER_NS})
             # remove these remnants so cleanup_namespaces works well
@@ -739,12 +744,7 @@ class XMLFilter(Filter, MetaPlugin):
                 xslt_root.append(template)
                 #print "ee", etree.tostring(xslt_root)
 
-            # append "identities" to preserve application
-            # XXX needs clarification!
-                if do_mix == 1 and elem.getparent() is None:
-                    e = nselem(XSL_NS, 'apply-templates',
-                            select="*")
-                    template.append(e)
+            # append "identity" to preserve application
             if do_mix > 1 or elem.getparent() is None and not children:
             # and not do_mix:
                 template = etree.XML(xslt_identity(''))
