@@ -20,7 +20,7 @@ except ImportError:
 from .command_context import CommandContext
 from .error import ClufterError, \
                    EC
-from .filter import Filter
+from .filter import Filter, CMD_HELP_OPTSEP_COMMON
 from .format import FormatError, SimpleFormat
 from .plugin_registry import PluginRegistry
 from .protocol import protodictval
@@ -52,6 +52,7 @@ protodecl = lambda x: len(x) == 2 and isinstance(x[0], Filter)
 
 # expected to be lowercase for more straightforward case-insensitive comparison
 CMD_HELP_OPTSEP_PRIMARY = 'options:'
+CMD_HELP_OPTSEP_COMMON =  CMD_HELP_OPTSEP_COMMON.lower()
 
 
 class CommandError(ClufterError):
@@ -265,7 +266,7 @@ class Command(object):
 
     def _figure_parser_desc_opts(self, fnc_defaults, fnc_varnames,
                                  opt_group=None):
-        readopts, shortopts, options = False, {}, []
+        readopts, common_tail, shortopts, options = False, False, {}, []
         description = []
         fnc_varnames = set(fnc_varnames)
         opt_group = opt_group or OptionParser()
@@ -274,6 +275,9 @@ class Command(object):
             line = line.lstrip()
             if readopts:
                 if not line:
+                    continue
+                if line.lower().startswith(CMD_HELP_OPTSEP_COMMON):
+                    common_tail = True
                     continue
                 line = line.replace('\t', ' ')
                 optname, optdesc = head_tail(line.split(' ', 1))  # 2nd->tuple
@@ -286,9 +290,10 @@ class Command(object):
                     ))
                     fnc_varnames.remove(optname)
                     short_aliases = shortopts.setdefault(optname_used[0], [])
-                    assert optname_used not in \
-                           (options[i][0][0] for i in short_aliases)
-                    short_aliases.append(len(options))  # as an index
+                    if not common_tail:
+                        assert optname_used not in \
+                            (options[i][0][0] for i in short_aliases)
+                        short_aliases.append(len(options))  # as an index
                     opt = {}
                     opt['help'] = optdesc[0].strip()
                     if optname in fnc_defaults:  # default if known
