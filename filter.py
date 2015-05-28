@@ -34,7 +34,7 @@ from .utils_func import apply_preserving_depth, \
                         apply_intercalate, \
                         loose_zip, \
                         zip_empty
-from .utils_prog import cli_undecor, which
+from .utils_prog import cli_undecor, docformat, which
 from .utils_xml import CLUFTER_NS, XSL_NS, \
                        namespaced, nselem, squote, element_juggler, \
                        xml_get_root_pi, xmltag_get_namespace
@@ -46,6 +46,8 @@ try:
 except ImportError:
     EDITOR = ''
 EDITOR = environ.get('EDITOR', EDITOR)
+
+CMD_HELP_OPTSEP_COMMON =  'common options:'
 
 log = getLogger(__name__)
 
@@ -201,12 +203,14 @@ class XMLFilter(Filter, MetaPlugin):
     _in_format = _out_format = 'XML'
 
     @staticmethod
+    @docformat(CMD_HELP_OPTSEP_COMMON)
     def command_common(cmd_ctxt,
                        nocheck=False,
                        batch=False,
                        editor=EDITOR,
                        raw=False):
         """\
+        {0}
             nocheck   do not validate any step (even if self-checks present)
             batch     do not interact (validation failure recovery, etc.)
             editor    customize editor to run (unused in batch mode)
