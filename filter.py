@@ -872,10 +872,11 @@ class XMLFilter(Filter, MetaPlugin):
     def filter_proceed_xslt(self, in_obj, **kwargs):
         """Push-button to be called from the filter itself, with walk_default"""
         raw, textmode = kwargs.pop('raw', False), kwargs.get('textmode', False)
-        def_first, system = '', kwargs.pop('system', '')
+        system = kwargs.pop('system', '')
         system_extra = kwargs.pop('system_extra', ())
-        def_first += ('<xsl:param name="system" select="{0}"/>'
-                      .format(squote(system)))
+        def_first = kwargs.pop('def_first', '') + (
+            '<xsl:param name="system" select="{0}"/>'.format(squote(system))
+        )
         if system:
             # guarantee at least 3 extra params, so they can be relied upon
             for i, val in loose_zip(xrange(1,4), system_extra):
