@@ -385,7 +385,7 @@ cib2pcscmd = ('''\
     </xsl:for-each>
 
     <!-- groups -->
-    <clufter:descent at="group"/>
+    <clufter:descent-mix at="group"/>
 
 ''') % dict(
     NL=NL
