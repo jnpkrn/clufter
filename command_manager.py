@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Command manager"""
@@ -103,8 +103,9 @@ class CommandManager(PluginManager):
                 # XXX maybe it just hasn't been resolved successfully
                 raise CommandNotFoundError(cmd)
 
-            parser.description, options = command.parser_desc_opts
-            parser.option_groups[0].add_options(make_options(options))
+            opt_group = parser.option_groups[0]
+            parser.description, options = command.parser_desc_opts(opt_group)
+            opt_group.add_options(make_options(options))
 
             args = ['--help'] if values.help else args[1:]
             parser.defaults.update(values.__dict__)  # from global options
