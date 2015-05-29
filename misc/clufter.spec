@@ -354,8 +354,9 @@ EOF)
 %global cl_jp_r Jan Pokorný <jpokorny+rpm-clufter @at@ fedoraproject .dot. org>
 %global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
-%{cl_entry 2015-05-20 0.11.2-0.1.a %{cl_jp}
-  move completion module to %{pkgsimple %{clufter_cli}} sub-package}
+%{cl_entry 2015-05-29 0.11.2-1 %{cl_jp}
+  move completion module to %{pkgsimple %{clufter_cli}} sub-package
+  bump upstream package}
 
 %{cl_entry 2015-05-19 0.11.1-1 %{cl_jp}
   bump upstream package}
