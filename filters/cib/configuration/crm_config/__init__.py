@@ -19,6 +19,9 @@ cib2pcscmd = ('''\
             verbose_inform('"new singleton property set: ", @name')
 ) + '''
             <xsl:value-of select='concat($pcscmd_pcs, "property set")'/>
+            <xsl:if test="$pcscmd_force">
+                <xsl:value-of select="' --force'"/>
+            </xsl:if>
             <xsl:value-of select='concat(" &apos;", @name, "=", @value, "&apos;")'/>
             <xsl:value-of select="'%(NL)s'"/>
 ''' + (

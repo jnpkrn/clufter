@@ -23,6 +23,7 @@ def cib2pcscmd(flt_ctxt, in_obj):
             in_obj,
             textmode=True,
             def_first=xslt_params(
+                pcscmd_force=xslt_boolean(flt_ctxt.get('pcscmd_force', 0)),
                 pcscmd_verbose=xslt_boolean(flt_ctxt.get('pcscmd_verbose', 1)),
                 pcscmd_tmpcib=squote(tmp_cib),
                 pcscmd_dryrun=xslt_boolean(dry_run),
