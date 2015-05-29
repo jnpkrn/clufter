@@ -6,6 +6,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 ###
 
+from ....filters._2pcscmd import verbose_ec_test, verbose_inform
 from ....utils_xslt import NL
 
 cib2pcscmd = ('''\
@@ -14,13 +15,17 @@ cib2pcscmd = ('''\
             <!-- unfortunately pcs will throw away the rest of name-value
                  pairs when first unknown observed; alternatively a single
                  command with "force" -->
+''' + (
+            verbose_inform('"new singleton property set: ", @name')
+) + '''
             <xsl:value-of select="'pcs property set'"/>
-            <xsl:value-of select='" &apos;"'/>
-            <xsl:value-of select="concat(@name, '=', @value)"/>
-            <xsl:value-of select='"&apos;"'/>
+            <xsl:value-of select='concat(" &apos;", @name, "=", @value, "&apos;")'/>
             <xsl:value-of select="'%(NL)s'"/>
+''' + (
+            verbose_ec_test
+) + '''
         </xsl:for-each>
     </xsl:for-each>
 ''') % dict(
-    NL=NL
+    NL=NL,
 )

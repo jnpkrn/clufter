@@ -4,12 +4,16 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+from ....filters._2pcscmd import verbose_ec_test, verbose_inform
 from ....utils_xslt import NL
 
 cib2pcscmd = ('''\
     <xsl:choose>
         <!-- plain first-then -->
         <xsl:when test="@first and @then">
+''' + (
+            verbose_inform('"new order constraint: ", @id')
+) + '''
             <xsl:value-of select="'pcs constraint order'"/>
             <xsl:if test="@first-action and @first-action != 'start'">
                 <xsl:value-of select="concat(' ', @first-action)"/>
@@ -27,6 +31,9 @@ cib2pcscmd = ('''\
                 <xsl:value-of select="concat(' ', 'symmetrical=', @symmetrical)"/>
             </xsl:if>
             <xsl:value-of select="'%(NL)s'"/>
+''' + (
+            verbose_ec_test
+) + '''
         </xsl:when>
 
         <!-- resource sets -->
@@ -37,5 +44,5 @@ cib2pcscmd = ('''\
     </xsl:choose>
 
 ''') % dict(
-    NL=NL
+    NL=NL,
 )
