@@ -23,14 +23,31 @@ from .ccs2pcs import ccsflat2cibfinal_chain
 def ccs2pcscmd_flatiron(cmd_ctxt,
                         input=PATH_CLUSTERCONF,
                         output="-",
+                        force=False,
+                        noauth=False,
+                        silent=False,
+                        tmp_cib="tmp-cib.xml",  # ~ filters.cib2pcscmd.TMP_CIB
+                        dry_run=False,
                         _common=XMLFilter.command_common):
     """(CMAN,rgmanager) cluster cfg. -> equivalent in pcs commands
 
     Options:
         input     input (CMAN,rgmanager) cluster config. file
         output    pcs commands to reinstate the cluster per the inputs
+        force     may the force be with emitted pcs commands
+        noauth    skip authentication step (OK if already set up)
+        silent    do not track the progress along the steps execution (echoes)
+        tmp_cib   file to accumulate the changes (empty ~ direct push)
+        dry_run   omit intrusive commands (TMP_CIB reset if empty)
     """
 
+    if dry_run and not tmp_cib:
+        tmp_cib = "tmp-cib.xml"  # ~ filters.cib2pcscmd.TMP_CIB
+    cmd_ctxt['pcscmd_force'] = force
+    cmd_ctxt['pcscmd_noauth'] = noauth
+    cmd_ctxt['pcscmd_verbose'] = not(silent)
+    cmd_ctxt['pcscmd_tmpcib'] = tmp_cib
+    cmd_ctxt['pcscmd_dryrun'] = dry_run
     file_proto = protocols.plugins['file'].ensure_proto
     return (
         file_proto(input),
