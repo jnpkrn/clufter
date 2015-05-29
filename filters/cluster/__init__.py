@@ -640,6 +640,9 @@ ccspcmk2pcscmd = ('''\
             <xsl:value-of select="'pcs cluster auth'"/>
 
             <clufter:descent-mix at="clusternode"/>
+            <xsl:if test="$pcscmd_force">
+                <xsl:value-of select="' --force'"/>
+            </xsl:if>
             <xsl:value-of select="'%(NL)s'"/>
 ''' + (
             verbose_ec_test
