@@ -626,7 +626,8 @@ class XMLFilter(Filter, MetaPlugin):
 
             # note that when do_mix, nested top_levels are actually propagated
             # back, which is the inverse of what we are doing here
-            if parent and isinstance(parent[0], etree._Element) and not do_mix:
+            if parent and isinstance(parent[0], etree._Element) and (
+                not do_mix or parent[1] is None):
                 top = filter(lambda x: x.tag in TOP_LEVEL_XSL, parent[0])
                 for e in top:
                     #print "at", etree.tostring(ret), "appending", etree.tostring(e)
