@@ -18,7 +18,7 @@ cib2pcscmd = ('''\
 ''' + (
             verbose_inform('"new singleton property set: ", @name')
 ) + '''
-            <xsl:value-of select="'pcs property set'"/>
+            <xsl:value-of select='concat($pcscmd_pcs, "property set")'/>
             <xsl:value-of select='concat(" &apos;", @name, "=", @value, "&apos;")'/>
             <xsl:value-of select="'%(NL)s'"/>
 ''' + (

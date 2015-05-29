@@ -20,7 +20,7 @@ cib = cib2pcscmd.in_format
 class FiltersCib2pcscmdTestCase(TestCase):
     def testConversion(self):
         in_obj = cib('file', join(dirname(dirname(__file__)), 'filled.cib'))
-        ret = cib2pcscmd(in_obj, pcscmd_verbose=False)
+        ret = cib2pcscmd(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='')
         #print ret.BYTESTRING()
         self.assertEquals(
             ret.BYTESTRING(),

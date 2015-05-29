@@ -35,7 +35,7 @@ cib2pcscmd = ('''\
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:variable>
-            <xsl:value-of select="concat('pcs constraint location',
+            <xsl:value-of select="concat($pcscmd_pcs, 'constraint location',
                                         ' ', @rsc,
                                         ' ', $Relationship, ' ', @node)"/>
             <xsl:if test="@score != 'INFINITY'">
@@ -61,7 +61,7 @@ cib2pcscmd = ('''\
                 <xsl:choose>
                     <xsl:when test="position() = 1">
                         <xsl:value-of select="concat(
-                                                'pcs constraint location',
+                                                $pcscmd_pcs, 'constraint location',
                                                 ' ', $Resource,
                                                 ' ', 'rule',
                                                 ' ', 'id=', @id,
@@ -72,7 +72,7 @@ cib2pcscmd = ('''\
                         <!-- subsequent per-constraint rules;
                             see https://bugzilla.redhat.com/1223404 -->
                         <xsl:value-of select="concat(
-                                                'pcs constraint rule add',
+                                                $pcscmd_pcs, 'constraint rule add',
                                                 ' ', $ConstraintId,
                                                 ' ', 'id=', @id
                                             )"/>
