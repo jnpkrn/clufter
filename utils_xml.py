@@ -54,8 +54,13 @@ rng_get_start = etree.ETXPath("/{0}/{1}"
                               .format(namespaced(RNG, 'grammar'),
                                       namespaced(RNG, 'start')))
 xml_get_root_pi = etree.XPath("/*/processing-instruction()")
-xmltag_get_localname = lambda tag: etree.QName(tag).localname
-xmltag_get_namespace = lambda tag: etree.QName(tag).namespace
+
+# tag can also be a subclass of etree._Element when applied on `element.tag`
+# --> return an empty string in such non-string cases
+xmltag_get_localname = lambda tag: etree.QName(tag).localname \
+                                   if isinstance(tag, basestring) else ''
+xmltag_get_namespace = lambda tag: etree.QName(tag).namespace \
+                                   if isinstance(tag, basestring) else ''
 
 RNG_ELEMENT = ("/{0}//{1}".format(namespaced(RNG, 'grammar'),
                                   namespaced(RNG, 'element'))
