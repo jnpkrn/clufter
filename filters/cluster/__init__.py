@@ -623,15 +623,28 @@ ccs_obfuscate_identifiers = '''\
 
 ###
 
-# XXX output + strip-space should rather be present from beginning?
-ccspcmk2pcscmd = '''\
-    <xsl:output method="text"/>
-    <xsl:strip-space elements="*"/>
+# following 2nd chance import is to allow direct usage context (testing, etc.)
+try:
+    from ....utils_xslt import NL
+    from ....filters._2pcscmd import verbose_ec_test, verbose_inform
+except ValueError:  # Value?
+    from ...utils_xslt import NL
+    from ...filters._2pcscmd import verbose_ec_test, verbose_inform
 
+ccspcmk2pcscmd = ('''\
+''' + (
+    verbose_inform('"new cluster: ", @name')
+) + '''
     <xsl:value-of select="concat('pcs cluster setup',
                                  ' --name ', @name)"/>
 
     <clufter:descent-mix at="clusternode"/>
     <clufter:descent-mix at="cman"/>
     <clufter:descent-mix at="totem"/>
-'''
+    <xsl:value-of select="'%(NL)s'"/>
+''' + (
+    verbose_ec_test
+) + '''
+''') % dict(
+    NL=NL,
+)
