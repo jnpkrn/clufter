@@ -586,10 +586,13 @@ class XMLFilter(Filter, MetaPlugin):
                     will_mix = max(will_mix, mix)
                     at = elem.attrib.get('at', '*')
                     # XXX can be a|b|c
-                    prev = hooks.setdefault(at, (walk, mix))
-                    if prev != (walk, mix):
-                        raise FilterError(None, "Ambigous match for `{0}'"
-                                          " tag ({1} vs {2})".format(at, walk, prev))
+                    at_hooks = hooks.setdefault(at, [])
+                    at_hooks.append((walk, mix))
+                    if len(at_hooks) > 1:
+                        raise FilterError(None,
+                            "Ambigous match for `{0}' tag ({1} vs {2})"
+                             .format(at, walk, at_hooks[0])
+                        )
                 elif (elem.tag == namespaced(XSL_NS, 'comment')
                       and parent and not(parent[2])):
                     # in non-root, turn the comments into "protected" ones
@@ -600,7 +603,7 @@ class XMLFilter(Filter, MetaPlugin):
                     element_juggler.drop(elem)
 
             if parent and parent[2] == 1 and '*' not in hooks:
-                hooks['*'] = (len(ret), ), 1
+                hooks['*'] = [((len(ret), ), 1)]
                 ret.append(nselem(CLUFTER_NS, 'descent-mix',
                                   attrib={'preserve-rest': 'false'}))
 
@@ -608,8 +611,9 @@ class XMLFilter(Filter, MetaPlugin):
             # be applied and the result attached (0), or just merged
             # to the parent template (1 if not preserve-rest required,
             # 2 otherwise)
-            do_mix = parent[1].get(name, parent[1].get('*', (None, None)))[1] \
-                     if parent and parent[1] is not None else will_mix
+            do_mix = parent[1].get(
+                         name, parent[1].get('*', [(None, None)])
+                     )[0][1] if parent and parent[1] is not None else will_mix
             if do_mix is None:
                 raise RuntimeError("Parent does not expect `{0}' nor wildcard"
                                    .format(name))
@@ -665,8 +669,9 @@ class XMLFilter(Filter, MetaPlugin):
                         c_up = c_up.getparent()
                     target_tag = c_up.tag if c_up.tag in hooks else '*'
                     if c_up.tag in hooks or '*' in hooks:
-                        l = scheduled.setdefault(hooks[target_tag], [])
-                        l.append(children[c_elem].getroot())
+                        for h in hooks[target_tag]:
+                            l = scheduled.setdefault(h, [])
+                            l.append(children[c_elem].getroot())
 
             for (index_history, mix), substitutes in scheduled.iteritems():
                 tag = reduce(lambda x, y: x[y], index_history, snippet)
@@ -868,10 +873,11 @@ class XMLFilter(Filter, MetaPlugin):
                         parent[parent.index(tag)] = e
                         ret[-1].append(snippet)
                 # in parallel: 2?
-                for target_tag, (index_history, mix) in hooks.iteritems():
-                    tag = reduce(lambda x, y: x[y], index_history, snippet)
-                    l = scheduled_subst.setdefault(target_tag, [])
-                    l.append(tag)
+                for target_tag, at_hooks in hooks.iteritems():
+                    for (index_history, mix) in at_hooks:
+                        tag = reduce(lambda x, y: x[y], index_history, snippet)
+                        l = scheduled_subst.setdefault(target_tag, [])
+                        l.append(tag)
 
         assert not len(scheduled_subst)  # XXX either fail or remove forcibly
         map(lambda x: etree.cleanup_namespaces(x), ret)
