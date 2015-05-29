@@ -589,10 +589,11 @@ class XMLFilter(Filter, MetaPlugin):
                     at_hooks = hooks.setdefault(at, [])
                     at_hooks.append((walk, mix))
                     if len(at_hooks) > 1:
-                        raise FilterError(None,
-                            "Ambigous match for `{0}' tag ({1} vs {2})"
-                             .format(at, walk, at_hooks[0])
-                        )
+                        msg = ("Ambigous match for `{0}' tag ({1} vs {2})"
+                               .format(at, walk, at_hooks[0]))
+                        if not mix:
+                            raise FilterError(None, msg)
+                        log.info(msg)
                 elif (elem.tag == namespaced(XSL_NS, 'comment')
                       and parent and not(parent[2])):
                     # in non-root, turn the comments into "protected" ones
