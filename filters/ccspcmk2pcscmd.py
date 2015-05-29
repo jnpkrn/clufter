@@ -19,6 +19,7 @@ def ccspcmk2pcscmd(flt_ctxt, in_obj):
             in_obj,
             textmode=True,
             def_first=xslt_params(
+                pcscmd_noauth=xslt_boolean(flt_ctxt.get('pcscmd_noauth', 0)),
                 pcscmd_verbose=xslt_boolean(flt_ctxt.get('pcscmd_verbose', 1)),
             ),
         ),

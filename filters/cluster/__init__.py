@@ -632,6 +632,18 @@ except ValueError:  # Value?
     from ...filters._2pcscmd import verbose_ec_test, verbose_inform
 
 ccspcmk2pcscmd = ('''\
+    <xsl:if test="not($pcscmd_noauth)">
+''' + (
+        verbose_inform('"auth cluster: ", @name')
+) + '''
+        <xsl:value-of select="'pcs cluster auth'"/>
+
+        <clufter:descent-mix at="clusternode"/>
+        <xsl:value-of select="'%(NL)s'"/>
+''' + (
+        verbose_ec_test
+) + '''
+    </xsl:if>
 ''' + (
     verbose_inform('"new cluster: ", @name')
 ) + '''
