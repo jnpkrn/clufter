@@ -632,31 +632,33 @@ except ValueError:  # Value?
     from ...filters._2pcscmd import verbose_ec_test, verbose_inform
 
 ccspcmk2pcscmd = ('''\
-    <xsl:if test="not($pcscmd_noauth)">
+    <xsl:if test="not($pcscmd_dryrun)">
+        <xsl:if test="not($pcscmd_noauth)">
 ''' + (
-        verbose_inform('"auth cluster: ", @name')
+            verbose_inform('"auth cluster: ", @name')
 ) + '''
-        <xsl:value-of select="'pcs cluster auth'"/>
+            <xsl:value-of select="'pcs cluster auth'"/>
+
+            <clufter:descent-mix at="clusternode"/>
+            <xsl:value-of select="'%(NL)s'"/>
+''' + (
+            verbose_ec_test
+) + '''
+        </xsl:if>
+''' + (
+        verbose_inform('"new cluster: ", @name')
+) + '''
+        <xsl:value-of select="concat('pcs cluster setup',
+                                     ' --name ', @name)"/>
 
         <clufter:descent-mix at="clusternode"/>
+        <clufter:descent-mix at="cman"/>
+        <clufter:descent-mix at="totem"/>
         <xsl:value-of select="'%(NL)s'"/>
 ''' + (
         verbose_ec_test
 ) + '''
     </xsl:if>
-''' + (
-    verbose_inform('"new cluster: ", @name')
-) + '''
-    <xsl:value-of select="concat('pcs cluster setup',
-                                 ' --name ', @name)"/>
-
-    <clufter:descent-mix at="clusternode"/>
-    <clufter:descent-mix at="cman"/>
-    <clufter:descent-mix at="totem"/>
-    <xsl:value-of select="'%(NL)s'"/>
-''' + (
-    verbose_ec_test
-) + '''
 ''') % dict(
     NL=NL,
 )
