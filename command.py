@@ -282,7 +282,7 @@ class Command(object):
                 line = line.replace('\t', ' ')
                 optname, optdesc = head_tail(line.split(' ', 1))  # 2nd->tuple
                 if not all((optname, optdesc)) or optname not in fnc_varnames:
-                    log.debug("Bad option line: {0}".format(line))
+                    log.warning("Bad option line: {0}".format(line))
                 else:
                     optname_used = cli_decor(optname)
                     log.debug("Command `{0}', found option `{1}' ({2})".format(
