@@ -4,6 +4,7 @@
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+from ....filters._2pcscmd import verbose_ec_test, verbose_inform
 from ....utils_xslt import NL, xslt_is_member
 
 cib2pcscmd_datespec = (
@@ -54,6 +55,9 @@ cib2pcscmd = ('''\
                 >WARNING: skipping location rule provided via reference</xsl:message>
             </xsl:for-each>
             <xsl:for-each select="rule[not(@id-ref)]">
+''' + (
+                verbose_inform('"new rule/location constraint: ", @id, "/", $ConstraintId')
+) + '''
                 <xsl:choose>
                     <xsl:when test="position() = 1">
                         <xsl:value-of select="concat(
@@ -165,10 +169,13 @@ cib2pcscmd = ('''\
                     </xsl:choose>
                 </xsl:for-each>
                 <xsl:value-of select="'%(NL)s'"/>
+''' + (
+                verbose_ec_test
+) + '''
             </xsl:for-each>
         </xsl:when>
     </xsl:choose>
 
 ''') % dict(
-    NL=NL
+    NL=NL,
 )

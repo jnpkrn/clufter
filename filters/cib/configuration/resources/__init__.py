@@ -317,11 +317,15 @@ cibprelude2cibcompact = ('''\
 
 ###
 
+from ....filters._2pcscmd import verbose_ec_test, verbose_inform
 from ....utils_xslt import NL
 
 cib2pcscmd = ('''\
     <!-- STONITH -->
     <xsl:for-each select=".//primitive[@class = 'stonith']">
+''' + (
+        verbose_inform('"new stonith: ", @id')
+) + '''
         <xsl:value-of select="concat('pcs stonith create',
                                      ' ', @id,
                                      ' ', @type)"/>
@@ -331,6 +335,9 @@ cib2pcscmd = ('''\
                                          "&apos;")'/>
         </xsl:for-each>
         <xsl:value-of select="'%(NL)s'"/>
+''' + (
+        verbose_ec_test
+) + '''
     </xsl:for-each>
 
     <!--
@@ -352,6 +359,9 @@ cib2pcscmd = ('''\
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
+''' + (
+        verbose_inform('"new resource: ", @id')
+) + '''
         <xsl:value-of select="concat('pcs resource create',
                                      ' ', @id,
                                      ' ', $ResourceSpec)"/>
@@ -382,11 +392,14 @@ cib2pcscmd = ('''\
             </xsl:for-each>
         </xsl:if>
         <xsl:value-of select="'%(NL)s'"/>
+''' + (
+        verbose_ec_test
+) + '''
     </xsl:for-each>
 
     <!-- groups -->
     <clufter:descent-mix at="group"/>
 
 ''') % dict(
-    NL=NL
+    NL=NL,
 )
