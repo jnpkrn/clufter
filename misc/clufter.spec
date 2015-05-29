@@ -320,6 +320,7 @@ EOF)
 %{clufter_script}
 %{python2_sitelib}/%{name}/__main__.py*
 %{python2_sitelib}/%{name}/main.py*
+%{python2_sitelib}/%{name}/completion.py*
 %endif
 
 %files %{pkgsimple %{clufter_pylib}}
@@ -329,6 +330,7 @@ EOF)
 %license %{_defaultdocdir}/%{clufter_source}/*[[:digit:]].txt
 %exclude %{python2_sitelib}/%{name}/__main__.py*
 %exclude %{python2_sitelib}/%{name}/main.py*
+%exclude %{python2_sitelib}/%{name}/completion.py*
 %exclude %{python2_sitelib}/%{name}/ext-plugins/*/
 %{python2_sitelib}/%{name}
 %{python2_sitelib}/%{name}-*.egg-info
@@ -353,7 +355,7 @@ EOF)
 %global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
 %{cl_entry 2015-05-20 0.11.2-0.1.a %{cl_jp}
-  TBD}
+  move completion module to %{pkgsimple %{clufter_cli}} sub-package}
 
 %{cl_entry 2015-05-19 0.11.1-1 %{cl_jp}
   bump upstream package}
