@@ -14,6 +14,7 @@ from shutil import rmtree
 from subprocess import CalledProcessError, check_call
 from sys import modules, stderr, __stdin__
 from tempfile import mkdtemp, NamedTemporaryFile
+from warnings import warn
 try:
     from collections import OrderedDict
 except ImportError:
@@ -26,7 +27,7 @@ from .error import ClufterError, ClufterPlainError
 from .format import CompositeFormat, Format, XML
 from .plugin_registry import MetaPlugin, PluginRegistry
 from .utils import args2tuple, arg2wrapped, \
-                   filterdict_keep, filterdict_pop, \
+                   filterdict_keep, filterdict_invkeep, filterdict_pop, \
                    head_tail, hybridproperty, \
                    lazystring, tuplist
 from .utils_func import apply_preserving_depth, \
@@ -165,9 +166,14 @@ class Filter(object):
     def __call__(self, in_obj, flt_ctxt=None, **kws):
         """Default is to use a function decorated with `deco`"""
         fmt_kws = filterdict_pop(kws, *self.out_format.context)
+        if kws:
+            warn("{0}: do not pass extraneous keyword arguments when not"
+                 " testing".format(self.__class__.__name__), RuntimeWarning)
         if flt_ctxt is None:  # when estranged (not under Command control)
             cmd_ctxt = CommandContext(kws)
             flt_ctxt = cmd_ctxt.ensure_filter(self)
+        else:
+            flt_ctxt.update(filterdict_invkeep(kws, flt_ctxt))
         fmt_kws = filterdict_keep(flt_ctxt, *self.out_format.context, **fmt_kws)
         outdecl = self._fnc(flt_ctxt, in_obj)
         outdecl_head, outdecl_tail = head_tail(outdecl)
