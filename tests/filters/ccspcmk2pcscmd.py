@@ -20,12 +20,12 @@ ccs = ccspcmk2pcscmd.in_format
 class FiltersCcspcmk2pcscmdTestCase(TestCase):
     def testConversion(self):
         in_obj = ccs('file', join(dirname(dirname(__file__)), 'filled.conf'))
-        ret = ccspcmk2pcscmd(in_obj)
+        ret = ccspcmk2pcscmd(in_obj, pcscmd_verbose=False)
         #print ret.BYTESTRING()
         self.assertEquals(
             ret.BYTESTRING(),
             "pcs cluster setup --name test ju hele"
-            " --consensus 200 --join 100 --token 5000"
+            " --consensus 200 --join 100 --token 5000\n"
         )
 
 
