@@ -175,3 +175,28 @@ cibcompact2cib = ('''\
                  " in shared storage scenarios",
     package_name=package_name()
 )
+
+###
+
+from ....filters._2pcscmd import verbose_ec_test, verbose_inform
+from ....utils_xslt import NL
+
+cib2pcscmd = ('''\
+    <clufter:descent-mix at="crm_config"/>
+    <clufter:descent-mix at="resources"/>
+    <clufter:descent-mix at="constraints"/>
+    <clufter:descent-mix at="fencing-topology"/>
+    <xsl:if test="$pcscmd_tmpcib">
+''' + (
+        verbose_inform('"push CIB: ", $pcscmd_tmpcib')
+) + '''
+        <xsl:value-of select="concat('pcs cluster cib-push ',
+                                     $pcscmd_tmpcib, ' --config')"/>
+        <xsl:value-of select="'%(NL)s'"/>
+''' + (
+        verbose_ec_test
+) + '''
+    </xsl:if>
+''') % dict(
+    NL=NL,
+)

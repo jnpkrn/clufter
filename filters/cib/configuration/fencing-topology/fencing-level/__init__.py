@@ -11,7 +11,7 @@ cib2pcscmd = ('''\
 ''' + (
     verbose_inform('"new stonith level: ", @index')
 ) + '''
-    <xsl:value-of select='concat("pcs stonith level add",
+    <xsl:value-of select='concat($pcscmd_pcs, "stonith level add",
                                  " ", @index,
                                  " ", @target,
                                  " &apos;", @devices, "&apos;")'/>

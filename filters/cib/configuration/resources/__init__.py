@@ -326,7 +326,7 @@ cib2pcscmd = ('''\
 ''' + (
         verbose_inform('"new stonith: ", @id')
 ) + '''
-        <xsl:value-of select="concat('pcs stonith create',
+        <xsl:value-of select="concat($pcscmd_pcs, 'stonith create',
                                      ' ', @id,
                                      ' ', @type)"/>
         <xsl:for-each select="instance_attributes/nvpair">
@@ -362,7 +362,7 @@ cib2pcscmd = ('''\
 ''' + (
         verbose_inform('"new resource: ", @id')
 ) + '''
-        <xsl:value-of select="concat('pcs resource create',
+        <xsl:value-of select="concat($pcscmd_pcs, 'resource create',
                                      ' ', @id,
                                      ' ', $ResourceSpec)"/>
         <xsl:for-each select="instance_attributes/nvpair">

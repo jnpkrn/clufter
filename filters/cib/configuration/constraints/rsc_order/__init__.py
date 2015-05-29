@@ -14,7 +14,7 @@ cib2pcscmd = ('''\
 ''' + (
             verbose_inform('"new order constraint: ", @id')
 ) + '''
-            <xsl:value-of select="'pcs constraint order'"/>
+            <xsl:value-of select="concat($pcscmd_pcs, 'pcs constraint order')"/>
             <xsl:if test="@first-action and @first-action != 'start'">
                 <xsl:value-of select="concat(' ', @first-action)"/>
             </xsl:if>

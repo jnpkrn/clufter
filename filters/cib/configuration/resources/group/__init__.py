@@ -11,7 +11,7 @@ cib2pcscmd = ('''\
 ''' + (
     verbose_inform('"new group: ", @id')
 ) + '''
-    <xsl:value-of select="concat('pcs resource group add ', @id)"/>
+    <xsl:value-of select="concat($pcscmd_pcs, 'resource group add ', @id)"/>
     <xsl:for-each select="primitive">
         <xsl:value-of select="concat(' ', @id)"/>
     </xsl:for-each>

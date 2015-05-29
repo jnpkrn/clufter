@@ -14,7 +14,7 @@ cib2pcscmd = ('''\
 ''' + (
             verbose_inform('"new colocation constraint: ", @id')
 ) + '''
-            <xsl:value-of select="'pcs constraint colocation add'"/>
+            <xsl:value-of select="concat($pcscmd_pcs, 'constraint colocation add')"/>
             <xsl:if test="
 ''' + (
             xslt_is_member('@rsc-role', ('master', 'slave'))
