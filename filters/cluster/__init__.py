@@ -472,6 +472,16 @@ ccsflat2cibprelude = ('''\
 
 ###
 
+# following 2nd chance import is to allow direct usage context (testing, etc.)
+try:
+    from ....utils_xslt import xslt_is_member
+except ValueError:  # Value?
+    from ...utils_xslt import xslt_is_member
+
+ccs_revitalize_fa_domain = tuple(
+    'fence_' + agent for agent in ('virt', 'xvm')
+)
+
 ccs_revitalize = '''\
     <clufter:descent-mix preserve-rest="true"/>
 
@@ -492,11 +502,10 @@ ccs_revitalize = '''\
                                     /cluster/fencedevices/fencedevice[
                                         @name = $FenceInst/@name
                                         and
-                                        (
-                                            @agent = 'fence_virt'
-                                            or
-                                            @agent = 'fence_xvm'
-                                        )
+''' + (
+                                        xslt_is_member('@agent',
+                                                       ccs_revitalize_fa_domain)
+) + '''
                                     ]">
                         <xsl:attribute name='port'>
                             <xsl:value-of select="."/>
