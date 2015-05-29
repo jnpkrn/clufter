@@ -38,7 +38,8 @@ from .utils_func import apply_preserving_depth, \
 from .utils_prog import cli_undecor, docformat, which
 from .utils_xml import CLUFTER_NS, XSL_NS, \
                        namespaced, nselem, squote, element_juggler, \
-                       xml_get_root_pi, xmltag_get_namespace
+                       xml_get_root_pi, \
+                       xmltag_get_namespace, xmltag_get_localname
 from .utils_xslt import xslt_identity
 from .command_context import CommandContext
 
@@ -724,9 +725,17 @@ class XMLFilter(Filter, MetaPlugin):
             # move top-level items directly to the stylesheet being built
             if do_mix:
                 xslt_root.text = snippet.text
-            for e in filter(lambda x: x.tag in TOP_LEVEL_XSL
-                                   or x.tag is etree.Comment, snippet):
-                xslt_root.append(e)
+            for e in etree.ETXPath(
+                "./comment()|" + '|./'.join(tag
+                                        for tag in TOP_LEVEL_XSL)
+               + '|descendant::' + namespaced(XSL_NS, 'template')
+            )(snippet):
+                # special case for variable, as it may be needed within template
+                # immediately
+                if xmltag_get_localname(e.tag) == 'variable':
+                    xslt_root.append(deepcopy(e))
+                else:
+                    xslt_root.append(e)
 
             # if something still remains, we assume it is "template"
             if len(snippet):
@@ -835,6 +844,7 @@ class XMLFilter(Filter, MetaPlugin):
                 snippet = deepcopy(transformer[0])  # in-situ manipulation
 
                 xslt_root = nselem(XSL_NS, 'stylesheet', version="1.0")
+                # XXX at least for xls:template, consider whole deep tree
                 top = filter(lambda x: x.tag in TOP_LEVEL_XSL, snippet)
                 for e in top:
                     xslt_root.append(e)
