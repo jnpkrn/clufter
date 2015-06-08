@@ -660,7 +660,7 @@ ccspcmk2pcscmd = ('''\
 ''' + (
         verbose_inform('"new cluster: ", @name')
 ) + '''
-        <xsl:value-of select="concat('pcs cluster setup',
+        <xsl:value-of select="concat('pcs cluster setup --start',
                                      ' --name ', @name)"/>
 
         <clufter:descent-mix at="clusternode"/>
