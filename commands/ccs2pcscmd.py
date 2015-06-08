@@ -28,6 +28,7 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
                         silent=False,
                         tmp_cib="tmp-cib.xml",  # ~ filters.cib2pcscmd.TMP_CIB
                         dry_run=False,
+                        enable=False,
                         _common=XMLFilter.command_common):
     """(CMAN,rgmanager) cluster cfg. -> equivalent in pcs commands
 
@@ -39,6 +40,7 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
         silent    do not track the progress along the steps execution (echoes)
         tmp_cib   file to accumulate the changes (empty ~ direct push)
         dry_run   omit intrusive commands (TMP_CIB reset if empty)
+        enable    enable cluster infrastructure services (autostart on reboot)
     """
 
     if dry_run and not tmp_cib:
@@ -48,6 +50,7 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
     cmd_ctxt['pcscmd_verbose'] = not(silent)
     cmd_ctxt['pcscmd_tmpcib'] = tmp_cib
     cmd_ctxt['pcscmd_dryrun'] = dry_run
+    cmd_ctxt['pcscmd_enable'] = enable
     file_proto = protocols.plugins['file'].ensure_proto
     return (
         file_proto(input),

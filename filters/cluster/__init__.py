@@ -660,8 +660,16 @@ ccspcmk2pcscmd = ('''\
 ''' + (
         verbose_inform('"new cluster: ", @name')
 ) + '''
-        <xsl:value-of select="concat('pcs cluster setup --start',
-                                     ' --name ', @name)"/>
+        <xsl:value-of select="'pcs cluster setup --start'"/>
+        <xsl:choose>
+            <xsl:when test="$pcscmd_enable">
+                <xsl:value-of select="' --enable'"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:message>%(msg_enable)s</xsl:message>
+            </xsl:otherwise>
+        </xsl:choose>
+        <xsl:value-of select="concat(' --name ', @name)"/>
 
         <clufter:descent-mix at="clusternode"/>
         <clufter:descent-mix at="cman"/>
@@ -673,4 +681,7 @@ ccspcmk2pcscmd = ('''\
     </xsl:if>
 ''') % dict(
     NL=NL,
+    msg_enable="NOTE: cluster infrastructure services not enabled"
+               " at this point, which can be changed any time by issuing:"
+               " pcs cluster enable --all",
 )

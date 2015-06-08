@@ -24,7 +24,7 @@ class FiltersCcspcmk2pcscmdTestCase(TestCase):
         #print ret.BYTESTRING()
         self.assertEquals(
             ret.BYTESTRING(),
-            "pcs cluster setup --name test ju hele"
+            "pcs cluster setup --start --name test ju hele"
             " --consensus 200 --join 100 --token 5000\n"
         )
 
