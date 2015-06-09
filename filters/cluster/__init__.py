@@ -678,6 +678,16 @@ ccspcmk2pcscmd = ('''\
 ''' + (
         verbose_ec_test
 ) + '''
+        <xsl:if test="$pcscmd_start_wait &gt; 0">
+''' + (
+            verbose_inform('"waiting for cluster to come up: ", @name, " seconds"')
+) + '''
+            <xsl:value-of select="concat('sleep ', $pcscmd_start_wait)"/>
+            <xsl:value-of select="'%(NL)s'"/>
+''' + (
+            verbose_ec_test
+) + '''
+        </xsl:if>
     </xsl:if>
 ''') % dict(
     NL=NL,
