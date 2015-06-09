@@ -29,18 +29,20 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
                         tmp_cib="tmp-cib.xml",  # ~ filters.cib2pcscmd.TMP_CIB
                         dry_run=False,
                         enable=False,
+                        start_wait=90,
                         _common=XMLFilter.command_common):
     """(CMAN,rgmanager) cluster cfg. -> equivalent in pcs commands
 
     Options:
-        input     input (CMAN,rgmanager) cluster config. file
-        output    pcs commands to reinstate the cluster per the inputs
-        force     may the force be with emitted pcs commands
-        noauth    skip authentication step (OK if already set up)
-        silent    do not track the progress along the steps execution (echoes)
-        tmp_cib   file to accumulate the changes (empty ~ direct push)
-        dry_run   omit intrusive commands (TMP_CIB reset if empty)
-        enable    enable cluster infrastructure services (autostart on reboot)
+        input       input (CMAN,rgmanager) cluster config. file
+        output      pcs commands to reinstate the cluster per the inputs
+        force       may the force be with emitted pcs commands
+        noauth      skip authentication step (OK if already set up)
+        silent      do not track the progress along the steps execution (echoes)
+        tmp_cib     file to accumulate the changes (empty ~ direct push)
+        dry_run     omit intrusive commands (TMP_CIB reset if empty)
+        enable      enable cluster infrastructure services (autostart on reboot)
+        start_wait  fixed seconds to give cluster to come up initially
     """
 
     if dry_run and not tmp_cib:
@@ -51,6 +53,7 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
     cmd_ctxt['pcscmd_tmpcib'] = tmp_cib
     cmd_ctxt['pcscmd_dryrun'] = dry_run
     cmd_ctxt['pcscmd_enable'] = enable
+    cmd_ctxt['pcscmd_start_wait'] = start_wait
     file_proto = protocols.plugins['file'].ensure_proto
     return (
         file_proto(input),
