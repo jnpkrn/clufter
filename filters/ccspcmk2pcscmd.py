@@ -6,7 +6,6 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..filter import XMLFilter
-from ..utils_xml import squote
 from ..utils_xslt import xslt_boolean, xslt_params
 
 
