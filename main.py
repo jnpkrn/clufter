@@ -190,7 +190,7 @@ class SharedHelpFormatter(IndentedHelpFormatter):
     def expand_default(self, option):
         ret = IndentedHelpFormatter.expand_default(self, option)
         if isinstance(option, ExpertOption):
-            ret = "(expert) " + ret
+            ret = "(Advanced) " + ret
         return ret.replace(self.choices_tag, ', '.join(option.choices or []))
 
 
