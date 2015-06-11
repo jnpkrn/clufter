@@ -676,7 +676,8 @@ ccspcmk2pcscmd = ('''\
                     ' - &lt;&lt;&lt;&quot;')"/>
             <clufter:descent-mix at="clusternode"/>
             <xsl:value-of select="concat(
-                '&quot;%(NL)s',
+                '&quot; &amp;&amp; break%(NL)s',
+                'false%(NL)s',
                 'done || {%(NL)s',
                 'echo &quot;WARNING: cluster being created ought to include this very local machine&quot;%(NL)s',
                 'read -p &quot;Do you want to continue [yN] (60s timeout): &quot; -t 60 || :%(NL)s',
