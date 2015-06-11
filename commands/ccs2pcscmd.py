@@ -30,6 +30,7 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
                         dry_run=False,
                         enable=False,
                         start_wait=90,
+                        noguidance=False,
                         _common=XMLFilter.command_common):
     """(CMAN,rgmanager) cluster cfg. -> equivalent in pcs commands
 
@@ -43,6 +44,7 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
         dry_run     omit intrusive commands (TMP_CIB reset if empty)
         enable      enable cluster infrastructure services (autostart on reboot)
         start_wait  fixed seconds to give cluster to come up initially
+        noguidance  omit extraneous guiding
     """
 
     if dry_run and not tmp_cib:
@@ -54,6 +56,7 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
     cmd_ctxt['pcscmd_dryrun'] = dry_run
     cmd_ctxt['pcscmd_enable'] = enable
     cmd_ctxt['pcscmd_start_wait'] = start_wait
+    cmd_ctxt['pcscmd_noguidance'] = noguidance
     file_proto = protocols.plugins['file'].ensure_proto
     return (
         file_proto(input),

@@ -20,7 +20,8 @@ ccs = ccspcmk2pcscmd.in_format
 class FiltersCcspcmk2pcscmdTestCase(TestCase):
     def testConversion(self):
         in_obj = ccs('file', join(dirname(dirname(__file__)), 'filled.conf'))
-        ret = ccspcmk2pcscmd(in_obj, pcscmd_verbose=False, pcscmd_noauth=True)
+        ret = ccspcmk2pcscmd(in_obj, pcscmd_verbose=False, pcscmd_noauth=True,
+                                     pcscmd_noguidance=True)
         #print ret.BYTESTRING()
         self.assertEquals(
             ret.BYTESTRING(),

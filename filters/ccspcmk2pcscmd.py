@@ -24,6 +24,7 @@ def ccspcmk2pcscmd(flt_ctxt, in_obj):
                 pcscmd_dryrun=xslt_boolean(flt_ctxt.get('pcscmd_dryrun', 0)),
                 pcscmd_enable=xslt_boolean(flt_ctxt.get('pcscmd_enable', 0)),
                 pcscmd_start_wait=flt_ctxt.get('pcscmd_start_wait', 90),
+                pcscmd_noguidance=xslt_boolean(flt_ctxt.get('pcscmd_noguidance', 0)),
             ),
         ),
     )
