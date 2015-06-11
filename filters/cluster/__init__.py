@@ -670,8 +670,8 @@ ccspcmk2pcscmd = ('''\
                     ' &lt;(python -m json.tool /var/lib/pcsd/tokens',
                         ' | sed -n &quot;s|^\s*\&quot;[^\&quot;]\+\&quot;:\s*\&quot;\([0-9a-f-]\+\)\&quot;.*|\1|1p&quot;',
                         ' | sort)',
-                ');',
-                'do%(NL)sgrep -Eq &quot;$(python -m json.tool /var/lib/pcsd/tokens',
+                ') @SENTINEL@; do %(NL)s',
+                'grep -Eq &quot;$(python -m json.tool /var/lib/pcsd/tokens',
                     ' | sed -n &quot;s|^\s*\&quot;\([^\&quot;]\+\)\&quot;:\s*\&quot;${l}\&quot;.*|\1|1p&quot;)&quot;',
                     ' - &lt;&lt;&lt;&quot;')"/>
             <clufter:descent-mix at="clusternode"/>
