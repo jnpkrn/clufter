@@ -657,6 +657,33 @@ ccspcmk2pcscmd = ('''\
             verbose_ec_test
 ) + '''
         </xsl:if>
+        <xsl:if test="not($pcscmd_noguidance)">
+            <!-- see rhbz#1210833 -->
+''' + (
+            verbose_inform('"check cluster includes local machine: ", @name')
+) + r'''
+            <xsl:value-of select="concat(
+                'for l in $(comm -12',
+                    ' &lt;(python -m json.tool /var/lib/pcsd/pcs_users.conf',
+                        ' | sed -n &quot;s|^\s*\&quot;[^\&quot;]\+\&quot;:\s*\&quot;\([0-9a-f-]\+\)\&quot;.*|\1|1p&quot;',
+                        ' | sort)',
+                    ' &lt;(python -m json.tool /var/lib/pcsd/tokens',
+                        ' | sed -n &quot;s|^\s*\&quot;[^\&quot;]\+\&quot;:\s*\&quot;\([0-9a-f-]\+\)\&quot;.*|\1|1p&quot;',
+                        ' | sort)',
+                ');',
+                'do%(NL)sgrep -Eq &quot;$(python -m json.tool /var/lib/pcsd/tokens',
+                    ' | sed -n &quot;s|^\s*\&quot;\([^\&quot;]\+\)\&quot;:\s*\&quot;${l}\&quot;.*|\1|1p&quot;)&quot;',
+                    ' - &lt;&lt;&lt;&quot;')"/>
+            <clufter:descent-mix at="clusternode"/>
+            <xsl:value-of select="concat(
+                '&quot;%(NL)s',
+                'done || {%(NL)s',
+                'echo &quot;WARNING: cluster being created ought to include this very local machine&quot;%(NL)s',
+                'read -p &quot;Do you want to continue [yN] (60s timeout): &quot; -t 60 || :%(NL)s',
+                'test &quot;${REPLY}&quot; = &quot;y&quot; || kill -INT $$%(NL)s',
+                '}%(NL)s:%(NL)s'
+            )"/>
+        </xsl:if>
 ''' + (
         verbose_inform('"new cluster: ", @name')
 ) + '''
