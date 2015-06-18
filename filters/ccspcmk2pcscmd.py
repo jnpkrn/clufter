@@ -6,7 +6,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..filter import XMLFilter
-from ..utils_xslt import xslt_boolean, xslt_params
+from ..utils_xslt import xslt_params
 
 
 @XMLFilter.deco('ccs', 'string-list')
@@ -18,13 +18,13 @@ def ccspcmk2pcscmd(flt_ctxt, in_obj):
             in_obj,
             textmode=True,
             def_first=xslt_params(
-                pcscmd_force=xslt_boolean(flt_ctxt.get('pcscmd_force', 0)),
-                pcscmd_noauth=xslt_boolean(flt_ctxt.get('pcscmd_noauth', 0)),
-                pcscmd_verbose=xslt_boolean(flt_ctxt.get('pcscmd_verbose', 1)),
-                pcscmd_dryrun=xslt_boolean(flt_ctxt.get('pcscmd_dryrun', 0)),
-                pcscmd_enable=xslt_boolean(flt_ctxt.get('pcscmd_enable', 0)),
+                pcscmd_force=flt_ctxt.get('pcscmd_force', False),
+                pcscmd_noauth=flt_ctxt.get('pcscmd_noauth', False),
+                pcscmd_verbose=flt_ctxt.get('pcscmd_verbose', True),
+                pcscmd_dryrun=flt_ctxt.get('pcscmd_dryrun', False),
+                pcscmd_enable=flt_ctxt.get('pcscmd_enable', False),
                 pcscmd_start_wait=flt_ctxt.get('pcscmd_start_wait', 90),
-                pcscmd_noguidance=xslt_boolean(flt_ctxt.get('pcscmd_noguidance', 0)),
+                pcscmd_noguidance=flt_ctxt.get('pcscmd_noguidance', False),
             ),
         ),
     )
