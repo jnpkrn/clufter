@@ -101,6 +101,16 @@ class Command(object):
         self._filter_chain = filter_chain
         self._filters = OrderedDict((f.__class__.name, f) for f in
                                     apply_intercalate(filter_chain))
+        fnc_defaults, fnc_varnames = self._fnc_defaults_varnames
+        for varname, default in fnc_defaults.iteritems():
+            if not isinstance(default, basestring):
+                continue
+            try:
+                # early/static interpolation of defaults ~ filters' constants
+                fnc_defaults[varname] = default.format(**self._filters)
+            except AttributeError:
+                pass
+        self._fnc_defaults_varnames = fnc_defaults, fnc_varnames
         # following will all be resolved lazily, on-demand;
         # all of these could be evaluated upon instantiation immediately,
         # but this is not the right thing to do due to potentially many
@@ -216,17 +226,6 @@ class Command(object):
     # self-introspection (arguments, description, options)
     #
 
-    def _figure_fnc_defaults_varnames(self):
-        """Dissect self._fnc to arg defaults (dict) + all arg names (tuple)"""
-        # XXX deprecated, _fnc_defaults_varnames set on the "birth" of class
-        try:
-            fnc = self._fnc
-        except:
-            raise CommandError(self, "Subclass does not implement _fnc")
-        if self._fnc_defaults_varnames is None:
-            self._fnc_defaults_varnames = func_defaults_varnames(fnc, skip=1)
-        return self._fnc_defaults_varnames
-
     def _figure_parser_opt_dumpnoop(self, options, shortopts):
         choices = []
         for fname, f in self._filters.iteritems():
@@ -339,7 +338,7 @@ class Command(object):
         """Parse docstring as description + Option constructor args list"""
         if self._desc_opts is None:
             self._desc_opts = self._figure_parser_desc_opts(
-                *self._figure_fnc_defaults_varnames(), opt_group=opt_group
+                *self._fnc_defaults_varnames, opt_group=opt_group
             )
         return self._desc_opts
 
@@ -516,15 +515,14 @@ class Command(object):
     def __call__(self, opts, args=None, cmd_ctxt=None):
         """Proceed the command"""
         ec = EC.EXIT_SUCCESS
-        fnc_defaults, fnc_varnames = self._figure_fnc_defaults_varnames()
         kwargs = {}
         # desugaring, which is useful mainly if non-contiguous sequence
         # of value-based options need to be specified
         args = [None if not a else a for a in args[0].split('::')] + args[1:] \
                if args else []
         args.reverse()  # we will be poping from the end
-        for v in fnc_varnames:
-            default = fnc_defaults.get(v, None)
+        for v in self._fnc_defaults_varnames[1]:
+            default = self._fnc_defaults_raw.get(v, None)
             opt = getattr(opts, v, default)
             if opt != default and isinstance(opt, (type(default),
                                                    MutableMapping)):
@@ -702,6 +700,7 @@ class Command(object):
                 '_filter_chain': filter_chain,
                 '_fnc': staticmethod(wrapped),
                 '_fnc_defaults_varnames': (fnc_defaults, fnc_varnames),
+                '_fnc_defaults_raw': fnc_defaults.copy(),  # un-interpolated
             }
             # optimization: shorten type() -> new() -> probe
             ret = cls.probe(fnc.__name__, (cls, ), attrs)
