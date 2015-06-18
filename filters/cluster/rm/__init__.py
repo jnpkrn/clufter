@@ -8,6 +8,14 @@ from ....utils_xslt import xslt_is_member
 
 ###
 
+ccs_disable_rg = '''\
+    <xsl:copy>
+        <xsl:attribute name="disabled">1</xsl:attribute>
+    </xsl:copy>
+'''
+
+###
+
 # avoid accidental start of rgmanager, see bz#723925;
 # only rm tag already present as only then there is a chance
 # of having RGManager + service set to start on boot
