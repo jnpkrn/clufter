@@ -27,8 +27,8 @@ class FiltersCcspcmk2pcscmdTestCase(TestCase):
             ret.BYTESTRING(),
             "pcs cluster setup --start --name test ju hele"
             " --consensus 200 --join 100 --token 5000\n"
-            "sleep 90\n"
+            "sleep {sleep}\n".format(sleep=ccspcmk2pcscmd
+                                           .defs['pcscmd_start_wait'])
         )
-
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))
