@@ -28,10 +28,10 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
                         force=False,
                         noauth=False,
                         silent=False,
-                        tmp_cib="tmp-cib.xml",  # ~ filters.cib2pcscmd.TMP_CIB
+                        tmp_cib="{cib2pcscmd.defs[pcscmd_tmpcib]}",
                         dry_run=False,
                         enable=False,
-                        start_wait=90,
+                        start_wait="{ccspcmk2pcscmd.defs[pcscmd_start_wait]}",
                         noguidance=False,
                         _common=XMLFilter.command_common):
     """(CMAN,rgmanager) cluster cfg. -> equivalent in pcs commands
@@ -49,8 +49,6 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
         noguidance  omit extraneous guiding
     """
 
-    if dry_run and not tmp_cib:
-        tmp_cib = "tmp-cib.xml"  # ~ filters.cib2pcscmd.TMP_CIB
     cmd_ctxt['pcscmd_force'] = force
     cmd_ctxt['pcscmd_noauth'] = noauth
     cmd_ctxt['pcscmd_verbose'] = not(silent)
