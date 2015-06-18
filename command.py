@@ -99,6 +99,8 @@ class Command(object):
             return None
         self = super(Command, cls).__new__(cls)
         self._filter_chain = filter_chain
+        self._filters = OrderedDict((f.__class__.name, f) for f in
+                                    apply_intercalate(filter_chain))
         # following will all be resolved lazily, on-demand;
         # all of these could be evaluated upon instantiation immediately,
         # but this is not the right thing to do due to potentially many
@@ -227,9 +229,9 @@ class Command(object):
 
     def _figure_parser_opt_dumpnoop(self, options, shortopts):
         choices = []
-        for f in apply_intercalate(self.filter_chain):
+        for fname, f in self._filters.iteritems():
             if issubclass(f.in_format.__class__, f.out_format.__class__):
-                choices.append(f.__class__.name)
+                choices.append(fname)
         # XXX NOOPizing doesn't make sense for input filters?
         debug_opts = (
             ('noop', False,
@@ -569,7 +571,7 @@ class Command(object):
                                                             ]
                                      ),
         }, bypass=True)
-        cmd_ctxt.ensure_filters(apply_intercalate(self._filter_chain))
+        cmd_ctxt.ensure_filters(self._filters.itervalues())
         io_driver = any2iter(self._fnc(cmd_ctxt, **kwargs))
         io_handler = (self._iochain_proceed, lambda c, ec=EC.EXIT_SUCCESS: ec)
         io_driver_map = izip_longest(io_driver, io_handler)
