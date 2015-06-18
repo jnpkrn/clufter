@@ -15,7 +15,7 @@ from ..utils_xslt import xslt_params
     pcscmd_verbose=True,
     pcscmd_dryrun=False,
     pcscmd_enable=False,
-    pcscmd_start_wait=90,
+    pcscmd_start_wait=60,
     pcscmd_noguidance=0,
 ))
 def ccspcmk2pcscmd(flt_ctxt, in_obj):
