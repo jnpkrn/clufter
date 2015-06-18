@@ -34,7 +34,9 @@ ccsflat2cibfinal_chain = ('ccs-revitalize',
                                          ('cib2cibfinal')))))
 
 @Command.deco(('ccs2ccsflat',
-                  ('ccs2ccs-pcmk'),
+                  ('ccs-disable-rg',
+                      ('ccs2ccs-pcmk',
+                          ('ccs-version-bump'))),
                   (ccsflat2cibfinal_chain)))
 def ccs2pcs_flatiron(cmd_ctxt,
                      input=PATH_CLUSTERCONF,
@@ -59,7 +61,11 @@ def ccs2pcs_flatiron(cmd_ctxt,
     return (
         file_proto(input),
         (
-            file_proto(ccs_pcmk),
+            (
+                (
+                    file_proto(ccs_pcmk),
+                ),
+            ),
             (
                 (
                     (

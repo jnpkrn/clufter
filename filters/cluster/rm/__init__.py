@@ -16,17 +16,6 @@ ccs_disable_rg = '''\
 
 ###
 
-# avoid accidental start of rgmanager, see bz#723925;
-# only rm tag already present as only then there is a chance
-# of having RGManager + service set to start on boot
-ccs2ccs_pcmk = '''\
-    <xsl:copy>
-        <xsl:attribute name="disabled">1</xsl:attribute>
-    </xsl:copy>
-'''
-
-###
-
 ccs_obfuscate_identifiers = '''\
 
     <!-- FAILOVER-DOMAIN -->

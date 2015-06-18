@@ -14,9 +14,11 @@ from .ccs2pcs import ccsflat2cibfinal_chain
 
 
 @Command.deco(('ccs2ccsflat',
-                  ('ccs2ccs-pcmk',
-                      ('ccspcmk2pcscmd',
-                          ('stringiter-combine2'))),
+                  ('ccs-disable-rg',
+                      ('ccs2ccs-pcmk',
+                          ('ccs-version-bump',
+                              ('ccspcmk2pcscmd',
+                                  ('stringiter-combine2'))))),
                   (ccsflat2cibfinal_chain,
                       ('cib2pcscmd',
                           ('stringiter-combine2')))))
@@ -63,7 +65,11 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
         (
             (
                 (
-                    file_proto(output),
+                    (
+                        (
+                            file_proto(output),
+                        ),
+                    ),
                 ),
             ),
             #(

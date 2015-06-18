@@ -534,19 +534,6 @@ ccs_version_bump = '''\
 
 ###
 
-ccs2ccs_pcmk = '''\
-    <clufter:descent-mix preserve-rest="true"/>
-
-    <!-- CLUSTER config version bump -->
-    <xsl:template match="cluster/@config_version">
-        <xsl:attribute name="{name()}">
-            <xsl:value-of select="string(. + 1)"/>
-        </xsl:attribute>
-    </xsl:template>
-'''
-
-###
-
 # check http://stackoverflow.com/questions/4509662/how-to-generate-unique-string
 # XXX device/@port for: fence_pcmk, fence_rhevm, fence_virsh, fence_{virt,xvm},
 #                       fence_vmware{,_soap} (?)
