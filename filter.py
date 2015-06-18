@@ -35,7 +35,7 @@ from .utils_func import apply_preserving_depth, \
                         apply_intercalate, \
                         loose_zip, \
                         zip_empty
-from .utils_prog import cli_undecor, docformat, which
+from .utils_prog import ProtectedDict, cli_undecor, docformat, which
 from .utils_xml import CLUFTER_NS, XSL_NS, \
                        namespaced, nselem, squote, element_juggler, \
                        xml_get_root_pi, \
@@ -171,10 +171,11 @@ class Filter(object):
             warn("{0}: do not pass extraneous keyword arguments when not"
                  " testing".format(self.__class__.__name__), RuntimeWarning)
         if flt_ctxt is None:  # when estranged (not under Command control)
-            cmd_ctxt = CommandContext(kws)
+            cmd_ctxt = CommandContext()
             flt_ctxt = cmd_ctxt.ensure_filter(self)
-        else:
-            flt_ctxt.update(filterdict_invkeep(kws, flt_ctxt))
+            # following only possibly without taint protection (this branch)
+            map(lambda d: flt_ctxt.parent.update(filterdict_invkeep(d, *flt_ctxt)),
+                (dict(self.defs), kws))
         fmt_kws = filterdict_keep(flt_ctxt, *self.out_format.context, **fmt_kws)
         outdecl = self._fnc(flt_ctxt, in_obj)
         outdecl_head, outdecl_tail = head_tail(outdecl)
@@ -182,7 +183,7 @@ class Filter(object):
         return self.out_format(outdecl_head, *outdecl_tail, **fmt_kws)
 
     @classmethod
-    def deco(cls, in_format, out_format):
+    def deco(cls, in_format, out_format, defs=None):
         """Decorator as an easy factory of actual filters"""
         def deco_fnc(fnc):
             log.debug("Filter: deco for {0}".format(fnc))
@@ -192,6 +193,7 @@ class Filter(object):
                 '_in_format': in_format,
                 '_out_format': out_format,
                 '_fnc': staticmethod(fnc),
+                'defs': property(lambda self: ProtectedDict(defs)),
             }
             # optimization: shorten type() -> new() -> probe
             ret = cls.probe(fnc.__name__, (cls, ), attrs)
