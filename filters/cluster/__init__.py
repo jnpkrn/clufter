@@ -523,6 +523,17 @@ ccs_revitalize = '''\
 
 ###
 
+ccs_version_bump = '''\
+    <!-- CLUSTER config version bump -->
+    <xsl:template match="cluster/@config_version">
+        <xsl:attribute name="{name()}">
+            <xsl:value-of select="string(. + 1)"/>
+        </xsl:attribute>
+    </xsl:template>
+'''
+
+###
+
 ccs2ccs_pcmk = '''\
     <clufter:descent-mix preserve-rest="true"/>
 
