@@ -28,14 +28,16 @@ def xslt_is_member(item, items):
     (contains(concat({1}), concat('|', {0}, '|')))'''.format(item, items)
 
 
+def xslt_boolean(param):
+    """Return true/false value as understood within XSL templates"""
+    return 'true()' if param else 'false()'
+
+
 def xslt_params(**d):
     """Convert a provided dictionary into textual XSLT params"""
     ret = ""
     for k, v in d.iteritems():
-        ret += '<xsl:param name="{0}" select="{1}"/>\n'.format(k, v)
+        ret += '<xsl:param name="{0}" select="{1}"/>\n'.format(
+            k, xslt_boolean(v) if isinstance(v, bool) else v
+        )
     return ret
-
-
-def xslt_boolean(param):
-    """Return true/false value as understood within XSL templates"""
-    return 'true()' if param else 'false()'
