@@ -702,6 +702,10 @@ class XMLFilter(Filter, MetaPlugin):
                 if mix == 1 and at != '*':  #and elem.getparent() is None:
                     e = nselem(XSL_NS, 'apply-templates', select=".//{0}".format(at))
                     tag.append(e)
+                elif mix == 2:
+                    e = nselem(XSL_NS, 'copy')
+                    e.append(nselem(XSL_NS, 'apply-templates', select="@*|node()"))
+                    tag.append(e)
 
             cl = snippet.xpath("//clufter:descent|//clufter:descent-mix",
                                  namespaces={'clufter': CLUFTER_NS})
