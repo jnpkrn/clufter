@@ -18,10 +18,12 @@ from .ccs2pcs import ccsflat2cibfinal_chain
                       ('ccs2ccs-pcmk',
                           ('ccs-version-bump',
                               ('ccspcmk2pcscmd',
-                                  ('stringiter-combine2'))))),
+                                  ('stringiter-combine2',
+                                       ('cmd-wrap')))))),
                   (ccsflat2cibfinal_chain,
                       ('cib2pcscmd',
-                          ('stringiter-combine2')))))
+                          ('stringiter-combine2'  # , ('cmd-wrap' ...
+                           )))))
 def ccs2pcscmd_flatiron(cmd_ctxt,
                         input=PATH_CLUSTERCONF,
                         output="-",
@@ -33,6 +35,7 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
                         enable=False,
                         start_wait="{ccspcmk2pcscmd.defs[pcscmd_start_wait]}",
                         noguidance=False,
+                        text_width='0',
                         _common=XMLFilter.command_common):
     """(CMAN,rgmanager) cluster cfg. -> equivalent in pcs commands
 
@@ -47,6 +50,7 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
         enable      enable cluster infrastructure services (autostart on reboot)
         start_wait  fixed seconds to give cluster to come up initially
         noguidance  omit extraneous guiding
+        text_width  used for rewrapping the commands (0 ~ auto)
     """
 
     cmd_ctxt['pcscmd_force'] = force
@@ -57,6 +61,62 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
     cmd_ctxt['pcscmd_enable'] = enable
     cmd_ctxt['pcscmd_start_wait'] = start_wait
     cmd_ctxt['pcscmd_noguidance'] = noguidance
+    cmd_ctxt['text_width'] = text_width
+    file_proto = protocols.plugins['file'].ensure_proto
+    return (
+        file_proto(input),
+        (
+            (
+                (
+                    (
+                        (
+                            (
+                                file_proto(output),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            #(
+            #    (
+            #        (
+            #            (
+            #                (
+            #                    (
+            #                        (
+            #                            file_proto(output),  # already tracked
+            #                        ),
+            #                    ),
+            #                ),
+            #            ),
+            #        ),
+            #    ),
+            #),
+        ),
+    )
+
+
+@Command.deco(('ccs2ccsflat',
+                  ('ccs-propagate-cman',
+                      ('ccs2needlexml',
+                          ('needlexml2pcscmd',
+                              ('stringiter-combine2',
+                                   ('cmd-wrap'))))),
+                  (ccsflat2cibfinal_chain,
+                      ('cib2pcscmd',
+                          ('stringiter-combine2'  # , ('cmd-wrap' ...
+                           )))))
+def ccs2pcscmd_needle(cmd_ctxt,
+                      input=PATH_CLUSTERCONF,
+                      output="-",
+                      _common=XMLFilter.command_common):
+    """[COMMAND CURRENTLY UNAVAILABLE]
+
+    Options:
+        input     input (CMAN,rgmanager) cluster configuration file
+        output    pcs commands to reinstate the cluster per the inputs
+    """
+    #"""(CMAN,rgmanager) cluster cfg. -> equivalent in pcs commands
     file_proto = protocols.plugins['file'].ensure_proto
     return (
         file_proto(input),
@@ -76,54 +136,9 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
             #            (
             #                (
             #                    (
-            #                        file_proto(output),  # already tracked
-            #                    ),
-            #                ),
-            #            ),
-            #        ),
-            #    ),
-            #),
-        ),
-    )
-
-
-@Command.deco(('ccs2ccsflat',
-                  ('ccs-propagate-cman',
-                      ('ccs2needlexml',
-                          ('needlexml2pcscmd',
-                              ('stringiter-combine2')))),
-                  (ccsflat2cibfinal_chain,
-                      ('cib2pcscmd',
-                          ('stringiter-combine2')))))
-def ccs2pcscmd_needle(cmd_ctxt,
-                      input=PATH_CLUSTERCONF,
-                      output="-",
-                      _common=XMLFilter.command_common):
-    """[COMMAND CURRENTLY UNAVAILABLE]
-
-    Options:
-        input     input (CMAN,rgmanager) cluster configuration file
-        output    pcs commands to reinstate the cluster per the inputs
-    """
-    #"""(CMAN,rgmanager) cluster cfg. -> equivalent in pcs commands
-    file_proto = protocols.plugins['file'].ensure_proto
-    return (
-        file_proto(input),
-        (
-            (
-                (
-                    (
-                        file_proto(output),
-                    ),
-                ),
-            ),
-            #(
-            #    (
-            #        (
-            #            (
-            #                (
-            #                    (
-            #                        file_proto(output),  # already tracked
+            #                        (
+            #                            file_proto(output),  # already tracked
+            #                        ),
             #                    ),
             #                ),
             #            ),
