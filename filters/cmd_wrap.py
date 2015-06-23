@@ -9,6 +9,7 @@ from ..filter import Filter
 from ..formats.command import command
 
 from os import getenv
+from sys import maxint
 from textwrap import TextWrapper
 
 
@@ -17,10 +18,22 @@ def cmd_wrap(flt_ctxt, in_obj):
     """Try to apply a bit smarter wrapping on lines carrying shell commands
 
     Smarter means:
+    - standard textwrap module logic applied on comments splitting; otherwise:
     - do not delimit option from its argument
     - when line is broken vertically, append backslash for the continuation
       and indent subsequent lines for visual clarity
     - and as a side-effect: normalize whitespace occurrences
+
+    Width used for rewrapping is based on three factors in precedence order:
+    - text_width value inside the filter context (`flt_ctxt`)
+      - 0 ~ fall-through to the value per the next item
+      - -1 ~ apply no wrapping at all (mimicked by implying huge text_width)
+      - positive ~ hard-limit the width (no smartness involved)
+      - negative ~ high-limit the width, apply the inverse value only when not
+                   exceeding the value per the next item
+    - COLUMNS environmental variable, if defined and possesses integer value
+    - hard-coded default of 72
+    If absolute value at this point is lower than 20, fallback to 20.
     """
     try:
         tw_system = int(getenv('COLUMNS'))
@@ -30,9 +43,11 @@ def cmd_wrap(flt_ctxt, in_obj):
         tw = int(flt_ctxt.get('text_width'))
         if not tw:
             raise TypeError
-        elif tw < 0:
+        elif tw < -1:
             tw = -tw
             tw = tw if not tw_system or tw < tw_system else tw_system
+        elif tw == -1:
+            tw = maxint >> 1  # one order of magnitude less to avoid overflows
     except TypeError:
         tw = tw_system
     if tw < 20:  # watch out for deliberate lower limit
