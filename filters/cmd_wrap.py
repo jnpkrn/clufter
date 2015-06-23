@@ -8,9 +8,12 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from ..filter import Filter
 from ..formats.command import command
 
+from logging import getLogger
 from os import getenv
 from sys import maxint
 from textwrap import TextWrapper
+
+log = getLogger(__name__)
 
 
 @Filter.deco('string-iter', 'string-iter')
@@ -52,6 +55,7 @@ def cmd_wrap(flt_ctxt, in_obj):
         tw = tw_system
     if tw < 20:  # watch out for deliberate lower limit
         tw = 20 if tw else 72
+        log.info('Text width fallback: {0}'.format(tw))
     cw = TextWrapper(width=tw, subsequent_indent='# ')  # wrapper for comments
 
     ret = []
