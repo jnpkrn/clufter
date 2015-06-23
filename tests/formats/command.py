@@ -72,5 +72,10 @@ class FormatsCommandTestCase(TestCase):
                                       ('-k', [('60BCBB4F5CD7F9EF',
                                                '~/.gnupg/pubring.gpg')])]))
 
+    def testBytestringToMergedQuoted(self):
+        c = command('bytestring', 'cut -f 1 -d @ "my private emails.txt"')
+        #print c('merged')
+        self.assertEqual(c.MERGED(),
+                         ['cut', '-f', '1', '-d', '@', "'my private emails.txt'"])
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))
