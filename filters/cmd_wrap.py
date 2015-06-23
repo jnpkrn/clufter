@@ -42,7 +42,7 @@ def cmd_wrap(flt_ctxt, in_obj):
     ret = []
     for line in in_obj('stringiter', protect_safe=True):
         if line.lstrip().startswith('#'):
-            ret.append(cw.wrap(line))
+            ret.extend(cw.wrap(line))
             continue
         linecnt, rline, remains = 0, [], tw - 2  # ' \'
         for itemgroup in command('bytestring', line)('separated'):
