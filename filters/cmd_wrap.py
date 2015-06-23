@@ -35,8 +35,8 @@ def cmd_wrap(flt_ctxt, in_obj):
             tw = tw if not tw_system or tw < tw_system else tw_system
     except TypeError:
         tw = tw_system
-    if not tw:
-        tw = 72
+    if tw < 20:  # watch out for deliberate lower limit
+        tw = 20 if tw else 72
     cw = TextWrapper(width=tw, subsequent_indent='# ')  # wrapper for comments
 
     ret = []
