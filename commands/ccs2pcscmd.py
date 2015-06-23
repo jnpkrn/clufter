@@ -50,7 +50,7 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
         enable      enable cluster infrastructure services (autostart on reboot)
         start_wait  fixed seconds to give cluster to come up initially
         noguidance  omit extraneous guiding
-        text_width  used for rewrapping the commands (0 ~ auto)
+        text_width  for commands rewrapping (0/-1/neg. ~ auto/disable/hi-limit)
     """
 
     cmd_ctxt['pcscmd_force'] = force
