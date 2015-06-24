@@ -52,7 +52,6 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
         noguidance  omit extraneous guiding
         text_width  for commands rewrapping (0/-1/neg. ~ auto/disable/hi-limit)
     """
-
     cmd_ctxt['pcscmd_force'] = force
     cmd_ctxt['pcscmd_noauth'] = noauth
     cmd_ctxt['pcscmd_verbose'] = not(silent)
@@ -62,6 +61,7 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
     cmd_ctxt['pcscmd_start_wait'] = start_wait
     cmd_ctxt['pcscmd_noguidance'] = noguidance
     cmd_ctxt['text_width'] = text_width
+
     file_proto = protocols.plugins['file'].ensure_proto
     return (
         file_proto(input),
