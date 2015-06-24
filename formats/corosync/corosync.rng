@@ -933,6 +933,19 @@ about 50 milliseconds in addition to this timeout.</a:documentation>
           </attribute>
         </optional>
         <optional>
+          <attribute name="token_coefficient" a:defaultValue="650">
+	    <a:documentation>This value is used only when
+nodelist section is specified and contains at least 3 nodes.
+If so, real token timeout is then computed as
+token + (number_of_nodes - 2) * token_coefficient.  This allows
+cluster to scale without manually changing token timeout every
+time new node is added.  This value can be set to 0 resulting
+in effective removal of this feature.</a:documentation>
+            
+            <data type="unsignedInt"/>
+          </attribute>
+        </optional>
+        <optional>
           <attribute name="token_retransmit" a:defaultValue="238" a4doc:danger-hint="It is not recommended to override this value without guidance from the corosync community.">
             <a:documentation>This timeout specifies a period in
 milliseconds without receiving a token after which the token is
