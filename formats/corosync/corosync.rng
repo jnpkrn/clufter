@@ -702,6 +702,18 @@ the protocol is under low utilization.</a:documentation>
           </attribute>
         </optional>
         <optional>
+          <attribute name="ip_version" a:defaultValue="ipv4">
+	    <a:documentation>Specifies version of IP to use for
+communication.  Value can be one of ipv4 or ipv6.  Default (if
+unspecified) is ipv4.</a:documentation>
+            
+            <choice>
+              <value>ipv4</value>
+              <value>ipv6</value>
+            </choice>
+          </attribute>
+        </optional>
+        <optional>
           <attribute name="join" a:defaultValue="50">
             <a:documentation>This timeout specifies in milliseconds how
 long to wait for join messages in the membership protocol.</a:documentation>
