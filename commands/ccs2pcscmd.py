@@ -109,14 +109,41 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
 def ccs2pcscmd_needle(cmd_ctxt,
                       input=PATH_CLUSTERCONF,
                       output="-",
+                      force=False,
+                      noauth=False,
+                      silent=False,
+                      tmp_cib="{cib2pcscmd.defs[pcscmd_tmpcib]}",
+                      dry_run=False,
+                      enable=False,
+                      start_wait="{needlexml2pcscmd.defs[pcscmd_start_wait]}",
+                      noguidance=False,
+                      text_width='0',
                       _common=XMLFilter.command_common):
-    """[COMMAND CURRENTLY UNAVAILABLE]
+    """(CMAN,rgmanager) cluster cfg. -> equivalent in pcs commands
 
     Options:
-        input     input (CMAN,rgmanager) cluster configuration file
-        output    pcs commands to reinstate the cluster per the inputs
+        input       input (CMAN,rgmanager) cluster configuration file
+        output      pcs commands to reinstate the cluster per the inputs
+        force       may the force be with emitted pcs commands
+        noauth      skip authentication step (OK if already set up)
+        silent      do not track the progress along the steps execution (echoes)
+        tmp_cib     file to accumulate the changes (empty ~ direct push)
+        dry_run     omit intrusive commands (TMP_CIB reset if empty)
+        enable      enable cluster infrastructure services (autostart on reboot)
+        start_wait  fixed seconds to give cluster to come up initially
+        noguidance  omit extraneous guiding
+        text_width  for commands rewrapping (0/-1/neg. ~ auto/disable/hi-limit)
     """
-    #"""(CMAN,rgmanager) cluster cfg. -> equivalent in pcs commands
+    cmd_ctxt['pcscmd_force'] = force
+    cmd_ctxt['pcscmd_noauth'] = noauth
+    cmd_ctxt['pcscmd_verbose'] = not(silent)
+    cmd_ctxt['pcscmd_tmpcib'] = tmp_cib
+    cmd_ctxt['pcscmd_dryrun'] = dry_run
+    cmd_ctxt['pcscmd_enable'] = enable
+    cmd_ctxt['pcscmd_start_wait'] = start_wait
+    cmd_ctxt['pcscmd_noguidance'] = noguidance
+    cmd_ctxt['text_width'] = text_width
+
     file_proto = protocols.plugins['file'].ensure_proto
     return (
         file_proto(input),
