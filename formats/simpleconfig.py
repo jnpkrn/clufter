@@ -16,11 +16,11 @@ class simpleconfig(SimpleFormat):
 
     Internally ('struct'), it is structured liked this:
 
-    SECTION  ::= list-or-tuple(TAG, OPTIONS, SECTIONS)
-    SECTIONS ::= list(SECTION)  # must be list due to arragement
-    OPTIONS  ::= tuple(OPTION)  # must be tuple (ditto)
-    OPTION   ::= list-or-tuple(TAG, VALUE)
-    TAG      ::= [^#@].*        # due to arrangement
+    SECTION  ::= tuple(TAG, OPTIONS, SECTIONS)  # [] tolerated, but fixed width
+    SECTIONS ::= list-or-tuple(SECTION)
+    OPTIONS  ::= list-or-tupletuple(OPTION)
+    OPTION   ::= tuple(TAG, VALUE)  # must be tuple due to inner arragement
+    TAG      ::= .*   # XXX and comment handling [^#@].*
     VALUE    ::= .*
 
     where SECTIONS form logical subsections (arbitrarily nested)
@@ -28,17 +28,17 @@ class simpleconfig(SimpleFormat):
     Example:
 
     ('corosync-ONLY-INTERNAL-TAG-NOT-EXTERNALIZED-ANYWAY',
-     (),
-     [['totem', (('version', '2'), ('cluster_name', 'aus-cluster')), None],
-      ['nodelist',
-       (),
-       [['node', (('id', '1'), ('ring0_addr', 'lolek.example.com')), None],
-        ['node', (('id', '2'), ('ring0_addr', 'bolek.example.com')), None]]],
-      ['quorum',
-       (('provider', 'corosync_votequorum'),
+     [],
+     [('totem', [('version', '2'), ('cluster_name', 'aus-cluster')], None),
+      ('nodelist',
+       [],
+       [('node', [('id', '1'), ('ring0_addr', 'lolek.example.com')], None),
+        ('node', [('id', '2'), ('ring0_addr', 'bolek.example.com')], None)]),
+      ('quorum',
+       [('provider', 'corosync_votequorum'),
         ('expected_votes', '1'),
-        ('two_node', '1')),
-       None]])
+        ('two_node', '1')],
+       None)])
     """
     # NOTE yacc-based parser in fence-virt
     native_protocol = STRUCT = Protocol('struct')
