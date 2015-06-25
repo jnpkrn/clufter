@@ -89,11 +89,11 @@ class simpleconfig(SimpleFormat):
                     ((d - 3) / 2 * indent + x[0] + optsep + x[1], )
                         if isinstance(x, tuple) and len(x) == 2  # dif. SECTION
                     else
-                    # rest
+                    # rest ([''] at the end is for a final newline)
                     ([(d - 3) / 2 * indent + x[0] + lbrace] if d > 1 else [])
                         + list(xxxx for xx in filter(bool, x[1:])
                                for xxx in xx for xxxx in xxx)
-                        + ([(d - 3) / 2 * indent + rbrace] if d > 1 else [])
+                        + ([(d - 3) / 2 * indent + rbrace] if d > 1 else [''])
             )(struct)
         )
         return ret
