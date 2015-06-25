@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Structured configuration formats such as corosync.conf"""
@@ -7,8 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..format import SimpleFormat
 from ..protocol import Protocol
-from ..utils import tuplist
-from ..utils_func import apply_aggregation_preserving_depth
+from ..utils_func import apply_aggregation_preserving_passing_depth
 from ..utils_prog import getenv_namespaced
 
 
@@ -79,40 +78,24 @@ class simpleconfig(SimpleFormat):
         # fallback
         struct = self.STRUCT(protect_safe=True)
         indent, optindent = (getenv_namespaced('COROINDENT', '\t'), ) * 2
-        lbrace, rbrace, optsep = '{', '}', ': '
-        # XXX previous apply_aggregation_preserving_passing_depth attempt
-        #     was unsuccessful
-        # XXX modulo trick seems not to help at all
-        ret = apply_aggregation_preserving_depth(
-            lambda xs:
-                # string or terminal options passthrough
-                xs
-                if isinstance(xs, basestring)
-                   or (isinstance(xs, tuple)
-                       and len(xs) == 2 and not any(tuplist(x) for x in xs))
-                else
-                # joining terminal options (from previous passthrough)
-                ('\n' + optindent).join(optsep.join(x)
-                                        for x in ('',) + xs).lstrip('\n')
-                if all(tuplist(x) for x in xs)  # and instance(xs, tuple)
-                else
-                # with braces-wrapping (using modulo arithmetics to shorten)
-                ('\n').join((((len(l.split('#')) - 3) / 2 * '#' or '#'
-                               + l[:len(l.split('#')) - 2])
-                             + l[len(l.split('#')) - 2:])
-                            #for x in tuple(xs[0:1]) + (lbrace,)
-                            for x in tuple((xs[0] + ' ' + lbrace, ))
-                                     + tuple(xs[1:]) + (rbrace, ) if x
-                            for l in x.splitlines())
-                if xs and not xs[0].startswith('#')  # and len(x) == 3
-                else
-                # without brace-wrapping (already wrapped, just shift right)
-                ('\n').join((((len(l.split('#')) - 3) / 2 * '#' or '#'
-                               + l[:len(l.split('#')) - 2])
-                             + l[len(l.split('#')) - 2:])
-                            for x in xs if x for l in x.splitlines())
-        )(struct).replace('###', '').replace('##', indent)
-        ret = '\n'.join(ret.splitlines()[1:-1]) + '\n'
+        lbrace, rbrace, optsep = ' {', '}', ': '  # spaces intentional
+        ret = '\n'.join(
+            apply_aggregation_preserving_passing_depth(
+                lambda x, d:
+                    # avoid IndexError
+                    x if not x or not isinstance(x[0], basestring)
+                    else
+                    # OPTION
+                    ((d - 3) / 2 * indent + x[0] + optsep + x[1], )
+                        if isinstance(x, tuple) and len(x) == 2  # dif. SECTION
+                    else
+                    # rest
+                    ([(d - 3) / 2 * indent + x[0] + lbrace] if d > 1 else [])
+                        + list(xxxx for xx in filter(bool, x[1:])
+                               for xxx in xx for xxxx in xxx)
+                        + ([(d - 3) / 2 * indent + rbrace] if d > 1 else [])
+            )(struct)
+        )
         return ret
 
     @SimpleFormat.producing(STRUCT, protect=True)
