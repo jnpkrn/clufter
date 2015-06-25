@@ -95,8 +95,12 @@ general:
   - 2.6 with `ordereddict`_ or some kind of ``collections.OrderedDict``
     backport (#929258) required
 
-- ``ccs_flatten``, embedded (originally `pacemaker.git/extra/rgmanager
-  <https://github.com/ClusterLabs/pacemaker/commit/6ef3f776bb8416dfe2edc86a8de4743fcdcc812e>`_):
+- embedded ``ccs_flatten`` (originally `pacemaker.git/extra/rgmanager
+  <https://github.com/ClusterLabs/pacemaker/commit/6ef3f77>`_) compiled
+  helper
+
+  - suitable C compiler (``gcc``)
+  - ``libxml2``
 
 
 tests:
