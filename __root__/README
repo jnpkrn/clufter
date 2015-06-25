@@ -34,6 +34,51 @@ a Python library, which is the case, e.g., with `pcs`_.
 .. _pcs: https://github.com/feist/pcs/
 
 
+Demo
+~~~~
+
+When properly installed, ``clufter`` command should be only these few
+letters away at your shell prompt.  For simplicity, I will stick with
+what one can use directly after cloning the repository and running
+``./run-check`` (to get the helper binary ccompiled):
+
+.. code-block:: bash
+
+  $ ./run-dev ccs2pcscmd -gsq tests/filled.conf
+  pcs cluster auth ju hele
+  pcs cluster setup --start --name ju hele --consensus 200 --token 5000 \
+    --join 100
+  sleep 60
+  pcs -f tmp-cib.xml property set stonith-enabled false
+  pcs cluster cib-push tmp-cib.xml --config
+
+Here we got a sequence of ``pcs`` commands that should get us
+started with rebuilding a cluster originally based on CMAN/rgmanager
+stack (with configuration captured in given file), now targetting
+Corosync/Pacemaker one (for which ``pcs`` is one of the high-level
+configuration tools).
+
+Depending on how sensitive the target environment is (conversely,
+how much confident of ``clufter`` and its output you are), you can
+either reason about each command, possibly making correction in due
+course (well, ``clufter`` never had ambitions to be fully and reliably
+automagic), or just pipe that into the shell interpreter, for instance:
+
+.. code-block:: bash
+
+  $ ./run-dev ccs2pcscmd -gsq tests/filled.conf | sh -x
+
+which will also turn on echoing of what is being executed, just in case.
+
+Take this just as a showcase of the primary goal for this tool, there
+are many other realated conversion/analysis related tasks featured
+and discoverable as:
+
+.. code-block:: bash
+
+  $ ./run-dev -l
+
+
 Dependencies
 ~~~~~~~~~~~~
 
