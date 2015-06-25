@@ -44,6 +44,13 @@ class simpleconfig(SimpleFormat):
     native_protocol = STRUCT = Protocol('struct')
     BYTESTRING = SimpleFormat.BYTESTRING
 
+    # notable lexical units for input
+    lbrace_i, rbrace_i, optsep_i = '{',            '}',      ':'
+    # notable lexical units for output (~ pretty-printing, hence with spaces)
+    lbrace_o, rbrace_o, optsep_o = ' ' + lbrace_i, rbrace_i, optsep_i + ' '
+    # same for input/output
+    csep = '#'
+
     @SimpleFormat.producing(BYTESTRING)
     def get_bytestring(self, *protodecl):
         """Externalize 'struct', that is basically, pretty print it
@@ -78,7 +85,7 @@ class simpleconfig(SimpleFormat):
         # fallback
         struct = self.STRUCT(protect_safe=True)
         indent, optindent = (getenv_namespaced('COROINDENT', '\t'), ) * 2
-        lbrace, rbrace, optsep = ' {', '}', ': '  # spaces intentional
+        lbrace, rbrace, optsep = self.lbrace_o, self.rbrace_o, self.optsep_o
         ret = '\n'.join(
             apply_aggregation_preserving_passing_depth(
                 lambda x, d:
