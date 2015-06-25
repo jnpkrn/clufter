@@ -50,11 +50,8 @@ general:
   - 2.6 with `ordereddict`_ or some kind of ``collections.OrderedDict``
     backport (#929258) required
 
-- ``ccs_flatten``, embedded, originally ``pacemaker/extra/rgmanager``:
-
-.. code-block:: bash
-
-  ./configure --with-cman=1 && ( cd extra/rgmanager && make )
+- ``ccs_flatten``, embedded (originally `pacemaker.git/extra/rgmanager
+  <https://github.com/ClusterLabs/pacemaker/commit/6ef3f776bb8416dfe2edc86a8de4743fcdcc812e>`_):
 
 
 tests:
