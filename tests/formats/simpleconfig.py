@@ -67,5 +67,11 @@ totem {
         #print sc.BYTESTRING()
         self.assertEqual(sc.BYTESTRING(), self.bytestring)
 
+    def testBytestring2Struct(self):
+        sc = simpleconfig('bytestring', self.bytestring)
+        #from pprint import pprint
+        #pprint(sc.STRUCT())
+        self.assertEqual(sc.STRUCT(), self.struct)
+
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))

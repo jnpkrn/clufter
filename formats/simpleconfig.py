@@ -107,5 +107,28 @@ class simpleconfig(SimpleFormat):
 
     @SimpleFormat.producing(STRUCT, protect=True)
     def get_struct(self, *protodecl):
-        # TODO parsing struct from string
-        raise NotImplementedError
+        # similar to pcs.corosync_conf._parse_section (and Corosync itself)
+        lbrace, rbrace, optsep = self.lbrace_i, self.rbrace_i, self.optsep_i
+        csep = self.csep
+        attrs, children = [], []
+        work, t = [('', attrs, children)], self.BYTESTRING()
+        while t:
+            h, t = t.split('\n', 1)
+            if h.startswith(csep):
+                continue
+            elif lbrace in h:
+                work.append((h.split(lbrace, 1)[0].strip(), [], []))
+                attrs, children = work[-1][1:]
+            elif rbrace in h:
+                try:
+                    cur = work.pop()
+                    attrs, children = work[-1][1:]
+                except IndexError:
+                    raise RuntimeError("Unexpected closing brace")
+                children.append(cur)
+            elif optsep in h:
+                attrs.append(tuple(x.strip() for x in h.split(optsep, 1)))
+        ret = work.pop()
+        if work:
+            raise RuntimeError("Missing {0} closing brace(s)".format(len(work)))
+        return ret
