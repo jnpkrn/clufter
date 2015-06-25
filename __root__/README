@@ -63,10 +63,18 @@ tests:
 .. _unittest2: https://pypi.python.org/pypi/unittest2
 
 
-Installation
-~~~~~~~~~~~~
+Stable version
+~~~~~~~~~~~~~~
 
-TBD
+Official released tarballs (as opposed to what you can `download from
+GitHub <https://github.com/jnpkrn/clufter/releases>`_) can be found,
+together with GPG signatures,
+at https://people.redhat.com/jpokorny/pkgs/clufter/.
+
+Also, the ``HEAD`` of ``master`` branch in the repository should always
+point to the latest stable, tagged (and GPG-signed, for that matter)
+release.  Current status of the test run using Travis CI against
+this branch:
 
 .. image:: https://travis-ci.org/jnpkrn/clufter.svg?branch=master
   :target: https://travis-ci.org/jnpkrn/clufter
