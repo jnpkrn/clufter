@@ -154,3 +154,16 @@ to or referred from some relevant file like ``~/.bashrc``, or when
 ``bash-completion`` package installed, stored to ``~/.config/bash_completion``
 (per-user) or ``/usr/share/bash-completion/bash_completion`` (system-wide).
 It's also possible this is already performed on the packaging level.
+
+
+---------
+ Contact
+---------
+
+Common cluster/HA channels falling under `ClusterLabs`_ umbrella:
+
+- `users dedicated mailing list`_
+- ``#clusterlabs`` channel at Freenode IRC server
+
+.. _ClusterLabs: http://clusterlabs.org/
+.. _users dedicated mailing list: http://oss.clusterlabs.org/mailman/listinfo/users
