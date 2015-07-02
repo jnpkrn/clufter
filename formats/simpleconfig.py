@@ -18,7 +18,7 @@ class simpleconfig(SimpleFormat):
 
     SECTION  ::= tuple(TAG, OPTIONS, SECTIONS)  # [] tolerated, but fixed width
     SECTIONS ::= list-or-tuple(SECTION)
-    OPTIONS  ::= list-or-tupletuple(OPTION)
+    OPTIONS  ::= list-or-tuple(OPTION)
     OPTION   ::= tuple(TAG, VALUE)  # must be tuple due to inner arragement
     TAG      ::= .*   # XXX and comment handling [^#@].*
     VALUE    ::= .*
@@ -132,3 +132,25 @@ class simpleconfig(SimpleFormat):
         if work:
             raise RuntimeError("Missing {0} closing brace(s)".format(len(work)))
         return ret
+
+
+class simpleconfig_normalized(simpleconfig):
+    """Structured configuration formats such as corosync.conf, normalized form
+
+    Here, "normalized" is a synonym to "bijectively convertible to XML".
+    Trivially, any elements-attributes XML is convertible to simpleconfig,
+    but because simpleconfig can carry name-/key-duplicated options, something
+    not suitable for reverse options-to-attributes mapping has to be normalized
+    and because this is to serve in simpleconfig2needlexml filter (hence
+    affecting only? uidgid entries), we define the normalization as follows:
+
+    1. analyze current section whether it contains repeated options
+      1a. no  -> goto 2. right away
+      1b. yes -> for each duplicated option but without its value duplication
+                 (in that case, such issue a warning), create a new
+                 "following sibling" section and move the option here on its
+                 own; if the current section contains subsection,
+                 issue a warning about that
+    2. continue with the next section in a defined traversal
+    """
+    pass
