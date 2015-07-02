@@ -29,16 +29,16 @@ class simpleconfig(SimpleFormat):
 
     ('corosync-ONLY-INTERNAL-TAG-NOT-EXTERNALIZED-ANYWAY',
      [],
-     [('totem', [('version', '2'), ('cluster_name', 'aus-cluster')], None),
+     [('totem', [('version', '2'), ('cluster_name', 'aus-cluster')], {}),
       ('nodelist',
        [],
-       [('node', [('id', '1'), ('ring0_addr', 'lolek.example.com')], None),
-        ('node', [('id', '2'), ('ring0_addr', 'bolek.example.com')], None)]),
+       [('node', [('nodeid', '1'), ('ring0_addr', 'lolek.example.com')], []),
+        ('node', [('nodeid', '2'), ('ring0_addr', 'bolek.example.com')], [])]),
       ('quorum',
        [('provider', 'corosync_votequorum'),
         ('expected_votes', '1'),
         ('two_node', '1')],
-       None)])
+       [])])
     """
     # NOTE yacc-based parser in fence-virt
     native_protocol = STRUCT = Protocol('struct')
