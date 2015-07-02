@@ -152,5 +152,7 @@ class simpleconfig_normalized(simpleconfig):
                  own; if the current section contains subsection,
                  issue a warning about that
     2. continue with the next section in a defined traversal
+
+    Fair enough, we've just described the simpleconfig-normalize filter :)
     """
     pass
