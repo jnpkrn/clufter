@@ -150,7 +150,8 @@ class Format(object):
         if protocol == 'native':
             protocol = self.native_protocol
 
-        assert protocol in self._protocols
+        assert protocol in self._protocols, ("unrecognized protocol `{0}'"
+                                             .format(protocol))
         assert args != (None, )
         validator = self.validator(protocol)
         if validator:
