@@ -73,8 +73,8 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
     )
 
 
-@Command.deco(('simpleconfig2needlexml',
-                  ('simpleconfig-normalize',
+@Command.deco(('simpleconfig-normalize',
+                  ('simpleconfig2needlexml',
                       ('needlexml2pcscmd',
                           ('stringiter-combine2')))),
               ('cib2pcscmd',
