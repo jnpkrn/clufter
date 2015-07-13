@@ -335,6 +335,7 @@ class SimpleFormat(Format):
     """This is what most of the format classes want to subclass"""
     native_protocol = BYTESTRING = Protocol('bytestring')
     FILE = Protocol('file')
+    void_file = '/dev/null'  # XXX not multi-platform
 
     def __init__(self, protocol, *args, **kwargs):
         """Format constructor, i.e., object = concrete uniformat data"""
