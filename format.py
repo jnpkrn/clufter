@@ -308,7 +308,8 @@ class Format(object):
                         produced = producer(protocol, *args, **kwargs)
                         if produced is None:
                             continue
-                        if that_cls is self.__class__:
+                        if (that_cls is self.__class__
+                            and protocol not in self._representations):
                             # computed -> stored normalization
                             self.swallow(protocol, *arg2wrapped(produced))
                         else:
