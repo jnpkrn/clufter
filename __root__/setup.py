@@ -616,6 +616,7 @@ setup(
         pkg_name: [
             pkg_param_defaults,
             'formats/*/*.rng',
+            'formats/*/*.minimal',
             'ext-plugins/PURPOSE',
         ],
     },
