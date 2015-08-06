@@ -107,10 +107,11 @@ EOF
         </primitive>
         <!-- mimic NOFAILBACK failoverdomain (FAILOVERDOMAIN-failover_domain1)-->
         <meta_attributes id="SERVICE-mm-META-ATTRS-nofailback">
-          <rule id="SERVICE-mm-META-RULE-stickiness" score="INFINITY" boolean-op="or">
+          <rule id="SERVICE-mm-META-RULE-stickiness" score="0" boolean-op="or">
             <expression id="STICKINESS-SERVICE-mm-rhel6-node1" attribute="#uname" operation="eq" value="rhel6-node1"/>
             <expression id="STICKINESS-SERVICE-mm-rhel6-node2" attribute="#uname" operation="eq" value="rhel6-node2"/>
           </rule>
+          <nvpair id="SERVICE-mm-META-ATTRS-nofailback-pair" name="resource-stickiness" value="INFINITY"/>
         </meta_attributes>
       </group>
     </resources>
