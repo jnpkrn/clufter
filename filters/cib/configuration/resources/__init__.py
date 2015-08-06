@@ -242,7 +242,7 @@ cibprelude2cibcompact = ('''\
                     /></xsl:comment>
                     <meta_attributes id="{$ResourceGroup}-META-ATTRS-nofailback">
                         <rule id="{$ResourceGroup}-META-RULE-stickiness"
-                            score="INFINITY"
+                            score="0"
                             boolean-op="or">
                             <xsl:for-each select="$FailoverDomain/meta_attributes/nvpair[
                                                     starts-with(@name, 'failoverdomainnode-')
@@ -254,6 +254,9 @@ cibprelude2cibcompact = ('''\
                                 </expression>
                             </xsl:for-each>
                         </rule>
+                        <nvpair id="{$ResourceGroup}-META-ATTRS-nofailback-pair"
+                                name="resource-stickiness"
+                                value="INFINITY"/>
                     </meta_attributes>
                 </xsl:if>
                 <!--
