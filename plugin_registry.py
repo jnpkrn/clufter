@@ -284,7 +284,7 @@ class PluginManager(object):
         to_discover.difference_update(ret.iterkeys())
         native_plugins = registry.native_plugins
         ret.update(filterdict_remove(to_discover,
-                                     fn=lambda x: native_plugins[x],
+                                     _fn_=lambda x: native_plugins[x],
                                      *native_plugins.keys()))
         to_discover = apply_intercalate(tuple(to_discover))
         if to_discover:
