@@ -336,6 +336,25 @@ cib2pcscmd = ('''\
 ''' + (
         attrset_xsl("instance_attributes")
 ) + '''
+        <!-- operations -->
+        <xsl:if test="operations/op">
+            <xsl:value-of select="' op'"/>
+            <xsl:for-each select="operations/op">
+                <xsl:value-of select="concat(' ', @name)"/>
+                <xsl:for-each select="@*">
+                    <xsl:value-of select='concat(" &apos;",
+                                                 name(), "=", .,
+                                                 "&apos;")'/>
+                </xsl:for-each>
+            </xsl:for-each>
+        </xsl:if>
+        <!-- meta attrs -->
+        <xsl:if test="meta_attributes/nvpair">
+            <xsl:value-of select="' meta'"/>
+''' + (
+            attrset_xsl("meta_attributes")
+) + '''
+        </xsl:if>
         <xsl:value-of select="'%(NL)s'"/>
 ''' + (
         verbose_ec_test
