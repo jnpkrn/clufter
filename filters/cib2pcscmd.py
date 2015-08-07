@@ -10,6 +10,30 @@ from ..utils_xml import squote
 from ..utils_xslt import xslt_params
 
 
+def attrset_xsl(attrset):
+    return ('''\
+        <xsl:for-each select="{attrset}">
+            <xsl:choose>
+                <xsl:when test="rule and nvpair">
+                    <xsl:message>
+                        <!-- TODO:PCS -->
+                        <xsl:value-of select="concat('WARNING: has to skip rule-based',
+                                                    ' {attrset} ', @id,
+                                                    ' (rhbz#1250744)')"/>
+                    </xsl:message>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:for-each select="nvpair">
+                        <xsl:value-of select='concat(" &apos;",
+                                                    @name, "=", @value,
+                                                    "&apos;")'/>
+                    </xsl:for-each>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:for-each>
+''').format(attrset=attrset)
+
+
 @XMLFilter.deco('cib', 'string-list', defs=dict(
     pcscmd_force=False,
     pcscmd_verbose=True,

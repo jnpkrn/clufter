@@ -321,6 +321,7 @@ cibprelude2cibcompact = ('''\
 ###
 
 from ....filters._2pcscmd import verbose_ec_test, verbose_inform
+from ....filters.cib2pcscmd import attrset_xsl
 from ....utils_xslt import NL
 
 cib2pcscmd = ('''\
@@ -332,11 +333,9 @@ cib2pcscmd = ('''\
         <xsl:value-of select="concat($pcscmd_pcs, 'stonith create',
                                      ' ', @id,
                                      ' ', @type)"/>
-        <xsl:for-each select="instance_attributes/nvpair">
-            <xsl:value-of select='concat(" &apos;",
-                                         @name, "=", @value,
-                                         "&apos;")'/>
-        </xsl:for-each>
+''' + (
+        attrset_xsl("instance_attributes")
+) + '''
         <xsl:value-of select="'%(NL)s'"/>
 ''' + (
         verbose_ec_test
@@ -368,11 +367,9 @@ cib2pcscmd = ('''\
         <xsl:value-of select="concat($pcscmd_pcs, 'resource create',
                                      ' ', @id,
                                      ' ', $ResourceSpec)"/>
-        <xsl:for-each select="instance_attributes/nvpair">
-            <xsl:value-of select='concat(" &apos;",
-                                         @name, "=", @value,
-                                         "&apos;")'/>
-        </xsl:for-each>
+''' + (
+        attrset_xsl("instance_attributes")
+) + '''
         <!-- operations -->
         <xsl:if test="operations/op">
             <xsl:value-of select="' op'"/>
@@ -388,11 +385,9 @@ cib2pcscmd = ('''\
         <!-- meta attrs -->
         <xsl:if test="meta_attributes/nvpair">
             <xsl:value-of select="' meta'"/>
-            <xsl:for-each select="meta_attributes/nvpair">
-                <xsl:value-of select='concat(" &apos;",
-                                             @name, "=", @value,
-                                             "&apos;")'/>
-            </xsl:for-each>
+''' + (
+            attrset_xsl("meta_attributes")
+) + '''
         </xsl:if>
         <xsl:value-of select="'%(NL)s'"/>
 ''' + (
