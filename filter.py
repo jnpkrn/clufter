@@ -151,7 +151,7 @@ class Filter(object):
         if io_formats is None:
             return None
         self = super(Filter, cls).__new__(cls)
-        self._in_format, self._out_format = io_formats
+        (self._in_format, self._out_format), self._validated = io_formats, False
         return self
 
     @hybridproperty
@@ -180,6 +180,8 @@ class Filter(object):
         outdecl = self._fnc(flt_ctxt, in_obj)
         outdecl_head, outdecl_tail = head_tail(outdecl)
         outdecl_tail = arg2wrapped(outdecl_tail)
+        if self._validated:
+            fmt_kws['validator_specs'] = {'': ''}
         return self.out_format(outdecl_head, *outdecl_tail, **fmt_kws)
 
     @classmethod
@@ -507,6 +509,7 @@ class XMLFilter(Filter, MetaPlugin):
             validator = self._out_format.validator('etree', spec=spec)
             if validator:
                 validate_hook = self._xslt_get_validate_hook(validator, **kws)
+                self._validated = True  # to avoid Format instance revalidation
         return (lambda ret, error_log=():
                     self._xslt_atom_hook(ret, error_log, validate_hook, **kws))
 
