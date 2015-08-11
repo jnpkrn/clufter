@@ -578,7 +578,7 @@ class XML(SimpleFormat):
 
     @classmethod
     def walk_schema(cls, root_dir, symbol=None, preprocess=lambda s, n: s,
-                    sparse=True):
+                    sparse=True, xml_root=None):
         """
         Get recipe for visiting symbol(s) within the XML as (sparsely) arranged
 
@@ -597,7 +597,7 @@ class XML(SimpleFormat):
 
         NB: order of keys really does not matter.
         """
-        xml_root = cls.root
+        xml_root = xml_root or cls.root
         particular_namespace = '.'.join((cls.namespace, symbol or xml_root))
         result = {}
         tree_stack = [(root_dir, None, result)]  # for bottom-up reconstruction
