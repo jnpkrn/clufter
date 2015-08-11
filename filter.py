@@ -899,8 +899,10 @@ class XMLFilter(Filter, MetaPlugin):
         if not root_dir:
             root_dir = dirname(modules[cls.__module__].__file__)
         kwargs.setdefault('symbol', cli_undecor(cls.name))
-        walk = in_obj.walk_schema(root_dir, **filterdict_pop(kwargs, 'symbol',
-                                                                     'sparse'))
+        walk = in_obj.walk_schema(root_dir, **filterdict_pop(kwargs,
+                                                             'symbol',
+                                                             'sparse',
+                                                             'xml_root'))
         return cls._traverse(in_obj, walk, **kwargs)
 
     def filter_proceed_xslt(self, in_obj, **kwargs):
@@ -969,5 +971,6 @@ class XMLFilter(Filter, MetaPlugin):
         kwargs.setdefault('symbol', cli_undecor(cls.name))
         walk = in_obj.walk_schema(root_dir, preprocess=cls._xslt_preprocess,
                                   sparse=False,
-                                  **filterdict_pop(kwargs, 'symbol'))
+                                  **filterdict_pop(kwargs, 'symbol',
+                                                           'xml_root'))
         return cls._xslt_template(walk)
