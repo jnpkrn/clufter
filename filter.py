@@ -956,8 +956,10 @@ class XMLFilter(Filter, MetaPlugin):
     @classmethod
     def deco_xslt(cls, in_format, out_format, **kwargs):
         def deco_cls(new_cls):
-            fnc = lambda ctxt, in_obj: \
-                      ('etree', ctxt.ctxt_proceed_xslt(in_obj, **kwargs))
+            fnc = lambda ctxt, in_obj, **kwargsi: \
+                      ('etree', ctxt.ctxt_proceed_xslt(in_obj,
+                                                       **dict(kwargs,
+                                                              **kwargsi)))
             fnc.__name__ = new_cls.__name__
             fnc.__module__ = new_cls.__module__
             return cls.deco(in_format, out_format)(fnc)
