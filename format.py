@@ -58,7 +58,7 @@ class formats(PluginRegistry):
 
         cls._protocols, cls._validators, cls._protocol_attrs = {}, {}, set()
         cls._context = set(popattr(cls, 'context_specs',
-                           attrs.pop('context_specs', ())))
+                                   attrs.pop('context_specs', ())))
         # protocols merge: top-down through inheritance
         for base in reversed(bases):
             cls._protocols.update(getattr(base, '_protocols', {}))
