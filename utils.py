@@ -185,6 +185,14 @@ class hybridproperty(property):
         return self.fget.__get__(None, this if this else owner)()
 
 
+class hybridmethod(property):
+    def __init__(self, fnc):
+        property.__init__(self, classmethod(fnc))
+
+    def __get__(self, this, owner):
+        return self.fget.__get__(None, this if this else owner)
+
+
 # inspired from speaklater: http://pypi.python.org/pypi/speaklater
 class lazystring(object):
     """Mimic string that in fact is on-off constructed on-demand
