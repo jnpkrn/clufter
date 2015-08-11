@@ -29,6 +29,7 @@ from .protocol import Protocol
 from .utils import arg2wrapped, args2sgpl, args2tuple, args2unwrapped, \
                    classproperty, \
                    head_tail, \
+                   hybridmethod, \
                    immutable, \
                    iterattrs, \
                    isinstanceupto, \
@@ -244,23 +245,23 @@ class Format(object):
         """Set of supported protocols for int-/externalization"""
         return self._protocols.keys()  # installed by meta-level
 
-    @classmethod
-    def validator(cls, protocol=None, spec=None):
+    @hybridmethod
+    def validator(this, protocol=None, spec=None):
         """Return validating function or None
 
         This ought to be the authoritative (and only) way to use
         a validator, do not touch _validators and also validator_specs
         is not dropped from class attributes for this very reason.
         """
-        which = cls.native_protocol if protocol is None else protocol
+        which = this.native_protocol if protocol is None else protocol
         try:
-            validator, sp = cls._validators[which]  # installed by meta-level
+            validator, sp = this._validators[which]  # installed by meta-level
         except KeyError:
             return None
         spec = spec if spec is not None else sp
         if spec == '':
             return None
-        return lambda *args, **kwargs: validator(cls, *args,
+        return lambda *args, **kwargs: validator(this, *args,
                                                  **dict(kwargs, spec=spec))
 
     @property
