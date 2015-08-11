@@ -652,10 +652,14 @@ class XML(SimpleFormat):
                 current_tracking[name] = (swag, {})
 
         for i in xrange(cls.MAX_DEPTH):
-            if cls._walk_schema_step_up(tree_stack) is result:
-                return result
+            try:
+                if cls._walk_schema_step_up(tree_stack) is result:
+                    return result
+            except IndexError:
+                raise FormatError(cls, "Format tree structure inconsistency"
+                                       " detected")
         else:
-            raise RuntimeError('INFLOOP detected')
+            raise FormatError(cls, "INFLOOP detected")
 
     ###
 
