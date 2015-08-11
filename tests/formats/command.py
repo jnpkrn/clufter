@@ -55,8 +55,10 @@ class FormatsCommandTestCase(TestCase):
                          ['cut', '-f', '1', '-d', '@', 'emails.txt'])
 
     def testDictToMerged(self):
-        c = command('dict', {'__cmd__': ('cut', ), '-f': ('1', ), '-d': ('@', ),
-                             '__args__': ('emails.txt', )})
+        c = command('dict', OrderedDict([('__cmd__', ['cut']),
+                                         ('-f', ['1']),
+                                         ('-d', ['@']),
+                                         ('__args__', ['emails.txt'])]))
         #print c('merged')
         self.assertEqual(c.MERGED(),
                          ['cut', '-f', '1', '-d', '@', 'emails.txt'])
