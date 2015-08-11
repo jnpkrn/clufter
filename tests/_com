@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Common base for testing"""
@@ -18,6 +18,8 @@ class CommonFilterTestCase(TestCase):
     def setUp(self):
         self.flt_mgr = FilterManager.init_lookup(ext_plugins=False)
 
-    #def tearDown(self):
-    #    self.flt_mgr.registry.setup(True)  # start from scratch
-    #    self.flt_mgr = None
+
+class TeardownFilterTestCase(CommonFilterTestCase):
+    def tearDown(self):
+        self.flt_mgr.registry.setup(True)  # start from scratch
+        self.flt_mgr = None
