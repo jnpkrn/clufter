@@ -47,3 +47,6 @@ after_failure:
             'file "@";
              gdb -se $(file "@" | sed -n "s|.* core file .* from \x27\([^\x27 ]*\).*|\1|p")
                  -c "@" -batch -ex "t a a bt f" -ex "set pagination 0"'
+
+notifications:
+        irc: "irc.freenode.net#clusterlabs-dev"
