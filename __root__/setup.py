@@ -42,6 +42,7 @@ def doraise_py_compile(file, cfile=None, dfile=None, doraise=False):
 py_compile.compile = doraise_py_compile
 
 PREFER_GITHUB = True
+PREFER_FORGE = 'github' if PREFER_GITHUB else 'pagure'  # alternatively: None
 DEBUG = getenv("SETUPDEBUG")
 DBGPFX = str(__file__)
 
@@ -563,12 +564,16 @@ def cond_require(package, *packages, **preferred):
 
 url_dict = dict(name=pkg_name, ver=pkg.version)
 download_url = ''
-if PREFER_GITHUB:
+if PREFER_FORGE == 'github':
     url = 'https://github.com/jnpkrn/{name}'
     if 'git.' in pkg.version:
         download_url = url + '/tarball/' + pkg.version.partition('git.')[-1]
     elif pkg.version.split('+')[-1] != 'a':
         download_url = url + '/tarball/v{ver}'
+elif PREFER_FORGE == 'pagure':
+    url = 'https://pagure.io/{name}'
+    if pkg.version.split('+')[-1] != 'a':
+        download_url = 'https://pagure.io/releases/{name}/{name}-{ver}.tar.gz'
 else:
     url = 'http://people.redhat.com/jpokorny/pkgs/{name}'
     if pkg.version.split('+')[-1] != 'a':

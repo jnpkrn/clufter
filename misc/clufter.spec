@@ -22,9 +22,9 @@
 %else
 %{!?clufter_source:  %global clufter_source   %{name}-%{clufter_version}}
 %endif
-%{!?clufter_url_main:%global clufter_url_main https://github.com/jnpkrn/}
-%{!?clufter_url_raw: %global clufter_url_raw  https://raw.githubusercontent.com/jnpkrn/}
-%{!?clufter_url_dist:%global clufter_url_dist https://people.redhat.com/jpokorny/pkgs/}
+%{!?clufter_url_main:%global clufter_url_main %{?!pagure:https://github.com/jnpkrn/%{name}}%{?pagure:https://pagure.io/%{name}}}
+%{!?clufter_url_raw: %global clufter_url_raw  %{?!pagure:https://raw.githubusercontent.com/jnpkrn/%{name}/}%{?pagure:https://pagure.io/%{name}/raw/}}
+%{!?clufter_url_dist:%global clufter_url_dist %{?!pagure:https://people.redhat.com/jpokorny/pkgs/%{name}/}%{?pagure:https://pagure.io/releases/%{name}/}}
 
 %{!?clufter_pylib:   %global clufter_pylib    python-%{name}}
 %{!?clufter_extlib:  %global clufter_extlib   %{name}-lib}
@@ -67,7 +67,7 @@ Release:        %{clufter_rel}%{?dist}
 Group:          System Environment/Base
 Summary:        Tool/library for transforming/analyzing cluster configuration formats
 License:        %{clufter_license}
-URL:            %{clufter_url_main}%{name}
+URL:            %{clufter_url_main}
 
 # autosetup
 BuildRequires:  git
@@ -80,12 +80,12 @@ BuildRequires:  python-lxml
 %endif
 
 %if "%{clufter_version}" == "%{clufter_version_norm}"
-Source0:        %{clufter_url_dist}%{name}/%{name}-%{version}.tar.gz
+Source0:        %{clufter_url_dist}%{name}-%{version}.tar.gz
 %else
 Source0:        %{clufter_source}.tar.gz
 # Source0 is created by Source1, just pass particular commit hash
 # via GITHASH env. variable
-Source1:        %{clufter_url_raw}%{name}/%{clufter_githash}/misc/run-sdist-per-commit
+Source1:        %{clufter_url_raw}%{clufter_githash}/%{?pagure:f/}misc/run-sdist-per-commit
 %endif
 
 
