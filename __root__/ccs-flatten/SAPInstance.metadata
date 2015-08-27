@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!DOCTYPE resource-agent SYSTEM "ra-api-1-modified.dtd">
+<resource-agent name="SAPInstance">
+<version>1.92.1</version>
+
+<longdesc lang="en">
+Resource script for SAP. It manages a SAP Instance as an HA resource.
+</longdesc>
+<shortdesc lang="en">SAP instance resource agent</shortdesc>
+
+<parameters>
+ <parameter name="InstanceName" unique="1" required="1" primary="1">
+  <longdesc lang="en">The full qualified SAP instance name. e.g. P01_DVEBMGS00_sapp01ci</longdesc>
+  <shortdesc lang="en">instance name: SID_INSTANCE_VIR-HOSTNAME</shortdesc>
+  <content type="string" default="" />
+ </parameter>
+ <parameter name="DIR_EXECUTABLE" unique="0" required="0">
+  <longdesc lang="en">The full qualified path where to find sapstartsrv and sapcontrol.</longdesc>
+  <shortdesc lang="en">path of sapstartsrv and sapcontrol</shortdesc>
+  <content type="string" default="" />
+ </parameter>
+ <parameter name="DIR_PROFILE" unique="0" required="0">
+  <longdesc lang="en">The full qualified path where to find the SAP START profile.</longdesc>
+  <shortdesc lang="en">path of start profile</shortdesc>
+  <content type="string" default="" />
+ </parameter>
+ <parameter name="START_PROFILE" unique="0" required="0">
+  <longdesc lang="en">The name of the SAP START profile.</longdesc>
+  <shortdesc lang="en">start profile name</shortdesc>
+  <content type="string" default="" />
+ </parameter>
+ <parameter name="START_WAITTIME" unique="0" required="0">
+  <longdesc lang="en">After that time in seconds a monitor operation is executed by the resource agent. Does the monitor return SUCCESS, the start is handled as SUCCESS. This is useful to resolve timing problems with e.g. the J2EE-Addin instance.</longdesc>
+  <shortdesc lang="en">Check the successful start after that time (do not wait for J2EE-Addin)</shortdesc>
+  <content type="string" default="3600" />
+ </parameter>
+ <parameter name="AUTOMATIC_RECOVER" unique="0" required="0">
+  <longdesc lang="en">The SAPInstance resource agent tries to recover a failed start attempt automaticaly one time. This is done by killing runing instance processes and executing cleanipc.</longdesc>
+  <shortdesc lang="en">Enable or disable automatic startup recovery</shortdesc>
+  <content type="boolean" default="false"/>
+ </parameter>
+ <parameter name="PRE_START_USEREXIT" unique="0" required="0">
+  <longdesc lang="en">The full qualified path where to find a script or program which should be executed before this resource gets started.</longdesc>
+  <shortdesc lang="en">path to a pre-start script</shortdesc>
+  <content type="string" default="" />
+ </parameter>
+ <parameter name="POST_START_USEREXIT" unique="0" required="0">
+  <longdesc lang="en">The full qualified path where to find a script or program which should be executed after this resource got started.</longdesc>
+  <shortdesc lang="en">path to a post-start script</shortdesc>
+  <content type="string" default="" />
+ </parameter>
+ <parameter name="PRE_STOP_USEREXIT" unique="0" required="0">
+  <longdesc lang="en">The full qualified path where to find a script or program which should be executed before this resource gets stopped.</longdesc>
+  <shortdesc lang="en">path to a pre-start script</shortdesc>
+  <content type="string" default="" />
+ </parameter>
+ <parameter name="POST_STOP_USEREXIT" unique="0" required="0">
+  <longdesc lang="en">The full qualified path where to find a script or program which should be executed after this resource got stopped.</longdesc>
+  <shortdesc lang="en">path to a post-start script</shortdesc>
+  <content type="string" default="" />
+ </parameter>
+</parameters>
+
+<actions>
+<action name="start" timeout="180" />
+<action name="stop" timeout="240" />
+<action name="status" timeout="60" depth="0" interval="120" start-delay="240" />
+<action name="monitor" depth="0" timeout="60" interval="120" start-delay="240" />
+<action name="validate-all" timeout="5" />
+<action name="meta-data" timeout="5" />
+<action name="methods" timeout="5" />
+</actions>
+</resource-agent>
