@@ -49,8 +49,10 @@ ${SETUP_MAKEFILE}: $(wildcard ${SETUP_CFG}) | /dev/null
 	$< > $@
 
 metadata:
-	for f in $$(find ${ra_metadata} -maxdepth 1 -type f -name '*.sh' \
-		    -printf '%f\n'); do \
+	for f in $$( \
+	    cd ${ra_metadata}; \
+	    ls -1 | xargs grep --exclude '*.metadata' --exclude 'ocf-*' -Fl -- meta-data \
+	); do \
 	    /bin/bash ${ra_metadata}/$$f meta-data > $$f.${ra_metadata_ext}.tmp \
 	    && test -s $$f.${ra_metadata_ext}.tmp \
 	    && mv $$f.${ra_metadata_ext}{.tmp,} \
