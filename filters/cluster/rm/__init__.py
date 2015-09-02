@@ -123,6 +123,7 @@ ccsflat2cibprelude = ('''\
                                          |@name
                                          |@address
                                          |@SID
+                                         |@InstanceName
                                      )[1], '/', '_')
                               )"/>
         <primitive id="{$Prefix}">
