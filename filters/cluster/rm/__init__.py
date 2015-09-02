@@ -114,10 +114,15 @@ ccsflat2cibprelude = ('''\
 ''' + (
     xslt_is_member('name()', ccsflat2cibprelude_elems_with_res)
 ) + ''']/*">
+        <!-- meta-primary can be, e.g., @address in case of ip,
+             and that can contain '/' which is not NCNameChar -->
         <xsl:variable name="Prefix"
                       select="concat('RESOURCE-', name(), '-',
-                                     @name,
-                                     translate(@address, '/', '_')
+                                     translate((
+                                         @*[name() = current()/@rgmanager-meta-primary]
+                                         |@name
+                                         |@address
+                                     )[1], '/', '_')
                               )"/>
         <primitive id="{$Prefix}">
 
