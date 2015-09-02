@@ -69,6 +69,9 @@ res_do_flatten(xmlNode ** xpp, xmlNode * rmp, resource_node_t * node, const char
     xmlSetProp(n, (xmlChar *) "rgmanager-meta-agent",
                (xmlChar *) basename(res->r_rule->rr_agent));
 
+    xmlSetProp(n, (xmlChar *) "rgmanager-meta-primary",
+               (xmlChar *) primary_attr_name(res));
+
     /* Multiple-instance resources must be decomposed into separate
        resources */
     if (res->r_refs > 1) {

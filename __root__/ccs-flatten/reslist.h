@@ -199,6 +199,7 @@ void destroy_resource(resource_t * res);
 char *attr_value(resource_node_t * node, const char *attrname);
 char *res_attr_value(resource_t * res, const char *attrname);
 char *primary_attr_value(resource_t *);
+char *primary_attr_name(resource_t *);
 void *act_dup(resource_act_t * acts);
 
 #endif                          /* _RESLIST_H */
