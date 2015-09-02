@@ -122,5 +122,37 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
             #print out_obj.BYTESTRING()
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
+    def testSapInstance(self):
+        flt_obj = rewrite_root(self.flt_mgr.filters[flt], 'cluster/rm')
+        in_fmt = flt_obj.in_format
+        io_strings = (
+            ('''\
+<SAPInstance AUTOMATIC_RECOVER="TRUE" DIR_EXECUTABLE="/sapmnt/GT1/exe" InstanceName="GT1_foobar"/>
+''', '''\
+<primitive id="RESOURCE-SAPInstance-GT1_foobar" description="natively converted from SAPInstance RA" class="ocf" provider="heartbeat" type="SAPInstance">
+  <instance_attributes id="RESOURCE-SAPInstance-GT1_foobar-ATTRS">
+    <nvpair id="RESOURCE-SAPInstance-GT1_foobar-ATTRS-InstanceName" name="InstanceName" value="GT1_foobar"/>
+    <nvpair id="RESOURCE-SAPInstance-GT1_foobar-ATTRS-DIR_EXECUTABLE" name="DIR_EXECUTABLE" value="/sapmnt/GT1/exe"/>
+    <nvpair id="RESOURCE-SAPInstance-GT1_foobar-ATTRS-AUTOMATIC_RECOVER" name="AUTOMATIC_RECOVER" value="TRUE"/>
+  </instance_attributes>
+  <meta_attributes id="RESOURCE-SAPInstance-GT1_foobar-META">
+    <nvpair id="RESOURCE-SAPInstance-GT1_foobar-META-service" name="rgmanager-service" value="RESOURCES-"/>
+  </meta_attributes>
+</primitive>
+'''),
+        )
+        for (in_str, out_str) in io_strings:
+            in_str = '''\
+<rm>
+    <resources>
+''' + in_str + '''\
+    </resources>
+</rm>
+'''
+            in_obj = in_fmt('bytestring', in_str)
+            out_obj = flt_obj(in_obj)
+            #print out_obj.BYTESTRING()
+            self.assertEquals(out_obj.BYTESTRING(), out_str)
+
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))
