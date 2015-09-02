@@ -28,7 +28,7 @@ def rewrite_root(flt, new_root):
 class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
     def testNfsClient(self):
         flt_obj = rewrite_root(self.flt_mgr.filters[flt], 'cluster/rm')
-        in_fmt, out_fmt = flt_obj.in_format, flt_obj.out_format
+        in_fmt = flt_obj.in_format
         io_strings = (
             ('''\
 <nfsclient name="test1" target="*" path="/srv/nfs/test1"/>

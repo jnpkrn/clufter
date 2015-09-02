@@ -2,7 +2,7 @@
 # Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
-"""Testing ccs2coro filter(s)"""
+"""Testing ccs2coroxml filter(s)"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from os.path import join, dirname as d; execfile(join(d((__file__)), '_com'))
