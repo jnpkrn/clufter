@@ -16,7 +16,7 @@ needlexml2pcscmd = '''\
                     preceding-sibling::interface[not(@ringnumber)]
                 )"/>
             </xsl:otherwise>
-        <xsl:choose>
+        </xsl:choose>
     </xsl:variable>
     <xsl:if test="$RingNumber &gt;= 0 or $RingNumber &lt;= 1">
         <xsl:if test="@bindnetaddr">
@@ -36,7 +36,7 @@ needlexml2pcscmd = '''\
                 <xsl:if test="@ttl">
                     <xsl:value-of select="concat(' --ttl', $RingNumber, ' ', @ttl)"/>
                 </xsl:if>
-            <xsl:otherwise>
+            </xsl:otherwise>
         </xsl:choose>
     </xsl:if>
 '''
