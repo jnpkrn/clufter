@@ -122,6 +122,7 @@ ccsflat2cibprelude = ('''\
                                          @*[name() = current()/@rgmanager-meta-primary]
                                          |@name
                                          |@address
+                                         |@SID
                                      )[1], '/', '_')
                               )"/>
         <primitive id="{$Prefix}">
