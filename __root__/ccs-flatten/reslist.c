@@ -146,6 +146,24 @@ primary_attr_value(resource_t * res)
     return NULL;
 }
 
+char *
+primary_attr_name(resource_t * res)
+{
+    int x;
+    resource_attr_t *ra;
+
+    for (x = 0; res->r_attrs && res->r_attrs[x].ra_name; x++) {
+        ra = &res->r_attrs[x];
+
+        if (!(ra->ra_flags & RA_PRIMARY))
+            continue;
+
+        return ra->ra_name;
+    }
+
+    return NULL;
+}
+
 /**
    Find a resource given its reference.  A reference is the value of the
    primary attribute.
