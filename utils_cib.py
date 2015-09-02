@@ -72,16 +72,22 @@ def rg2hb_xsl(dst, src=None, req=False, op=False):
     """Emit XSL snippet yielding nvpair-encoded HB RA parameter from RG one
 
     Parameters:
-        dst    destination parameter (name in the nvpair)
-        src    source parameter (if not provided, use dst ~ 1:1 match)
-        req    valid values: False, True, abs (use raw `src` instead)
-        op     whether this is relevant for "operations" section
+        dst         destination parameter (name in the nvpair)
+        src         source parameter (if not provided, use dst ~ 1:1 match)
+        req         valid values: False, True, abs (use raw `src` instead),
+                    or Warning (deprecated paramater, implies False
+                    and emitted warning [thus the literal object])
+        op          whether this is relevant for "operations" section
     """
-    assert req in (False, True, abs), "Invalid `req` param"
+    assert req in (False, True, abs, Warning), "Invalid `req` param"
     src = src or dst
+    deprecated, req = (True, False) if req is Warning else (False, req)
     return (('''\
             <xsl:if test="@{src}">
-''' if not req else '') + (('''\
+''' if not req else '') + ('''\
+            <xsl:message
+            >WARNING: parameter/op {dst} (converted from {src}) is now deprecated</xsl:message>
+''' if deprecated else '') + (('''\
             <!-- {dst} ~ {src} -->
             <nvpair id="{{concat($Prefix, '-ATTRS-{dst}')}}"
                     name="{dst}"
