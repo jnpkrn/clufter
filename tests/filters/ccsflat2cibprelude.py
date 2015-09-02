@@ -75,4 +75,52 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
             #print out_obj.BYTESTRING()
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
+    def testSapDatabase(self):
+        flt_obj = rewrite_root(self.flt_mgr.filters[flt], 'cluster/rm')
+        in_fmt = flt_obj.in_format
+        io_strings = (
+            ('''\
+<SAPDatabase SID="SAP1" DBTYPE="ORA" NETSERVICENAME="LISTENER_SAP1" DIR_EXECUTABLE="/dbpath/SAP1"/>
+''', '''\
+<primitive id="RESOURCE-SAPDatabase-SAP1" description="natively converted from SAPDatabase RA" class="ocf" provider="heartbeat" type="SAPDatabase">
+  <instance_attributes id="RESOURCE-SAPDatabase-SAP1-ATTRS">
+    <nvpair id="RESOURCE-SAPDatabase-SAP1-ATTRS-SID" name="SID" value="SAP1"/>
+    <nvpair id="RESOURCE-SAPDatabase-SAP1-ATTRS-DBTYPE" name="DBTYPE" value="ORA"/>
+    <nvpair id="RESOURCE-SAPDatabase-SAP1-ATTRS-NETSERVICENAME" name="NETSERVICENAME" value="LISTENER_SAP1"/>
+  </instance_attributes>
+  <meta_attributes id="RESOURCE-SAPDatabase-SAP1-META">
+    <nvpair id="RESOURCE-SAPDatabase-SAP1-META-service" name="rgmanager-service" value="RESOURCES-"/>
+  </meta_attributes>
+</primitive>
+'''),
+            ('''\
+<SAPDatabase SID="GT1" AUTOMATIC_RECOVER="TRUE" DBTYPE="ORA" DIR_EXECUTABLE="/sapmnt/GT1/exe" STRICT_MONITORING="FALSE"/>
+''', '''\
+<primitive id="RESOURCE-SAPDatabase-GT1" description="natively converted from SAPDatabase RA" class="ocf" provider="heartbeat" type="SAPDatabase">
+  <instance_attributes id="RESOURCE-SAPDatabase-GT1-ATTRS">
+    <nvpair id="RESOURCE-SAPDatabase-GT1-ATTRS-SID" name="SID" value="GT1"/>
+    <nvpair id="RESOURCE-SAPDatabase-GT1-ATTRS-DBTYPE" name="DBTYPE" value="ORA"/>
+    <nvpair id="RESOURCE-SAPDatabase-GT1-ATTRS-STRICT_MONITORING" name="STRICT_MONITORING" value="FALSE"/>
+    <nvpair id="RESOURCE-SAPDatabase-GT1-ATTRS-AUTOMATIC_RECOVER" name="AUTOMATIC_RECOVER" value="TRUE"/>
+  </instance_attributes>
+  <meta_attributes id="RESOURCE-SAPDatabase-GT1-META">
+    <nvpair id="RESOURCE-SAPDatabase-GT1-META-service" name="rgmanager-service" value="RESOURCES-"/>
+  </meta_attributes>
+</primitive>
+'''),
+        )
+        for (in_str, out_str) in io_strings:
+            in_str = '''\
+<rm>
+    <resources>
+''' + in_str + '''\
+    </resources>
+</rm>
+'''
+            in_obj = in_fmt('bytestring', in_str)
+            out_obj = flt_obj(in_obj)
+            #print out_obj.BYTESTRING()
+            self.assertEquals(out_obj.BYTESTRING(), out_str)
+
+
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))
