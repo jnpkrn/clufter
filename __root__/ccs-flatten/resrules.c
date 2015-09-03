@@ -26,6 +26,7 @@
 #include <sys/stat.h>
 #include <ctype.h>
 #include <dirent.h>
+#include <errno.h>
 #include <glob.h>
 #include <libgen.h>
 #include <limits.h>

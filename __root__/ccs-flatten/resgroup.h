@@ -8,7 +8,6 @@
 #  include <string.h>
 #  include <unistd.h>
 #  include <sys/types.h>
-#  include <errno.h>
 
 /* Requests */
 #  define RG_SUCCESS	  0
