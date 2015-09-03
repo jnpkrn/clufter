@@ -698,7 +698,7 @@ _get_childtypes(xmlDocPtr doc, xmlXPathContextPtr ctx, char *base, resource_rule
 static int
 read_pipe(int fd, char **file, size_t * length)
 {
-    char buf[4096];
+    char buf[4096], *tmp_file = NULL;
     int n, done = 0;
 
     *file = NULL;
@@ -724,10 +724,14 @@ read_pipe(int fd, char **file, size_t * length)
             done = 1;
         }
 
-        if (*file)
-            *file = realloc(*file, (*length) + n + done);
-        else
+        if (*file) {
+            errno = 0;
+            tmp_file = realloc(*file, (*length) + n + done);
+            if (tmp_file || !errno)  /* prevent possible memleak */
+                *file = tmp_file;
+        } else {
             *file = malloc(n + done);
+        }
 
         if (!*file)
             return -1;
