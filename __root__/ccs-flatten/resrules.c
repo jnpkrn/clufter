@@ -795,9 +795,6 @@ read_resource_agent_metadata(char *filename)
     waitpid(pid, NULL, 0);
     close(_pipe[0]);
 
-    if (!size)
-        return NULL;
-
     doc = xmlParseMemory(data, size);
     free(data);
     return doc;
