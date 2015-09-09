@@ -182,6 +182,17 @@ from ....filters._2pcscmd import verbose_ec_test, verbose_inform
 from ....utils_xslt import NL
 
 cib2pcscmd = ('''\
+    <xsl:if test="not($pcscmd_dryrun) and $pcscmd_tmpcib">
+''' + (
+        verbose_inform('"get initial/working CIB: ", $pcscmd_tmpcib')
+) + '''
+        <xsl:value-of select="concat('pcs cluster cib ',
+                                     $pcscmd_tmpcib, ' --config')"/>
+        <xsl:value-of select="'%(NL)s'"/>
+''' + (
+        verbose_ec_test
+) + '''
+    </xsl:if>
     <clufter:descent-mix at="crm_config"/>
     <clufter:descent-mix at="resources"/>
     <clufter:descent-mix at="constraints"/>
