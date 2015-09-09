@@ -167,4 +167,80 @@ EOF
     return ${ret}
 }
 
-[ "${1}" = "__norun__" ] || run_check "$@"
+run_check_cmd() {
+    # self-check for sanity usage
+    testcmd="$(mktemp)"
+    { ${PYTHONEXEC} run-dev ccs2pcscmd --dist redhat,7.1,Maipo \
+	                                 "${@}" -sg -- - "${testcmd}" \
+      && echo "TEST: execution OK" \
+      || { echo "TEST: execution FAIL"; ret=20; }; }<<EOF
+<?xml version="1.0"?>
+<cluster name="one" config_version="6">
+  <logging debug="on"/>
+  <clusternodes>
+    <clusternode name="rhel6-node1" votes="1" nodeid="1">
+      <fence>
+        <method name="single">
+          <device name="xvm" domain="rhel6-node1"/>
+        </method>
+      </fence>
+    </clusternode>
+    <clusternode name="rhel6-node2" votes="1" nodeid="2">
+      <fence>
+        <method name="single">
+          <device name="xvm" domain="rhel6-node2"/>
+        </method>
+      </fence>
+    </clusternode>
+  </clusternodes>
+  <fencedevices>
+    <fencedevice name="xvm" agent="fence_xvm"/>
+  </fencedevices>
+  <quorumd label="qdisk"/>
+  <rm central_processing="1">
+    <failoverdomains>
+      <failoverdomain name="failover_domain1" ordered="1" restricted="1" nofailback="1">
+        <failoverdomainnode name="rhel6-node1" priority="1"/>
+        <failoverdomainnode name="rhel6-node2" priority="1"/>
+      </failoverdomain>
+    </failoverdomains>
+    <resources>
+      <ip address="192.168.0.128" monitor_link="1"/>
+    </resources>
+    <service autostart="1" name="mm" domain="failover_domain1">
+    <!-- service exclusive="0" autostart="1" name="mm" -->
+      <ip ref="192.168.0.128"/>
+    </service>
+  </rm>
+</cluster>
+EOF
+    { diff -u -- - "${testcmd}" \
+      && echo "TEST: cmd diff OK" \
+      || { echo "TEST: cmd diff FAIL"; ret=21; }; }<<EOF
+pcs cluster auth rhel6-node1 rhel6-node2
+pcs cluster setup --start --name rhel6-node1 rhel6-node2 \\
+  --consensus 12000 --token 10000 --join 60
+sleep 60
+pcs cluster cib tmp-cib.xml --config
+pcs -f tmp-cib.xml \\
+  stonith create FENCEDEV-xvm fence_xvm pcmk_host_map rhel6-node1:rhel6-node1,rhel6-node2:rhel6-node2
+pcs -f tmp-cib.xml \\
+  resource create RESOURCE-ip-192.168.0.128 ocf:heartbeat:IPaddr2 ip 192.168.0.128
+pcs -f tmp-cib.xml \\
+  resource group add SERVICE-mm-GROUP RESOURCE-ip-192.168.0.128
+pcs -f tmp-cib.xml \\
+  constraint location SERVICE-mm-GROUP rule id constraint-id score INFINITY constraint-id=CONSTRAINT-LOCATION-SERVICE-mm-GROUP score=INFINITY #uname eq rhel6-node1
+pcs -f tmp-cib.xml \\
+  constraint rule add CONSTRAINT-LOCATION-SERVICE-mm-GROUP id score INFINITY score=INFINITY #uname eq rhel6-node2
+pcs \\
+  -f tmp-cib.xml constraint rule add CONSTRAINT-LOCATION-SERVICE-mm-GROUP id score \\
+  -INFINITY score=-INFINITY \\
+  #uname ne rhel6-node1 #uname ne rhel6-node2
+pcs cluster cib-push tmp-cib.xml --config
+EOF
+    rm -f -- "${testcmd}"
+    unset testcmd
+    return ${ret}
+}
+
+[ "${1}" = "__norun__" ] || { run_check "$@"; run_check_cmd "$@"; }
