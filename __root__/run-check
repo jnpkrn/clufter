@@ -36,8 +36,8 @@ which ccs_flatten 2>/dev/null || (
 run_check() {
     # self-check for sanity usage
     testcib="$(mktemp)" testcoro="$(mktemp)"
-    { { ${PYTHONEXEC} run-dev ccs2pcs-needle --dist redhat,7.1,Maipo \
-	                                     "${@}" -- - - "${testcib}" \
+    { { ${PYTHONEXEC} run-dev ccs2pcs --dist redhat,7.1,Maipo \
+	                              "${@}" -- - - "${testcib}" \
         | grep -Ev 'key: _NOT_SECRET--' > "${testcoro}"; } \
     && echo "TEST: execution OK" \
     || { echo "TEST: execution FAIL"; ret=20; }; }<<EOF
