@@ -36,8 +36,8 @@ which ccs_flatten 2>/dev/null || (
 run_check() {
     # self-check for sanity usage
     testcib="$(mktemp)" testcoro="$(mktemp)"
-    { { ${PYTHONEXEC} run-dev ccs2pcs --dist redhat,7.1,Maipo \
-	                              "${@}" -- - - "${testcib}" \
+    { { ${PYTHONEXEC} run-dev --dist redhat,7.1,Maipo \
+                              ccs2pcs "${@}" -- - - "${testcib}" \
         | grep -Ev 'key: _NOT_SECRET--' > "${testcoro}"; } \
     && echo "TEST: execution OK" \
     || { echo "TEST: execution FAIL"; ret=20; }; }<<EOF
@@ -170,8 +170,8 @@ EOF
 run_check_cmd() {
     # self-check for sanity usage
     testcmd="$(mktemp)"
-    { ${PYTHONEXEC} run-dev ccs2pcscmd --dist redhat,7.1,Maipo \
-	                                 "${@}" -sg -- - "${testcmd}" \
+    { ${PYTHONEXEC} run-dev --dist redhat,7.1,Maipo \
+                            ccs2pcscmd "${@}" -sg -- - "${testcmd}" \
       && echo "TEST: execution OK" \
       || { echo "TEST: execution FAIL"; ret=20; }; }<<EOF
 <?xml version="1.0"?>
