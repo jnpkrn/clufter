@@ -205,10 +205,19 @@ formats and filters.
   | sed 's|run[-_]dev|%{name}|g' > .bashcomp
 %endif
 %if %{with manpage}
+# generate man pages
 %{__mkdir_p} -- .manpages/man%{clufter_manpagesec}
 help2man -N -h -H -n "$(sed -n '2s|[^(]\+(\([^)]\+\))|\1|p' README)" ./run-dev \
   | sed 's|run[-_]dev|%{name}|g' \
   > .manpages/man%{clufter_manpagesec}/%{name}.%{clufter_manpagesec}
+for cmd in $(./run-dev -l | sed -n 's|^  \(\S\+\).*|\1|p'); do
+  echo -e "#\!/bin/sh\n{ [ \$# -ge 1 ] && [ \"\$1\" = \"--version\" ] \
+  && ./run-dev \"\$@\" || ./run-dev ${cmd} \"\$@\"; } \
+  | sed 's|run[-_]dev|%{name}|g'" > .tmp-${cmd}
+  chmod +x .tmp-${cmd}
+  help2man -N -h -H -n "${cmd}" ./.tmp-${cmd} \
+  > .manpages/man%{clufter_manpagesec}/%{name}-${cmd}.%{clufter_manpagesec}
+done
 %endif
 
 %install
