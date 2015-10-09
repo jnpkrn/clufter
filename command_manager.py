@@ -111,7 +111,8 @@ class CommandManager(PluginManager):
             parser.defaults.update(values.__dict__)  # from global options
             opts, args = parser.parse_args(args)
             if opts.help:
-                usage = ('\n' + len('Usage: ') * ' ').join(map(
+                sep = '\n{0:^{width}}'.format('or:', width=len('Usage: '))
+                usage = sep.join(map(
                     lambda c:
                         "{0}{1} [<cmd option ...>]"
                         .format("%prog [<global option> ...] "
