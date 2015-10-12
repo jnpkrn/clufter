@@ -39,8 +39,10 @@ pcs -f tmp-cib.xml resource create RESOURCE-apache-webserver ocf:heartbeat:apach
 """), text_width=80)
         #print result.BYTESTRING()
         self.assertEquals(result.BYTESTRING(), """\
-pcs -f tmp-cib.xml \
-  resource create RESOURCE-apache-webserver ocf:heartbeat:apache 'options= -Dwebserver' op stop id=RESOURCE-apache-webserver-OP-stop name=stop interval=0 timeout=122s
+pcs -f tmp-cib.xml  \\
+  resource create RESOURCE-apache-webserver ocf:heartbeat:apache \\
+  'options= -Dwebserver' \\
+  op stop id=RESOURCE-apache-webserver-OP-stop name=stop interval=0 timeout=122s
 """)
 
 

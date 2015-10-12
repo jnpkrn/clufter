@@ -16,6 +16,39 @@ from textwrap import TextWrapper
 log = getLogger(__name__)
 
 
+def cmd_args_cutter(itemgroups):
+    if not itemgroups:
+        return itemgroups
+    ret, acc = [], []
+    cmd = itemgroups[0][0] if itemgroups[0] else ""
+    for i in itemgroups:
+        if len(i) > 1 and (not(i[0].startswith('-')) or i[0] == '-'):
+            if cmd.endswith('pcs'):
+                pos = -1
+                end = len(i)
+                while pos + 1 < end:
+                    pos += 1
+                    if pos <= end - 2:
+                        if i[pos] in ("op", "meta"):
+                            ret.append(tuple(acc))
+                            acc = [i[pos]]
+                            continue
+                    if pos <= end - 4:
+                        if i[pos:pos + 2] == ("resource", "create"):
+                            ret.extend((tuple(acc), tuple(i[pos:pos + 4])))
+                            acc = []
+                            pos += 3
+                            continue
+                    # TBD
+                    acc.append(i[pos])
+                ret.append(tuple(acc))
+            else:
+                ret.extend((ii, ) for ii in i)
+        else:
+            ret.append(i)
+    return ret
+
+
 @Filter.deco('string-iter', 'string-iter')
 def cmd_wrap(flt_ctxt, in_obj):
     """Try to apply a bit smarter wrapping on lines carrying shell commands
@@ -64,7 +97,8 @@ def cmd_wrap(flt_ctxt, in_obj):
             ret.extend(cw.wrap(line))
             continue
         linecnt, rline, remains = 0, [], tw - 2  # ' \'
-        for itemgroup in command('bytestring', line)('separated'):
+        itemgroups = cmd_args_cutter(command('bytestring', line)('separated'))
+        for itemgroup in itemgroups:
             item = ' '.join(itemgroup)
             fills = len(item) + (1 if rline else 0)
             # also deal with text width overflow on the first line
