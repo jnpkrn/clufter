@@ -78,12 +78,11 @@ class command(SimpleFormat):
         if self.BYTESTRING in self._representations:  # break the possible loop
             from shlex import split
             ret = split(self.BYTESTRING())
-            enquote = self._dict.get('enquote', True)
-            if enquote:
+            if self._dict.get('enquote', True):
                 ret = self._escape(ret)
             for i, lexeme in enumerate(ret[:]):
                 # heuristic(!) method to normalize: '-a=b' -> '-a', 'b'
-                if (lexeme.count('=') == 1 and
+                if (lexeme.count('=') == 1 and lexeme.startswith('-') and
                     ('"' not in lexeme or lexeme.count('"') % 2) and
                     ("'" not in lexeme or lexeme.count("'") % 2)):
                     ret[i:i + 1] = lexeme.split('=')
