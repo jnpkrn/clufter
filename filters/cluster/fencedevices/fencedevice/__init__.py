@@ -27,6 +27,8 @@ ccsflat2cibprelude = '''\
 ccs_obfuscate_credentials_password = (
     'passwd',
     'snmp_priv_passwd',
+    # legacy fence_vmware https://fedorahosted.org/cluster/wiki/VMware_FencingConfig#OldFence_vmware
+    'vmpasswd',
 )
 
 ccs_obfuscate_credentials_login = (
