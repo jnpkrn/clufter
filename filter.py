@@ -754,9 +754,8 @@ class XMLFilter(Filter, MetaPlugin):
                     xslt_root.append(e)
 
             # if something still remains, we assume it is "template"
-            if len(snippet):
+            if filter(lambda x: x.tag not in TOP_LEVEL_XSL, snippet):
                 log.debug("snippet0: {0}, {1}, {2}".format(do_mix, elem.tag, etree.tostring(snippet)))
-                #if not filter(lambda x: x.tag in TOP_LEVEL_XSL, snippet):
                 template = nselem(XSL_NS, 'template', match=elem.tag)
                 if do_mix:
                     template.extend(snippet)
