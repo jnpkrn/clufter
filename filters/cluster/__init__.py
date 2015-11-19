@@ -568,9 +568,8 @@ ccs_obfuscate_identifiers = '''\
                   select="cluster/clusternodes/clusternode[@name]"/>
     <xsl:template match="
         cluster/clusternodes/clusternode/@name
-        |cluster/clusternodes/clusternode//device/@nodename
-        |cluster/clusternodes/clusternode//device/@port
-        |cluster/rm/failoverdomains/failoverdomain/failoverdomainnode/@name">
+        |cluster/rm/failoverdomains/failoverdomain/failoverdomainnode/@name
+        |cluster/clusternodes/clusternode//device/@*[name() != 'name']">
         <xsl:variable name="ClusterNodeMatch"
                       select="$ClusterNode[
                                   translate(@name, $AlphaUpper, $AlphaLower)
@@ -586,8 +585,8 @@ ccs_obfuscate_identifiers = '''\
                         count($ClusterNodeMatch/preceding-sibling::clusternode) + 1
                     )"/>
                 </xsl:when>
-                <xsl:when test="name() = 'port'">
-                    <!-- conservative approach with @port -->
+                <xsl:when test="name() != 'name'">
+                    <!-- conservative approach with (un)fence device attrs -->
                     <xsl:value-of select="."/>
                 </xsl:when>
                 <xsl:otherwise>
