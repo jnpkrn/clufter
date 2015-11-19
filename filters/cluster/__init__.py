@@ -600,7 +600,8 @@ ccs_obfuscate_identifiers = '''\
                   select="cluster/fencedevices/fencedevice[@name]"/>
     <xsl:template match="
         cluster/fencedevices/fencedevice/@name
-        |cluster/clusternodes/clusternode/fence/method/device/@name">
+        |cluster/clusternodes/clusternode/fence/method/device/@name
+        |cluster/clusternodes/clusternode/unfence/device/@name">
         <xsl:variable name="FenceDeviceMatch"
                       select="$FenceDevice[
                                   @name
