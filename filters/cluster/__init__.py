@@ -568,8 +568,8 @@ ccs_obfuscate_identifiers = '''\
                   select="cluster/clusternodes/clusternode[@name]"/>
     <xsl:template match="
         cluster/clusternodes/clusternode/@name
-        |cluster/clusternodes/clusternode/fence/method/device/@nodename
-        |cluster/clusternodes/clusternode/fence/method/device/@port
+        |cluster/clusternodes/clusternode//device/@nodename
+        |cluster/clusternodes/clusternode//device/@port
         |cluster/rm/failoverdomains/failoverdomain/failoverdomainnode/@name">
         <xsl:variable name="ClusterNodeMatch"
                       select="$ClusterNode[
