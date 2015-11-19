@@ -537,7 +537,6 @@ ccs_version_bump = '''\
 # check http://stackoverflow.com/questions/4509662/how-to-generate-unique-string
 # XXX device/@port for: fence_pcmk, fence_rhevm, fence_virsh, fence_{virt,xvm},
 #                       fence_vmware{,_soap} (?)
-# XXX cluster/@alias (not el6)
 ccs_obfuscate_identifiers = '''\
     <clufter:descent-mix preserve-rest="true"/>
 
@@ -546,6 +545,14 @@ ccs_obfuscate_identifiers = '''\
     <xsl:template match="cluster/@name">
         <xsl:attribute name="{name()}">
             <xsl:value-of select="'CLUSTER-NAME'"/>
+        </xsl:attribute>
+    </xsl:template>
+
+    <!-- XXX: CLUSTER-ALIAS (not in el6 schemas) -->
+
+    <xsl:template match="cluster/@alias">
+        <xsl:attribute name="{name()}">
+            <xsl:value-of select="'CLUSTER-ALIAS'"/>
         </xsl:attribute>
     </xsl:template>
 
