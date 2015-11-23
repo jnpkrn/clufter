@@ -568,6 +568,7 @@ ccs_obfuscate_identifiers = '''\
                   select="cluster/clusternodes/clusternode[@name]"/>
     <xsl:template match="
         cluster/clusternodes/clusternode/@name
+        |cluster/clusternodes/clusternode/altname/@name
         |cluster/rm/failoverdomains/failoverdomain/failoverdomainnode/@name
         |cluster/clusternodes/clusternode//device/@*[name() != 'name']">
         <xsl:variable name="ClusterNodeMatch"
@@ -582,12 +583,27 @@ ccs_obfuscate_identifiers = '''\
                     <!-- 1+ match(es) found -->
                     <xsl:value-of select="concat(
                         'CLUSTER-NODE-',
-                        count($ClusterNodeMatch/preceding-sibling::clusternode) + 1
+                        1 + count(
+                            $ClusterNodeMatch/preceding-sibling::*[
+                                count(.|$ClusterNode) = count($ClusterNode)
+                            ]
+                        )
                     )"/>
                 </xsl:when>
                 <xsl:when test="name() != 'name'">
-                    <!-- conservative approach with (un)fence device attrs -->
+                    <!-- rest of non-name ~ (un)fence device attributes -->
                     <xsl:value-of select="."/>
+                </xsl:when>
+                <xsl:when test="name(..) = 'altname'">
+                    <!-- altname case, further customized prefix -->
+                    <xsl:value-of select="concat(
+                        'CLUSTER-NODE-ALT-',
+                        1 + count(
+                            ../../preceding-sibling::*[
+                                count(.|$ClusterNode) = count($ClusterNode)
+                            ]
+                        )
+                    )"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <!-- probably refential integrity error -->
