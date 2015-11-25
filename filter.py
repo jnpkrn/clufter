@@ -534,7 +534,7 @@ class XMLFilter(Filter, MetaPlugin):
                                                        *e[2:]))
                          for e in entries)
         if fatal:
-            raise FilterPlainError("FAIL: {0}".format((', ').join(e for e in fatal)))
+            raise FilterPlainError("FAILED filter: {0}".format(cls.name))
         return ret
 
     @staticmethod
