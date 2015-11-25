@@ -1,1 +1,6 @@
-(surely there are, either known or percepted by the 6th sense)
+ccs2*
+- values of primary resource parameters cannot contain single quotes
+  (due to how xslt_id_friendly is expected to be used)
+
+
+(surely there are more, either known or percepted by the 6th sense)
