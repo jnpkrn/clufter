@@ -519,12 +519,14 @@ class XMLFilter(Filter, MetaPlugin):
                         **ignored):
         fatal = []
         for entry in error_log:
+            emsg = entry.message
             if (entry.domain == 22 and entry.type == 0 and entry.level == 2
                     and emsg == "unknown error"):  # bogus errors
                 continue
-            urgent = entry.type != 0
-            msg = ("|header:[{0:{1}}]| |subheader:XSLT|: {2}"
-                   .format(cls.name, maxl, entry.message))
+            urgent = (ret is None and not(emsg.split(' ', 1)[0].isupper())
+                      or entry.type != 0)
+            msg = "|header:[{0:{1}}]| |subheader:XSLT:| {2}".format(cls.name,
+                                                                    maxl, emsg)
             svc_output(msg, urgent=urgent,
                        base=entry.message.startswith('WARNING:') and 'warning')
             if urgent:
@@ -797,13 +799,18 @@ class XMLFilter(Filter, MetaPlugin):
                 log.debug("Applying on {0}".format(etree.tostring(xslt_root)))
                 #ret = elem.xslt(xslt_root)
                 xslt = etree.XSLT(xslt_root)
-                ret = xslt(elem)
-                error_log = xslt.error_log
-                # following seems to carefully preserve space (depending on
-                # xsl:output)
-                #ret = etree.fromstring(str(xslt(elem))).getroottree()
-                log.debug("With result {0}".format(etree.tostring(ret)))
-                #etree.cleanup_namespaces(ret)
+                try:
+                    ret = xslt(elem)
+                except etree.XSLTApplyError as e:
+                    error_log = e.error_log
+                    ret = None
+                else:
+                    # following seems to carefully preserve space (depending on
+                    # xsl:output)
+                    #ret = etree.fromstring(str(xslt(elem))).getroottree()
+                    log.debug("With result {0}".format(etree.tostring(ret)))
+                    #etree.cleanup_namespaces(ret)
+                    error_log = xslt.error_log
             return ret, error_log
 
         def postprocess(ret):
