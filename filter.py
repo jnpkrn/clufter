@@ -519,6 +519,9 @@ class XMLFilter(Filter, MetaPlugin):
                         **ignored):
         fatal = []
         for entry in error_log:
+            if (entry.domain == 22 and entry.type == 0 and entry.level == 2
+                    and emsg == "unknown error"):  # bogus errors
+                continue
             msg = ("|header:[{0:{1}}]| |subheader:XSLT|: {2}"
                    .format(cls.name, maxl, entry.message))
             svc_output(msg, urgent=entry.type != 0,
