@@ -436,7 +436,7 @@ ccsflat2cibprelude = ('''\
 
             <fencing-topology>
             <xsl:for-each select="clusternodes/clusternode[
-                                      count(fence/method) &gt; 1
+                                      count(fence/method[device]) &gt; 1
                                       or
                                       fence/method[
                                           count(device) &gt; 1
