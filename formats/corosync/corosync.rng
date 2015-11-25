@@ -95,6 +95,7 @@ if *debug* is 'on'.  Note: 'debug' is the same as if *debug* is 'on'.</a:documen
           <value>debug</value>
           <value>emerg</value>
           <value>err</value>
+          <value>error</value>
           <value>info</value>
           <value>notice</value>
           <value>warning</value>
@@ -106,7 +107,18 @@ if *debug* is 'on'.  Note: 'debug' is the same as if *debug* is 'on'.</a:documen
 that will be used for any messages sent to syslog.</a:documentation>
         
         <choice>
+          <value>auth</value>
+          <value>authpriv</value>
+          <value>cron</value>
           <value>daemon</value>
+          <value>ftp</value>
+          <value>kern</value>
+          <value>lpr</value>
+          <value>mail</value>
+          <value>news</value>
+          <value>syslog</value>
+          <value>user</value>
+          <value>uucp</value>
           <value>local0</value>
           <value>local1</value>
           <value>local2</value>
@@ -129,6 +141,7 @@ is the same as *debug* is 'on'.</a:documentation>
           <value>debug</value>
           <value>emerg</value>
           <value>err</value>
+          <value>error</value>
           <value>info</value>
           <value>notice</value>
           <value>warning</value>
@@ -230,6 +243,7 @@ if *debug* is 'on'.  Note: 'debug' is the same as if *debug* is 'on'.</a:documen
           <value>debug</value>
           <value>emerg</value>
           <value>err</value>
+          <value>error</value>
           <value>info</value>
           <value>notice</value>
           <value>warning</value>
@@ -241,7 +255,18 @@ if *debug* is 'on'.  Note: 'debug' is the same as if *debug* is 'on'.</a:documen
 that will be used for any messages sent to syslog.</a:documentation>
         
         <choice>
+          <value>auth</value>
+          <value>authpriv</value>
+          <value>cron</value>
           <value>daemon</value>
+          <value>ftp</value>
+          <value>kern</value>
+          <value>lpr</value>
+          <value>mail</value>
+          <value>news</value>
+          <value>syslog</value>
+          <value>user</value>
+          <value>uucp</value>
           <value>local0</value>
           <value>local1</value>
           <value>local2</value>
@@ -264,6 +289,7 @@ is the same as *debug* is 'on'.</a:documentation>
           <value>debug</value>
           <value>emerg</value>
           <value>err</value>
+          <value>error</value>
           <value>info</value>
           <value>notice</value>
           <value>warning</value>
