@@ -41,3 +41,18 @@ def xslt_params(**d):
             k, xslt_boolean(v) if isinstance(v, bool) else v
         )
     return ret
+
+
+def xslt_id_friendly(inner):
+    """Make the passed XPath expression yielding string XML ID friendly"""
+    # XXX apostrophe missing
+    return '''\
+    translate(
+        translate(
+            {0},
+            ' -/:',
+            '____'
+        ),
+        '!&#x22;#$&#x25;&#x26;()*+,;&#x3c;=&#x3e;?@[\]^`{{|}}~',
+        ''
+    )'''.format(inner)
