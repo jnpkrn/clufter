@@ -522,11 +522,12 @@ class XMLFilter(Filter, MetaPlugin):
             if (entry.domain == 22 and entry.type == 0 and entry.level == 2
                     and emsg == "unknown error"):  # bogus errors
                 continue
+            urgent = entry.type != 0
             msg = ("|header:[{0:{1}}]| |subheader:XSLT|: {2}"
                    .format(cls.name, maxl, entry.message))
-            svc_output(msg, urgent=entry.type != 0,
+            svc_output(msg, urgent=urgent,
                        base=entry.message.startswith('WARNING:') and 'warning')
-            if entry.type != 0:
+            if urgent:
                 fatal.append("XSLT: " + entry.message)
         if not fatal and validate_hook:
             ret, entries = validate_hook(ret)
