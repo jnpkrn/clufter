@@ -525,10 +525,12 @@ class XMLFilter(Filter, MetaPlugin):
                 continue
             urgent = (ret is None and not(emsg.split(' ', 1)[0].isupper())
                       or entry.type != 0)
+            emsg = emsg if not urgent else 'FATAL: ' + emsg
             msg = "|header:[{0:{1}}]| |subheader:XSLT:| {2}".format(cls.name,
                                                                     maxl, emsg)
             svc_output(msg, urgent=urgent,
-                       base=entry.message.startswith('WARNING:') and 'warning')
+                       base=emsg.startswith('WARNING:') and 'warning'
+                            or urgent and 'error')
             if urgent:
                 fatal.append("XSLT: " + entry.message)
         if not fatal and validate_hook:
