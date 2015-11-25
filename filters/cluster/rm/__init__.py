@@ -90,6 +90,7 @@ ccs_obfuscate_identifiers = '''\
 ###
 
 from ....utils_cib import ResourceSpec
+from ....utils_xslt import xslt_id_friendly
 from .... import package_name
 
 ccsflat2cibprelude_elems_res_hybrid = (
@@ -118,13 +119,16 @@ ccsflat2cibprelude = ('''\
              and that can contain '/' which is not NCNameChar -->
         <xsl:variable name="Prefix"
                       select="concat('RESOURCE-', name(), '-',
-                                     translate((
-                                         @*[name() = current()/@rgmanager-meta-primary]
-                                         |@name
-                                         |@address
-                                         |@SID
-                                         |@InstanceName
-                                     )[1], '/', '_')
+''' + (
+                                  xslt_id_friendly(
+                                      '(@*[name() = current()/@rgmanager-meta-primary]'
+                                      '|@name'
+                                      '|@address'
+                                      '|@SID'
+                                      '|@InstanceName'
+                                      ')[1]'
+                                  )
+) + '''
                               )"/>
         <primitive id="{$Prefix}">
 
