@@ -173,6 +173,8 @@ use `logrotate(8)` with the option `copytruncate`, e.g.
         
         <choice>
           <value>no</value>
+          <value>off</value>
+          <value>on</value>
           <value>yes</value>
         </choice>
       </attribute>
@@ -183,6 +185,8 @@ the respective destination of logging output.</a:documentation>
         
         <choice>
           <value>no</value>
+          <value>off</value>
+          <value>on</value>
           <value>yes</value>
         </choice>
       </attribute>
@@ -193,6 +197,8 @@ the respective destination of logging output.</a:documentation>
         
         <choice>
           <value>no</value>
+          <value>off</value>
+          <value>on</value>
           <value>yes</value>
         </choice>
       </attribute>
@@ -321,6 +327,8 @@ use `logrotate(8)` with the option `copytruncate`, e.g.
         
         <choice>
           <value>no</value>
+          <value>off</value>
+          <value>on</value>
           <value>yes</value>
         </choice>
       </attribute>
@@ -331,6 +339,8 @@ the respective destination of logging output.</a:documentation>
         
         <choice>
           <value>no</value>
+          <value>off</value>
+          <value>on</value>
           <value>yes</value>
         </choice>
       </attribute>
@@ -341,6 +351,8 @@ the respective destination of logging output.</a:documentation>
         
         <choice>
           <value>no</value>
+          <value>off</value>
+          <value>on</value>
           <value>yes</value>
         </choice>
       </attribute>
