@@ -57,3 +57,21 @@ ccsflat2cibprelude = ('''\
         </meta_attributes>
     </template>
 ''') % dict(package_name=package_name())
+
+###
+
+ccs_revitalize = '''\
+    <!-- omit failoverdomainnodes with repeated name
+         rgmanager/src/daemons/fo_domain.c:fod_get_node:error #30
+     -->
+    <xsl:template match="failoverdomainnode[
+                             preceding-sibling::failoverdomainnode[
+                                 @name = current()/@name
+                             ]
+                         ]">
+        <xsl:message>
+            <xsl:value-of select="concat('WARNING: omitting failoverdomainnode',
+                                         ' with repeated name (', @name, ')')"/>
+        </xsl:message>
+    </xsl:template>
+'''
