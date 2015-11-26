@@ -314,7 +314,7 @@ class XMLFilter(Filter, MetaPlugin):
         return postprocess(ret)
 
     @classmethod
-    def _try_edit(cls, res_snippet, schema_path, schema_snippet, msgs,
+    def _try_edit(cls, res_snippet, schema_path, schema_snippet, msgs, cnt,
                   use_offset=True, editor='', **ignored):
         editor = editor.strip() or EDITOR
         pkg_name = package_name()
@@ -333,7 +333,8 @@ class XMLFilter(Filter, MetaPlugin):
             "  exiting the editor, the snippet will be inspected again)",
             ". OMITTING the snippet from the result, but be warned, this",
             "  may cause validation error at the level closer to the root",
-            ". TERMINATING the whole conversion: DELETE everything",
+            ". TERMINATING the whole conversion: EXIT without a modification",
+            "  {3} more time(s) in row or DELETE everything right away",
             "",
             "+ forcing the snippet, empty or not, without validation:",
             "  TURN `:force-this=false` to `:force-this=true`",
@@ -343,7 +344,8 @@ class XMLFilter(Filter, MetaPlugin):
         offset = len(message) + len(msgs) + 5 if use_offset else 0
         e = '\n  '.join(["[{0}:{1}] {2}".format(m[0] + offset, *m[1:])
                         for m in msgs])
-        message = '  ' + '\n  '.join(message).format(pkg_name, e, schema_path)
+        message = '  ' + '\n  '.join(message).format(pkg_name, e, schema_path,
+                                                     cnt)
         prompt = """\
 <{0}-recovery force-block="false">
 
@@ -456,16 +458,22 @@ class XMLFilter(Filter, MetaPlugin):
                 parent_pos = element_juggler.grab(elem)
                 res_snippet = etree.tostring(elem, pretty_print=True)
                 force = False
-                while True:
+                for i in xrange(2, 0, -1):  # 2 subsequent NOOPs -> termination
                     try:
                         elems, force = cls._try_edit(res_snippet.strip(),
                                                      schema, schema_snippet,
-                                                     msgs, use_offset, **kws)
+                                                     msgs, i, use_offset, **kws)
                     except FilterError as e:
                         log.warning(str(e))
                         elems = ()
                     if elems is not None:  # active change
                         break
+                else:
+                    print >>stderr, ("Opportunity to recover the invalid"
+                                     " (intermediate) result was repeatedly"
+                                     " abandoned")
+                    elems = False
+
                 if not elems:
                     element_juggler.drop(elem)
                     if elems is False:
@@ -476,6 +484,7 @@ class XMLFilter(Filter, MetaPlugin):
                 else:
                     # positive change occurred (reverse due to insert)
                     elems = reversed(elems)
+
                 worklist.append(None)
                 for e in elems:
                     if not force:
