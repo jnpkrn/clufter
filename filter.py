@@ -35,7 +35,7 @@ from .utils_func import apply_preserving_depth, \
                         apply_intercalate, \
                         loose_zip, \
                         zip_empty
-from .utils_prog import ProtectedDict, cli_undecor, docformat, which
+from .utils_prog import ProtectedDict, cli_decor, cli_undecor, docformat, which
 from .utils_xml import CLUFTER_NS, XSL_NS, \
                        namespaced, nselem, squote, element_juggler, \
                        xml_get_root_pi, \
@@ -340,12 +340,14 @@ class XMLFilter(Filter, MetaPlugin):
             "  TURN `:force-this=false` to `:force-this=true`",
             "+ forcing the whole block of snippets without validation:",
             "  CHANGE `force-block` attribute in the root element to `true`",
+            "",
+            "Hint: `--dump={4} --nocheck` to store a full copy",
         ]
         offset = len(message) + len(msgs) + 5 if use_offset else 0
         e = '\n  '.join(["[{0}:{1}] {2}".format(m[0] + offset, *m[1:])
                         for m in msgs])
         message = '  ' + '\n  '.join(message).format(pkg_name, e, schema_path,
-                                                     cnt)
+                                                     cnt, cli_decor(cls.name))
         prompt = """\
 <{0}-recovery force-block="false">
 
