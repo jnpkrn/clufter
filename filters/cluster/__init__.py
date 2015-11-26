@@ -312,8 +312,10 @@ ccs2needlexml = lazystring(lambda: ('''\
 
 try:
     from .... import package_name, version
+    from ....utils_xslt import xslt_id_friendly
 except ValueError:
     from ... import package_name, version
+    from ...utils_xslt import xslt_id_friendly
 ccsflat2cibprelude_self_id = "{0} {1}".format(package_name(), version)
 
 # should roughly match the output of:
@@ -385,7 +387,12 @@ ccsflat2cibprelude = ('''\
                             <xsl:variable name="Prefix">
                                 <xsl:value-of select="concat('FENCEINST-', @name, '-NODE-', $NodeName)"/>
                                 <xsl:if test="@port">
-                                    <xsl:value-of select="concat('-', @port)"/>
+                                    <xsl:value-of select="concat(
+                                        '-',
+''' + (
+                                        xslt_id_friendly('@port')
+) + '''
+                                    )"/>
                                 </xsl:if>
                             </xsl:variable>
                             <primitive id="{$Prefix}"
