@@ -1,0 +1,17 @@
+ignore-paths:
+    - __root__
+ignore-patterns:
+    - ^__root__/__project__(/|$)
+autodetect: false
+pylint:
+    run: true
+pep8:
+    run: false
+pyflakes:
+    run: false
+mccabe:
+    run: false
+dodgy:
+    run: false
+pep257:
+    run: false
