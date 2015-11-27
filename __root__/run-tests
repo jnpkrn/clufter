@@ -29,7 +29,7 @@ if ${PYTHONEXEC} -c "import sys; sys.exit(sys.version_info[:2] < (2,7))"; then
     CMD="-m unittest"
 else
     # pre-2.7 unittest doesn't offer test discovery, use external unittest2
-    CMD="unit2"
+    CMD="-m unittest2"
 fi
 DEBUG="env LOGLEVEL=WARNING"
 PGR=${PAGER:-less}
