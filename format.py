@@ -535,6 +535,14 @@ class CompositeFormat(Format, MetaPlugin):
         return tuple(f.producer(p)(p, *a, **kwargs)
                      for f, p, a in zip(self._designee, protocol[1], args))
 
+    @property
+    def hash(self):
+        """Compute hash trying to uniquely identify the format instance"""
+        if self._hash is None:
+            self._hash = hex(reduce(lambda a, b: a ^ int(b.hash, base=16),
+                                    self._designee, 0))[2:]
+        return self._hash  # XXX hex digest can possibly be shorter that normal
+
 
 class XML(SimpleFormat):
     """"Base for XML-based configuration formats"""
