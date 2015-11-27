@@ -22,10 +22,12 @@ install:
         # make following robust enough to deal with pip pre-6.0(?)
         - true;{
                pip install --disable-pip-version-check -- pip >/dev/null
-               && pip install --disable-pip-version-check -qe .[test,coverage];
+               && pip install --disable-pip-version-check -qe .[test,coverage]
+               && pip install --disable-pip-version-check coveralls;
           } || {
                pip install --disable-pip-version-check -- pip 2>/dev/null >&2
-               || pip install -qe .[test,coverage];
+               || pip install -qe .[test,coverage]
+               && pip install  coveralls;
           } || {
                ret=$?;
                echo "LOGS>"; cat ~/.pip/pip.log ~/.cache/pip/log/debug.log 2>/dev/null;
