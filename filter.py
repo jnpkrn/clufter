@@ -627,10 +627,11 @@ class XMLFilter(Filter, MetaPlugin):
                     )
                     element_juggler.drop(elem)
 
-            if parent and parent[2] == 1 and '*' not in hooks:
+            if parent and parent[2] and '*' not in hooks:
                 hooks['*'] = [((len(ret), ), 1)]
                 ret.append(nselem(CLUFTER_NS, 'descent-mix',
-                                  attrib={'preserve-rest': 'false'}))
+                                  attrib={'preserve-rest':
+                                          ('false', 'true')[parent[2] - 1]}))
 
             # do_mix decides whether the current sub-template will be
             # be applied and the result attached (0), or just merged
