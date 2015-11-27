@@ -25,7 +25,7 @@ TAIL='2>&1 | sed \
     -e "s/^\(Ran [1-9][0-9]*.*\)/${cyan}\1${stop}/"'
 
 if ${PYTHONEXEC} -c "import sys; sys.exit(sys.version_info[:2] < (2,7))"; then
-    CMD="${PYTHONEXEC} -m unittest"
+    CMD="-m unittest"
 else
     # pre-2.7 unittest doesn't offer test discovery, use external unittest2
     CMD="unit2"
@@ -34,6 +34,7 @@ DEBUG="env LOGLEVEL=WARNING"
 PGR=${PAGER:-less}
 VERBOSE=1
 RUNCHECK=1
+COVERAGE=0
 ACC=
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -46,6 +47,9 @@ while [ $# -gt 0 ]; do
             done
             exit ${ret}
             ;;
+	-c)
+	    COVERAGE=1
+	    ;;
         -d)
             DEBUG=
             ;;
@@ -70,6 +74,10 @@ while [ $# -gt 0 ]; do
     esac
     shift
 done
+
+[ "${COVERAGE}" -eq 0 ] || CMD="coverage2 run ${CMD}"
+[[ ! "${CMD}" =~ ^-m ]] || CMD="${PYTHONEXEC} ${CMD}"
+
 
 # "--verbose" game because of "Alternative Usage: unit2 discover [options]"
 [ -n "${ACC}" ] \

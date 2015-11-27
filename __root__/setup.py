@@ -681,7 +681,8 @@ setup(
     include_package_data=False,
 
     extras_require={
-        'test': cond_require('unittest2', unittest='runner')
+        'test': cond_require('unittest2', unittest='runner'),
+        'coverage': ('coverage', ),
     },
 
     # TODO: uncomment this when ready for tests
