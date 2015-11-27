@@ -272,3 +272,49 @@ ccsflat2cibprelude = ('''\
                                                    ' to /usr/lib/ocf/resource.d',
                                                    '/rgmanager directory')"/>'''
 )
+
+###
+
+ccs_revitalize = '''\
+    <!-- omit resources with repeated primary attribute
+         rgmanager/src/daemons/reslist.c:store_resource:attribute collision
+         (simplified a bit - limited just to sibling scope)
+     -->
+    <xsl:template match="service
+                          |service/*
+                          |vm
+                          |vm/*
+                          |resources/*">
+        <xsl:choose>
+            <xsl:when test="preceding-sibling::*[
+                                name() = name(current())
+                                and
+                                current()/@rgmanager-meta-primary
+                                and
+                                @*[
+                                    name() = current()/@rgmanager-meta-primary
+                                ] = current()/@*[
+                                    name() = current()/@rgmanager-meta-primary
+                                ]
+                             ]">
+                <xsl:message>
+                    <xsl:value-of select="concat('WARNING: omitting resource',
+                                                ' with repeated primary',
+                                                ' attribute (', name(), '/@',
+                                                @rgmanager-meta-primary, '=',
+                                                @*[
+                                                    name()
+                                                    =
+                                                    current()/@rgmanager-meta-primary
+                                                ], ')'
+                                          )"/>
+                </xsl:message>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:copy>
+                    <xsl:apply-templates select="@*|node()"/>
+                </xsl:copy>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+'''
