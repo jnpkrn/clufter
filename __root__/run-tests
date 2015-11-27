@@ -9,7 +9,8 @@
 # ---
 # [1] http://docs.python.org/2/library/unittest.html#command-line-interface
 
-. ./run-check "$(dirname "${0}")/run-check" __norun__
+NORUN=1
+. ./run-check "$(dirname "${0}")/run-check"
 
 stop=$(printf "\033\[0m")
 blue=$(printf "\033[01;34m") red=$(printf "\033[01;31m")

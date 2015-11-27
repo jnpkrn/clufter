@@ -243,4 +243,4 @@ EOF
     return ${ret}
 }
 
-[ "${1}" = "__norun__" ] || { run_check "$@"; run_check_cmd "$@"; }
+[ "${NORUN:-0}" -ne 0 ] || { run_check "$@"; run_check_cmd "$@"; }
