@@ -12,7 +12,7 @@ before_install:
           'from sys import exit, version_info as v; exit(v[:2] in ((2, 7), (3, 2)))'
           || sudo apt-get install -qq python-lxml python-distribute
 install:
-        - cd __root__
+        - pushd __root__
         - python2 setup.py -q
             saveopts -f setup.cfg pkg_prepare
               --ra-metadata-dir="$(pwd)/cluster"
@@ -33,6 +33,7 @@ install:
                echo "LOGS>"; cat ~/.pip/pip.log ~/.cache/pip/log/debug.log 2>/dev/null;
                f() { return $1; }; f $ret;
           }
+        - popd
 
 before_script:
         - ulimit -S -c unlimited  # ensure cores are generated (~after_failure)
