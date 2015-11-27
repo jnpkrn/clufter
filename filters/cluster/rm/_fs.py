@@ -53,7 +53,11 @@ ccsflat2cibprelude = ('''
                         <!-- specification a la netfs-->
                         <xsl:when test="$FsKind = 'netfs'
                                         and
-                                        starts-with(@fstype, 'nfs')">
+                                        (
+                                            not(@fstype)
+                                            or
+                                            starts-with(@fstype, 'nfs')
+                                        )">
                             <xsl:value-of select="concat(
                                                       @host,
                                                       ':',
@@ -115,7 +119,11 @@ ccsflat2cibprelude = ('''
                         </xsl:when>
                         <xsl:when test="$FsKind = 'netfs'
                                         and
-                                        starts-with(@fstype, 'nfs')">
+                                        (
+                                            not(@fstype)
+                                            or
+                                            starts-with(@fstype, 'nfs')
+                                        )">
                             <xsl:value-of select="'sync,soft,noac'"/>
                         </xsl:when>
                         <xsl:when test="$FsKind = 'netfs'
