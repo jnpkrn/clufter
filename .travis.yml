@@ -22,10 +22,10 @@ install:
         # make following robust enough to deal with pip pre-6.0(?)
         - true;{
                pip install --disable-pip-version-check -- pip >/dev/null
-               && pip install --disable-pip-version-check -qe .[test];
+               && pip install --disable-pip-version-check -qe .[test,coverage];
           } || {
                pip install --disable-pip-version-check -- pip 2>/dev/null >&2
-               || pip install -qe .[test];
+               || pip install -qe .[test,coverage];
           } || {
                ret=$?;
                echo "LOGS>"; cat ~/.pip/pip.log ~/.cache/pip/log/debug.log 2>/dev/null;
@@ -35,7 +35,7 @@ install:
 before_script:
         - ulimit -S -c unlimited  # ensure cores are generated (~after_failure)
 
-script: ./run-tests
+script: ./run-tests -c
 
 after_failure:
         - sudo apt-get install -qq gdb libc6-dbg
@@ -47,6 +47,9 @@ after_failure:
             'file "@";
              gdb -se $(file "@" | sed -n "s|.* core file .* from \x27\([^\x27 ]*\).*|\1|p")
                  -c "@" -batch -ex "t a a bt f" -ex "set pagination 0"'
+
+after_success:
+        coveralls
 
 notifications:
         irc: "irc.freenode.net#clusterlabs-dev"
