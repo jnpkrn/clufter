@@ -1,0 +1,5 @@
+[run]
+source = clufter
+
+[report]
+show_missing = True
