@@ -76,7 +76,8 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-[ "${COVERAGE}" -eq 0 ] || CMD="coverage2 run ${CMD}"
+[ "${COVERAGE}" -eq 0 ] || which coverage2 >/dev/null 2>/dev/null \
+  && CMD="coverage2 run ${CMD}" || CMD="coverage run ${CMD}"
 [[ ! "${CMD}" =~ ^-m ]] || CMD="${PYTHONEXEC} ${CMD}"
 
 
