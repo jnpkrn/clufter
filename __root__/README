@@ -128,6 +128,9 @@ this branch:
 .. image:: https://travis-ci.org/jnpkrn/clufter.svg?branch=master
   :target: https://travis-ci.org/jnpkrn/clufter
 
+.. image:: https://coveralls.io/repos/jnpkrn/clufter/badge.svg?branch=master&service=github
+  :target: https://coveralls.io/github/jnpkrn/clufter?branch=master
+
 
 Development version
 ~~~~~~~~~~~~~~~~~~~
@@ -136,6 +139,9 @@ TBD
 
 .. image:: https://travis-ci.org/jnpkrn/clufter.svg?branch=next
   :target: https://travis-ci.org/jnpkrn/clufter
+
+.. image:: https://coveralls.io/repos/jnpkrn/clufter/badge.svg?branch=next&service=github
+  :target: https://coveralls.io/github/jnpkrn/clufter?branch=next
 
 
 ---------------
