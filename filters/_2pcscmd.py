@@ -48,10 +48,12 @@ def coro2pcscmd(**kwargs):
             what=kwargs.get(w) or w
         ) if w in kwargs else ''
     return ('''\
+    <xsl:variable name="ClusterName" select="string(@name
+                                                    |totem/@cluster_name)"/>
     <xsl:if test="not($pcscmd_dryrun)">
         <xsl:if test="not($pcscmd_noauth)">
 ''' + (
-            verbose_inform('"auth cluster: ", @name')
+            verbose_inform('"auth cluster: ", $ClusterName')
 ) + '''
             <xsl:value-of select="'pcs cluster auth'"/>
 
@@ -67,7 +69,7 @@ def coro2pcscmd(**kwargs):
         <xsl:if test="not($pcscmd_noguidance)">
             <!-- see rhbz#1210833 -->
 ''' + (
-            verbose_inform('"check cluster includes local machine: ", @name')
+            verbose_inform('"check cluster includes local machine: ", $ClusterName')
 ) + r'''
             <xsl:value-of select="concat(
                 'for l in $(comm -12',
@@ -93,7 +95,7 @@ def coro2pcscmd(**kwargs):
             )"/>
         </xsl:if>
 ''' + (
-        verbose_inform('"new cluster: ", @name')
+        verbose_inform('"new cluster: ", $ClusterName')
 ) + '''
         <xsl:value-of select="'pcs cluster setup --start'"/>
         <xsl:choose>
@@ -104,7 +106,7 @@ def coro2pcscmd(**kwargs):
                 <xsl:message>%(msg_enable)s</xsl:message>
             </xsl:otherwise>
         </xsl:choose>
-        <xsl:value-of select="concat(' --name ', @name)"/>
+        <xsl:value-of select="concat(' --name ', $ClusterName)"/>
 
         %(descent_node)s
         %(descent_cman)s
@@ -116,7 +118,7 @@ def coro2pcscmd(**kwargs):
 ) + '''
         <xsl:if test="$pcscmd_start_wait &gt; 0">
 ''' + (
-            verbose_inform('"waiting for cluster to come up: ", @name, " seconds"')
+            verbose_inform('"waiting for cluster to come up: ", $ClusterName, " seconds"')
 ) + '''
             <xsl:value-of select="concat('sleep ', $pcscmd_start_wait)"/>
             <xsl:value-of select="'%(NL)s'"/>
