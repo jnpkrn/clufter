@@ -60,16 +60,20 @@ class command(SimpleFormat):
         while merged:
             i = merged.pop()
             if acc == ['--'] or i is None or i.startswith('-') and i != '-':
-                if acc:
+                if not acc:
+                    pass
+                elif acc[0].startswith('-'):
+                    # expect that, by convention, option takes at most 1 arg
+                    ret.extend(filter(bool, (tuple(acc[:2]), tuple(acc[2:]))))
+                else:
                     ret.append(tuple(acc))
                 acc = [] if i is None else [i]
             elif self._dict.get('magic_split', False):
                 acc.extend(i.split('::'))  # magic "::"-split
-                merged.append(None)
             else:
                 acc.append(i)
-        # expect that, by convention, option takes at most a single argument
-        ret.extend(filter(bool, (tuple(acc[:2]), tuple(acc[2:]))))
+            if acc and not merged:
+                merged.append(None)  # mark terminal acc -> ret propagation
         return ret
 
     @SimpleFormat.producing(MERGED, protect=True)
