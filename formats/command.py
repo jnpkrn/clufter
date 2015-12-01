@@ -56,20 +56,23 @@ class command(SimpleFormat):
     def get_separated(self, *protodecl):
         merged = self.MERGED()
         merged.reverse()
-        ret, acc = [], []
+        ret, acc, takes = [], [], 2  # by convention, option takes at most 1 arg
         while merged:
             i = merged.pop()
             if acc == ['--'] or i is None or i.startswith('-') and i != '-':
                 if not acc:
                     pass
                 elif acc[0].startswith('-'):
-                    # expect that, by convention, option takes at most 1 arg
-                    ret.extend(filter(bool, (tuple(acc[:2]), tuple(acc[2:]))))
+                    ret.extend(filter(bool, (tuple(acc[:takes]),
+                                             tuple(acc[takes:]))))
                 else:
                     ret.append(tuple(acc))
-                acc = [] if i is None else [i]
+                acc, takes = [] if i is None else [i], 2  # reset option-arg cnt
             elif self._dict.get('magic_split', False):
-                acc.extend(i.split('::'))  # magic "::"-split
+                split = i.split('::')  # magic "::"-split
+                if len(acc) == 1 and acc[0].startswith('-') and acc[0] != '-':
+                    takes = len(split) + 1  # sticky option multi-arguments
+                acc.extend(split)
             else:
                 acc.append(i)
             if acc and not merged:
