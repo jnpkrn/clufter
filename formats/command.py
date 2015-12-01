@@ -30,15 +30,20 @@ class command(SimpleFormat):
         # rule: last but one item in qs cannot be escaped inside enquotion
         ret = []
         for b in base:
-            if ' ' in b or any(b.startswith(q) or b.endswith(q) for q in qs):
+            use_qs = qs
+            if any(b.startswith(q) or b.endswith(q) for q in use_qs) \
+                    or (any(c in b for c in ' #$') and not b.startswith('<<')
+                    and not any(b.startswith(s) for s in ("$(", "<("))):
+                if '$' in b:
+                    use_qs = tuple(c for c in use_qs if c != "'")
                 use_q = ''
-                for q in qs:
+                for q in use_qs:
                     if q not in b:
                         use_q = q
                         break
                 else:
-                    use_q = qs[-1]
-                    if use_q != qs[0]:
+                    use_q = use_qs[-1]
+                    if use_q != use_qs[0]:
                         b = b.replace(use_q, '\\' + use_q)
                     else:
                         raise RuntimeError('cannot quote the argument')
