@@ -222,8 +222,7 @@ pcs cluster setup --start --name one rhel6-node1 rhel6-node2 \\
   --consensus 12000 --token 10000 --join 60
 sleep 60
 pcs cluster cib tmp-cib.xml --config
-pcs -f tmp-cib.xml \\
-  stonith create FENCEDEV-xvm fence_xvm \\
+pcs -f tmp-cib.xml stonith create FENCEDEV-xvm fence_xvm \\
   pcmk_host_map=rhel6-node1:rhel6-node1,rhel6-node2:rhel6-node2
 pcs -f tmp-cib.xml \\
   resource create RESOURCE-ip-192.168.0.128 ocf:heartbeat:IPaddr2 \\

@@ -34,7 +34,8 @@ def cmd_args_cutter(itemgroups):
                             acc = [i[pos]]
                             continue
                     if pos <= end - 4:
-                        if i[pos:pos + 2] == ("resource", "create"):
+                        if i[pos:pos + 2] in (("resource", "create"),
+                                              ("stonith", "create")):
                             ret.extend(
                                 filter(bool, (tuple(acc), tuple(i[pos:pos + 4])))
                             )
