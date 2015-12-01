@@ -223,19 +223,26 @@ pcs cluster setup --start --name one rhel6-node1 rhel6-node2 \\
 sleep 60
 pcs cluster cib tmp-cib.xml --config
 pcs -f tmp-cib.xml \\
-  stonith create FENCEDEV-xvm fence_xvm pcmk_host_map rhel6-node1:rhel6-node1,rhel6-node2:rhel6-node2
+  stonith create FENCEDEV-xvm fence_xvm \\
+  pcmk_host_map=rhel6-node1:rhel6-node1,rhel6-node2:rhel6-node2
 pcs -f tmp-cib.xml \\
-  resource create RESOURCE-ip-192.168.0.128 ocf:heartbeat:IPaddr2 ip 192.168.0.128
+  resource create RESOURCE-ip-192.168.0.128 ocf:heartbeat:IPaddr2 \\
+  ip=192.168.0.128
 pcs -f tmp-cib.xml \\
   resource group add SERVICE-mm-GROUP RESOURCE-ip-192.168.0.128
 pcs -f tmp-cib.xml \\
-  constraint location SERVICE-mm-GROUP rule id constraint-id score INFINITY constraint-id=CONSTRAINT-LOCATION-SERVICE-mm-GROUP score=INFINITY #uname eq rhel6-node1
+  constraint location SERVICE-mm-GROUP rule \\
+  id=CONSTRAINT-LOCATION-SERVICE-mm-GROUP-rhel6-node1 \\
+  constraint-id=CONSTRAINT-LOCATION-SERVICE-mm-GROUP score=INFINITY \\
+  '#uname' eq rhel6-node1
 pcs -f tmp-cib.xml \\
-  constraint rule add CONSTRAINT-LOCATION-SERVICE-mm-GROUP id score INFINITY score=INFINITY #uname eq rhel6-node2
-pcs \\
-  -f tmp-cib.xml constraint rule add CONSTRAINT-LOCATION-SERVICE-mm-GROUP id score \\
-  -INFINITY score=-INFINITY \\
-  #uname ne rhel6-node1 #uname ne rhel6-node2
+  constraint rule add CONSTRAINT-LOCATION-SERVICE-mm-GROUP \\
+  id=CONSTRAINT-LOCATION-SERVICE-mm-GROUP-rhel6-node2 score=INFINITY \\
+  '#uname' eq rhel6-node2
+pcs -f tmp-cib.xml \\
+  constraint rule add CONSTRAINT-LOCATION-SERVICE-mm-GROUP \\
+  id=CONSTRAINT-LOCATION-SERVICE-mm-GROUP-RESTRICTED score=-INFINITY \\
+  '#uname' ne rhel6-node1 '#uname' ne rhel6-node2
 pcs cluster cib-push tmp-cib.xml --config
 EOF
     rm -f -- "${testcmd}"

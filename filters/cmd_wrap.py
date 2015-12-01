@@ -99,18 +99,44 @@ def cmd_wrap(flt_ctxt, in_obj):
         if line.lstrip().startswith('#'):
             ret.extend(cw.wrap(line))
             continue
-        linecnt, rline, remains = 0, [], tw - 2  # ' \'
+        linecnt, rline, remains = -1, [], tw - 2  # ' \'
         itemgroups = cmd_args_cutter(command('bytestring', line)('separated'))
-        for itemgroup in itemgroups:
-            item = ' '.join(itemgroup)
-            fills = len(item) + (1 if rline else 0)
-            # also deal with text width overflow on the first line
-            if (remains - fills >= 0 or not rline):
-                rline.append(item)
-                remains -= fills
-            else:
-                ret.append(('  ' if linecnt else '') + ' '.join(rline) + ' \\')
-                linecnt += 1
-                rline, remains = [item], tw - len(item) - 4  # ' \' & ident
-        ret.append(('  ' if linecnt else '') + ' '.join(rline))
+        itemgroups.reverse()
+        while itemgroups:
+            itemgroup = list(itemgroups.pop())
+            itemgroup.reverse()
+            while itemgroup:
+                curlen = 0
+                line = [itemgroup.pop()]
+                curlen += len(line[-1])
+                # best match fill
+                while itemgroup \
+                        and remains - (curlen + 1 + len(itemgroup[-1])) >= 0:
+                    line.append(itemgroup.pop())
+                    curlen += 1 + len(line[-1])
+                # compensate for ' \' tail not necessary if very last item fits
+                if not itemgroups and len(itemgroup) == 1 \
+                        and len(itemgroup[-1]) == 1:
+                    line.append(itemgroup.pop())
+                    curlen += 1 + len(line[-1])
+                # merge previous group to the current one if it fits the length
+                if rline and not itemgroup \
+                        and remains - (curlen + 1 + len(' '.join(rline))) >= 0:
+                    line = rline + line
+                    rline = []
+                    linecnt -= 1
+                # second pass optionally handles the terminal propagation
+                for i in xrange(2):
+                    if rline:
+                        tail = ' \\' if rline is not line else ''
+                        rline = ' '.join(rline)
+                        if not linecnt:
+                            ret.append(rline + tail)
+                            remains -= 2  # initial indent
+                        else:
+                            ret.append('  ' + rline + tail)
+                    linecnt += 1
+                    rline = line
+                    if itemgroups or itemgroup:
+                        break
     return ('stringiter', ret)
