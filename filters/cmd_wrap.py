@@ -42,6 +42,7 @@ def cmd_args_cutter(itemgroups):
                     # TBD
                     acc.append(i[pos])
                 ret.append(tuple(acc))
+                acc = []
             else:
                 ret.extend((ii, ) for ii in i)
         else:
