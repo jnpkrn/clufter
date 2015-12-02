@@ -56,3 +56,18 @@ def xslt_id_friendly(inner):
         '!&#x22;#$&#x25;&#x26;()*+,;&#x3c;=&#x3e;?@[\]^`{{|}}~',
         ''
     )'''.format(inner)
+
+
+def xslt_string_mapping(d, what="."):
+    """Convert dictionary into procedural mapping application (`xsl:when`s)"""
+    ret = []
+    for k, v in d.iteritems():
+        if not isinstance(v, basestring):
+            continue
+        ret.append('''\
+    <xsl:when test="{0} = '{1}'">'''.format(what, k))
+        ret.append('''\
+        <xsl:value-of select="'{0}'"/>'''.format(v))
+        ret.append('''\
+    </xsl:when>''')
+    return '\n'.join(ret)
