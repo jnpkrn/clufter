@@ -24,5 +24,6 @@
 !/.travis.yml
 !/ext-plugins/lib-{general,ccs,pcs}
 !/tests/XMLFormat-walk/
+!/tests/filters/
 !/tests/formats/
 !/tests/functional/
