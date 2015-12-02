@@ -11,8 +11,11 @@
 /__root__/*.egg-info
 
 /README.[!r]*
-/cib.xml
-/corosync.conf
+/dump-*
+/cib-*.xml
+/cluster-*.conf
+/corosync-*.conf
+/tmp-cib.xml
 
 # KEEP
 .*
