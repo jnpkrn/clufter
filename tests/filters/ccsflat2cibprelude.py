@@ -5,25 +5,10 @@
 """Testing `ccsflat2cibprelude' filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+# following makes available also: TeardownFilterTestCase, rewrite_root
 from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_com'))
 
-from os.path import dirname, join, split
-from sys import modules
-
 flt = 'ccsflat2cibprelude'
-
-def rewrite_root(flt, new_root):
-    # /foo/bar -> (/foo, bar)
-    # /foo/bar/ -> (/foo/bar, )
-    new_root_dir, new_xml_root = split(new_root)
-    old_root_dir = dirname(modules[flt.__class__.__module__].__file__)
-    new_root_dir = join(old_root_dir, new_root_dir)
-    flt._fnc = (lambda orig_fnc:
-        lambda *args, **kwargs: orig_fnc(*args, root_dir=new_root_dir,
-                                                xml_root=new_xml_root, **kwargs)
-    )(flt._fnc)
-    return flt
-
 
 class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
     def testNfsClient(self):
