@@ -15,8 +15,8 @@ except ValueError:  # Value?
 ccs_propagate_cman = '''\
     <xsl:template match="cman/@*[not(
 ''' + (
-                        xslt_is_member('.', ('cman',
-                                             'expected_votes'))
+                        xslt_is_member('name()', ('two_node',
+                                                  'expected_votes'))
 ) + ''')] | cman/altmulticast
           | cman/multicast"/>
 
