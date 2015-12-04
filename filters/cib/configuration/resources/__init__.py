@@ -426,3 +426,99 @@ cib2pcscmd = ('''\
 ''') % dict(
     NL=NL,
 )
+
+###
+
+from ....utils_xslt import xslt_is_member
+
+cib_meld_templates_op_roles = ('Started', 'Slave')
+
+# see lib/pengine/complex.c: unpack_template
+cib_meld_templates = ('''\
+    <!-- drop any occurrence as we meld them into proper primitives -->
+    <xsl:template match="template"/>
+
+    <xsl:template name="rewrite-id">
+        <xsl:param name="Elem"/>
+        <xsl:param name="InstanceId"/>
+        <xsl:copy>
+            <xsl:for-each select="@*">
+                <xsl:choose>
+                    <xsl:when test="name() = 'id'">
+                        <xsl:attribute name="{name()}">
+                            <xsl:value-of select="concat(., '-', $InstanceId)"/>
+                        </xsl:attribute>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:copy/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each>
+            <xsl:for-each select="*">
+                <xsl:call-template name="rewrite-id">
+                    <xsl:with-param name="Elem" select="."/>
+                    <xsl:with-param name="InstanceId" select="$InstanceId"/>
+                </xsl:call-template>
+            </xsl:for-each>
+        </xsl:copy>
+    </xsl:template>
+
+    <xsl:template match="primitive[@template]">
+        <xsl:variable name="Template"
+                      select="//template[@id = current()/@template]"/>
+        <xsl:variable name="InstanceId" select="generate-id()"/>
+        <xsl:copy>
+            <xsl:copy-of select="@id|$Template/@*[name() != 'id']"/>
+            <xsl:for-each select="$Template/*[name() != 'operations']">
+                <xsl:call-template name="rewrite-id">
+                    <xsl:with-param name="Elem" select="."/>
+                    <xsl:with-param name="InstanceId" select="$InstanceId"/>
+                </xsl:call-template>
+            </xsl:for-each>
+            <xsl:for-each select="*">
+                <xsl:copy>
+                    <xsl:copy-of select="@*"/>
+                    <xsl:if test="name() = 'operations'">
+                        <xsl:variable name="Operations" select="."/>
+                        <xsl:for-each select="$Template/op[
+                                                  not(
+                                                      $Operations/op[
+                                                          @name = current()/@name
+                                                          and
+                                                          (
+                                                              @role = current()/@role
+                                                              or
+                                                              ((
+                                                                  not(@role)
+                                                                  or
+''' + (
+                                                                  xslt_is_member('@role',
+                                                                                 cib_meld_templates_op_roles)
+) + '''
+                                                              ) and (
+                                                                  not(current()/@role)
+                                                                  or
+''' + (
+                                                                  xslt_is_member('current()/@role',
+                                                                                 cib_meld_templates_op_roles)
+) + '''
+
+                                                              ))
+                                                          )
+                                                      ]
+                                                  )
+                                              ]">
+                            <xsl:call-template name="rewrite-id">
+                                <xsl:with-param name="Elem" select="."/>
+                                <xsl:with-param name="InstanceId" select="$InstanceId"/>
+                            </xsl:call-template>
+                        </xsl:for-each>
+                    </xsl:if>
+                    <xsl:if test="name() != 'operations'">
+                        <xsl:apply-templates/>
+                    </xsl:if>
+                </xsl:copy>
+            </xsl:for-each>
+        </xsl:copy>
+    </xsl:template>
+''')
