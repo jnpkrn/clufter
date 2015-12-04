@@ -18,7 +18,7 @@ ccsflat2cibprelude = '''\
         <!-- SHOW-STOPPERS -->
         <xsl:if test="@lv_name">
             <xsl:message terminate="true"
-            >Cannot convert LV binding, stick with whole VG one</xsl:message>
+            >Cannot convert LV binding, stick with whole VG one [https://bugzilla.redhat.com/1286292]</xsl:message>
         </xsl:if>
 
         <!-- INSTANCE_ATTRIBUTES -->
