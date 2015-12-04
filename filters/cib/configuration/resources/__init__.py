@@ -417,6 +417,12 @@ cib2pcscmd = ('''\
     <!-- groups -->
     <clufter:descent-mix at="group"/>
 
+    <!-- templates -->
+    <xsl:if test="template">
+        <xsl:message terminate="true"
+        >Cannot convert templates to pcs commands yet [https://bugzilla.redhat.com/1281359]</xsl:message>
+    </xsl:if>
+
 ''') % dict(
     NL=NL,
 )
