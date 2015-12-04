@@ -40,7 +40,7 @@ Demo
 When properly installed, ``clufter`` command should be only these few
 letters away at your shell prompt.  For simplicity, I will stick with
 what one can use directly after cloning the repository and running
-``./run-check`` (to get the helper binary ccompiled):
+``./run-check`` (to get the helper binary compiled):
 
 .. code-block:: bash
 
