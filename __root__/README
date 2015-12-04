@@ -46,10 +46,11 @@ what one can use directly after cloning the repository and running
 
   $ ./run-dev ccs2pcscmd -gsq tests/filled.conf
   pcs cluster auth ju hele
-  pcs cluster setup --start --name ju hele --consensus 200 --token 5000 \
-    --join 100
+  pcs cluster setup --start --name test ju hele --consensus 200 \
+    --token 5000 --join 100
   sleep 60
-  pcs -f tmp-cib.xml property set stonith-enabled false
+  pcs cluster cib tmp-cib.xml --config
+  pcs -f tmp-cib.xml property set stonith-enabled=false
   pcs cluster cib-push tmp-cib.xml --config
 
 Here we got a sequence of ``pcs`` commands that should get us
