@@ -21,9 +21,10 @@ from .ccs2pcs import ccsflat2cibfinal_chain
                                   ('stringiter-combine2',
                                        ('cmd-wrap')))))),
                   (ccsflat2cibfinal_chain,
-                      ('cib2pcscmd',
-                          ('stringiter-combine2'  # , ('cmd-wrap' ...
-                           )))))
+                      ('cib-meld-templates',
+                          ('cib2pcscmd',
+                              ('stringiter-combine2'  # , ('cmd-wrap' ...
+                               ))))))
 def ccs2pcscmd_flatiron(cmd_ctxt,
                         input=PATH_CLUSTERCONF,
                         output="-",
@@ -61,6 +62,7 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
     cmd_ctxt['pcscmd_start_wait'] = start_wait
     cmd_ctxt['pcscmd_noguidance'] = noguidance
     cmd_ctxt['text_width'] = text_width
+    # XXX possibility to disable cib-meld-templates
 
     file_proto = protocols.plugins['file'].ensure_proto
     return (
@@ -84,7 +86,9 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
             #                (
             #                    (
             #                        (
-            #                            file_proto(output),  # already tracked
+            #                            (
+            #                                file_proto(output),  # already tracked
+            #                            ),
             #                        ),
             #                    ),
             #                ),
@@ -103,9 +107,10 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
                               ('stringiter-combine2',
                                    ('cmd-wrap'))))),
                   (ccsflat2cibfinal_chain,
-                      ('cib2pcscmd',
-                          ('stringiter-combine2'  # , ('cmd-wrap' ...
-                           )))))
+                      ('cib-meld-templates',
+                          ('cib2pcscmd',
+                              ('stringiter-combine2'  # , ('cmd-wrap' ...
+                               ))))))
 def ccs2pcscmd_needle(cmd_ctxt,
                       input=PATH_CLUSTERCONF,
                       output="-",
@@ -143,6 +148,7 @@ def ccs2pcscmd_needle(cmd_ctxt,
     cmd_ctxt['pcscmd_start_wait'] = start_wait
     cmd_ctxt['pcscmd_noguidance'] = noguidance
     cmd_ctxt['text_width'] = text_width
+    # XXX possibility to disable cib-meld-templates
 
     file_proto = protocols.plugins['file'].ensure_proto
     return (
@@ -164,7 +170,9 @@ def ccs2pcscmd_needle(cmd_ctxt,
             #                (
             #                    (
             #                        (
-            #                            file_proto(output),  # already tracked
+            #                            (
+            #                                file_proto(output),  # already tracked
+            #                            ),
             #                        ),
             #                    ),
             #                ),
