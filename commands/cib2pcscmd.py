@@ -11,8 +11,9 @@ from ..protocol import protocols
 from ..utils_cib import PATH_CIB
 
 
-@Command.deco(('cib2pcscmd',
-                  ('cmd-wrap')))
+@Command.deco(('cib-meld-templates',
+                  ('cib2pcscmd',
+                      ('cmd-wrap'))))
 def cib2pcscmd(cmd_ctxt,
                input=PATH_CIB,
                output="-",
@@ -44,11 +45,14 @@ def cib2pcscmd(cmd_ctxt,
     cmd_ctxt['pcscmd_dryrun'] = dry_run
     cmd_ctxt['pcscmd_enable'] = enable
     cmd_ctxt['text_width'] = text_width
+    # XXX possibility to disable cib-meld-templates
 
     file_proto = protocols.plugins['file'].ensure_proto
     return (
         file_proto(input),
         (
-            file_proto(output),
+            (
+                file_proto(output),
+            ),
         ),
     )
