@@ -688,7 +688,7 @@ class XMLFilter(Filter, MetaPlugin):
     def proceed_xslt(cls, in_obj, xslt_atom_hook=lambda ret, err: ret, **kws):
         """Apply iteratively XSLT snippets as per the schema tree (walk)
 
-        You should likely use `proceed_xslt_filter` wrapper instead.
+        You should likely use `filter_proceed_xslt` wrapper instead.
         """
         # XXX postprocess: omitted as standard defines the only root element
 
