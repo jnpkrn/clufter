@@ -537,11 +537,17 @@ class XMLFilter(Filter, MetaPlugin):
             urgent = (ret is None and not(emsg.split(' ', 1)[0].isupper())
                       or entry.type != 0)
             emsg = emsg if not urgent else 'FATAL: ' + emsg
+            emsg = cls._re_highlight.sub('\g<lp>|highlight:\g<msg>|\g<rp>',
+                                         emsg)
             msg = "|header:[{0:{1}}]| |subheader:XSLT:| {2}".format(cls.name,
                                                                     maxl, emsg)
             svc_output(msg, urgent=urgent,
-                       base=emsg.startswith('WARNING:') and 'warning'
-                            or urgent and 'error')
+                       base=reduce(
+                           lambda now, (new, new_l):
+                               now or (emsg.startswith(new) and new_l),
+                           {'WARNING:': 'warning', 'NOTE:': 'note'}.iteritems(),
+                           ''
+                       ) or urgent and 'error')
             if urgent:
                 fatal.append("XSLT: " + entry.message)
         if not fatal and validate_hook:
