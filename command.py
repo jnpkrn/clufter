@@ -256,9 +256,6 @@ class Command(object):
         # unofficial/unsupported ones
         for var in fnc_varnames:
             optname_used = cli_decor(var)
-            short_aliases = shortopts.setdefault(optname_used[0], [])
-            assert optname_used not in \
-                   (options[i][0][0] for i in short_aliases)
             options.append([["--" + optname_used], dict(
                 expert=True,
                 help="(undocumented expert option)",
