@@ -38,7 +38,7 @@ ccs2needlexml = '''\
                                     </xsl:otherwise>
                                 </xsl:choose>
                             <xsl:value-of select="concat(' hence not propagated (as',
-                                                         ' quorum_votes property)')"/>
+                                                         ' `quorum_votes` property)')"/>
                         </xsl:message>
                     </xsl:when>
                     <xsl:otherwise>

@@ -22,7 +22,7 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
   <instance_attributes id="RESOURCE-nfsclient-test1-ATTRS">
     <nvpair id="RESOURCE-nfsclient-test1-ATTRS-clientspec" name="clientspec" value="*"/>
     <nvpair id="RESOURCE-nfsclient-test1-ATTRS-directory" name="directory" value="/srv/nfs/test1"/>
-    <!-- NOTE: explicitly disabling unlock_on_stop parameter so as to preserve original behavior; you may want to enable it, though -->
+    <!-- NOTE: explicitly disabling `unlock_on_stop` parameter for `exportfs` resource so as to preserve original `nfsclient` resource behavior; you may want to enable it, though -->
     <nvpair id="RESOURCE-nfsclient-test1-ATTRS-unlock_on_stop" name="unlock_on_stop" value="false"/>
   </instance_attributes>
   <meta_attributes id="RESOURCE-nfsclient-test1-META">
@@ -38,7 +38,7 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
     <nvpair id="RESOURCE-nfsclient-test2-ATTRS-clientspec" name="clientspec" value="*"/>
     <nvpair id="RESOURCE-nfsclient-test2-ATTRS-directory" name="directory" value="/srv/nfs/test2"/>
     <nvpair id="RESOURCE-nfsclient-test2-ATTRS-options" name="options" value="rw,async,no_root_squash"/>
-    <!-- NOTE: explicitly disabling unlock_on_stop parameter so as to preserve original behavior; you may want to enable it, though -->
+    <!-- NOTE: explicitly disabling `unlock_on_stop` parameter for `exportfs` resource so as to preserve original `nfsclient` resource behavior; you may want to enable it, though -->
     <nvpair id="RESOURCE-nfsclient-test2-ATTRS-unlock_on_stop" name="unlock_on_stop" value="false"/>
   </instance_attributes>
   <meta_attributes id="RESOURCE-nfsclient-test2-META">

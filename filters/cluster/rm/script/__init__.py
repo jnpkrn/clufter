@@ -36,9 +36,9 @@ ccsflat2cibprelude = ('''\
     </xsl:when>
 ''') % dict(
     note=', '.join((
-        squote("NOTE: consider moving "),
+        squote("NOTE: consider moving `"),
         "@file",
-        squote(" into canonical LSB scripts location (standard: /etc/init.d/)"
+        squote("` into canonical LSB scripts location (standard: `/etc/init.d/`)"
                " + reflecting this in the configuration, perhaps even"
                " switching to an equivalent (systemd, anything OCF RA, ...)")
     ))
