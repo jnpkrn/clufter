@@ -436,6 +436,10 @@ cib_meld_templates_op_roles = ('Started', 'Slave')
 # see lib/pengine/complex.c: unpack_template
 cib_meld_templates = ('''\
     <!-- drop any occurrence as we meld them into proper primitives -->
+    <xsl:template match="template[1]">
+        <xsl:message
+        >NOTE: this step may not be necessary once pcs handles templates [https://bugzilla.redhat.com/1281359]</xsl:message>
+    </xsl:template>
     <xsl:template match="template"/>
 
     <xsl:template name="rewrite-id">
