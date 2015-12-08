@@ -488,7 +488,8 @@ class Command(object):
                             )
                         else:
                             cmd_ctxt['svc_output'](
-                                "|header:[{0:{1}}]| dump file: |highlight:{2}|"
+                                "|header:[{0:{1}}]| |subheader:dump:|"
+                                " |highlight:{2}|"
                                 .format(flt.__class__.name, maxl, fn)
                             )
                     continue
