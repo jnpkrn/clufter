@@ -504,7 +504,7 @@ class Command(object):
             passout['passout'] = flt_ctxt['out'](*io_decl)
             if passout is unused and io_decl[0] == SimpleFormat.FILE:
                 cmd_ctxt['svc_output'](
-                    "|header:[{0:{1}}]| output file: |highlight:{2}|"
+                    "|header:[{0:{1}}]| |subheader:output:| |highlight:{2}|"
                     .format(flt.__class__.name, maxl, passout['passout'])
                 )
 
