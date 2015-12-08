@@ -36,7 +36,8 @@ from .utils_func import apply_preserving_depth, \
                         apply_intercalate, \
                         loose_zip, \
                         zip_empty
-from .utils_prog import ProtectedDict, cli_decor, cli_undecor, docformat, which
+from .utils_prog import FancyOutput, ProtectedDict, \
+                        cli_decor, cli_undecor, docformat, which
 from .utils_xml import CLUFTER_NS, XSL_NS, \
                        namespaced, nselem, squote, element_juggler, \
                        xml_get_root_pi, \
@@ -202,6 +203,14 @@ class Filter(object):
             ret = cls.probe(fnc.__name__, (cls, ), attrs)
             return ret
         return deco_fnc
+
+    @classmethod
+    def ctxt_svc_output(cls, ctxt, msg, **kwargs):
+        if 'svc_output' in ctxt:
+            svc_output = ctxt['svc_output']
+        else:
+            svc_output = FancyOutput(f=stderr, prefix="[{0}] ")
+        svc_output(msg, prefix_arg=cls.name, **kwargs)
 
 
 def tag_log(s, elem):
@@ -528,8 +537,9 @@ class XMLFilter(Filter, MetaPlugin):
                     self._xslt_atom_hook(ret, error_log, validate_hook, **kws))
 
     @classmethod
-    def _xslt_atom_hook(cls, ret, error_log, validate_hook=None, maxl=1,
-                        svc_output=lambda s, **kwargs: stderr.write(s + '\n'),
+    def _xslt_atom_hook(cls, ret, error_log, validate_hook=None,
+                        svc_output=(lambda msg, **kws:
+                                    Filter.ctxt_svc_output(None, msg, **kws)),
                         **ignored):
         fatal = []
         for entry in error_log:
@@ -542,9 +552,7 @@ class XMLFilter(Filter, MetaPlugin):
             emsg = emsg if not urgent else 'FATAL: ' + emsg
             emsg = cls._re_highlight.sub('\g<lp>|highlight:\g<msg>|\g<rp>',
                                          emsg)
-            msg = "|header:[{0:{1}}]| |subheader:XSLT:| {2}".format(cls.name,
-                                                                    maxl, emsg)
-            svc_output(msg, urgent=urgent,
+            svc_output("|subheader:XSLT:| {0}".format(emsg), urgent=urgent,
                        base=reduce(
                            lambda now, (new, new_l):
                                now or (emsg.startswith(new) and new_l),
@@ -963,7 +971,7 @@ class XMLFilter(Filter, MetaPlugin):
             def_first += '<clufter:descent-mix preserve-rest="true"/>'
 
         xslt_atom_hook = self._xslt_get_atom_hook(**filterdict_pop(kwargs,
-            'editor', 'interactive', 'maxl', 'svc_output', 'validator_specs'
+            'editor', 'interactive', 'svc_output', 'validator_specs'
         ))
 
         kwargs.setdefault('walk_default_first', def_first)
@@ -984,9 +992,10 @@ class XMLFilter(Filter, MetaPlugin):
         """The same as `filter_proceed_xslt`, context-aware"""
         kwargs = filterdict_keep(ctxt,
             'raw', 'system', 'system_extra',  # <- proceed_xslt / atom_hook -v
-            'editor', 'interactive', 'maxl', 'svc_output', 'validator_specs',
+            'editor', 'interactive', 'validator_specs',
             **kwargs
         )
+        kwargs['svc_output'] = ctxt.ctxt_svc_output
         return self.filter_proceed_xslt(in_obj, **kwargs)
 
     @classmethod

@@ -405,9 +405,7 @@ class Command(object):
                                            partitioner=lambda x:
                                            not (tuplist(x)) or protodecl(x))))
         # if any "EMPTY" (zip_empty) value present, respective class name ~ str
-        maxl = len(sorted(self._filters, key=len)[-1])
         unused, tstmp = {}, hex(int(time()))[2:]
-        cmd_ctxt['maxl'] = maxl
         while worklist:
             workitem = worklist.pop()
             if workitem == zip_empty:
@@ -479,18 +477,12 @@ class Command(object):
                             )
                             ret(SimpleFormat.FILE, fn)
                         except FormatError:
-                            cmd_ctxt['svc_output'](
-                                "|header:[{0:{1}}]| dumping failed"
-                                .format(flt.__class__.name, maxl),
-                                base='error',
-                                urgent=True
-                            )
+                            flt_ctxt.ctxt_svc_output("dumping failed",
+                                                     base='error', urgent=True)
                         else:
-                            cmd_ctxt['svc_output'](
-                                "|header:[{0:{1}}]| |subheader:dump:|"
-                                " |highlight:{2}|"
-                                .format(flt.__class__.name, maxl, fn)
-                            )
+                            flt_ctxt.ctxt_svc_output("|subheader:dump:|"
+                                                     " |highlight:{0}|"
+                                                     .format(fn))
                     continue
             # output time!  (INFILTER terminal listed twice in io_chain)
             with cmd_ctxt.prevented_taint():
@@ -501,10 +493,8 @@ class Command(object):
             # store output somewhere, which even can be useful (use as a lib)
             passout['passout'] = flt_ctxt['out'](*io_decl)
             if passout is unused and io_decl[0] == SimpleFormat.FILE:
-                cmd_ctxt['svc_output'](
-                    "|header:[{0:{1}}]| |subheader:output:| |highlight:{2}|"
-                    .format(flt.__class__.name, maxl, passout['passout'])
-                )
+                flt_ctxt.ctxt_svc_output("|subheader:output:| |highlight:{0}|"
+                                         .format(passout['passout']))
 
         # close "magic" fds
         map(lambda (k, f): k in native_fds or f.close(), magic_fds.iteritems())
@@ -549,6 +539,7 @@ class Command(object):
                                                             for a in args)))
         log.debug("Running command `{0}';  args={1}, kwargs={2}"
                   .format(self.__class__.name, args, kwargs))
+        maxl = len(sorted(self._filters, key=len)[-1])
         cmd_ctxt = cmd_ctxt or CommandContext({
             'filter_chain_analysis': self.filter_chain_analysis,
             'filter_noop':           getattr(opts, 'noop', ()),
@@ -558,6 +549,8 @@ class Command(object):
             'svc_output':            FancyOutput(f=stderr,
                                                  quiet=getattr(opts, 'quiet',
                                                                False),
+                                                 prefix=("|header:[{{0:{0}}}]| "
+                                                         .format(maxl)),
                                                  color=dict(auto=None,
                                                             never=False,
                                                             always=True)[
