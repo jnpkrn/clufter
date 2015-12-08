@@ -539,7 +539,7 @@ class XMLFilter(Filter, MetaPlugin):
     @classmethod
     def _xslt_atom_hook(cls, ret, error_log, validate_hook=None,
                         svc_output=(lambda msg, **kws:
-                                    Filter.ctxt_svc_output(None, msg, **kws)),
+                                    Filter.ctxt_svc_output({}, msg, **kws)),
                         **ignored):
         fatal = []
         for entry in error_log:
