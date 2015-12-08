@@ -20,7 +20,7 @@ ccs2needlexml = '''\
     <xsl:if test="@expected_votes">
         <xsl:message>
             <xsl:value-of select="concat('WARNING: intentionally omitting',
-                                         ' expected_votes parameter as it',
+                                         ' `expected_votes` parameter as it',
                                          ' may be based on assumptions',
                                          ' no longer true in post-conversion',
                                          ' environment')"/>

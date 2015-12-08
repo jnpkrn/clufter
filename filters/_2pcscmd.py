@@ -130,8 +130,8 @@ def coro2pcscmd(**kwargs):
 ''') % dict(
     NL=NL,
     msg_enable="NOTE: cluster infrastructure services not enabled"
-               " at this point, which can be changed any time by issuing:"
-               " pcs cluster enable --all",
+               " at this point, which can be changed any time by issuing"
+               " `pcs cluster enable --all`",
     **dict(('descent_' + k, descent(k))
            for k in ('cman', 'node', 'quorum', 'totem'))
 )

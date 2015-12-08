@@ -43,8 +43,8 @@ ccsflat2cibprelude = ('''\
     </xsl:when>
 ''') % dict(
     note=', '.join((
-        squote("NOTE: explicitly disabling unlock_on_stop parameter so as to"
-               " preserve original behavior;"),
-        squote(" you may want to enable it, though"),
+        squote("NOTE: explicitly disabling `unlock_on_stop` parameter for"),
+        squote(" `exportfs` resource so as to preserve original `nfsclient`"),
+        squote(" resource behavior; you may want to enable it, though"),
     ))
 )

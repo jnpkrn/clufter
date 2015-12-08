@@ -259,10 +259,11 @@ ccsflat2cibprelude = ('''\
     <clufter:descent at="failoverdomain"/>
 ''') % dict(
     package_name=package_name(),
-    note_unhandled='''<xsl:value-of select="concat('WARNING: resource ', name(),
-                                                   ' is currently unhandled by',
-                                                   ' the conversion, you are',
-                                                   ' advised to copy ',
+    note_unhandled='''<xsl:value-of select="concat('WARNING: resource `',
+                                                   name(),
+                                                   '` is currently unhandled',
+                                                   ' in the conversion, you',
+                                                   ' are advised to copy ',
                                                    substring-before(
                                                        @rgmanager-meta-agent,
                                                        '.metadata'
