@@ -9,6 +9,7 @@ from copy import deepcopy
 from logging import getLogger
 from os import environ, isatty, stat
 from os.path import dirname, join
+from re import compile as re_compile
 from shlex import split as shlex_split
 from shutil import rmtree
 from subprocess import CalledProcessError, check_call
@@ -212,6 +213,8 @@ class XMLFilter(Filter, MetaPlugin):
     """Base for XML/XSLT traversal filters"""
 
     _in_format = _out_format = 'XML'
+
+    _re_highlight = re_compile('(?P<lp>`)(?P<msg>[^`]*)(?P<rp>`)')
 
     @staticmethod
     @docformat(CMD_HELP_OPTSEP_COMMON)
