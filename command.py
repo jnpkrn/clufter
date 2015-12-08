@@ -379,8 +379,7 @@ class Command(object):
                     )
         return to_check
 
-    @classmethod
-    def _iochain_proceed(cls, cmd_ctxt, io_chain):
+    def _iochain_proceed(self, cmd_ctxt, io_chain):
         # currently works sequentially, jumping through the terminals in-order;
         # when any of them (apparently the output one) hasn't its prerequisites
         # (i.e., input data) satisfied, the run is restarted with first
@@ -398,7 +397,7 @@ class Command(object):
         terminal_chain = cmd_ctxt['filter_chain_analysis']['terminal_chain']
         terminals = apply_intercalate(terminal_chain)
 
-        terminal_chain = cls._iochain_check_terminals(io_chain, terminal_chain)
+        terminal_chain = self._iochain_check_terminals(io_chain, terminal_chain)
 
         native_fds = dict((f.fileno(), f) for f in (stderr, stdin, stdout))
         magic_fds = native_fds.copy()
@@ -407,8 +406,7 @@ class Command(object):
                                            partitioner=lambda x:
                                            not (tuplist(x)) or protodecl(x))))
         # if any "EMPTY" (zip_empty) value present, respective class name ~ str
-        maxl = len(sorted(worklist, key=lambda x: len(x[0].__class__.__name__)
-                         )[-1][0].__class__.__name__)
+        maxl = len(sorted(self._filters, key=len)[-1])
         unused, tstmp = {}, hex(int(time()))[2:]
         cmd_ctxt['maxl'] = maxl
         while worklist:
