@@ -337,6 +337,7 @@ class FancyOutput(object):
         'error',
         'header',
         'highlight',
+        'note',
         'subheader',
         'warning',
     )
@@ -369,8 +370,9 @@ class FancyOutput(object):
         error     = 'lightred',
         header    = 'magenta',
         highlight = 'green',
+        note      = 'brown',
         subheader = 'blue',
-        warning   = 'darkgray',
+        warning   = 'red',
     )
 
     @classmethod
