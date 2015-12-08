@@ -552,7 +552,7 @@ class XMLFilter(Filter, MetaPlugin):
             emsg = emsg if not urgent else 'FATAL: ' + emsg
             emsg = cls._re_highlight.sub('\g<lp>|highlight:\g<msg>|\g<rp>',
                                          emsg)
-            svc_output("|subheader:XSLT:| {0}".format(emsg), urgent=urgent,
+            svc_output("|subheader:xslt:| {0}".format(emsg), urgent=urgent,
                        base=reduce(
                            lambda now, (new, new_l):
                                now or (emsg.startswith(new) and new_l),
