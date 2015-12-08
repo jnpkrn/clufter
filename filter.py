@@ -15,6 +15,7 @@ from shutil import rmtree
 from subprocess import CalledProcessError, check_call
 from sys import modules, stderr, __stdin__
 from tempfile import mkdtemp, NamedTemporaryFile
+from time import time
 from warnings import warn
 try:
     from collections import OrderedDict
@@ -231,13 +232,15 @@ class XMLFilter(Filter, MetaPlugin):
                        nocheck=False,
                        batch=False,
                        editor=EDITOR,
-                       raw=False):
+                       raw=False,
+                       _profile=False):
         """\
         {0}
             nocheck   do not validate any step (even if self-checks present)
             batch     do not interact (validation failure recovery, etc.)
             editor    customize editor to run (unused in batch mode)
             raw       do not care about pretty-printed output
+            _profile  enable XSLT profiling (auxiliary files produced)
         """
         flt_ctxt = cmd_ctxt.filter()
         flt_ctxt.setdefault('validator_specs', {'': ''} if nocheck else {},
@@ -245,7 +248,8 @@ class XMLFilter(Filter, MetaPlugin):
         flt_ctxt.update(
             raw=raw,
             interactive=not(batch and isatty(__stdin__.fileno())),
-            editor=editor
+            editor=editor,
+            profile=_profile,
         )
 
     @staticmethod
@@ -561,11 +565,22 @@ class XMLFilter(Filter, MetaPlugin):
                        ) or urgent and 'error')
             if urgent:
                 fatal.append("XSLT: " + entry.message)
-        if not fatal and validate_hook:
-            ret, entries = validate_hook(ret)
-            fatal.extend("RNG: " + ':'.join(args2tuple(str(e[0]), str(e[1]),
-                                                       *e[2:]))
-                         for e in entries)
+        if not fatal:
+            if hasattr(ret, 'xslt_profile') and ret.xslt_profile:
+                profile = etree.tostring(ret.xslt_profile, pretty_print=True)
+                fn = 'xslt-profile-{0}-{1}.xml'.format(cls.name,
+                                                       hex(int(time()))[2:])
+                with open(fn, "a") as f:
+                    f.write(profile)
+                    svc_output("|subheader:xslt-profile:| |highlight:{0}|"
+                               .format(fn))
+                del ret.xslt_profile
+
+            if validate_hook:
+                ret, entries = validate_hook(ret)
+                fatal.extend("RNG: " + ':'.join(args2tuple(str(e[0]), str(e[1]),
+                                                           *e[2:]))
+                             for e in entries)
         if fatal:
             raise FilterPlainError("FAILED filter: {0}".format(cls.name))
         return ret
@@ -692,9 +707,9 @@ class XMLFilter(Filter, MetaPlugin):
         """
         # XXX postprocess: omitted as standard defines the only root element
 
-        def proceed(transformer, elem, children):
+        def proceed(transformer, elem, children, profile=False):
             # expect (xslt, hooks) in the former case
-            return xslt_atom_hook(*do_proceed(transformer, elem, children)
+            return xslt_atom_hook(*do_proceed(transformer, elem, children, profile)
                                   if not callable(transformer)
                                   else transformer(elem, children))
 
@@ -756,7 +771,7 @@ class XMLFilter(Filter, MetaPlugin):
                 parent[index:index] = e.getchildren()
                 e.getparent().remove(e)
 
-        def do_proceed(xslt, elem, children):
+        def do_proceed(xslt, elem, children, profile=False):
             # in bottom-up manner
 
             hooks, do_mix = xslt[1:]
@@ -831,7 +846,7 @@ class XMLFilter(Filter, MetaPlugin):
                 #ret = elem.xslt(xslt_root)
                 xslt = etree.XSLT(xslt_root)
                 try:
-                    ret = xslt(elem)
+                    ret = xslt(elem, profile_run=profile)
                 except etree.XSLTApplyError as e:
                     error_log = e.error_log
                     ret = None
@@ -871,6 +886,9 @@ class XMLFilter(Filter, MetaPlugin):
 
         if not kws.pop('textmode', False):
             kws.setdefault('postprocess', postprocess)
+        if kws.pop('profile', False):
+            kws['proceed'] = (lambda *args, **kwargs:
+                                  proceed(*args, profile=True, **kwargs))
         defaults = dict(preprocess=cls._xslt_preprocess, proceed=proceed,
                         sparse=True)
         defaults.update(kws)
@@ -991,8 +1009,8 @@ class XMLFilter(Filter, MetaPlugin):
     def ctxt_proceed_xslt(self, ctxt, in_obj, **kwargs):
         """The same as `filter_proceed_xslt`, context-aware"""
         kwargs = filterdict_keep(ctxt,
-            'raw', 'system', 'system_extra',  # <- proceed_xslt / atom_hook -v
-            'editor', 'interactive', 'validator_specs',
+            'profile', 'raw', 'system', 'system_extra',  # <- proceed_xslt
+            'editor', 'interactive', 'validator_specs',  # <- atom_hook
             **kwargs
         )
         kwargs['svc_output'] = ctxt.ctxt_svc_output

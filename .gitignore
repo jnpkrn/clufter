@@ -16,6 +16,7 @@
 /cluster-*.conf
 /corosync-*.conf
 /tmp-cib.xml
+/xslt-profile-*.xml
 
 # KEEP
 .*
