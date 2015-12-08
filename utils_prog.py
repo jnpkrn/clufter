@@ -381,11 +381,13 @@ class FancyOutput(object):
                                     else '\033[' + spec)
 
     # TODO use /etc/terminal-colors.d/clufter.{enable,disable,scheme}
-    def __init__(self, f=stdout, recheck=False, color=None, quiet=False, **cfg):
+    def __init__(self, f=stdout, recheck=False, color=None, quiet=False,
+                 prefix='', **cfg):
         if not isinstance(f, file):
             f = fdopen(f, "a")
         self._f = f
         self._quiet = quiet
+        self._prefix = prefix
         self._table = self.table.copy().update(cfg)
         if color is not None:
             recheck = False
@@ -397,6 +399,11 @@ class FancyOutput(object):
     def __call__(self, s, **kwargs):
         if self._quiet and not kwargs.pop('urgent', False):
             return
+        if self._prefix:
+            prefix = self._prefix
+            if 'prefix_arg' in kwargs:
+                prefix = prefix.format(kwargs['prefix_arg'])
+            s = prefix + s
         self._handle(s, **kwargs)
         self._f.flush()
 
