@@ -28,7 +28,6 @@ from .utils import any2iter, \
                    arg2wrapped, \
                    args2tuple, \
                    filterdict_keep, \
-                   func_defaults_varnames, \
                    head_tail, \
                    hybridproperty, \
                    nonetype, \
