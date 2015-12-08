@@ -263,7 +263,8 @@ class Command(object):
 
     def _figure_parser_desc_opts(self, fnc_defaults, fnc_varnames,
                                  opt_group=None):
-        readopts, common_tail, shortopts, options = False, False, {}, []
+        readopts, common_tail = False, False
+        shortopts, options, expert =  {}, [], []
         description = []
         fnc_varnames = set(fnc_varnames)
         opt_group = opt_group or OptionParser()
@@ -281,17 +282,21 @@ class Command(object):
                 if not all((optname, optdesc)) or optname not in fnc_varnames:
                     log.warning("Bad option line: {0}".format(line))
                 else:
-                    optname_used = cli_decor(optname)
+                    target = expert if optname.startswith('_') else options
+                    optname_used = cli_decor(optname.lstrip('_'))
                     log.debug("Command `{0}', found option `{1}' ({2})".format(
                         self.__class__.name, optname_used, optname
                     ))
                     fnc_varnames.remove(optname)
                     short_aliases = shortopts.setdefault(optname_used[0], [])
-                    if not common_tail:
+                    opt = {}
+                    if target is expert:
+                        opt['expert'] = True
+                        opt['dest'] = optname  # (un)decor just works, '_' not
+                    elif not common_tail:
                         assert optname_used not in \
                             (options[i][0][0] for i in short_aliases)
                         short_aliases.append(len(options))  # as an index
-                    opt = {}
                     opt['help'] = optdesc[0].strip()
                     if optname in fnc_defaults:  # default if known
                         default = fnc_defaults[optname]
@@ -303,7 +308,7 @@ class Command(object):
                         else:
                             opt['help'] += " [%default]"
                         opt['default'] = default
-                    options.append([["--" + optname_used], opt])
+                    target.append([["--" + optname_used], opt])
             elif line.lower().startswith(CMD_HELP_OPTSEP_PRIMARY):
                 readopts = True
             else:
@@ -324,6 +329,7 @@ class Command(object):
                 options[alias][0].append(use)
 
         self._figure_parser_opt_dumpnoop(options, shortopts)
+        options.extend(expert)
         self._figure_parser_opt_unofficial(options, shortopts, fnc_varnames)
 
         description = description[:-1] if not description[-1] else description
