@@ -95,11 +95,19 @@ def cmd_wrap(flt_ctxt, in_obj):
         log.info('Text width fallback: {0}'.format(tw))
     cw = TextWrapper(width=tw, subsequent_indent='# ')  # wrapper for comments
 
-    ret = []
+    ret, continuation = [], []
     for line in in_obj('stringiter', protect_safe=True):
         if line.lstrip().startswith('#'):
             ret.extend(cw.wrap(line))
             continue
+        # rough overapproximation of what is indeed a line continuation
+        if line.endswith('\\') and not line.endswith('\\\\'):
+            if '#' not in line:
+                continuation.append(line[:-1])
+                continue
+            line += '\\'  # XXX
+        line = ' '.join(continuation) + line
+        continuation = []
         linecnt, rline, remains = -1, [], tw - 2  # ' \'
         itemgroups = cmd_args_cutter(command('bytestring', line)('separated'))
         itemgroups.reverse()
