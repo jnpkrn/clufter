@@ -15,9 +15,10 @@ from ..utils_corosync import PATH_COROCONF
 
 
 @Command.deco(('ccspcmk2pcscmd',
-                  ('stringiter-combine2')),
-              ('cib2pcscmd',
-                  ('stringiter-combine2')))
+                      ('stringiter-combine2')),
+              ('cib-meld-templates',
+                  ('cib2pcscmd',
+                      ('stringiter-combine2'))))
 def pcs2pcscmd_flatiron(cmd_ctxt,
                         ccs=PATH_CLUSTERCONF,
                         cib=PATH_CIB,
@@ -63,11 +64,13 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
         (
            file_proto(ccs),
            (
-               file_proto(output),
+                    file_proto(output),
            ),
            file_proto(cib),
            #(
-           #    file_proto(output),  # already tracked
+           #    (
+           #        file_proto(output),  # already tracked
+           #    ),
            #),
         ),
     )
@@ -77,8 +80,9 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
                   ('simpleconfig2needlexml',
                       ('needlexml2pcscmd',
                           ('stringiter-combine2')))),
-              ('cib2pcscmd',
-                          ('stringiter-combine2')))
+              ('cib-meld-templates',
+                  ('cib2pcscmd',
+                          ('stringiter-combine2'))))
 def pcs2pcscmd_needle(cmd_ctxt,
                       coro=PATH_COROCONF,
                       cib=PATH_CIB,
@@ -132,7 +136,9 @@ def pcs2pcscmd_needle(cmd_ctxt,
             ),
            file_proto(cib),
            #(
+           #    (
            #            file_proto(output),  # already tracked
+           #    ),
            #),
         ),
     )
