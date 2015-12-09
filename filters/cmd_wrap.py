@@ -28,11 +28,6 @@ def cmd_args_cutter(itemgroups):
                 end = len(i)
                 while pos + 1 < end:
                     pos += 1
-                    if pos <= end - 2:
-                        if i[pos] in ("op", "meta"):
-                            ret.append(tuple(acc))
-                            acc = [i[pos]]
-                            continue
                     if pos <= end - 4:
                         if i[pos:pos + 2] in (("resource", "create"),
                                               ("stonith", "create")):
@@ -41,6 +36,11 @@ def cmd_args_cutter(itemgroups):
                             )
                             acc = []
                             pos += 3
+                            continue
+                    if pos <= end - 2:
+                        if i[pos] in ("op", "meta"):
+                            ret.append(tuple(acc))
+                            acc = [i[pos]]
                             continue
                     # TBD
                     acc.append(i[pos])
