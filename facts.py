@@ -82,6 +82,9 @@ cluster_map = {
                     # https://fedoraproject.org/wiki/Changes/ReplaceYumWithDNF
                     'cmd::pkg-install':             'dnf install -y {packages}',
                 }),
+                ((23, ), {
+                    'pacemaker[coro]':               (1, 1, 13),
+                }),
             ),
             'redhat': (
                 ((6, 0), {
