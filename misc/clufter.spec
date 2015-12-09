@@ -60,6 +60,10 @@
   %endif
 %endif
 
+# universality++
+# https://fedoraproject.org/wiki/EPEL:Packaging?rd=Packaging:EPEL#The_.25license_tag
+%{!?_licensedir:%global license %doc}
+
 
 Name:           %{clufter_name}
 Version:        %{clufter_version_norm}
