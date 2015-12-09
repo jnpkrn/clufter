@@ -133,6 +133,10 @@ cluster_map = {
                     'corosync':                      (2, 3),
                     'pacemaker[coro,hb]':            (1, 1, 10),
                 }),
+                ((15, 04), {
+                    # https://packages.ubuntu.com/vivid/{corosync,pacemaker}
+                    'pacemaker[coro,hb]':            (1, 1, 12),
+                }),
             ),
         },
 }
