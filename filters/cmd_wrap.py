@@ -28,9 +28,11 @@ def cmd_args_cutter(itemgroups):
                 end = len(i)
                 while pos + 1 < end:
                     pos += 1
+                    # try to cut into "firm groups"
                     if pos <= end - 4:
                         if i[pos:pos + 2] in (("resource", "create"),
                                               ("stonith", "create")):
+                            # "resource/stonith create X Y" firm group
                             ret.extend(
                                 filter(bool, (tuple(acc), tuple(i[pos:pos + 4])))
                             )
@@ -39,6 +41,7 @@ def cmd_args_cutter(itemgroups):
                             continue
                     if pos <= end - 2:
                         if i[pos] in ("op", "meta"):
+                            # "op/meta non-option [non-option...]"
                             ret.append(tuple(acc))
                             acc = [i[pos]]
                             continue
