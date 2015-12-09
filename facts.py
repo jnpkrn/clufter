@@ -169,11 +169,16 @@ aliases_releases = {
     'debian': {  # because of http://bugs.python.org/issue9514 @ 2.6 ?
         'squeeze':    '6',
         'wheezy':     '7',
-        'wheezy/sid': '7.999',
+        'wheezy/sid': '7.999',  # XXX ?
+        'jessie':     '8',
     },
     'ubuntu': {
-        'raring':     '13.04',
-        'saucy':      '13.10',
+        'raring':     '13.04',  # Raring Ringtail
+        'saucy':      '13.10',  # Saucy Salamander
+        'trusty':     '14.04',  # Trusty Tahr
+        'utopic':     '14.10',  # Utopic Unicorn
+        'vivid':      '15.04',  # Vivid Vervet
+        'wily':       '15.10',  # Wily Werewolf
     }
 }
 
