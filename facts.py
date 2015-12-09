@@ -44,8 +44,12 @@ cluster_map = {
                     'pacemaker[coro,hb]':            (1, 1, 7),
                 }),
                 ((8, ), {
-                    # https://packages.debian.org/jessie/corosync (?)
+                    # https://packages.debian.org/jessie/corosync
                     'corosync':                      (1, 4, 6),
+                }),
+                ((9, ), {
+                    # https://packages.debian.org/stretch/corosync
+                    'corosync':                      (2, 3, 5),
                 }),
             ),
             'fedora': (
