@@ -40,6 +40,14 @@ def cmd_args_cutter(itemgroups):
                             acc = list(i[pos:pos])
                             pos += len(acc) - 1
                             continue
+                    if pos <= end - 3:
+                        if i[pos:pos + 2] in (('property', 'set'),
+                                              ('property', 'unset')):
+                            # "property set/unset non-option [non-option...]"
+                            ret.extend(filter(bool, (tuple(acc), )))
+                            acc = list(i[pos:pos + 2])
+                            pos += len(acc) - 1
+                            continue
                     if pos <= end - 2:
                         if i[pos] in ("op", "meta"):
                             # "op/meta non-option [non-option...]"
