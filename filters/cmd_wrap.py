@@ -36,14 +36,16 @@ def cmd_args_cutter(itemgroups):
                             ret.extend(
                                 filter(bool, (tuple(acc), tuple(i[pos:pos + 4])))
                             )
-                            acc = []
-                            pos += 3
+                            pos += 4
+                            acc = list(i[pos:pos])
+                            pos += len(acc) - 1
                             continue
                     if pos <= end - 2:
                         if i[pos] in ("op", "meta"):
                             # "op/meta non-option [non-option...]"
-                            ret.append(tuple(acc))
-                            acc = [i[pos]]
+                            ret.extend(filter(bool, (tuple(acc), )))
+                            acc = list(i[pos:pos + 1])
+                            pos += len(acc) - 1
                             continue
                     # TBD
                     acc.append(i[pos])
