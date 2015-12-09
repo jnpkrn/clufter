@@ -16,7 +16,7 @@ cib2pcscmd = ('''\
                  pairs when first unknown observed; alternatively a single
                  command with "force" -->
 ''' + (
-            verbose_inform('"new singleton property set: ", @name')
+            verbose_inform('"set singleton cluster property: ", @name')
 ) + '''
             <xsl:value-of select='concat($pcscmd_pcs, "property set")'/>
             <xsl:if test="$pcscmd_force">
