@@ -21,10 +21,11 @@ from .ccs2pcs import ccsflat2cibfinal_chain
                                   ('stringiter-combine2',
                                        ('cmd-wrap')))))),
                   (ccsflat2cibfinal_chain,
-                      ('cib-meld-templates',
-                          ('cib2pcscmd',
-                              ('stringiter-combine2'  # , ('cmd-wrap' ...
-                               ))))))
+                      ('cib-revitalize',
+                          ('cib-meld-templates',
+                              ('cib2pcscmd',
+                                  ('stringiter-combine2'  # , ('cmd-wrap' ...
+                                   )))))))
 def ccs2pcscmd_flatiron(cmd_ctxt,
                         input=PATH_CLUSTERCONF,
                         output="-",
@@ -87,7 +88,9 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
             #                    (
             #                        (
             #                            (
-            #                                file_proto(output),  # already tracked
+            #                                (
+            #                                    file_proto(output),  # already tracked
+            #                                ),
             #                            ),
             #                        ),
             #                    ),
@@ -107,10 +110,11 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
                               ('stringiter-combine2',
                                    ('cmd-wrap'))))),
                   (ccsflat2cibfinal_chain,
-                      ('cib-meld-templates',
-                          ('cib2pcscmd',
-                              ('stringiter-combine2'  # , ('cmd-wrap' ...
-                               ))))))
+                      ('cib-revitalize',
+                          ('cib-meld-templates',
+                              ('cib2pcscmd',
+                                  ('stringiter-combine2'  # , ('cmd-wrap' ...
+                                   )))))))
 def ccs2pcscmd_needle(cmd_ctxt,
                       input=PATH_CLUSTERCONF,
                       output="-",
@@ -171,7 +175,9 @@ def ccs2pcscmd_needle(cmd_ctxt,
             #                    (
             #                        (
             #                            (
-            #                                file_proto(output),  # already tracked
+            #                                (
+            #                                    file_proto(output),  # already tracked
+            #                                ),
             #                            ),
             #                        ),
             #                    ),

@@ -11,9 +11,10 @@ from ..protocol import protocols
 from ..utils_cib import PATH_CIB
 
 
-@Command.deco(('cib-meld-templates',
-                  ('cib2pcscmd',
-                      ('cmd-wrap'))))
+@Command.deco(('cib-revitalize',
+                  ('cib-meld-templates',
+                      ('cib2pcscmd',
+                          ('cmd-wrap')))))
 def cib2pcscmd(cmd_ctxt,
                input=PATH_CIB,
                output="-",
@@ -52,7 +53,9 @@ def cib2pcscmd(cmd_ctxt,
         file_proto(input),
         (
             (
-                file_proto(output),
+                (
+                    file_proto(output),
+                ),
             ),
         ),
     )
