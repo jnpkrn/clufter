@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """ccs-revitalize command"""
@@ -7,11 +7,12 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..command import Command
 from ..protocol import protocols
+from ..utils_cman import PATH_CLUSTERCONF
 
 
 @Command.deco('ccs-revitalize')
 def ccs_revitalize(cmd_ctxt,
-                   input="/etc/cluster/cluster.conf",
+                   input=PATH_CLUSTERCONF,
                    output="cluster-revitalized-{ccs-revitalize.in.hash}.conf"):
     """Migrate deprecated config's props (agent params, etc.)
 

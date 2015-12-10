@@ -7,11 +7,12 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..command import Command
 from ..protocol import protocols
+from ..utils_cman import PATH_CLUSTERCONF
 
 
 @Command.deco('ccs-artefacts')
 def ccs_artefacts(cmd_ctxt,
-                  input="/etc/cluster/cluster.conf",
+                  input=PATH_CLUSTERCONF,
                   output="cman-artefacts-{ccs-artefacts.in.hash}.conf"):
     """Output artefacts referenced in the config. in CVS format
 
