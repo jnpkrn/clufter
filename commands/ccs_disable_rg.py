@@ -7,12 +7,13 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..command import Command
 from ..protocol import protocols
+from ..utils_cman import PATH_CLUSTERCONF
 
 
 @Command.deco(('ccs-disable-rg',
                    ('ccs-version-bump')))
 def ccs_disable_rg(cmd_ctxt,
-                   input="/etc/cluster/cluster.conf",
+                   input=PATH_CLUSTERCONF,
                    output="cluster-disabledrg-{ccs-disable-rg.in.hash}.conf",
                    noversionbump=False):
     """Make config. prevent RGManager from (accidentally) starting
