@@ -15,9 +15,6 @@ cib2pcscmd = ('''\
         verbose_inform('"set properties for ", @uname, " node"')
 ) + '''
         <xsl:value-of select='concat($pcscmd_pcs, "property set")'/>
-        <xsl:if test="$pcscmd_force">
-            <xsl:value-of select="' --force'"/>
-        </xsl:if>
         <xsl:value-of select="concat(' --node ', @uname)"/>
         <xsl:for-each select="instance_attributes">
             <xsl:for-each select="nvpair">
