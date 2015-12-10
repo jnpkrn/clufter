@@ -81,3 +81,49 @@ cib2pcscmd = ('''\
 ''') % dict(
     NL=NL,
 )
+
+###
+
+from ....utils_xslt import xslt_is_member
+
+from logging import getLogger
+log = getLogger(__name__)
+
+# XXX a bit dirty DRY approach
+from os.path import dirname, join
+use = join(reduce(lambda a, b: dirname(a), xrange(2), __file__), '__init__.py')
+myglobals = dict(__package__=__package__, __name__=__name__)
+try:
+    execfile(use, myglobals)
+except IOError:
+    log.error("Unable to refer to `{0}' file".format(use))
+    cib_revitalize_deprecated_props_cluster = None  # make it fail later
+else:
+    cib_revitalize_deprecated_props_cluster = \
+        myglobals['cib_revitalize_deprecated_props_cluster']
+
+cib_revitalize = ('''\
+    <xsl:copy>
+        <xsl:for-each select="cluster_property_set">
+            <xsl:if test="not(
+                           count(nvpair[
+''' + (
+                                  xslt_is_member('@name',
+                                                 cib_revitalize_deprecated_props_cluster)
+) + '''
+                              ]) = count(nvpair)
+                          ) and not(@id-ref)">
+                <xsl:copy>
+                    <xsl:copy-of select="@*"/>
+                    <xsl:apply-templates select="rule"/>
+                    <xsl:apply-templates select="nvpair[
+''' + (
+                                                     xslt_is_member('@name',
+                                                                    cib_revitalize_deprecated_props_cluster)
+) + ''']"/>
+                    <xsl:apply-templates select="score"/>
+                </xsl:copy>
+            </xsl:if>
+        </xsl:for-each>
+    </xsl:copy>
+''')

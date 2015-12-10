@@ -214,3 +214,135 @@ cib2pcscmd = ('''\
 ''') % dict(
     NL=NL,
 )
+
+###
+
+from ....utils_xslt import xslt_is_member, xslt_string_mapping
+
+cib_revitalize_deprecated_props_cluster_rsc = {
+    'default-resource-stickiness': 'resource-stickiness',
+    'is-managed-default':          'is-managed',
+}
+
+cib_revitalize_deprecated_props_cluster_op = {
+    'default-action-timeout': 'timeout',
+}
+
+cib_revitalize_deprecated_props_cluster = \
+    cib_revitalize_deprecated_props_cluster_rsc.keys() \
+    + cib_revitalize_deprecated_props_cluster_op.keys()
+
+cib_revitalize = ('''\
+    <xsl:copy>
+
+    <!-- nested handling of crm_config: drop the innovated nvpairs -->
+    <clufter:descent-mix at="crm_config"/>
+
+    <!-- move deprecated crm_config properties to rsc_defaults -->
+    <xsl:choose>
+        <xsl:when test="crm_config/cluster_property_set/nvpair[
+''' + (
+                             xslt_is_member('@name',
+                                            cib_revitalize_deprecated_props_cluster_rsc)
+) + ''']">
+            <rsc_defaults>
+                <xsl:apply-templates select="rsc_defaults/nvpair"/>
+                <xsl:for-each select="crm_config/cluster_property_set[nvpair[
+''' + (
+                             xslt_is_member('@name',
+                                            cib_revitalize_deprecated_props_cluster_rsc)
+) + ''']]">
+                    <meta_attributes id="{concat(@id, '-', generate-id(.))}">
+                    <!-- XXX make rewrite-id a generalized helper -->
+                    <!-- xsl:if test="rule">
+                        <xsl:call-template name="rewrite-id">
+                            <xsl:with-param name="Elem" select="rule"/>
+                            <xsl:with-param name="InstanceId" select="generate-id(rule)"/>
+                        </xsl:call-template>
+                    </xsl:if -->
+                    <xsl:for-each select="nvpair[
+''' + (
+                             xslt_is_member('@name',
+                                            cib_revitalize_deprecated_props_cluster_rsc)
+) + ''']">
+                        <nvpair id="{concat(@id, '-', generate-id(.))}">
+                            <xsl:attribute name="name">
+                                <xsl:choose>
+''' + (
+                                xslt_string_mapping(cib_revitalize_deprecated_props_cluster_rsc, '@name')
+) + '''
+                                </xsl:choose>
+                            </xsl:attribute>
+                            <xsl:attribute name="value">
+                                <xsl:value-of select="@value"/>
+                            </xsl:attribute>
+                        </nvpair>
+                    </xsl:for-each>
+                    </meta_attributes>
+                    <xsl:apply-templates select="rsc_defaults/score"/>
+                </xsl:for-each>
+            </rsc_defaults>
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:apply-templates select="rsc_defaults"/>
+        </xsl:otherwise>
+    </xsl:choose>
+
+    <!-- move deprecated crm_config properties to op_defaults -->
+    <xsl:choose>
+        <xsl:when test="crm_config/cluster_property_set/nvpair[
+''' + (
+                             xslt_is_member('@name',
+                                            cib_revitalize_deprecated_props_cluster_op)
+) + ''']">
+            <op_defaults>
+                <xsl:apply-templates select="op_defaults/nvpair"/>
+                <xsl:for-each select="crm_config/cluster_property_set[nvpair[
+''' + (
+                             xslt_is_member('@name',
+                                            cib_revitalize_deprecated_props_cluster_op)
+) + ''']]">
+                    <meta_attributes id="{concat(@id, '-', generate-id(.))}">
+                    <!-- XXX make rewrite-id a generalized helper -->
+                    <!-- xsl:if test="rule">
+                        <xsl:call-template name="rewrite-id">
+                            <xsl:with-param name="Elem" select="rule"/>
+                            <xsl:with-param name="InstanceId" select="generate-id(rule)"/>
+                        </xsl:call-template>
+                    </xsl:if -->
+                    <xsl:for-each select="nvpair[
+''' + (
+                             xslt_is_member('@name',
+                                            cib_revitalize_deprecated_props_cluster_op)
+) + ''']">
+                        <nvpair id="{concat(@id, generate-id(.))}">
+                            <xsl:attribute name="name">
+                                <xsl:choose>
+''' + (
+                                xslt_string_mapping(cib_revitalize_deprecated_props_cluster_op)
+) + '''
+                                </xsl:choose>
+                            </xsl:attribute>
+                            <xsl:attribute name="value">
+                                <xsl:value-of select="."/>
+                            </xsl:attribute>
+                        </nvpair>
+                    </xsl:for-each>
+                    </meta_attributes>
+                    <xsl:apply-templates select="op_defaults/score"/>
+                </xsl:for-each>
+            </op_defaults>
+        </xsl:when>
+        <xsl:otherwise>
+            <xsl:apply-templates select="op_defaults"/>
+        </xsl:otherwise>
+    </xsl:choose>
+
+    <xsl:apply-templates select="*[not(
+''' + (
+        xslt_is_member('name()',
+                       ('crm_config', 'rsc_defaults', 'op_defaults'))
+) + ''')]"/>
+
+    </xsl:copy>
+''')
