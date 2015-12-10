@@ -58,6 +58,7 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
     cmd_ctxt['pcscmd_start_wait'] = start_wait
     cmd_ctxt['pcscmd_noguidance'] = noguidance
     cmd_ctxt['text_width'] = text_width
+    # XXX possibility to disable cib-meld-templates
 
     file_proto = protocols.plugins['file'].ensure_proto
     return (
@@ -122,6 +123,7 @@ def pcs2pcscmd_needle(cmd_ctxt,
     cmd_ctxt['pcscmd_start_wait'] = start_wait
     cmd_ctxt['pcscmd_noguidance'] = noguidance
     cmd_ctxt['text_width'] = text_width
+    # XXX possibility to disable cib-meld-templates
 
     file_proto = protocols.plugins['file'].ensure_proto
     return (
