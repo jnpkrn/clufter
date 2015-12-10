@@ -194,6 +194,8 @@ cib2pcscmd = ('''\
 ) + '''
     </xsl:if>
     <clufter:descent-mix at="crm_config"/>
+    <clufter:descent-mix at="rsc_defaults"/>
+    <clufter:descent-mix at="op_defaults"/>
     <clufter:descent-mix at="nodes"/>
     <clufter:descent-mix at="resources"/>
     <clufter:descent-mix at="constraints"/>
