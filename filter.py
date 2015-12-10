@@ -678,7 +678,7 @@ class XMLFilter(Filter, MetaPlugin):
             if do_mix and do_mix < will_mix:
                 raise RuntimeError("Parent does not want preserve-rest while"
                                    " child wants to")
-            elif do_mix > 1 and will_mix:  # and not parent
+            elif do_mix > 1 and will_mix and not parent:
                 do_mix = 1
 
             # note that when do_mix, nested top_levels are actually propagated
@@ -690,7 +690,7 @@ class XMLFilter(Filter, MetaPlugin):
                     #print "at", etree.tostring(ret), "appending", etree.tostring(e)
                     ret.append(deepcopy(e))
 
-            log.debug("hooks {0}".format(hooks))
+            log.debug("do_mix {0}, hooks {1}".format(do_mix, hooks))
             return (ret, hooks, do_mix)
         elif callable(sym):
             return sym
