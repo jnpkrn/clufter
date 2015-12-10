@@ -53,7 +53,7 @@ def ccs2pcs_flatiron(cmd_ctxt,
     Options:
         input     input (CMAN,rgmanager) cluster config. file
         ccs_pcmk  output Corosync/CMAN (+fencing pass-through) config. file
-        cib       output proper Pacemaker cluster config. file
+        cib       output proper Pacemaker cluster config. file (CIB)
     """
     _check_pacemaker_1_2(cmd_ctxt)
 
@@ -98,7 +98,7 @@ def ccs2pcs_needle(cmd_ctxt,
     Options:
         input     input (CMAN,rgmanager) cluster configuration file
         coro      output Corosync v2 config. file
-        cib       output proper Pacemaker cluster config. file
+        cib       output proper Pacemaker cluster config. file (CIB)
     """
     _check_pacemaker_1_2(cmd_ctxt)
 
