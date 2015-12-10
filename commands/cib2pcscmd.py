@@ -29,7 +29,7 @@ def cib2pcscmd(cmd_ctxt,
     """CIB -> equivalent in pcs commands
 
     Options:
-        input       input (CMAN,rgmanager) cluster config. file
+        input       input proper Pacemaker cluster config. file (CIB)
         output      pcs commands to reinstate the cluster per the inputs
         force       may the force be with emitted pcs commands
         noauth      skip authentication step (OK if already set up)

@@ -40,7 +40,7 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
 
     Options:
         ccs         input Corosync/CMAN (+fencing pass-through) config. file
-        cib         input proper Pacemaker cluster config. file
+        cib         input proper Pacemaker cluster config. file (CIB)
         output      pcs commands to reinstate the cluster per the inputs
         force       may the force be with emitted pcs commands
         noauth      skip authentication step (OK if already set up)
@@ -112,7 +112,7 @@ def pcs2pcscmd_needle(cmd_ctxt,
 
     Options:
         coro        input Corosync v2 config. file
-        cib         input proper Pacemaker cluster config. file
+        cib         input proper Pacemaker cluster config. file (CIB)
         output      pcs commands to reinstate the cluster per the inputs
         force       may the force be with emitted pcs commands
         noauth      skip authentication step (OK if already set up)
