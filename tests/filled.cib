@@ -50,6 +50,18 @@
           <operations/>
         </primitive>
       </group>
+      <clone id="memcached-clone">
+        <primitive class="systemd" id="memcached" type="memcached">
+          <instance_attributes id="memcached-instance_attributes"/>
+          <operations>
+            <op id="memcached-start-timeout-60s" interval="0s" name="start" timeout="60s"/>
+            <op id="memcached-monitor-interval-60s" interval="60s" name="monitor"/>
+          </operations>
+        </primitive>
+        <meta_attributes id="memcached-clone-meta">
+          <nvpair id="memcached-interleave" name="interleave" value="true"/>
+        </meta_attributes>
+      </clone>
     </resources>
     <constraints/>
   </configuration>

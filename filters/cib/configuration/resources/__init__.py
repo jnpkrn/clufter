@@ -322,7 +322,7 @@ cibprelude2cibcompact = ('''\
 
 from ....filters._2pcscmd import verbose_ec_test, verbose_inform
 from ....filters.cib2pcscmd import attrset_xsl
-from ....utils_xslt import NL
+from ....utils_xslt import NL, xslt_is_member
 
 cib2pcscmd = ('''\
     <!-- STONITH -->
@@ -362,7 +362,7 @@ cib2pcscmd = ('''\
     </xsl:for-each>
 
     <!--
-        ORDINARY CLUSTER RESOURCES
+        ORDINARY/CLONE/MASTER CLUSTER RESOURCES
      -->
 
     <!-- primitives -->
@@ -380,9 +380,23 @@ cib2pcscmd = ('''\
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
+        <xsl:choose>
+            <xsl:when test="name(..) = 'clone'">
 ''' + (
-        verbose_inform('"new resource: ", @id')
+                verbose_inform('"new clone resource: ", @id')
 ) + '''
+            </xsl:when>
+            <xsl:when test="name(..) = 'clone'">
+''' + (
+                verbose_inform('"new master resource: ", @id')
+) + '''
+            </xsl:when>
+            <xsl:otherwise>
+''' + (
+                verbose_inform('"new resource: ", @id')
+) + '''
+            </xsl:otherwise>
+        </xsl:choose>
         <xsl:value-of select="concat($pcscmd_pcs, 'resource create',
                                      ' ', @id,
                                      ' ', $ResourceSpec)"/>
@@ -406,6 +420,19 @@ cib2pcscmd = ('''\
             <xsl:value-of select="' meta'"/>
 ''' + (
             attrset_xsl("meta_attributes")
+) + '''
+        </xsl:if>
+        <!-- clone/master resource specifics
+         XXX alternatively, we could use: pcs resource clone to be
+             more explicit
+         -->
+        <xsl:if test="
+''' + (
+            xslt_is_member('name(..)', ('clone', 'master'))
+) + '''">
+            <xsl:value-of select="concat(' --', name(..))"/>
+''' + (
+            attrset_xsl("../meta_attributes")
 ) + '''
         </xsl:if>
         <xsl:value-of select="'%(NL)s'"/>
