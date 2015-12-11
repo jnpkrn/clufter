@@ -386,7 +386,7 @@ cib2pcscmd = ('''\
                 verbose_inform('"new clone resource: ", @id')
 ) + '''
             </xsl:when>
-            <xsl:when test="name(..) = 'clone'">
+            <xsl:when test="name(..) = 'master'">
 ''' + (
                 verbose_inform('"new master resource: ", @id')
 ) + '''
