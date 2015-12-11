@@ -322,7 +322,7 @@ cibprelude2cibcompact = ('''\
 
 from ....filters._2pcscmd import verbose_ec_test, verbose_inform
 from ....filters.cib2pcscmd import attrset_xsl
-from ....utils_xslt import NL, xslt_is_member
+from ....utils_xslt import NL
 
 cib2pcscmd = ('''\
     <!-- STONITH -->
@@ -383,12 +383,12 @@ cib2pcscmd = ('''\
         <xsl:choose>
             <xsl:when test="name(..) = 'clone'">
 ''' + (
-                verbose_inform('"new clone resource: ", @id')
+                verbose_inform('"new resource: ", @id, " (to be set as clone)"')
 ) + '''
             </xsl:when>
             <xsl:when test="name(..) = 'master'">
 ''' + (
-                verbose_inform('"new master resource: ", @id')
+                verbose_inform('"new resource: ", @id, " (to be set as master)"')
 ) + '''
             </xsl:when>
             <xsl:otherwise>
@@ -422,27 +422,21 @@ cib2pcscmd = ('''\
             attrset_xsl("meta_attributes")
 ) + '''
         </xsl:if>
-        <!-- clone/master resource specifics
-         XXX alternatively, we could use: pcs resource clone to be
-             more explicit
-         -->
-        <xsl:if test="
-''' + (
-            xslt_is_member('name(..)', ('clone', 'master'))
-) + '''">
-            <xsl:value-of select="concat(' --', name(..))"/>
-''' + (
-            attrset_xsl("../meta_attributes")
-) + '''
-        </xsl:if>
+        <!-- NOTE clone/master resource specifics handled separately later -->
         <xsl:value-of select="'%(NL)s'"/>
 ''' + (
         verbose_ec_test
 ) + '''
     </xsl:for-each>
 
-    <!-- groups -->
+    <!-- group -->
     <clufter:descent-mix at="group"/>
+
+    <!-- clone (depends on primitive|group) -->
+    <clufter:descent-mix at="clone"/>
+
+    <!-- master (depends on primitive|group) -->
+    <clufter:descent-mix at="master"/>
 
     <!-- templates -->
     <xsl:if test="template">
