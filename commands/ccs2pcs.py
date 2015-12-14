@@ -10,6 +10,7 @@ from ..facts import cluster_pcs_1_2, cluster_pcs_flatiron
 from ..filter import XMLFilter
 from ..protocol import protocols
 from ..utils_cman import PATH_CLUSTERCONF
+from ._chains_pcs import ccsflat2cibfinal_chain, ccsflat2cibfinal_output
 
 
 def _check_pacemaker_1_2(cmd_ctxt):
@@ -27,11 +28,6 @@ def _check_pacemaker_1_2(cmd_ctxt):
                    urgent=True,
         )
 
-ccsflat2cibfinal_chain = ('ccs-revitalize',
-                             ('ccsflat2cibprelude',
-                                 ('cibprelude2cibcompact',
-                                     ('cibcompact2cib',
-                                         ('cib2cibfinal')))))
 
 @Command.deco(('ccs2ccsflat',
                   ('ccs-disable-rg',
@@ -66,14 +62,8 @@ def ccs2pcs_flatiron(cmd_ctxt,
                     file_proto(ccs_pcmk),
                 ),
             ),
-            (
-                (
-                    (
-                        (
-                            file_proto(cib),
-                        ),
-                    ),
-                ),
+            ccsflat2cibfinal_output(
+                file_proto(cib),
             ),
         ),
     )
@@ -111,14 +101,8 @@ def ccs2pcs_needle(cmd_ctxt,
                     file_proto(coro),
                 ),
             ),
-            (
-                (
-                    (
-                        (
-                            file_proto(cib),
-                        ),
-                    ),
-                ),
+            ccsflat2cibfinal_output(
+                file_proto(cib),
             ),
         ),
     )

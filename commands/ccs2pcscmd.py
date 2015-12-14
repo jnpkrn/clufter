@@ -10,7 +10,7 @@ from ..facts import cluster_pcs_flatiron
 from ..filter import XMLFilter
 from ..protocol import protocols
 from ..utils_cman import PATH_CLUSTERCONF
-from .ccs2pcs import ccsflat2cibfinal_chain
+from ._chains_pcs import ccsflat2pcscmd_chain, ccsflat2pcscmd_output
 
 
 @Command.deco(('ccs2ccsflat',
@@ -20,12 +20,9 @@ from .ccs2pcs import ccsflat2cibfinal_chain
                               ('ccspcmk2pcscmd',
                                   ('stringiter-combine2',
                                        ('cmd-wrap')))))),
-                  (ccsflat2cibfinal_chain,
-                      ('cib-revitalize',
-                          ('cib-meld-templates',
-                              ('cib2pcscmd',
+                  (ccsflat2pcscmd_chain,
                                   ('stringiter-combine2'  # , ('cmd-wrap' ...
-                                   )))))))
+                                   ))))
 def ccs2pcscmd_flatiron(cmd_ctxt,
                         input=PATH_CLUSTERCONF,
                         output="-",
@@ -80,24 +77,12 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
                     ),
                 ),
             ),
-            #(
-            #    (
-            #        (
+            #ccsflat2cibfinal_output(
             #            (
             #                (
-            #                    (
-            #                        (
-            #                            (
-            #                                (
-            #                                    file_proto(output),  # already tracked
-            #                                ),
-            #                            ),
-            #                        ),
-            #                    ),
+            #                    file_proto(output),  # already tracked
             #                ),
             #            ),
-            #        ),
-            #    ),
             #),
         ),
     )
@@ -109,12 +94,9 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
                           ('needlexml2pcscmd',
                               ('stringiter-combine2',
                                    ('cmd-wrap'))))),
-                  (ccsflat2cibfinal_chain,
-                      ('cib-revitalize',
-                          ('cib-meld-templates',
-                              ('cib2pcscmd',
-                                  ('stringiter-combine2'  # , ('cmd-wrap' ...
-                                   )))))))
+                  (ccsflat2pcscmd_chain,
+                              ('stringiter-combine2'  # , ('cmd-wrap' ...
+                               ))))
 def ccs2pcscmd_needle(cmd_ctxt,
                       input=PATH_CLUSTERCONF,
                       output="-",
@@ -167,24 +149,12 @@ def ccs2pcscmd_needle(cmd_ctxt,
                     ),
                 ),
             ),
-            #(
-            #    (
+            #ccsflat2cibfinal_output(
             #        (
             #            (
-            #                (
-            #                    (
-            #                        (
-            #                            (
-            #                                (
-            #                                    file_proto(output),  # already tracked
-            #                                ),
-            #                            ),
-            #                        ),
-            #                    ),
-            #                ),
+            #                file_proto(output),  # already tracked
             #            ),
             #        ),
-            #    ),
             #),
         ),
     )
