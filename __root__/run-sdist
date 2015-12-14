@@ -2,9 +2,16 @@
 # for locally-commited-only round-trip,
 # for pushed-code round-trip, see REPO/misc/run-sdist-per-commit
 pushd "$(git rev-parse --show-toplevel)"
-git archive --format=tar HEAD | (
-  cd $(mktemp -d '/var/tmp/pkg-XXXXX') \
-    && tar xf - \
-    && python2 setup.py sdist -d "${OLDPWD}/__root__/dist")
-echo "New source tarball created: $(ls -1t __root__/dist | head -n1)"
+git archive --format=tar HEAD \
+  | (
+    cd $(mktemp -d '/var/tmp/pkg-XXXXX') \
+      && tar xf - \
+      && python2 setup.py sdist -d "${OLDPWD}/__root__/dist" \
+      && tar cJpf "${OLDPWD}/__root__/dist/$(
+           ls -1t "${OLDPWD}/__root__/dist" | head -n1 \
+             | sed s'|\.tar\.gz|-tests.tar.xz|'
+         )" --transform 's|__root__/||' -- \
+         tests/ _go _gone __root__/run-tests
+  )
+echo "New source tarballs created: $(ls -1t __root__/dist | head -n2)"
 popd
