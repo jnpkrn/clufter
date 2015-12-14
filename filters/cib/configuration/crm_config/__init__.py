@@ -116,11 +116,11 @@ cib_revitalize = ('''\
                 <xsl:copy>
                     <xsl:copy-of select="@*"/>
                     <xsl:apply-templates select="rule"/>
-                    <xsl:apply-templates select="nvpair[
+                    <xsl:apply-templates select="nvpair[not(
 ''' + (
                                                      xslt_is_member('@name',
                                                                     cib_revitalize_deprecated_props_cluster)
-) + ''']"/>
+) + ''')]"/>
                     <xsl:apply-templates select="score"/>
                 </xsl:copy>
             </xsl:if>
