@@ -9,12 +9,11 @@ from ..command import Command
 from ..filter import XMLFilter
 from ..protocol import protocols
 from ..utils_cib import PATH_CIB
+from ._chains_pcs import cib2pcscmd_chain, cib2pcscmd_output
 
 
-@Command.deco(('cib-revitalize',
-                  ('cib-meld-templates',
-                      ('cib2pcscmd',
-                          ('cmd-wrap')))))
+@Command.deco((cib2pcscmd_chain,
+                  ('cmd-wrap')))
 def cib2pcscmd(cmd_ctxt,
                input=PATH_CIB,
                output="-",
@@ -51,11 +50,7 @@ def cib2pcscmd(cmd_ctxt,
     file_proto = protocols.plugins['file'].ensure_proto
     return (
         file_proto(input),
-        (
-            (
-                (
-                    file_proto(output),
-                ),
-            ),
+        cib2pcscmd_output(
+            file_proto(output),
         ),
     )
