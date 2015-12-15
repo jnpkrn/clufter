@@ -109,7 +109,7 @@ ccsflat2cibprelude = ('''\
     <xsl:for-each select="*[
 ''' + (
     xslt_is_member('name()', ccsflat2cibprelude_elems_with_res)
-) + ''']/*">
+) + ''']/*[name() != 'action']">
         <!-- meta-primary can be, e.g., @address in case of ip,
              and that can contain '/' which is not NCNameChar -->
         <xsl:variable name="Prefix"
