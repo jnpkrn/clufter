@@ -1,5 +1,5 @@
 /*
-  Copyright Red Hat, Inc. 2004-2006
+  Copyright 2015 Red Hat, Inc.
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -60,6 +60,7 @@ res_do_flatten(xmlNode ** xpp, xmlNode * rmp, resource_node_t * node, const char
     xmlNode *n, *r;
     resource_attr_t *ra;
     resource_t *res = node->rn_resource;
+    resource_act_t *acts = node->rn_actions;
     char *val;
     char buf[256];
     int x, y;
@@ -71,6 +72,36 @@ res_do_flatten(xmlNode ** xpp, xmlNode * rmp, resource_node_t * node, const char
 
     xmlSetProp(n, (xmlChar *) "rgmanager-meta-primary",
                (xmlChar *) primary_attr_name(res));
+
+    /* set actions explicitly */
+    for (x = 0; acts[x].ra_name; x++) {
+        if (acts[x].ra_timeout < 0 && acts[x].ra_interval < 0)
+            continue;
+        /* blacklist some effective non-actions */
+        if (!strcmp(acts[x].ra_name, "meta-data")
+                || !strcmp(acts[x].ra_name, "validate-all"))
+            continue;
+
+        r = xmlNewNode(NULL, (xmlChar *) "action");
+        xmlSetProp(r, (xmlChar *) "name", (xmlChar *) acts[x].ra_name);
+
+        if (acts[x].ra_timeout >= 0) {
+            snprintf(buf, sizeof(buf), "%ld", acts[x].ra_timeout);
+            xmlSetProp(r, (xmlChar *) "timeout", (xmlChar *) buf);
+        }
+        if (acts[x].ra_interval >= 0) {
+            snprintf(buf, sizeof(buf), "%ld", acts[x].ra_interval);
+            xmlSetProp(r, (xmlChar *) "interval", (xmlChar *) buf);
+        }
+        if ((!strcmp(acts[x].ra_name, "status")
+                || !strcmp(acts[x].ra_name, "monitor"))
+                && acts[x].ra_depth >= 0) {
+            snprintf(buf, sizeof(buf), "%d", acts[x].ra_depth);
+            xmlSetProp(r, (xmlChar *) "depth", (xmlChar *) buf);
+        }
+
+        xmlAddChild(n, r);
+    }
 
     /* Multiple-instance resources must be decomposed into separate
        resources */
