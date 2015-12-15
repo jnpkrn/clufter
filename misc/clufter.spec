@@ -226,7 +226,7 @@ sed -e 's:\(.*\):\\\&\\fIrun_dev-\1\\fR\\\|(%{clufter_manpagesec}), :' \
   .subcmds > .see-also
 help2man -N -h -H -i .see-also \
   -n "$(sed -n '2s|[^(]\+(\([^)]\+\))|\1|p' README)" ./run-dev \
-  | sed 's|run[-_]dev|%{name}|g' \
+  | sed 's|run\\\?[-_]dev|%{name}|g' \
   > ".manpages/man%{clufter_manpagesec}/%{name}.%{clufter_manpagesec}"
 while read cmd; do
   echo -e "#\!/bin/sh\n{ [ \$# -ge 1 ] && [ \"\$1\" = \"--version\" ] \
@@ -249,7 +249,7 @@ while read cmd; do
     ;;&
   esac
   help2man -N -h -H -i .see-also -n "${cmd}" "./.tmp-${cmd}" \
-    | sed 's|run[-_]dev|%{name}|g' \
+    | sed 's|run\\\?[-_]dev|%{name}|g' \
   > ".manpages/man%{clufter_manpagesec}/%{name}-${cmd}.%{clufter_manpagesec}"
 done < .subcmds
 %endif
