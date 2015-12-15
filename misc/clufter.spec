@@ -5,7 +5,6 @@
                                                 python2 ../setup.py --name)}}
 %{!?clufter_license: %global clufter_license  %{?!infer:GPLv2+}%{?infer:%(
                                                 python2 ../setup.py --license)}}
-%{!?clufter_check:   %global clufter_check    1}
 
 # special vars wrt. versioning
 %{!?clufter_b:       %global clufter_b        1}
@@ -19,8 +18,10 @@
 
 %if "%{clufter_version}" == "%{clufter_version_norm}"
 %{!?clufter_source:  %global clufter_source   %{name}-%{version}}
+%{!?clufter_check:   %global clufter_check    2}
 %else
 %{!?clufter_source:  %global clufter_source   %{name}-%{clufter_version}}
+%{!?clufter_check:   %global clufter_check    1}
 %endif
 %{!?clufter_url_main:%global clufter_url_main %{?!pagure:https://github.com/jnpkrn/%{name}}%{?pagure:https://pagure.io/%{name}}}
 %{!?clufter_url_raw: %global clufter_url_raw  %{?!pagure:https://raw.githubusercontent.com/jnpkrn/%{name}/}%{?pagure:https://pagure.io/%{name}/raw/}}
@@ -85,6 +86,9 @@ BuildRequires:  python-lxml
 
 %if "%{clufter_version}" == "%{clufter_version_norm}"
 Source0:        %{clufter_url_dist}%{name}-%{version}.tar.gz
+%if "0%{clufter_check}" == 2
+Source1:        %{clufter_url_dist}%{name}-%{version}-tests.tar.xz
+%endif
 %else
 Source0:        %{clufter_source}.tar.gz
 # Source0 is created by Source1, just pass particular commit hash
@@ -190,7 +194,11 @@ formats and filters.
 
 %prep
 %if "%{clufter_version}" == "%{clufter_version_norm}"
+%if "0%{clufter_check}" == 2
+%autosetup -p1 -S git -a 1
+%else
 %autosetup -p1 -S git
+%endif
 %else
 %autosetup -n %{clufter_source} -p1 -S git
 %endif
@@ -295,7 +303,11 @@ declare ret=0 \
         ccs_flatten_dir="$(dirname '%{buildroot}%{clufter_ccs_flatten}')"
 ln -s '%{buildroot}%{clufter_ra_metadata_dir}'/*.'%{clufter_ra_metadata_ext}' \
       "${ccs_flatten_dir}"
+%if "%{clufter_check}" == 1
 PATH="${PATH:+${PATH}:}${ccs_flatten_dir}" ./run-check
+%else
+PATH="${PATH:+${PATH}:}${ccs_flatten_dir}" ./run-tests
+$endif
 ret=$?
 %{__rm} -f -- "${ccs_flatten_dir}"/*.'%{clufter_ra_metadata_ext}'
 [ ${ret} -eq 0 ] || exit ${ret}
