@@ -237,6 +237,17 @@ while read cmd; do
     | sed -e 's:\(.*\):\\\&\\fIrun_dev-\1\\fR\\\|(%{clufter_manpagesec}), :' \
       -e '1s|\(.*\)|\[SEE ALSO\]\n\\\&\\fIrun_dev\\fR\\\|(1), \n\1|' \
       -e '$s|\(.*\)|\1\nand perhaps more|' > .see-also
+  # XXX uses ";;&" bashism
+  case "${cmd}" in
+  ccs[2-]*)
+    sed -i \
+      '1s:\(.*\):\1\n\\\&\\fIcluster.conf\\fR\\\|(5), \\\&\\fIccs\\fR\\\|(7), :' \
+    .see-also
+    ;;&
+  *[2-]pcscmd*)
+    sed -i '1s:\(.*\):\1\n\\\&\\fIpcs\\fR\\\|(8), :' .see-also
+    ;;&
+  esac
   help2man -N -h -H -i .see-also -n "${cmd}" "./.tmp-${cmd}" \
     | sed 's|run[-_]dev|%{name}|g' \
   > ".manpages/man%{clufter_manpagesec}/%{name}-${cmd}.%{clufter_manpagesec}"
