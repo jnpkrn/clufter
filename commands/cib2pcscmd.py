@@ -50,7 +50,9 @@ def cib2pcscmd(cmd_ctxt,
     file_proto = protocols.plugins['file'].ensure_proto
     return (
         file_proto(input),
-        cib2pcscmd_output(
-            file_proto(output),
+        (
+            cib2pcscmd_output(
+                file_proto(output),
+            ),
         ),
     )
