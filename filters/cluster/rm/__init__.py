@@ -101,19 +101,15 @@ ccsflat2cibprelude_elems_res_toplevel = ccsflat2cibprelude_elems_res_hybrid + (
     'service',
 )
 
-ccsflat2cibprelude_elems_with_res = ccsflat2cibprelude_elems_res_toplevel + (
-    'resources',
-)
-
 ccsflat2cibprelude = ('''\
     <xsl:for-each select="*[
 ''' + (
-    xslt_is_member('name()', ccsflat2cibprelude_elems_res_hybrid)
+        xslt_is_member('name()', ccsflat2cibprelude_elems_res_hybrid)
 ) + ''']
     |
     *[
 ''' + (
-    xslt_is_member('name()', ccsflat2cibprelude_elems_with_res)
+        xslt_is_member('name()', ccsflat2cibprelude_elems_res_toplevel)
 ) + ''']/*[name() != 'action']">
         <!-- meta-primary can be, e.g., @address in case of ip,
              and that can contain '/' which is not NCNameChar -->
