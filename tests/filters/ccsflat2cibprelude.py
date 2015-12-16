@@ -27,6 +27,7 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
   </instance_attributes>
   <meta_attributes id="RESOURCE-nfsclient-test1-META">
     <nvpair id="RESOURCE-nfsclient-test1-META-service" name="rgmanager-service" value="RESOURCES-"/>
+    <nvpair id="RESOURCE-nfsclient-test1-META-monitor" name="rgmanager-monitor" value="60s"/>
   </meta_attributes>
 </primitive>
 '''),
@@ -43,6 +44,7 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
   </instance_attributes>
   <meta_attributes id="RESOURCE-nfsclient-test2-META">
     <nvpair id="RESOURCE-nfsclient-test2-META-service" name="rgmanager-service" value="RESOURCES-"/>
+    <nvpair id="RESOURCE-nfsclient-test2-META-monitor" name="rgmanager-monitor" value="60s"/>
   </meta_attributes>
 </primitive>
 '''),
@@ -75,6 +77,7 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
   </instance_attributes>
   <meta_attributes id="RESOURCE-SAPDatabase-SAP1-META">
     <nvpair id="RESOURCE-SAPDatabase-SAP1-META-service" name="rgmanager-service" value="RESOURCES-"/>
+    <nvpair id="RESOURCE-SAPDatabase-SAP1-META-monitor" name="rgmanager-monitor" value="60s"/>
   </meta_attributes>
 </primitive>
 '''),
@@ -90,6 +93,7 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
   </instance_attributes>
   <meta_attributes id="RESOURCE-SAPDatabase-GT1-META">
     <nvpair id="RESOURCE-SAPDatabase-GT1-META-service" name="rgmanager-service" value="RESOURCES-"/>
+    <nvpair id="RESOURCE-SAPDatabase-GT1-META-monitor" name="rgmanager-monitor" value="60s"/>
   </meta_attributes>
 </primitive>
 '''),
@@ -122,6 +126,7 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
   </instance_attributes>
   <meta_attributes id="RESOURCE-SAPInstance-GT1_foobar-META">
     <nvpair id="RESOURCE-SAPInstance-GT1_foobar-META-service" name="rgmanager-service" value="RESOURCES-"/>
+    <nvpair id="RESOURCE-SAPInstance-GT1_foobar-META-monitor" name="rgmanager-monitor" value="60s"/>
   </meta_attributes>
 </primitive>
 '''),

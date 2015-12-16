@@ -189,6 +189,31 @@ ccsflat2cibprelude = ('''\
                                   '-',
                                   ../@name
                                )}"/>
+                <xsl:variable name="IntervalFound"
+                              select="action[
+                                  @name = 'monitor'
+                                  and
+                                  not(preceding-sibling::action[
+                                      @name = 'monitor'
+                                      and
+                                      @depth &lt; current()/@depth
+                                  ])
+                                  and
+                                  not(following-sibling::action[
+                                      @name = 'monitor'
+                                      and
+                                      @depth &lt; current()/@depth
+                                  ])
+                              ]/@interval"/>
+                <xsl:variable name="Interval">
+                    <xsl:value-of select="$IntervalFound"/>
+                    <xsl:if test="not($IntervalFound)">
+                        <xsl:value-of select="'60'"/>
+                    </xsl:if>
+                </xsl:variable>
+                <nvpair id="{$Prefix}-META-monitor"
+                        name="rgmanager-monitor"
+                        value="{concat($Interval, 's')}"/>
                 <!--nvpair id="{$Prefix}-META-domain"
                         name="rgmanager-domain"
                         value="{../@domain}"/-->
