@@ -193,7 +193,7 @@ cibprelude2cibcompact = ('''\
                                                 )
                                             )]">
                             <xsl:choose>
-                                <xsl:when test="meta_attributes">
+                                <xsl:when test="name() = 'meta_attributes'">
                                     <xsl:copy>
                                         <xsl:copy-of select="@*|node()[
                                                                 name() != 'nvpair'
