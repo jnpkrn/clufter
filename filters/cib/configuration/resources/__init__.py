@@ -315,7 +315,6 @@ cibprelude2cibcompact = ('''\
                                 ]/@id
                             ]
                          ]"/>
-
 ''') % dict(package_name=package_name())
 
 ###
@@ -544,6 +543,60 @@ cib_meld_templates = ('''\
                     </xsl:if>
                 </xsl:copy>
             </xsl:for-each>
+        </xsl:copy>
+    </xsl:template>
+''')
+
+###
+
+cibcompact2cib = ('''\
+    <!-- propagate monitor operation info to proper operations stanza ... -->
+    <xsl:template match="primitive[
+                              meta_attributes/nvpair/@name = 'rgmanager-monitor'
+                          ]">
+        <xsl:variable name="Monitor"
+                      select="meta_attributes/nvpair[
+                                  @name = 'rgmanager-monitor'
+                              ]"/>
+        <xsl:copy>
+            <xsl:copy-of select="@*"/>
+            <xsl:for-each select="*[name() != 'utilization']">
+                <xsl:choose>
+                    <xsl:when test="name() = 'meta_attributes'
+                                    and
+                                    count(*) = count(nvpair[@name = 'rgmanager-monitor'])"/>
+                    <xsl:when test="name() = 'meta_attributes'">
+                        <xsl:copy>
+                            <xsl:apply-templates select="@*|*[
+                                                             name() != 'nvpair'
+                                                             or
+                                                             @name != 'rgmanager-monitor'
+                                                         ]"/>
+                        </xsl:copy>
+                    </xsl:when>
+                    <xsl:when test="name() = 'operations'">
+                        <xsl:copy>
+                            <xsl:apply-templates select="@*|*"/>
+                            <op id="{concat(@id, '-OP-monitor')}"
+                                name="monitor"
+                                interval="{$Monitor/@value}"/>
+                        </xsl:copy>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:copy>
+                            <xsl:apply-templates select="@*|*"/>
+                        </xsl:copy>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:for-each>
+            <xsl:if test="not(operations)">
+                <operations>
+                    <op id="{concat(@id, '-OP-monitor')}"
+                        name="monitor"
+                        interval="{$Monitor/@value}"/>
+                </operations>
+            </xsl:if>
+            <xsl:apply-templates select="utilization"/>
         </xsl:copy>
     </xsl:template>
 ''')
