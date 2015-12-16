@@ -7,6 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 ###
 
 from ....filters._2pcscmd import verbose_ec_test, verbose_inform
+from ....filters.cib2pcscmd import attrset_xsl
 from ....utils_xslt import NL
 
 
@@ -16,11 +17,9 @@ cib2pcscmd = ('''\
         verbose_inform('"set resource defaults"')
 ) + '''
         <xsl:value-of select='concat($pcscmd_pcs, "resource defaults")'/>
-        <xsl:for-each select="meta_attributes">
-            <xsl:for-each select="nvpair">
-                <xsl:value-of select='concat(" &apos;", @name, "=", @value, "&apos;")'/>
-            </xsl:for-each>
-        </xsl:for-each>
+''' + (
+        attrset_xsl("meta_attributes")
+) + '''
         <xsl:value-of select="'%(NL)s'"/>
 ''' + (
         verbose_ec_test
