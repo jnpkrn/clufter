@@ -315,6 +315,33 @@ cibprelude2cibcompact = ('''\
                                 ]/@id
                             ]
                          ]"/>
+
+    <!-- exclusive resource groups (pre-conversion state) not supported yet -->
+    <xsl:template match="template[
+                             @provider = '%(package_name)s'
+                             and
+                             @type = 'temporary-service'
+                             and
+                             meta_attributes/nvpair[
+                                 @name = 'exclusive'
+                                 and
+                                 (
+                                    @value = 'yes'
+                                    or
+                                    @value &gt; 0
+                                )
+                             ]
+                          ]">
+        <xsl:message terminate="yes">
+            <xsl:value-of select="concat('Cannot convert resource group',
+                                         ' when exclusive (could be mimicked',
+                                         ' using utilization properties or',
+                                         ' highly unscalable set of',
+                                         ' anti-colocations): ',
+                                         substring-after(@id, 'SERVICE-'),
+                                         ' [https://bugzilla.redhat.com/1206640#c2]')"/>
+        </xsl:message>
+    </xsl:template>
 ''') % dict(package_name=package_name())
 
 ###
