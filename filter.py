@@ -31,7 +31,7 @@ from .plugin_registry import MetaPlugin, PluginRegistry
 from .utils import args2tuple, arg2wrapped, \
                    filterdict_keep, filterdict_invkeep, filterdict_pop, \
                    head_tail, hybridproperty, \
-                   lazystring, tuplist
+                   identity, lazystring, tuplist
 from .utils_func import apply_preserving_depth, \
                         apply_aggregation_preserving_depth, \
                         apply_intercalate, \
@@ -965,6 +965,8 @@ class XMLFilter(Filter, MetaPlugin):
                                                              'symbol',
                                                              'sparse',
                                                              'xml_root'))
+        walk_transform = kwargs.pop('walk_transform', identity)
+        walk = walk_transform(walk)
         return cls._traverse(in_obj, walk, **kwargs)
 
     def filter_proceed_xslt(self, in_obj, **kwargs):
