@@ -39,7 +39,7 @@ ccsflat2cibprelude = '''\
 ''' + (
             rg2hb_xsl('hypervisor', 'hypervisor_uri')
             +
-            rg2hb_xsl('snapshot')
+            rg2hb_xsl('snapshot', req=None)
 ) + '''\
         </instance_attributes>
     </xsl:when>
