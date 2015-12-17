@@ -174,17 +174,23 @@ ccsflat2cibprelude = ('''\
             <!-- store service reference for later use -->
 
             <meta_attributes id="{$Prefix}-META">
-                <nvpair id="{$Prefix}-META-service"
-                        name="rgmanager-service"
-                        value="{concat(
-                                  translate(
-                                      name(..),
-                                      'abcdefghijklmnopqrstuvwxyz',
-                                      'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-                                  ),
-                                  '-',
-                                  ../@name
-                               )}"/>
+                <xsl:if test="
+''' + (
+                    xslt_is_member('name(..)',
+                                   ccsflat2cibprelude_elems_res_toplevel)
+) + '''">
+                    <nvpair id="{$Prefix}-META-service"
+                            name="rgmanager-service"
+                            value="{concat(
+                                    translate(
+                                        name(..),
+                                        'abcdefghijklmnopqrstuvwxyz',
+                                        'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                                    ),
+                                    '-',
+                                    ../@name
+                                )}"/>
+                </xsl:if>
                 <xsl:variable name="IntervalFound"
                               select="action[
                                   @name = 'monitor'
