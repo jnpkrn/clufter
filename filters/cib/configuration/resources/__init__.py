@@ -453,6 +453,26 @@ cib2pcscmd = ('''\
 ''' + (
         verbose_ec_test
 ) + '''
+
+        <!-- XXX "pcs resource utilization" not supported with majority
+                 of pcs versions -->
+        <xsl:if test="utilization/nvpair">
+''' + (
+            verbose_inform('"set utilization for resource: ", @id')
+) + '''
+            <xsl:value-of select="concat($pcscmd_pcs, 'resource utilization -h',
+                                         ' &gt;/dev/null',
+                                         ' &amp;&amp; ',
+                                         $pcscmd_pcs, 'resource utilization',
+                                         ' ', @id)"/>
+''' + (
+                attrset_xsl("utilization")
+) + '''
+            <xsl:value-of select="'%(NL)s'"/>
+''' + (
+            verbose_ec_test
+) + '''
+        </xsl:if>
     </xsl:for-each>
 
     <!-- group -->
