@@ -14,17 +14,21 @@ from sys import modules
 from unittest import TestCase
 
 from .filter_manager import FilterManager
+from .utils import filterdict_pop
 
 
-def rewrite_root(flt, new_root):
+def rewrite_root(flt, new_root, **kwargs):
     # /foo/bar -> (/foo, bar)
     # /foo/bar/ -> (/foo/bar, )
     new_root_dir, new_xml_root = split(new_root)
     old_root_dir = dirname(modules[flt.__class__.__module__].__file__)
     new_root_dir = join(old_root_dir, new_root_dir)
+
+    new_kws = filterdict_pop(kwargs, 'walk_transform',
+                             root_dir=new_root_dir, xml_root=new_xml_root)
+
     flt._fnc = (lambda orig_fnc:
-        lambda *args, **kwargs: orig_fnc(*args, root_dir=new_root_dir,
-                                                xml_root=new_xml_root, **kwargs)
+        lambda *args, **kws: orig_fnc(*args, **dict(kws, **new_kws))
     )(flt._fnc)
     return flt
 
