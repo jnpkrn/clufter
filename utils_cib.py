@@ -75,16 +75,19 @@ def rg2hb_xsl(dst, src=None, req=False, op=False):
         dst         destination parameter (name in the nvpair)
         src         source parameter (if not provided, use dst ~ 1:1 match)
         req         valid values: False, True, abs (use raw `src` instead),
+                    or None (propage parameter only if non-empty)
                     or Warning (deprecated paramater, implies False
-                    and emitted warning [thus the literal object])
+                    and emitted warning [thus the literal object]),
         op          whether this is relevant for "operations" section
     """
-    assert req in (False, True, abs, Warning), "Invalid `req` param"
+    assert req in (False, True, abs, None, Warning), "Invalid `req` param"
     src = src or dst
     deprecated, req = (True, False) if req is Warning else (False, req)
     return (('''\
             <xsl:if test="@{src}">
-''' if not req else '') + ('''\
+''' if req is False else '''\
+            <xsl:if test="@{src} != ''">
+''' if req is None else '') + ('''\
             <xsl:message
             >WARNING: parameter/op {dst} (converted from {src}) is now deprecated</xsl:message>
 ''' if deprecated else '') + (('''\
