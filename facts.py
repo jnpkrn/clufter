@@ -68,20 +68,28 @@ cluster_map = {
                 ((17, ), {
                     'corosync':                      (2, 3),
                     'pacemaker[coro]':               (1, 1, 7),
+                    'pcs':                           (0, 9, 1),
                 }),
                 ((18, ), {
                     'pacemaker[coro]':               (1, 1, 8),
+                    'pcs':                           (0, 9, 27),
                 }),
                 ((19, ), {
                     'pacemaker[coro]':               (1, 1, 9),
+                    'pcs':                           (0, 9, 34),
                     #---
                     # https://fedoraproject.org/wiki/Features/ReplaceMySQLwithMariaDB
                     'pkg::mysql':                   'mariadb-server',
                 }),
+                ((20, ), {
+                    'pcs':                           (0, 9, 44),
+                }),
                 ((21, ), {
                     'pacemaker[coro]':               (1, 1, 11),
+                    'pcs':                           (0, 9, 115),
                 }),
                 ((22, ), {
+                    'pcs':                           (0, 9, 139),
                     #---
                     # https://fedoraproject.org/wiki/Changes/ReplaceYumWithDNF
                     'cmd::pkg-install':             'dnf install -y {packages}',
@@ -104,26 +112,39 @@ cluster_map = {
                 ((6, 2), {
                     'corosync':                      (1, 4),
                 }),
+                ((6, 4), {
+                    'pcs':                           (0, 9, 26),
+                }),
                 ((6, 5), {
                     'pacemaker[cman]':               (1, 1, 10),
+                    'pcs':                           (0, 9, 90),
                 }),
                 ((6, 6), {
                     'pacemaker[acls,cman]':          (1, 1, 11),
+                    'pcs':                           (0, 9, 123),
                 }),
                 ((6, 7), {
                     'pacemaker[acls,cman]':          (1, 1, 12),
+                    'pcs':                           (0, 9, 139),
+                }),
+                ((6, 8), {
+                    # u9n := utilization
+                    'pcs[u9n]':                      (0, 9, 148),  # XXX guess
                 }),
                 ((7, 0), {
                     'corosync':                      (2, 3),
                     'pacemaker[coro]':               (1, 1, 10),
+                    'pcs':                           (0, 9, 115),
                     #---
                     'pkg::mysql':                   'mariadb-server',
                 }),
                 ((7, 1), {
                     'pacemaker[acls,coro]':          (1, 1, 12),
+                    'pcs':                           (0, 9, 137),
                 }),
                 ((7, 2), {
                     'pacemaker[acls,coro]':          (1, 1, 13),
+                    'pcs':                           (0, 9, 143),
                 }),
             ),
             'ubuntu': (
