@@ -195,7 +195,7 @@ formats and filters.
 %prep
 %if "%{clufter_version}" == "%{clufter_version_norm}"
 %if "0%{clufter_check}" == 2
-%autosetup -p1 -S git -a 1
+%autosetup -p1 -S git -b 1
 %else
 %autosetup -p1 -S git
 %endif
