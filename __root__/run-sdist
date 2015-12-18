@@ -7,10 +7,9 @@ git archive --format=tar HEAD \
     cd $(mktemp -d '/var/tmp/pkg-XXXXX') \
       && tar xf - \
       && python2 setup.py sdist -d "${OLDPWD}/__root__/dist" \
-      && tar cJpf "${OLDPWD}/__root__/dist/$(
-           ls -1t "${OLDPWD}/__root__/dist" | head -n1 \
-             | sed s'|\.tar\.gz|-tests.tar.xz|'
-         )" --transform 's|__root__/||' -- \
+      && T=$(ls -1t "${OLDPWD}/__root__/dist" | sed -n '1s|\.tar\.gz||p') \
+      && tar cJpf "${OLDPWD}/__root__/dist/${T}-tests.tar.xz" \
+         --transform "s|\(__root__/\)\?|${T}/|" -- \
          tests/ _go _gone __root__/run-tests
   )
 echo "New source tarballs created: $(ls -1t __root__/dist | head -n2)"
