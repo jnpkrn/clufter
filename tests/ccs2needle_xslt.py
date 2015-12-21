@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2015 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing destilling XSLT from the sparse tree-organized snippets"""
@@ -10,17 +10,14 @@ from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
 
 from unittest import TestCase
 from os.path import dirname, join
-#from pprint import pprint
+from sys import modules
 
 from lxml import etree
 
 from .filter import XMLFilter
 from .format_manager import FormatManager
-from .utils_prog import dirname_x
 
-#WALK_DIR = join(dirname_x(__file__, 2), 'filters', 'cluster')
-WALK_DIR = join(dirname_x(__file__, 2), 'filters')
-
+WALK_DIR = join(dirname(modules[XMLFilter.__module__].__file__), 'filters')
 
 class Ccs2NeedleXsltViewOnly(TestCase):
     def setUp(self):
