@@ -394,10 +394,12 @@ class XMLFilter(Filter, MetaPlugin):
                 assert len(editor_args) >= 2
                 editor_args[0] = which(editor_args[0])
                 try:
-                    # pty.spawn doesn't work as nicely
-                    with open('/dev/tty') as f_tty:
-                        log.info("running `{0}'".format(' '.join(editor_args)))
-                        check_call(editor_args, stdin=f_tty)
+                    # pty.spawn doesn't work as nicely,
+                    # /dev/tty may not be present (with open('/dev/tty') as si)
+                    # and we decide whether to be interactive per
+                    # sys.__stdin__ anyway
+                    log.info("running `{0}'".format(' '.join(editor_args)))
+                    check_call(editor_args, stdin=__stdin__)
                 except (CalledProcessError, IOError) as e:
                     raise FilterError(cls, str(e))
                 except OSError:
