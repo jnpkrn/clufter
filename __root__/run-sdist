@@ -9,8 +9,12 @@ git archive --format=tar HEAD \
       && python2 setup.py sdist -d "${OLDPWD}/__root__/dist" \
       && T=$(ls -1t "${OLDPWD}/__root__/dist" | sed -n '1s|\.tar\.gz||p') \
       && tar cJpf "${OLDPWD}/__root__/dist/${T}-tests.tar.xz" \
-         --transform "s|\(__root__/\)\?|${T}/|" -- \
-         tests/ _go _gone __root__/run-tests
+         --exclude "*.vim" --transform \
+         "s|^\(__root__/\)\?\(\([^.r]\|r\([^u]\|u\([^n]\|n\([^-]\|-t\)\)\)\).*\)\$|${T}/\2|" \
+         -- tests/ _go _gone __root__/run-tests
+      # transformation above distinguishes run-t.* (run-tests)
+      # and run-[^t].* (run-dev)
   )
-echo "New source tarballs created: $(ls -1t __root__/dist | head -n2)"
+echo "New source tarballs created:"
+ls -1t __root__/dist | head -n2
 popd
