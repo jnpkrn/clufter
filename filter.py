@@ -384,35 +384,39 @@ class XMLFilter(Filter, MetaPlugin):
         tmpdir = mkdtemp(prefix=pkg_name)
         reply, force = '', ''
         try:
-            tmp = NamedTemporaryFile(dir=tmpdir, suffix='.xml', delete=True)
+            tmp_name = ""
+            tmp = NamedTemporaryFile(dir=tmpdir, suffix='.xml', delete=False)
             with tmp as tmpfile:
                 tmpfile.write(prompt)
                 tmpfile.flush()
-                orig_mtime = stat(tmp.name).st_mtime
-                # XXX: Windows platform: delete=False, then close-popen-open
-                editor_args = shlex_split(editor) + [tmp.name]
-                assert len(editor_args) >= 2
-                editor_args[0] = which(editor_args[0])
-                try:
-                    # pty.spawn doesn't work as nicely,
-                    # /dev/tty may not be present (with open('/dev/tty') as si)
-                    # and we decide whether to be interactive per
-                    # sys.__stdin__ anyway
-                    log.info("running `{0}'".format(' '.join(editor_args)))
-                    check_call(editor_args, stdin=__stdin__)
-                except (CalledProcessError, IOError) as e:
-                    raise FilterError(cls, str(e))
-                except OSError:
-                    raise FilterError(cls, "Editor `{0}' seems unavailable"
-                                            .format(editor))
-                if orig_mtime == stat(tmp.name).st_mtime:
-                    return None, force  # no change occurred
-                # do not trust editors/sed/whatever to do a _real in-place_
-                # modifications (sed definitely doesn't; see also
-                # http://www.pixelbeat.org/docs/unix_file_replacement.html),
-                # otherwise tmpfile.seek(0) would be enough
-                with open(tmp.name, 'r') as tmpfile:
-                    reply = tmpfile.read().strip()
+                tmp_name = tmp.name
+            old_stat = stat(tmp_name)
+
+            editor_args = shlex_split(editor) + [tmp_name]
+            assert len(editor_args) >= 2
+            editor_args[0] = which(editor_args[0])
+            try:
+                # pty.spawn doesn't work as nicely,
+                # /dev/tty may not be present (with open('/dev/tty') as si)
+                # and we decide whether to be interactive per
+                # sys.__stdin__ anyway
+                log.info("running `{0}'".format(' '.join(editor_args)))
+                check_call(editor_args, stdin=__stdin__)
+            except (CalledProcessError, IOError) as e:
+                raise FilterError(cls, str(e))
+            except OSError:
+                raise FilterError(cls, "Editor `{0}' seems unavailable"
+                                        .format(editor))
+            new_stat = stat(tmp_name)
+            if old_stat.st_size == new_stat.st_size \
+                    and old_stat.st_mtime == new_stat.st_mtime:
+                return None, force  # no change occurred
+            # do not trust editors/sed/whatever to do a _real in-place_
+            # modifications (sed definitely doesn't; see also
+            # http://www.pixelbeat.org/docs/unix_file_replacement.html),
+            # otherwise tmpfile.seek(0) would be enough
+            with open(tmp_name, 'r') as tmpfile:
+                reply = tmpfile.read().strip()
         finally:
             rmtree(tmpdir)
         if not reply:
