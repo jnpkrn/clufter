@@ -12,6 +12,8 @@
 NORUN=1
 . ./run-check "$(dirname "${0}")/run-check"
 
+die () { echo "$@"; exit 127; }
+
 stop=$(printf "\033\[0m")
 blue=$(printf "\033[01;34m") red=$(printf "\033[01;31m")
 green=$(printf "\033[01;32m") cyan=$(printf "\033[01;36m")
@@ -48,14 +50,17 @@ while [ $# -gt 0 ]; do
             done
             exit ${ret}
             ;;
-	-c)
-	    COVERAGE=1
-	    ;;
+        -c)
+            COVERAGE=1
+            ;;
         -d)
             DEBUG=
             ;;
         -n)
             RUNCHECK=0
+            ;;
+        -N)
+            CMD=nosetests
             ;;
         -q)
             VERBOSE=0
@@ -76,21 +81,44 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-[ "${COVERAGE}" -eq 0 ] || {
-  which coverage2 >/dev/null 2>/dev/null \
-  && CMD="coverage2 run ${CMD}" \
-  || CMD="coverage run ${CMD}"
-}
-case "${CMD}" in -m*) CMD="${PYTHONEXEC} ${CMD}";; esac
 
+# nosetests fallback
+CMDTEST=${CMD}
+case "${CMD}" in -m*) CMDTEST="${PYTHONEXEC} ${CMD}";; esac
+eval "${CMDTEST} -h >/dev/null 2>/dev/null"
+[ "$?" -ne 1 ] || {
+  [ "${CMD}" != "nosetests" ] && which nosetests >/dev/null 2>/dev/null \
+  && CMD=nosetests
+} || die 'no testing framework found (resort to running particular *.py files?)'
+
+[ "${COVERAGE}" -eq 0 ] || {
+  [ "${CMD}" = "nosetests" ] \
+  && CMD="${CMD} --with-coverage" \
+  || which coverage2 >/dev/null 2>/dev/null \
+    && CMD="coverage2 run ${CMD}" \
+    || CMD="coverage run ${CMD}"
+}
+
+case "${CMD}" in -m*) CMD="${PYTHONEXEC} ${CMD}";;
+                 nosetests*) CMD="${CMD} -s";; esac
 
 # "--verbose" game because of "Alternative Usage: unit2 discover [options]"
 [ -n "${ACC}" ] \
 && { RUNCHECK=0; [ "${VERBOSE}" -eq 0 ] || ACC="--verbose ${ACC}"; } \
-|| {
+|| case "${CMD}" in
+  nosetests*)
+    [ ! -f "__init__.py" ] || die "nosetests doesn't support repo dir structure"
+    # --collect-only --all-modules tests?
+    ACC="tests/*.py tests/*/*.py"
+    [ "${VERBOSE}" -eq 0 ] || ACC="--verbose ${ACC}"
+    ;;
+  *)
     ACC="discover -s tests -p '*.py'"
     [ "${VERBOSE}" -eq 0 ] || ACC="${ACC} --verbose"
-}
+    ;;
+esac
+
+echo "${CMD} ${ACC}"
 
 [ -t 0 ] || TAIL=
 
