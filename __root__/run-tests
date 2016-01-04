@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -29,9 +29,12 @@ TAIL='2>&1 | sed \
 
 if ${PYTHONEXEC} -c "import sys; sys.exit(sys.version_info[:2] < (2,7))"; then
     CMD="-m unittest"
-else
+elif ${PYTHONEXEC} -c "import sys; sys.exit(sys.version_info[:2] < (2,6))"; then
     # pre-2.7 unittest doesn't offer test discovery, use external unittest2
-    CMD="-m unittest2"
+    CMD="-m unittest2.__main__"  # see http://bugs.python.org/issue2751
+else
+    die "Unsupported Python version: $(
+         ${PYTHONEXEC} -c "import sys; sys.write(sys.version_info[:2])")"
 fi
 DEBUG="env LOGLEVEL=WARNING"
 PGR=${PAGER:-less}
@@ -94,9 +97,11 @@ eval "${CMDTEST} -h >/dev/null 2>/dev/null"
 [ "${COVERAGE}" -eq 0 ] || {
   [ "${CMD}" = "nosetests" ] \
   && CMD="${CMD} --with-coverage" \
-  || which coverage2 >/dev/null 2>/dev/null \
+  || {
+    which coverage2 >/dev/null 2>/dev/null \
     && CMD="coverage2 run ${CMD}" \
     || CMD="coverage run ${CMD}"
+  }
 }
 
 case "${CMD}" in -m*) CMD="${PYTHONEXEC} ${CMD}";;
