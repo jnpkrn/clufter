@@ -77,7 +77,7 @@ URL:            %{clufter_url_main}
 # autosetup
 BuildRequires:  git
 
-# Python side (first for python2* macros)
+# Python side (first item for python2* macros + overall Python run-time)
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 %if "0%{clufter_check}"
