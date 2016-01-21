@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Base command stuff (TBD)"""
@@ -25,6 +25,7 @@ from .format import FormatError, SimpleFormat
 from .plugin_registry import PluginRegistry
 from .protocol import protodictval
 from .utils import any2iter, \
+                   areinstancesupto, \
                    arg2wrapped, \
                    args2tuple, \
                    filterdict_keep, \
@@ -506,6 +507,28 @@ class Command(object):
     def __call__(self, opts, args=None, cmd_ctxt=None):
         """Proceed the command"""
         ec = EC.EXIT_SUCCESS
+        maxl = len(sorted(self._filters, key=len)[-1])
+        cmd_ctxt = cmd_ctxt or CommandContext({
+            'filter_chain_analysis': self.filter_chain_analysis,
+            'filter_noop':           getattr(opts, 'noop', ()),
+            'filter_dump':           getattr(opts, 'dump', ()),
+            'system':                getattr(opts, 'sys', ''),
+            'system_extra':          getattr(opts, 'dist', '').split(','),
+            'svc_output':            FancyOutput(f=stderr,
+                                                 quiet=getattr(opts, 'quiet',
+                                                               False),
+                                                 prefix=("|header:[{{0:{0}}}]| "
+                                                         .format(maxl)),
+                                                 color=dict(auto=None,
+                                                            never=False,
+                                                            always=True)[
+                                                                getattr(opts,
+                                                                        'color',
+                                                                        'auto')
+                                                            ]
+                                     ),
+        }, bypass=True)
+        cmd_ctxt.ensure_filters(self._filters.itervalues())
         kwargs = {}
         # desugaring, which is useful mainly if non-contiguous sequence
         # of value-based options need to be specified
@@ -515,8 +538,17 @@ class Command(object):
         for v in self._fnc_defaults_varnames[1]:
             default = self._fnc_defaults_raw.get(v, None)
             opt = getattr(opts, v, default)
-            if opt != default and isinstance(opt, (type(default),
-                                                   MutableMapping)):
+            if isinstance(opt, basestring):
+                try:
+                    opt = opt.format(**cmd_ctxt['__filters__'])
+                    # XXX type adjustment at least for bool?
+                except (ValueError, KeyError):
+                    pass
+            if isinstance(opt, MutableMapping) \
+                    or not isinstance(default, basestring) \
+                        and isinstance(opt, basestring) \
+                    or areinstancesupto(opt, default, object, type) \
+                        and opt != default:
                 kwargs[v] = opt
                 continue
             elif not isinstance(opt, (basestring, type(None))):
@@ -542,28 +574,6 @@ class Command(object):
                                                             for a in args)))
         log.debug("Running command `{0}';  args={1}, kwargs={2}"
                   .format(self.__class__.name, args, kwargs))
-        maxl = len(sorted(self._filters, key=len)[-1])
-        cmd_ctxt = cmd_ctxt or CommandContext({
-            'filter_chain_analysis': self.filter_chain_analysis,
-            'filter_noop':           getattr(opts, 'noop', ()),
-            'filter_dump':           getattr(opts, 'dump', ()),
-            'system':                getattr(opts, 'sys', ''),
-            'system_extra':          getattr(opts, 'dist', '').split(','),
-            'svc_output':            FancyOutput(f=stderr,
-                                                 quiet=getattr(opts, 'quiet',
-                                                               False),
-                                                 prefix=("|header:[{{0:{0}}}]| "
-                                                         .format(maxl)),
-                                                 color=dict(auto=None,
-                                                            never=False,
-                                                            always=True)[
-                                                                getattr(opts,
-                                                                        'color',
-                                                                        'auto')
-                                                            ]
-                                     ),
-        }, bypass=True)
-        cmd_ctxt.ensure_filters(self._filters.itervalues())
         io_driver = any2iter(self._fnc(cmd_ctxt, **kwargs))
         io_handler = (self._iochain_proceed, lambda c, ec=EC.EXIT_SUCCESS: ec)
         io_driver_map = izip_longest(io_driver, io_handler)
