@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Various little+independent helpers"""
@@ -114,7 +114,9 @@ def isinstanceupto(subj, obj, *exc):
 
 
 def areinstances(obj1, obj2):
-    isinstance(obj1, obj2.__class__) or isinstance(obj2, obj1.__class__)
+    return isinstance(obj1, obj2.__class__) or isinstance(obj2, obj1.__class__)
+
+
 
 
 def popattr(obj, what, *args):
