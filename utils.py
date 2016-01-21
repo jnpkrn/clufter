@@ -117,6 +117,9 @@ def areinstances(obj1, obj2):
     return isinstance(obj1, obj2.__class__) or isinstance(obj2, obj1.__class__)
 
 
+def areinstancesupto(obj1, obj2, *exc):
+    return isinstanceupto(obj1, obj2.__class__, *exc) \
+        or isinstanceupto(obj2, obj1.__class__, *exc)
 
 
 def popattr(obj, what, *args):
