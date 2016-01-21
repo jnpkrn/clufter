@@ -542,7 +542,9 @@ class Command(object):
                 try:
                     opt = opt.format(**cmd_ctxt['__filters__'])
                     # XXX type adjustment at least for bool?
-                except (ValueError, KeyError):
+                except (AttributeError, ValueError, KeyError):
+                    # AttributeError ~ may be available later on,
+                    #                  resolved in io_decl_specials
                     pass
             if isinstance(opt, MutableMapping) \
                     or not isinstance(default, basestring) \
