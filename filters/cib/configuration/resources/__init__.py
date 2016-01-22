@@ -271,7 +271,7 @@ cibprelude2cibcompact = ('''\
                               $Autostart = 0">
                     <xsl:comment
                     ><xsl:value-of select="concat(' mimic no-autostart resource group (',
-                                                $ResourceGroup, ')')"
+                                                  $ResourceGroup, ')')"
                     /></xsl:comment>
                     <meta_attributes id="{$ResourceGroup}-META-ATTRS-autostart">
                         <nvpair id="{$ResourceGroup}-META-is-managed"
