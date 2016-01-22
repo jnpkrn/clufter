@@ -7,6 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 ###
 
 from .... import package_name
+from ....utils_xslt import xslt_is_member
 
 cibprelude2cibcompact = ('''\
     <!--
@@ -278,6 +279,73 @@ cibprelude2cibcompact = ('''\
                                 name="is-managed"
                                 value="false"/>
                     </meta_attributes>
+                </xsl:if>
+                <!--
+                    migration-treshold + failure-timeout
+                    ~ @max_restarts + restart_expire_time
+                      iff recovery in (restart, relocate->migration-threshold=1)
+                -->
+                <xsl:variable name="MaxRestarts"
+                            select="meta_attributes/nvpair[
+                                        @name = 'max_restarts'
+                                    ]/@value"/>
+                <xsl:variable name="RestartExpireTime"
+                            select="meta_attributes/nvpair[
+                                        @name = 'restart_expire_time'
+                                    ]/@value"/>
+                <xsl:variable name="Recovery"
+                            select="translate(
+                                        meta_attributes/nvpair[
+                                            @name = 'recovery'
+                                        ]/@value,
+                                        'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                                        'abcdefghijklmnopqrstuvwxyz'
+                                    )"/>
+                <xsl:if test="
+''' + (
+                    xslt_is_member('$Recovery',
+                                   ('', 'restart', 'relocate'))
+) + '''
+                ">
+                    <xsl:choose>
+                        <xsl:when test="$Recovery = 'relocate'">
+                            <xsl:comment
+                            ><xsl:value-of select="concat(
+                                ' mimic relocate recover policy for',
+                                ' resource group (', $ResourceGroup, ')')"
+                            /></xsl:comment>
+                            <meta_attributes id="{$ResourceGroup}-META-ATTRS-recover-relocate">
+                                <nvpair id="{$ResourceGroup}-META-migration-threshold"
+                                        name="migration-threshold"
+                                        value="1"/>
+                                <!-- 30s timeout is non-educated guestimation -->
+                                <nvpair id="{$ResourceGroup}-META-failure-timeout"
+                                        name="failure-timeout"
+                                        value="30s"/>
+                            </meta_attributes>
+                        </xsl:when>
+                        <xsl:when test="number($MaxRestarts) &gt; 0
+                                        and
+                                        number($RestartExpireTime) &gt;= 0">
+                            <xsl:comment
+                            ><xsl:value-of select="concat(
+                                ' mimic finely specified restart recover',
+                                ' policy for resource group (',
+                                $ResourceGroup, ')')"
+                            /></xsl:comment>
+                            <meta_attributes id="{$ResourceGroup}-META-ATTRS-recover-restart">
+                                <nvpair id="{$ResourceGroup}-META-migration-threshold"
+                                        name="migration-threshold"
+                                        value="{$MaxRestarts}"/>
+                                <!-- 30s timeout is non-educated guestimation -->
+                                <nvpair id="{$ResourceGroup}-META-failure-timeout"
+                                        name="failure-timeout"
+                                        value="{$RestartExpireTime}"/>
+                            </meta_attributes>
+                        </xsl:when>
+                        <xsl:otherwise>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </xsl:if>
             </group>
         </xsl:if>
