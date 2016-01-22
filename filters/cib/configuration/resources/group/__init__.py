@@ -22,19 +22,10 @@ cib2pcscmd = ('''\
 ) + '''
 
     <!-- meta attrs -->
-    <xsl:if test="meta_attributes/nvpair">
 ''' + (
-        verbose_inform('"meta attributes for group: ", @id')
-) + '''
-        <xsl:value-of select="concat($pcscmd_pcs, 'resource meta ', @id)"/>
-''' + (
-            attrset_xsl("meta_attributes")
-) + '''
-        <xsl:value-of select="'%(NL)s'"/>
-''' + (
-        verbose_ec_test
-) + '''
-    </xsl:if>
-''') % dict(
+    attrset_xsl("meta_attributes",
+                cmd='$pcscmd_pcs, "resource meta ", @id',
+                inform='"meta attributes for group: ", @id')
+)) % dict(
     NL=NL,
 )
