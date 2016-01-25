@@ -138,4 +138,4 @@ trap 'ret=1' USR1
 
 [ "${RUNCHECK}" -eq 0 ] || { run_check; run_check_cmd; } || ret=$((ret+2))
 
-f() { return $1; }; f ${ret}
+f() { echo "EXIT STATUS: $1"; return $1; }; f ${ret}
