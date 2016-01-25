@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -142,14 +142,27 @@ cibcompact2cib = ('''\
                                     <rule id="CONSTRAINT-LOCATION-{$Resource/@id}-RESTRICTED"
                                           boolean-op="and"
                                           score="-INFINITY">
-                                        <xsl:for-each select="$FailoverDomain/meta_attributes/nvpair[
-                                                                  starts-with(@name, 'failoverdomainnode-')
-                                                              ]">
-                                            <expression id="CONSTRAINT-LOCATION-{$Resource/@id}-RESTRICTED-{@value}-expr"
-                                                        attribute="#uname"
-                                                        operation="ne"
-                                                        value="{@value}"/>
-                                        </xsl:for-each>
+                                        <xsl:choose>
+                                            <xsl:when test="$FailoverDomain/meta_attributes/nvpair[
+                                                                starts-with(@name, 'failoverdomainnode-')
+                                                            ]">
+                                                <xsl:for-each select="$FailoverDomain/meta_attributes/nvpair[
+                                                                          starts-with(@name, 'failoverdomainnode-')
+                                                                      ]">
+                                                    <expression id="CONSTRAINT-LOCATION-{$Resource/@id}-RESTRICTED-{@value}-expr"
+                                                                attribute="#uname"
+                                                                operation="ne"
+                                                                value="{@value}"/>
+                                                </xsl:for-each>
+                                            </xsl:when>
+                                            <xsl:otherwise>
+                                                <!-- see filters/ccs-revitalize[failoverdomains]:
+                                                     warn on empty restricted failoverdomains -->
+                                                <expression id="CONSTRAINT-LOCATION-{$Resource/@id}-RESTRICTED-all-expr"
+                                                            attribute="#uname"
+                                                            operation="defined"/>
+                                            </xsl:otherwise>
+                                        </xsl:choose>
                                     </rule>
                                 </xsl:if>
                             </rsc_location>
