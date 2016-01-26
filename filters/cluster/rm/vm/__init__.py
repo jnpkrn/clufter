@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -42,6 +42,23 @@ ccsflat2cibprelude = '''\
             rg2hb_xsl('snapshot', req=None)
 ) + '''\
         </instance_attributes>
+
+        <!-- OPERATIONS -->
+        <xsl:variable name="VmStop"
+                      select="action[
+                                  @name = 'stop'
+                                  and
+                                  number(@timeout) &gt; 0
+                              ]"/>
+        <xsl:if test="$VmStop">
+            <operations>
+''' + (
+                rg2hb_xsl("stop", "{concat($VmStop/@timeout, 's')}",
+                          req=abs, op=True)
+) + '''\
+            </operations>
+        </xsl:if>
+
     </xsl:when>
 '''
 
