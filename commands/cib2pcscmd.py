@@ -33,7 +33,7 @@ def cib2pcscmd(cmd_ctxt,
         force       may the force be with emitted pcs commands
         noauth      skip authentication step (OK if already set up)
         silent      do not track the progress along the steps execution (echoes)
-        tmp_cib     file to accumulate the changes (empty ~ direct push)
+        tmp_cib     file to accumulate the changes (empty ~ direct push, avoid!)
         dry_run     omit intrusive commands (TMP_CIB reset if empty)
         enable      enable cluster infrastructure services (autostart on reboot)
         text_width  for commands rewrapping (0/-1/neg. ~ auto/disable/hi-limit)

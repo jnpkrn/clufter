@@ -45,7 +45,7 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
         force       may the force be with emitted pcs commands
         noauth      skip authentication step (OK if already set up)
         silent      do not track the progress along the steps execution (echoes)
-        tmp_cib     file to accumulate the changes (empty ~ direct push)
+        tmp_cib     file to accumulate the changes (empty ~ direct push, avoid!)
         dry_run     omit intrusive commands (TMP_CIB reset if empty)
         enable      enable cluster infrastructure services (autostart on reboot)
         start_wait  fixed seconds to give cluster to come up initially
@@ -117,7 +117,7 @@ def pcs2pcscmd_needle(cmd_ctxt,
         force       may the force be with emitted pcs commands
         noauth      skip authentication step (OK if already set up)
         silent      do not track the progress along the steps execution (echoes)
-        tmp_cib     file to accumulate the changes (empty ~ direct push)
+        tmp_cib     file to accumulate the changes (empty ~ direct push, avoid!)
         dry_run     omit intrusive commands (TMP_CIB reset if empty)
         enable      enable cluster infrastructure services (autostart on reboot)
         start_wait  fixed seconds to give cluster to come up initially
