@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """pcs2pcscmd{,-flatiron,-needle} commands"""
@@ -39,7 +39,7 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
     """(Corosync/CMAN,Pacemaker) cluster cfg. -> reinstating pcs commands
 
     Options:
-        ccs         input Corosync/CMAN (+fencing pass-through) config. file
+        ccs         input Corosync/CMAN (+fence_pcmk) configuration file
         cib         input proper Pacemaker cluster config. file (CIB)
         output      pcs commands to reinstate the cluster per the inputs
         force       may the force be with emitted pcs commands
@@ -111,7 +111,7 @@ def pcs2pcscmd_needle(cmd_ctxt,
     """(Corosync v2,Pacemaker) cluster cfg. -> reinstating pcs commands
 
     Options:
-        coro        input Corosync v2 config. file
+        coro        input Corosync v2 configuration file
         cib         input proper Pacemaker cluster config. file (CIB)
         output      pcs commands to reinstate the cluster per the inputs
         force       may the force be with emitted pcs commands
