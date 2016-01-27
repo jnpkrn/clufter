@@ -326,7 +326,8 @@ R: default (`@exclusive` = 0)
 
 P: default (no such purposefully full utilization of node resources
             specified)
-   - pcs: does not support utilization yet (TODO?)
+   - pcs: support is arriving
+     (https://bugzilla.redhat.com/show_bug.cgi?id=1158500)
 
 [2. flat model of node-exclusive/co-occurence-less resource, no preemption]
 EXCLUSIVE(B, TRUE)
