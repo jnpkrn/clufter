@@ -307,6 +307,8 @@ assumed variables (+ constraints) to be combined with proper preconditions:
 R: driven by `/cluster/rm/<service>/@exclusive`
    - note: only applies to service/vm (not primitive resources)
 P: driven by `utilization` constraint
+   (or possibly by a set of `colocation` constraints:
+   for all r in RESOURCES\RESOURCE: COOCCURENCE(RESOURCE, r, -INF) [1]
 
 [1. model of non-node-exclusive/co-occurence-positive resource, based on 2.]
 for all B' in RUNNABLE(A): EXCLUSIVE(B', FALSE) [implies EXCLUSIVE(B, FALSE)]
@@ -643,5 +645,7 @@ P: # pcs resource unmanage RESOURCE
 
 References
 ==========
+
+[1] http://oss.clusterlabs.org/pipermail/users/2016-January/002197.html
 
 : vim: set ft=rst:  <-- not exactly, but better than nothing
