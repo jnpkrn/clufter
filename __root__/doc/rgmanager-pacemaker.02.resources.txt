@@ -38,7 +38,7 @@ Explicit resource-node assignment properties, PROPERTY(RESOURCE, NODE)
 . AFFINITY
 Other resource properties, PROPERTY(RESOURCE)
 . RECOVERY
-. MANAGED
+. ENABLED
 
 # XXX: service ref=... + single node failover domains vs. clone
 
@@ -601,25 +601,25 @@ P: can only be achieved in case of AFFINITY(RESOURCE, NODE, FALSE)
    be added, effectively preventing RESOURCE to run anywhere
 
 
-Is-managed resource property
+Is-enabled resource property
 ----------------------------
 
-MANAGED ::= MANAGED(RESOURCE, TRUE)
-          | MANAGED(RESOURCE, FALSE)
-. MANAGED(RESOURCE, TRUE)   ... resource is managed (default assumption)
-. MANAGED(RESOURCE, FALSE)  ... resource is not managed
+ENABLED ::= ENABLED(RESOURCE, TRUE)
+          | ENABLED(RESOURCE, FALSE)
+. ENABLED(RESOURCE, TRUE)   ... resource is enabled (default assumption)
+. ENABLED(RESOURCE, FALSE)  ... resource is disabled
 
 notes
 . see also 01/cluster: FUNCTION
 
-R: except for static un-managing of everything (RGManager avoidance),
+R: except for static disabling of everything (RGManager avoidance),
    can be partially driven by `/cluster/rm/(service|vm)/@autostart`
    and/or run-time modification using `clusvcadm`
    (or at least it is close???)
 
-P: via `is-managed` meta-attribute
+P: via `target-role` (or possibly `is-managed`) meta-attribute [1]
 
-MANAGED(RESOURCE, TRUE)  [1. resource is managed]
+ENABLED(RESOURCE, TRUE)  [1. resource is enabled]
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 R: (partially) driven by specifying `@autostart` as non-zero
@@ -627,18 +627,26 @@ R: (partially) driven by specifying `@autostart` as non-zero
    - default, no need for that
    # clusvcadm -U RESOURCE  <-- whole service/vm only
 
-P: default, no need for that, otherwise specifying `is-managed` as `true`
+P: default, no need for that, otherwise specifying `target-role` as `Started`
+   (or possibly `is-managed` as `true`)
+   # pcs resource enable RESOURCE
+   # pcs resource meta RESOURCE target-role=
+   # pcs resource meta RESOURCE target-role=Started
+   or
    # pcs resource manage RESOURCE
    # pcs resource meta RESOURCE is-managed=
    # pcs resource meta RESOURCE is-managed=true
 
-MANAGED(RESOURCE, FALSE)  [2. resource is not managed]
+ENABLED(RESOURCE, FALSE)  [2. resource is disabled]
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 R: (partially?) driven by specifying `@autostart` as `0` (or `no`)
    # clusvcadm -Z RESOURCE  <-- whole service/vm only
 
-P: # pcs resource unmanage RESOURCE
+P: # pcs resource disable RESOURCE
+   # pcs resource meta RESOURCE target-role=Stopped
+   or
+   # pcs resource unmanage RESOURCE
    # pcs resource meta RESOURCE is-managed=false
 
 
