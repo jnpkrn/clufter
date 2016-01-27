@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """ccs2pcscmd{,-flatiron,-needle} commands"""
@@ -39,7 +39,7 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
     """(CMAN,rgmanager) cluster cfg. -> equivalent in pcs commands
 
     Options:
-        input       input (CMAN,rgmanager) cluster config. file
+        input       input (CMAN,rgmanager) cluster configuration file
         output      pcs commands to reinstate the cluster per the inputs
         force       may the force be with emitted pcs commands
         noauth      skip authentication step (OK if already set up)

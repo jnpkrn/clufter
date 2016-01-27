@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """ccs2pcs{,-flatiron,-needle} commands"""
@@ -47,7 +47,7 @@ def ccs2pcs_flatiron(cmd_ctxt,
     (~cluster.conf) along with Pacemaker proper one (~cib.xml).
 
     Options:
-        input     input (CMAN,rgmanager) cluster config. file
+        input     input (CMAN,rgmanager) cluster configuration file
         ccs_pcmk  output Corosync/CMAN (+fencing pass-through) config. file
         cib       output proper Pacemaker cluster config. file (CIB)
     """

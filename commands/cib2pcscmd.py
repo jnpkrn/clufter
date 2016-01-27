@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """cib2pcscmd command"""
@@ -28,7 +28,7 @@ def cib2pcscmd(cmd_ctxt,
     """CIB -> equivalent in pcs commands
 
     Options:
-        input       input proper Pacemaker cluster config. file (CIB)
+        input       input proper Pacemaker cluster configuration file (CIB)
         output      pcs commands to reinstate the cluster per the inputs
         force       may the force be with emitted pcs commands
         noauth      skip authentication step (OK if already set up)

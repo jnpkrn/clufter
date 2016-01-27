@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """cib-revitalize command"""
@@ -17,7 +17,7 @@ def cib_revitalize(cmd_ctxt,
     """Migrate deprecated configuration items in CIB
 
     Options:
-        input   input proper Pacemaker cluster config. file (CIB)
+        input   input proper Pacemaker cluster configuration file (CIB)
         output  output file with "revitalized" content
     """
     file_proto = protocols.plugins['file'].ensure_proto
