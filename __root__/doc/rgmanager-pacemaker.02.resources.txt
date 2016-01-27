@@ -1,6 +1,6 @@
 IN THE LIGHT OF RGMANAGER-PACEMAKER CONVERSION: 02/CLUSTERED RESOURCE PROPERTIES
 
-Copyright 2014 Red Hat, Inc., Jan Pokorný <jpokorny @at@ Red Hat .dot. com>
+Copyright 2016 Red Hat, Inc., Jan Pokorný <jpokorny @at@ Red Hat .dot. com>
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
 or any later version published by the Free Software Foundation;
@@ -582,8 +582,8 @@ RECOVERY(RESOURCE, RELOCATE)  [4. move to another node]
 
 R: driven by specifying `@recovery` as `relocate`
 
-P: driven by specifying `migration-threshold` as negative number(?)
-   (regardless of `failure-timeout`)
+P: driven by specifying `migration-threshold` as 1
+   (or possibly negative number?; regardless of `failure-timeout`)
    (but can be overriden by OCF RA return code, anyway?)
 
 RECOVERY(RESOURCE, DISABLE)  [5. no more attempt]
