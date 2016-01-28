@@ -172,6 +172,19 @@ ccsflat2cibprelude = ('''\
                 </xsl:otherwise>
             </xsl:choose>
 
+            <xsl:if test="number(@__max_failures) &gt; 0
+                          and
+                          number(@__failure_expire_time) &gt; 0">
+                <xsl:message>
+                    <xsl:value-of select="concat('WARNING: failures in status',
+                                                 ' checks (akin to __max_failures',
+                                                 ' and __failure_expire_time) are',
+                                                 ' always directly propagated',
+                                                 ' in Pacemaker without any',
+                                                 ' thresholding (', $Spec, ')')"/>
+                </xsl:message>
+            </xsl:if>
+
             <!-- store service reference for later use -->
 
             <meta_attributes id="{$Prefix}-META">
