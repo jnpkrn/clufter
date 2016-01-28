@@ -305,9 +305,9 @@ ccsflat2cibprelude = ('''\
 
 ccs_revitalize = '''\
     <xsl:template match="service
-                          |service/*
+                          |service//*[name() != 'action']
                           |vm
-                          |vm/*
+                          |vm//*[name() != 'action']
                           |resources/*">
         <xsl:choose>
             <!-- omit resources with repeated primary attribute
