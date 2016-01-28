@@ -342,6 +342,37 @@ ccs_revitalize = '''\
             </xsl:when>
             <xsl:otherwise>
                 <xsl:copy>
+                    <xsl:choose>
+                        <!-- omit __max_failures + __failure_expire_time when
+                             used without any real effect -->
+                        <xsl:when test="not(@__max_failures)
+                                        !=
+                                        not(@__failure_expire_time)
+                                        or
+                                        number(@__max_failures) &lt;= 0
+                                        or
+                                        number(@__failure_expire_time) &lt; 0">
+                            <xsl:message>
+                                <xsl:value-of select="concat('WARNING: __max_failures',
+                                                             ' and __failure_expire_time',
+                                                             ' must be specified in pair',
+                                                             ' and both of them has to be',
+                                                             ' positive numbers; not',
+                                                             ' satisfied, hence dropped',
+                                                             '(', name(),')')"/>
+                            </xsl:message>
+                            <xsl:apply-templates select="@*[
+                                                             not(
+''' + (
+                                xslt_is_member('name()',
+                                               ('__max_failures',
+                                                '__failure_expire_time'))
+) + ''')]"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:apply-templates select="@*"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
                     <xsl:apply-templates select="@*|node()"/>
                 </xsl:copy>
             </xsl:otherwise>
