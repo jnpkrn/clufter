@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -304,16 +304,18 @@ ccsflat2cibprelude = ('''\
 ###
 
 ccs_revitalize = '''\
-    <!-- omit resources with repeated primary attribute
-         rgmanager/src/daemons/reslist.c:store_resource:attribute collision
-         (simplified a bit - limited just to sibling scope)
-     -->
     <xsl:template match="service
                           |service/*
                           |vm
                           |vm/*
                           |resources/*">
         <xsl:choose>
+            <!-- omit resources with repeated primary attribute
+                 rgmanager/src/daemons/reslist.c:store_resource:attribute collision
+                 (simplified a bit - limited just to sibling scope)
+                 XXX: this will only work for config preprocessed with
+                      ccs_flatten
+             -->
             <xsl:when test="preceding-sibling::*[
                                 name() = name(current())
                                 and
