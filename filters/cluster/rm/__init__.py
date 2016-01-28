@@ -113,19 +113,20 @@ ccsflat2cibprelude = ('''\
 ) + ''']/*[name() != 'action']">
         <!-- meta-primary can be, e.g., @address in case of ip,
              and that can contain '/' which is not NCNameChar -->
-        <xsl:variable name="Prefix"
-                      select="concat('RESOURCE-', name(), '-',
+        <xsl:variable name="Spec"
+                      select="
 ''' + (
-                                  xslt_id_friendly(
-                                      '(@*[name() = current()/@rgmanager-meta-primary]'
-                                      '|@name'
-                                      '|@address'
-                                      '|@SID'
-                                      '|@InstanceName'
-                                      ')[1]'
-                                  )
-) + '''
-                              )"/>
+                              xslt_id_friendly(
+                                  '(@*[name() = current()/@rgmanager-meta-primary]'
+                                  '|@name'
+                                  '|@address'
+                                  '|@SID'
+                                  '|@InstanceName'
+                                  ')[1]'
+                              )
+) + '''"/>
+        <xsl:variable name="Prefix"
+                      select="concat('RESOURCE-', name(), '-', $Spec)"/>
         <primitive id="{$Prefix}">
 
             <xsl:attribute name="description"
