@@ -126,7 +126,7 @@ FAILURE-ISOLATION(GROUP, RESOURCE, STOP)  [3. disable unconditionally]
 
 R: specifying `@__independent_subtree` as `2` or `non-critical`
 
-P: default `on-fail` values modulo `ignore` for `status`
+P: default `on-fail` values modulo `ignore` for `monitor` (or `status`)
    operation and `stop` for `stop`) for RESOURCE ???
 
 
