@@ -1,0 +1,205 @@
+IN THE LIGHT OF RGMANAGER-PACEMAKER CONVERSION: 03/RESOURCE GROUP PROPERTIES
+
+Copyright 2016 Red Hat, Inc., Jan Pokorný <jpokorny @at@ Red Hat .dot. com>
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3
+or any later version published by the Free Software Foundation;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled "GNU
+Free Documentation License".
+
+
+Preface
+=======
+
+This document elaborates on how selected resource group internal
+relationship properties (denoting the run-time behavior) formalized
+by the means of LTL logic maps to particular RGManager (R) and
+Pacemaker (P) configuration arrangements.
+Due to the purpose of this document, "selected" here means set of
+properties one commonly uses in case of the former cluster resource
+manager (R).
+
+Properties are categorised, each is further dissected based on
+the property variants (basically holds or doesn't, but can be more
+convoluted), and for each variants, the LTL model and R+P specifics
+are provided (when possible or practical).
+
+
+Outline
+-------
+
+Group properties derived from resource properties
+Other group properties, PROPERTY(GROUP)
+
+
+
+Group properties derived from resource properties
+=================================================
+
+Resource group (group) is an ordered set of resources:
+
+GROUP ::= { RESOURCE1, ..., RESOURCEn },
+          RESOURCE1 < RESOURCE 2
+          ...
+          RESOURCEn-1 < RESOURCE n
+
+and is a product of two resource properties applied for each
+subsequent pair of resources in linear fashion:
+
+. ORDERING
+  ORDERING(RESOURCE1, RESOURCE2, STRONG)
+  ...
+  ORDERING(RESOURCEn-1, RESOURCEn, STRONG)
+
+. COOCCURRENCE
+  COOCCURRENCE(RESOURCE1, RESOURCE2, POSITIVE)
+  ...
+  COOCCURRENCE(RESOURCEn-1, RESOURCEn, POSITIVE)
+
+As the set is ordered, let's introduce two shortcut functions:
+
+. BEFORE(GROUP, RESOURCE) -> { R | for all R in GROUP, r < RESOURCE }
+. AFTER(GROUP, RESOURCE)  -> { R | for all R in GROUP, r > RESOURCE }
+
+
+
+Other group properties
+=========================
+
+Recovery policy group property
+---------------------------------
+
+RECOVERY ::= RECOVERY(GROUP, RESTART-ONLY)
+           | RECOVERY(GROUP, RESTART-UNTIL1, MAX-RESTARTS)
+           | RECOVERY(GROUP, RESTART-UNTIL2, MAX-RESTARTS, EXPIRE-TIME)
+           | RECOVERY(GROUP, RELOCATE)
+           | RECOVERY(GROUP, DISABLE)
+. RECOVERY(GROUP, RESTART)  ... "attempt to restart in place", unlimited
+. RECOVERY(GROUP, RESTART-UNTIL1, MAX-RESTARTS)
+                            ... ditto, but after MAX-RESTARTS attempts
+                                (for the whole period of group-node
+                                assignment) attempt to relocate
+. RECOVERY(GROUP, RESTART-UNTIL2, MAX-RESTARTS, EXPIRE-TIME)
+                            ... ditto, but after MAX-RESTARTS attempts
+                                accumulated within EXPIRE-TIME windows,
+                                attempt to relocate
+. RECOVERY(GROUP, RELOCATE) ... move to another node
+. RECOVERY(GROUP, DISABLE)  ... do not attempt anything, stop
+
+R: driven by `/cluster/rm/(service|vm)/@recovery`
+
+P: driven by OCF RA return code and/or `migration-threshold`
+
+RECOVERY(GROUP, RESTART-ONLY)  [1. restart in place, unlimited]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+R: default, no need for that, otherwise specifying `@recovery` as `restart`
+   (and not specifying none of `@max_restarts`, `@restart_expire_time`,
+   or keeping `@max_restarts` at zero!)
+
+P: default, no need for that, otherwise specifying `migration-threshold`
+   as `INFINITY` (or zero?; can be overriden by OCF RA return code, anyway?)
+
+RECOVERY(GROUP, RESTART-UNTIL1, MAX-RESTARTS)  [2. restart + absolute limit]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+R: driven by specifying `@max_restarts` as `MAX-RESTARTS` (value, non-positive
+   number boils down to case 1.)
+   - and, optionally, specifying `@recovery` as `restart` (or not at all!)
+
+P: driven by specifying `migration-threshold` as `MAX-RESTARTS` (value,
+   presumably non-negative, `INFINITY` or zero? boil down to case 1.)
+   (but can be overriden by OCF RA return code, anyway?)
+
+[3. restart + relative limit for number of restarts/period]
+RECOVERY(GROUP, RESTART-UNTIL2, MAX-RESTARTS, EXPIRE-TIME)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+R: driven by specifying `@max_restarts` as `MAX-RESTARTS` (value, non-positive
+   number boils down to case 1.) and `@restart_expire_time`
+   as `EXPIRE-TIME` (value, negative after expansion boils down to the
+   case 1., zero to case 2.)
+   - and, optionally, specifying `@recovery` as `restart` (or not at all!)
+
+P: driven by specifying `migration-threshold` as `MAX-RESTARTS` (value,
+   presumably non-negative, `INFINITY` or zero? boil down to case 1.) and
+   `failure-timeout` as `EXPIRE-TIME`  (value, presumably positive, zero
+   boils down to case 2.)
+   (but can be overriden by OCF RA return code, anyway?)
+
+RECOVERY(GROUP, RELOCATE)  [4. move to another node]
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+R: driven by specifying `@recovery` as `relocate`
+
+P: driven by specifying `migration-threshold` as 1
+   (or possibly negative number?; regardless of `failure-timeout`)
+   (but can be overriden by OCF RA return code, anyway?)
+
+RECOVERY(GROUP, DISABLE)  [5. no more attempt]
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+R: driven by specifying `@recovery` as `disable`
+
+P: can only be achieved in case of AFFINITY(GROUP, NODE, FALSE)
+   for all nodes except one and specifying `migration-threshold`
+   as `1` because upon single failure, remaining
+   AFFINITY(RESOURCE, NODE, FALSE) rule for yet-enabled NODE will
+   be added, effectively preventing RESOURCE to run anywhere
+
+
+Is-enabled group property
+-------------------------
+
+ENABLED ::= ENABLED(GROUP, TRUE)
+          | ENABLED(GROUP, FALSE)
+. ENABLED(GROUP, TRUE)   ... group is enabled (default assumption)
+. ENABLED(GROUP, FALSE)  ... group is disabled
+
+notes
+. see also 01/cluster: FUNCTION
+
+R: except for static disabling of everything (RGManager avoidance),
+   can be partially driven by `/cluster/rm/(service|vm)/@autostart`
+   and/or run-time modification using `clusvcadm`
+   (or at least it is close???)
+
+P: via `target-role` (or possibly `is-managed`) meta-attribute [1]
+
+ENABLED(GROUP, TRUE)  [1. group is enabled]
+~~~~~~~~~~~~~~~~~~~~~~~
+
+R: (partially) driven by specifying `@autostart` as non-zero
+   (has to be sequence of digits for sure, though!)
+   - default, no need for that
+   # clusvcadm -U GROUP  <-- whole service/vm only
+
+P: default, no need for that, otherwise specifying `target-role` as `Started`
+   (or possibly `is-managed` as `true`)
+   # pcs resource enable GROUP
+   # pcs resource meta GROUP target-role=
+   # pcs resource meta GROUP target-role=Started
+   or
+   # pcs resource manage GROUP
+   # pcs resource meta GROUP is-managed=
+   # pcs resource meta GROUP is-managed=true
+
+ENABLED(GROUP, FALSE)  [2. group is disabled]
+~~~~~~~~~~~~~~~~~~~~~
+
+R: (partially?) driven by specifying `@autostart` as `0` (or `no`)
+   # clusvcadm -Z GROUP  <-- whole service/vm only
+
+P: # pcs resource disable GROUP
+   # pcs resource meta GROUP target-role=Stopped
+   or
+   # pcs resource unmanage GROUP
+   # pcs resource meta GROUP is-managed=false
+
+
+
+References
+==========
+
+: vim: set ft=rst:  <-- not exactly, but better than nothing
