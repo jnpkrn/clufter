@@ -136,6 +136,13 @@ res_do_flatten(xmlNode ** xpp, xmlNode * rmp, resource_node_t * node, const char
         }
     }
 
+
+    /* also restore some meta-attributes */
+    if (node->rn_flags &= (RF_INDEPENDENT|RF_NON_CRITICAL)) {
+        xmlSetProp(n, (xmlChar *) "__independent_subtree",
+                      (xmlChar *) (node->rn_flags&RF_NON_CRITICAL ? "2" : "1"));
+    }
+
     if (!*xpp) {
         /* Add top-level container */
         *xpp = n;
