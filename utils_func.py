@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Various functional-paradigm helpers"""
@@ -72,7 +72,7 @@ loose_zip = lambda a, b: zip(
 )
 apply_loose_zip_preserving_depth = \
     lambda a, b: \
-        (type(a) if type(a) == type(b) else type(a))(
+        type(a)(
             [apply_loose_zip_preserving_depth(*p) for p in loose_zip(a, b)]
         ) if tuplist(a) == tuplist(b) == True else zipped_outlier([a, b])
 # as previous, but with length checking of some sort
@@ -80,7 +80,7 @@ apply_loose_zip_preserving_depth = \
 #       to the length of the bigger one
 apply_strict_zip_preserving_depth = \
     lambda a, b: \
-        (type(a) if type(a) == type(b) else type(a))(
+        type(a)(
             [apply_strict_zip_preserving_depth(*p) for p in zip(a, b)]
         ) if tuplist(a) == tuplist(b) == True and len(a) == len(b) \
         else zipped_outlier([a, b])
