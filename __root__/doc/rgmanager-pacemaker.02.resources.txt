@@ -30,7 +30,7 @@ Outline
 
 Resource-resource interaction properites, PROPERTY(RESOURCE1, RESOURCE2)
 . ORDERING
-. COOCCURENCE
+. COOCCURRENCE
 Relative resource-node assignment properties, PROPERTY(RESOURCE)
 . STICKY
 . EXCLUSIVE
@@ -130,25 +130,25 @@ P: driven by specifying `symmetrical` as `false` (default is `true`)
    # pcs constraint order B then C symmetrical=false
 
 
-Cooccurence (location-based interaction dependence of the resources)
---------------------------------------------------------------------
+Cooccurrence (location-based interaction dependence of the resources)
+---------------------------------------------------------------------
 
-COOCCURENCE ::= COOCURENCE(RESOURCE1, RESOURCE2, NONE)
-              | COOCURENCE(RESOURCE1, RESOURCE2, POSITIVE)
-              | COOCURENCE(RESOURCE1, RESOURCE2, NEGATIVE)
-              | COOCURENCE(RESOURCE1, RESOURCE2, SCORE),
-                SCORE in {..., -1, 0, 1, ...}, 0~NONE, -INF~NEGATIVE,
-                                               +INF~POSITIVE
-. COOCCURENCE(RESOURCE1, RESOURCE2, NONE)     ... not any occurence
-                                                  relationship (default)
-. COOCCURENCE(RESOURCE1, RESOURCE2, POSITIVE) ... positive occurence
-                                                  relationship (flat model)
-. COOCCURENCE(RESOURCE1, RESOURCE2, NEGATIVE) ... negative occurence
-                                                  relationship (flat model)
-. COOCCURENCE(RESOURCE1, RESOURCE2, SCORE)    ... score-based/advisory
-                                                  occurence relationship
+COOCCURRENCE ::= COOCURRENCE(RESOURCE1, RESOURCE2, NONE)
+               | COOCURRENCE(RESOURCE1, RESOURCE2, POSITIVE)
+               | COOCURRENCE(RESOURCE1, RESOURCE2, NEGATIVE)
+               | COOCURRENCE(RESOURCE1, RESOURCE2, SCORE),
+                 SCORE in {..., -1, 0, 1, ...}, 0~NONE, -INF~NEGATIVE,
+                                                +INF~POSITIVE
+. COOCCURRENCE(RESOURCE1, RESOURCE2, NONE)     ... not any occurrence
+                                                   relationship (default)
+. COOCCURRENCE(RESOURCE1, RESOURCE2, POSITIVE) ... positive occurrence
+                                                   relationship (flat model)
+. COOCCURRENCE(RESOURCE1, RESOURCE2, NEGATIVE) ... negative occurrence
+                                                   relationship (flat model)
+. COOCCURRENCE(RESOURCE1, RESOURCE2, SCORE)    ... score-based/advisory
+                                                   occurrence relationship
 
-note: COOCCURENCE relation between RESOURCE1 and RESOURCE2 is not symmetric,
+note: COOCCURRENCE relation between RESOURCE1 and RESOURCE2 is not symmetric,
       RESOURCE1 is "dependent", RESOURCE2 is "leader"
 
 assumed variables (+ constraints) to be combined with proper preconditions:
@@ -165,16 +165,16 @@ R: driven by various arrangements
 
 P: driven by `colocation` constraint (or `group` arrangement)
 
-COOCCURENCE(B/RESOURCE1, C/RESOURCE2, NONE)  [1. no cooccurence]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+COOCCURRENCE(B/RESOURCE1, C/RESOURCE2, NONE)  [1. no cooccurrence]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 R: default
 
 P: default, no need for that, otherwise specifying `score` as `0`
    # pcs constraint colocation add B/RESOURCE1 with C/RESOURCE2 0
 
-COOCCURENCE(B/RESOURCE1, C/RESOURCE2, POSITIVE)  [2. possitive cooccurence]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-a AND b -> c  [basic positive cooccurence condition]
+COOCCURRENCE(B/RESOURCE1, C/RESOURCE2, POSITIVE)  [2. positive cooccurrence]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+a AND b -> c  [basic positive cooccurrence condition]
 X b -> X d    ["dependent" follows its "leader"]
 
 R: driven by grouping set of sequentially dependent resources
@@ -196,9 +196,9 @@ P: driven by (a) `colocation` constraint, specifying `INFINITY`,
    - (b)
      # pcs resource group add SOMENAME C/RESOURCE2 B/RESOURCE1
 
-COOCCURENCE(B/RESOURCE1, C/RESOURCE2, NEGATIVE)  [3. negative cooccurence]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-a AND b -> ~c  [basic negative cooccurence condition]
+COOCCURRENCE(B/RESOURCE1, C/RESOURCE2, NEGATIVE)  [3. negative cooccurrence]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+a AND b -> ~c  [basic negative cooccurrence condition]
 X b -> X ~d    ["dependent" escapes its "leader"]
 
 R: driven/emulated solely by disjunct failover domains
@@ -209,7 +209,7 @@ P: driven by `colocation` constraint, specifying `-INFINITY`
    # pcs constraint colocation add B/RESOURCE1 with C/RESOURCE2 -INFINITY
    # pcs constraint colocation set C/RESOURCE2 B/RESOURCE1 setoptions score=-INFINITY
 
-COOCURENCE(B/RESOURCE1, C/RESOURCE2, SCORE)  [4. score-based/advisory occurence]
+COOCURENCE(B/RESOURCE1, C/RESOURCE2, SCORE)  [4. score-based/advisory occurrence]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 TBD
 
@@ -308,9 +308,9 @@ R: driven by `/cluster/rm/<service>/@exclusive`
    - note: only applies to service/vm (not primitive resources)
 P: driven by `utilization` constraint
    (or possibly by a set of `colocation` constraints:
-   for all r in RESOURCES\RESOURCE: COOCCURENCE(RESOURCE, r, -INF) [1]
+   for all r in RESOURCES\RESOURCE: COOCCURRENCE(RESOURCE, r, -INF) [1]
 
-[1. model of non-node-exclusive/co-occurence-positive resource, based on 2.]
+[1. model of non-node-exclusive/co-occurrence-positive resource, based on 2.]
 for all B' in RUNNABLE(A): EXCLUSIVE(B', FALSE) [implies EXCLUSIVE(B, FALSE)]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~(a OR b) OR ~(~a -> ~b R ~a AND ~b -> ~a R ~b)
@@ -331,7 +331,7 @@ P: default (no such purposefully full utilization of node resources
    - pcs: support is arriving
      (https://bugzilla.redhat.com/show_bug.cgi?id=1158500)
 
-[2. flat model of node-exclusive/co-occurence-less resource, no preemption]
+[2. flat model of node-exclusive/co-occurrence-less resource, no preemption]
 EXCLUSIVE(B, TRUE)
 ~~~~~~~~~~~~~~~~~~
 ~(a OR b) OR (~a -> ~b R ~a) AND (~b -> ~a R ~b)  [mutual exclusion]
