@@ -98,7 +98,9 @@ a AND b AND ~c AND ~d -> X ~b AND X X ~a          [stop:  C, then B]
 
 R: TBD
 
-P: driven by specifying `score` as `0`
+P: driven by specifying `kind` as `Optional` (or `score` as `0`)
+   # pcs constraint order B then C kind=Optional
+   or
    # pcs constraint order B then C score=0
 
 ORDERING(B, C, STRONG)  [3. strong ordering]
@@ -110,10 +112,13 @@ a AND b AND ~c -> a AND b AND ~c AND ~d   [stronger, follows as per previous]
 
 R: TBD
 
-P: driven by omitting `score` (or specifying it as non-zero)
+P: driven by omitting both `kind` and `score` (or specifying `kind` as
+   `Mandatory` or `score` as non-zero)
    or (b) using `group` (which implies also `colocation` constraint)
    - (a)
      # pcs constraint order B then C
+     # pcs constraint order B then C kind=Mandatory
+     or
      # pcs constraint order B then C score=1
      # XXX pcs constraint order set B C
    - (b)
