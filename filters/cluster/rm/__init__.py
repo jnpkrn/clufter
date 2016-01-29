@@ -207,16 +207,28 @@ ccsflat2cibprelude = ('''\
                 </xsl:if>
                 <xsl:variable name="IntervalFound"
                               select="action[
-                                  @name = 'monitor'
+                                  (
+                                      @name = 'monitor'
+                                      or
+                                      @name = 'status'
+                                  )
                                   and
                                   not(preceding-sibling::action[
-                                      @name = 'monitor'
+                                      (
+                                          @name = 'monitor'
+                                          or
+                                          @name = 'status'
+                                      )
                                       and
                                       @depth &lt; current()/@depth
                                   ])
                                   and
                                   not(following-sibling::action[
-                                      @name = 'monitor'
+                                      (
+                                          @name = 'monitor'
+                                          or
+                                          @name = 'status'
+                                      )
                                       and
                                       @depth &lt; current()/@depth
                                   ])
