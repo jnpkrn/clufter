@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing format"""
@@ -65,11 +65,12 @@ class XMLValidationTestCase(TestCase):
     coro_input_fail = join(dirname(__file__), 'coro_fail.xml')
 
     def testRngImplicitValidationOk(self):
+        ok = True
         try:
             et = coroxml_needle('file', self.coro_input_ok)('etree')
         except Exception:
-            raise
-            self.assertTrue(False)
+            ok = False
+        self.assertTrue(ok)
 
     def testRngImplicitValidationFail(self):
         try:
