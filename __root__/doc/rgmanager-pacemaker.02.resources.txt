@@ -309,6 +309,7 @@ R: driven by `/cluster/rm/<service>/@exclusive`
 P: driven by `utilization` constraint
    (or possibly by a set of `colocation` constraints:
    for all r in RESOURCES\RESOURCE: COOCCURRENCE(RESOURCE, r, -INF) [1]
+   (see [3. negative cooccurrence])
 
 [1. model of non-node-exclusive/co-occurrence-positive resource, based on 2.]
 for all B' in RUNNABLE(A): EXCLUSIVE(B', FALSE) [implies EXCLUSIVE(B, FALSE)]
