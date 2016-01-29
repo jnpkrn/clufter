@@ -368,6 +368,8 @@ EOF)
 %{python2_sitelib}/%{name}/__main__.py*
 %{python2_sitelib}/%{name}/main.py*
 %{python2_sitelib}/%{name}/completion.py*
+# only useful here, rest of egg-info pulled through internal dependency
+%{python2_sitelib}/%{name}-*.egg-info/entry_points.txt
 %endif
 
 %files %{pkgsimple %{clufter_pylib}}
@@ -381,6 +383,8 @@ EOF)
 %exclude %{python2_sitelib}/%{name}/ext-plugins/*/
 %{python2_sitelib}/%{name}
 %{python2_sitelib}/%{name}-*.egg-info
+# entry_points.txt only useful for -cli package
+%exclude %{python2_sitelib}/%{name}-*.egg-info/entry_points.txt
 # /usr/libexec/clufter/ccs_flatten -> /usr/libexec/clufter
 # /usr/libexec/ccs_flatten         -> /usr/libexec/ccs_flatten
 %(echo '%{clufter_ccs_flatten}' | sed 's|\(%{_libexecdir}/[^/]\+\).*|\1|')
