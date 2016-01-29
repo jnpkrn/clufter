@@ -37,8 +37,8 @@ Relative resource-node assignment properties, PROPERTY(RESOURCE)
 Explicit resource-node assignment properties, PROPERTY(RESOURCE, NODE)
 . AFFINITY
 Other resource properties, PROPERTY(RESOURCE)
-. RECOVERY
-. ENABLED
+. RECOVERY  --> see RECOVERY(GROUP)
+. ENABLED   --> Pacemaker only, same as ENABLED(GROUP)
 
 # XXX: service ref=... + single node failover domains vs. clone
 
@@ -519,141 +519,6 @@ Initial exclusive resource-node affinity
 
 TBD:
 https://bugzilla.redhat.com/994215#RFE--Control-which-node-a-service-autostarts-on
-
-
-
-Other resource properties
-=========================
-
-Recovery policy resource property
----------------------------------
-
-RECOVERY ::= RECOVERY(RESOURCE, RESTART-ONLY)
-           | RECOVERY(RESOURCE, RESTART-UNTIL1, MAX-RESTARTS)
-           | RECOVERY(RESOURCE, RESTART-UNTIL2, MAX-RESTARTS, EXPIRE-TIME)
-           | RECOVERY(RESOURCE, RELOCATE)
-           | RECOVERY(RESOURCE, DISABLE)
-. RECOVERY(RESOURCE, RESTART)  ... "attempt to restart in place", unlimited
-. RECOVERY(RESOURCE, RESTART-UNTIL1, MAX-RESTARTS)
-                               ... ditto, but after MAX-RESTARTS attempts
-                                   (for the whole period of resource-node
-                                   assignment) attempt to relocate
-. RECOVERY(RESOURCE, RESTART-UNTIL2, MAX-RESTARTS, EXPIRE-TIME)
-                               ... ditto, but after MAX-RESTARTS attempts
-                                   accumulated within EXPIRE-TIME windows,
-                                   attempt to relocate
-. RECOVERY(RESOURCE, RELOCATE) ... move to another node
-. RECOVERY(RESOURCE, DISABLE)  ... do not attempt anything, stop
-
-R: driven by `/cluster/rm/(service|vm)/@recovery`
-
-P: driven by OCF RA return code and/or `migration-threshold`
-
-RECOVERY(RESOURCE, RESTART-ONLY)  [1. restart in place, unlimited]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-R: default, no need for that, otherwise specifying `@recovery` as `restart`
-   (and not specifying none of `@max_restarts`, `@restart_expire_time`,
-   or keeping `@max_restarts` at zero!)
-
-P: default, no need for that, otherwise specifying `migration-threshold`
-   as `INFINITY` (or zero?; can be overriden by OCF RA return code, anyway?)
-
-RECOVERY(RESOURCE, RESTART-UNTIL1, MAX-RESTARTS)  [2. restart + absolute limit]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-R: driven by specifying `@max_restarts` as `MAX-RESTARTS` (value, non-positive
-   number boils down to case 1.)
-   - and, optionally, specifying `@recovery` as `restart` (or not at all!)
-
-P: driven by specifying `migration-threshold` as `MAX-RESTARTS` (value,
-   presumably non-negative, `INFINITY` or zero? boil down to case 1.)
-   (but can be overriden by OCF RA return code, anyway?)
-
-[3. restart + relative limit for number of restarts/period]
-RECOVERY(RESOURCE, RESTART-UNTIL2, MAX-RESTARTS, EXPIRE-TIME)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-R: driven by specifying `@max_restarts` as `MAX-RESTARTS` (value, non-positive
-   number boils down to case 1.) and `@restart_expire_time`
-   as `EXPIRE-TIME` (value, negative after expansion boils down to the
-   case 1., zero to case 2.)
-   - and, optionally, specifying `@recovery` as `restart` (or not at all!)
-
-P: driven by specifying `migration-threshold` as `MAX-RESTARTS` (value,
-   presumably non-negative, `INFINITY` or zero? boil down to case 1.) and
-   `failure-timeout` as `EXPIRE-TIME`  (value, presumably positive, zero
-   boils down to case 2.)
-   (but can be overriden by OCF RA return code, anyway?)
-
-RECOVERY(RESOURCE, RELOCATE)  [4. move to another node]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-R: driven by specifying `@recovery` as `relocate`
-
-P: driven by specifying `migration-threshold` as 1
-   (or possibly negative number?; regardless of `failure-timeout`)
-   (but can be overriden by OCF RA return code, anyway?)
-
-RECOVERY(RESOURCE, DISABLE)  [5. no more attempt]
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-R: driven by specifying `@recovery` as `disable`
-
-P: can only be achieved in case of AFFINITY(RESOURCE, NODE, FALSE)
-   for all nodes except one and specifying `migration-threshold`
-   as `1` because upon single failure, remaining
-   AFFINITY(RESOURCE, NODE, FALSE) rule for yet-enabled NODE will
-   be added, effectively preventing RESOURCE to run anywhere
-
-
-Is-enabled resource property
-----------------------------
-
-ENABLED ::= ENABLED(RESOURCE, TRUE)
-          | ENABLED(RESOURCE, FALSE)
-. ENABLED(RESOURCE, TRUE)   ... resource is enabled (default assumption)
-. ENABLED(RESOURCE, FALSE)  ... resource is disabled
-
-notes
-. see also 01/cluster: FUNCTION
-
-R: except for static disabling of everything (RGManager avoidance),
-   can be partially driven by `/cluster/rm/(service|vm)/@autostart`
-   and/or run-time modification using `clusvcadm`
-   (or at least it is close???)
-
-P: via `target-role` (or possibly `is-managed`) meta-attribute [1]
-
-ENABLED(RESOURCE, TRUE)  [1. resource is enabled]
-~~~~~~~~~~~~~~~~~~~~~~~
-
-R: (partially) driven by specifying `@autostart` as non-zero
-   (has to be sequence of digits for sure, though!)
-   - default, no need for that
-   # clusvcadm -U RESOURCE  <-- whole service/vm only
-
-P: default, no need for that, otherwise specifying `target-role` as `Started`
-   (or possibly `is-managed` as `true`)
-   # pcs resource enable RESOURCE
-   # pcs resource meta RESOURCE target-role=
-   # pcs resource meta RESOURCE target-role=Started
-   or
-   # pcs resource manage RESOURCE
-   # pcs resource meta RESOURCE is-managed=
-   # pcs resource meta RESOURCE is-managed=true
-
-ENABLED(RESOURCE, FALSE)  [2. resource is disabled]
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-R: (partially?) driven by specifying `@autostart` as `0` (or `no`)
-   # clusvcadm -Z RESOURCE  <-- whole service/vm only
-
-P: # pcs resource disable RESOURCE
-   # pcs resource meta RESOURCE target-role=Stopped
-   or
-   # pcs resource unmanage RESOURCE
-   # pcs resource meta RESOURCE is-managed=false
 
 
 
