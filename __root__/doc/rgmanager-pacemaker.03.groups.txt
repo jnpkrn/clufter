@@ -30,6 +30,8 @@ Outline
 -------
 
 Group properties derived from resource properties
+Group member vs. rest of group properties, PROPERTY(GROUP, RESOURCE)
+. FAILURE-ISOLATION
 Other group properties, PROPERTY(GROUP)
 
 
@@ -61,6 +63,71 @@ As the set is ordered, let's introduce two shortcut functions:
 
 . BEFORE(GROUP, RESOURCE) -> { R | for all R in GROUP, r < RESOURCE }
 . AFTER(GROUP, RESOURCE)  -> { R | for all R in GROUP, r > RESOURCE }
+
+
+
+Group member vs. rest of group properties
+=========================================
+
+Generally a relation expressed by a predicate PROPERTY(GROUP, RESOURCE),
+assuming RESOURCE in GROUP, implying modification of the behavior of
+cluster wrt. group-resource pair:
+
+PROPERTY(GROUP, RESOURCE) -> ALTER(BEFORE(GROUP, RESOURCE))
+
+
+Independence between failing resource and its group predecessors
+----------------------------------------------------------------
+
+FAILURE-ISOLATION ::= FAILURE-ISOLATION(GROUP, RESOURCE, NONE)
+                    | FAILURE-ISOLATION(GROUP, RESOURCE, TRY-RESTART)
+                    | FAILURE-ISOLATION(GROUP, RESOURCE, STOP)
+. FAILURE-ISOLATION(GROUP, RESOURCE, NONE)  ... RESOURCE failure leads to
+                                                recovery of the whole group
+. FAILURE-ISOLATION(GROUP, RESOURCE, TRY-RESTART)
+                                            ... RESOURCE failure leads to
+                                                (bounded) local restarts
+                                                of RESOURCE and its successor
+                                                (AFTER(GROUP, RESOURCE)) first
+. FAILURE-ISOLATION(GROUP, RESOURCE, STOP)  ... RESOURCE failure leads to
+                                                stopping and disabling
+                                                of RESOURCE and its successor
+                                                (AFTER(GROUP, RESOURCE))
+
+R: driven by `__independent_subtree` property of RESOURCE within GROUP
+
+P: in part, driven by `on-fail` property of `monitor` and `stop` operations
+   for RESOURCE
+
+FAILURE-ISOLATION(GROUP, RESOURCE, NONE)  [1. recovery the group]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+R: default, no need for that, othewise specifying `@__independent_subtree`
+   as `0` for RESOURCE within GROUP
+
+P: specifying `migration-threshold` 1 (+default `on-fail` values)
+   for RESOURCE, but only if original recovery policy was `relocate`,
+   so better not to do anything otherwise???
+
+
+FAILURE-ISOLATION(GROUP, RESOURCE, TRY-RESTART)  [2. begin with local restarts]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+R: specifying `@__independent_subtree` as `1` or `yes`
+   + `@__max_restarts` and `__restart_expire_time`
+
+P: specifying `migration-threshold` as a value between 2 and INFINITY
+   (inclusive) (+default `on-fail` values) for RESOURCE, but only if
+   original recovery policy was `relocate`, so better not to do anything
+   otherwise???
+
+FAILURE-ISOLATION(GROUP, RESOURCE, STOP)  [3. disable unconditionally]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+R: specifying `@__independent_subtree` as `2` or `non-critical`
+
+P: default `on-fail` values modulo `ignore` for `status`
+   operation and `stop` for `stop`) for RESOURCE ???
 
 
 

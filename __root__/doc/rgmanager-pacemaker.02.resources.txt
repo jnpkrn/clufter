@@ -37,7 +37,7 @@ Relative resource-node assignment properties, PROPERTY(RESOURCE)
 Explicit resource-node assignment properties, PROPERTY(RESOURCE, NODE)
 . AFFINITY
 Other resource properties, PROPERTY(RESOURCE)
-. RECOVERY  --> see RECOVERY(GROUP)
+. RECOVERY  --> see RECOVERY(GROUP) and FAILURE-ISOLATION(GROUP, RESOURCE)
 . ENABLED   --> Pacemaker only, same as ENABLED(GROUP)
 
 # XXX: service ref=... + single node failover domains vs. clone
