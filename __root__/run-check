@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -229,9 +229,7 @@ pcs -f tmp-cib.xml stonith create FENCEDEV-xvm fence_xvm \\
   pcmk_host_map=rhel6-node1:rhel6-node1,rhel6-node2:rhel6-node2
 pcs -f tmp-cib.xml \\
   resource create RESOURCE-ip-192.168.0.128 ocf:heartbeat:IPaddr2 \\
-  ip=192.168.0.128 \\
-  op monitor id=RESOURCE-ip-192.168.0.128-OP-monitor name=monitor \\
-  interval=20s
+  ip=192.168.0.128 op monitor interval=20s
 pcs -f tmp-cib.xml \\
   resource group add SERVICE-mm-GROUP RESOURCE-ip-192.168.0.128
 pcs -f tmp-cib.xml \\
