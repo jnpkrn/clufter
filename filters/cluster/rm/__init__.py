@@ -185,7 +185,7 @@ ccsflat2cibprelude = ('''\
                 </xsl:message>
             </xsl:if>
 
-            <!-- store service reference for later use -->
+            <!-- store service reference and auxiliary values for later use -->
 
             <meta_attributes id="{$Prefix}-META">
                 <xsl:if test="
@@ -245,6 +245,40 @@ ccsflat2cibprelude = ('''\
                 <!--nvpair id="{$Prefix}-META-domain"
                         name="rgmanager-domain"
                         value="{../@domain}"/-->
+
+                <xsl:variable name="IndependentSubtree">
+                    <xsl:choose>
+                        <xsl:when test="number(@__independent_subtree) = 1
+                                        or
+                                        translate(
+                                            @__independent_subtree,
+                                            'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                                            'abcdefghijklmnopqrstuvwxyz'
+                                        ) = 'yes'">
+                            <!-- xsl:value-of select="'1'"/ -->
+                            <xsl:message>
+                                <xsl:value-of select="concat('WARNING: __independent_subtree=1',
+                                                            ' property not propagated as there',
+                                                            ' is no straightforward equivalent',
+                                                            ' (', $Spec, ')')"/>
+                            </xsl:message>
+                        </xsl:when>
+                        <xsl:when test="number(@__independent_subtree) = 2
+                                        or
+                                        translate(
+                                            @__independent_subtree,
+                                            'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                                            'abcdefghijklmnopqrstuvwxyz'
+                                        ) = 'non-critical'">
+                            <xsl:value-of select="'2'"/>
+                        </xsl:when>
+                    </xsl:choose>
+                </xsl:variable>
+                <xsl:if test="$IndependentSubtree != ''">
+                    <nvpair id="{$Prefix}-META-independent"
+                            name="rgmanager-independent"
+                            value="{$IndependentSubtree}"/>
+                </xsl:if>
             </meta_attributes>
         </primitive>
     </xsl:for-each>

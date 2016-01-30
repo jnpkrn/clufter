@@ -665,9 +665,13 @@ cib_meld_templates = ('''\
 ###
 
 cibcompact2cib = ('''\
-    <!-- propagate monitor operation info to proper operations stanza ... -->
+    <!-- propagate monitor/independent tree info to proper operations stanza -->
     <xsl:template match="primitive[
-                              meta_attributes/nvpair/@name = 'rgmanager-monitor'
+                             meta_attributes/nvpair[
+                                 @name = 'rgmanager-monitor'
+                                 or
+                                 @name = 'rgmanager-independent'
+                             ]
                           ]">
         <xsl:variable name="ResPrefix"
                       select="@id"/>
@@ -675,33 +679,102 @@ cibcompact2cib = ('''\
                       select="meta_attributes/nvpair[
                                   @name = 'rgmanager-monitor'
                               ]"/>
+        <xsl:variable name="IsIndependent"
+                      select="meta_attributes/nvpair[
+                                  @name = 'rgmanager-independent'
+                                  and
+                                  @value = '2'
+                              ]"/>
         <xsl:copy>
             <xsl:copy-of select="@*"/>
             <xsl:for-each select="*[name() != 'utilization']">
                 <xsl:choose>
                     <xsl:when test="name() = 'meta_attributes'
                                     and
-                                    count(*) = count(nvpair[@name = 'rgmanager-monitor'])"/>
+                                    count(*) = count(
+                                        nvpair[
+                                            @name = 'rgmanager-monitor'
+                                            or
+                                            @name = 'rgmanager-independent'
+                                        ]
+                                    )"/>
                     <xsl:when test="name() = 'meta_attributes'">
                         <xsl:copy>
                             <xsl:apply-templates select="@*|*[
                                                              name() != 'nvpair'
                                                              or
                                                              @name != 'rgmanager-monitor'
+                                                             or
+                                                             @name != 'rgmanager-independent'
                                                          ]"/>
                         </xsl:copy>
                     </xsl:when>
                     <xsl:when test="name() = 'operations'">
                         <xsl:copy>
-                            <xsl:apply-templates select="@*|*"/>
+                            <xsl:copy-of select="@*"/>
+                            <xsl:for-each select="op">
+                                <xsl:copy>
+                                    <xsl:copy-of select="@*"/>
+                                    <xsl:choose>
+                                        <xsl:when test="(
+                                                            @name = 'monitor'
+                                                            or
+                                                            @name = 'status'
+                                                        )
+                                                        and
+                                                        $IsIndependent">
+                                            <xsl:attribute name="on-fail">
+                                                <xsl:value-of select="'ignore'"/>
+                                            </xsl:attribute>
+                                        </xsl:when>
+                                        <xsl:when test="@name = 'stop'
+                                                        and
+                                                        $IsIndependent">
+                                            <xsl:attribute name="on-fail">
+                                                <xsl:value-of select="'stop'"/>
+                                            </xsl:attribute>
+                                        </xsl:when>
+                                    </xsl:choose>
+                                </xsl:copy>
+                            </xsl:for-each>
                             <xsl:if test="not(
-                                              op[@name = 'monitor']
+                                              op[
+                                                  @name = 'monitor'
+                                                  or
+                                                  @name = 'status'
+                                              ]
                                           )
                                           and
-                                          $Monitor">
+                                          (
+                                              $Monitor
+                                              or
+                                              $IsIndependent
+                                          )">
+                                <!-- interval has to be defined -->
                                 <op id="{concat($ResPrefix, '-OP-monitor')}"
                                     name="monitor"
-                                    interval="{$Monitor/@value}"/>
+                                    interval="60s">
+                                    <xsl:if test="$Monitor">
+                                        <xsl:attribute name="interval">
+                                            <xsl:value-of select="$Monitor/@value"/>
+                                        </xsl:attribute>
+                                    </xsl:if>
+                                    <xsl:if test="$IsIndependent">
+                                        <xsl:attribute name="on-fail">
+                                            <xsl:value-of select="'ignore'"/>
+                                        </xsl:attribute>
+                                    </xsl:if>
+                                </op>
+                            </xsl:if>
+                            <xsl:if test="not(
+                                              op[@name = 'stop']
+                                          )
+                                          and
+                                          $IsIndependent">
+                                <op id="{concat($ResPrefix, '-OP-stop')}"
+                                    name="stop"
+                                    interval="0"
+                                    on-fail="stop"/>
                             </xsl:if>
                         </xsl:copy>
                     </xsl:when>
@@ -714,11 +787,33 @@ cibcompact2cib = ('''\
             </xsl:for-each>
             <xsl:if test="not(operations)
                           and
-                          $Monitor">
+                          (
+                              $Monitor
+                              or
+                              $IsIndependent
+                          )">
                 <operations>
-                    <op id="{concat(@id, '-OP-monitor')}"
+                    <!-- interval has to be defined -->
+                    <op id="{concat($ResPrefix, '-OP-monitor')}"
                         name="monitor"
-                        interval="{$Monitor/@value}"/>
+                        interval="60s">
+                        <xsl:if test="$Monitor">
+                            <xsl:attribute name="interval">
+                                <xsl:value-of select="$Monitor/@value"/>
+                            </xsl:attribute>
+                        </xsl:if>
+                        <xsl:if test="$IsIndependent">
+                            <xsl:attribute name="on-fail">
+                                <xsl:value-of select="'ignore'"/>
+                            </xsl:attribute>
+                        </xsl:if>
+                    </op>
+                    <xsl:if test="$IsIndependent">
+                        <op id="{concat($ResPrefix, '-OP-stop')}"
+                            name="stop"
+                            interval="0"
+                            on-fail="stop"/>
+                    </xsl:if>
                 </operations>
             </xsl:if>
             <xsl:apply-templates select="utilization"/>
