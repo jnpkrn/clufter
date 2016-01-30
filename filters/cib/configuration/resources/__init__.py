@@ -502,7 +502,11 @@ cib2pcscmd = ('''\
             <xsl:value-of select="' op'"/>
             <xsl:for-each select="operations/op">
                 <xsl:value-of select="concat(' ', @name)"/>
-                <xsl:for-each select="@*">
+                <xsl:for-each select="@*[
+                                          name() != 'id'
+                                          and
+                                          name() != 'name'
+                                      ]">
                     <xsl:value-of select='concat(" &apos;",
                                                  name(), "=", .,
                                                  "&apos;")'/>
