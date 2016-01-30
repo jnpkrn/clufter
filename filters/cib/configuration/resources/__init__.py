@@ -694,9 +694,15 @@ cibcompact2cib = ('''\
                     <xsl:when test="name() = 'operations'">
                         <xsl:copy>
                             <xsl:apply-templates select="@*|*"/>
-                            <op id="{concat($ResPrefix, '-OP-monitor')}"
-                                name="monitor"
-                                interval="{$Monitor/@value}"/>
+                            <xsl:if test="not(
+                                              op[@name = 'monitor']
+                                          )
+                                          and
+                                          $Monitor">
+                                <op id="{concat($ResPrefix, '-OP-monitor')}"
+                                    name="monitor"
+                                    interval="{$Monitor/@value}"/>
+                            </xsl:if>
                         </xsl:copy>
                     </xsl:when>
                     <xsl:otherwise>
@@ -706,7 +712,9 @@ cibcompact2cib = ('''\
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:for-each>
-            <xsl:if test="not(operations)">
+            <xsl:if test="not(operations)
+                          and
+                          $Monitor">
                 <operations>
                     <op id="{concat(@id, '-OP-monitor')}"
                         name="monitor"
