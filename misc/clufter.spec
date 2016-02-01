@@ -305,12 +305,12 @@ EOF
 %endif
 %if %{with manpage}
 %{__mkdir_p} -- '%{buildroot}%{_mandir}'
-%{__cp} -a -- .manpages/* '%{buildroot}%{_mandir}'
+%{__cp} -a -t '%{buildroot}%{_mandir}' -- .manpages/*
 %endif
 %endif
 %{__mkdir_p} -- '%{buildroot}%{_defaultdocdir}/%{clufter_source}'
-%{__install} -pm 644 -- gpl-2.0.txt doc/*.txt doc/rgmanager-pacemaker/* \
-                        '%{buildroot}%{_defaultdocdir}/%{clufter_source}'
+%{__cp} -a -t '%{buildroot}%{_defaultdocdir}/%{clufter-source}' \
+           -- gpl-2.0.txt doc/*.txt doc/rgmanager-pacemaker
 
 %check
 %if "0%{clufter_check}"
@@ -382,7 +382,7 @@ EOF)
 %files %{pkgsimple %{clufter_pylib}}
 # following few paths will get marked as doc automatically based on location
 %dir %{_defaultdocdir}/%{clufter_source}
-%{_defaultdocdir}/%{clufter_source}/*[^[:digit:]].txt
+%{_defaultdocdir}/%{clufter_source}/*[^[:digit:]]
 %license %{_defaultdocdir}/%{clufter_source}/*[[:digit:]].txt
 %exclude %{python2_sitelib}/%{name}/__main__.py*
 %exclude %{python2_sitelib}/%{name}/main.py*
