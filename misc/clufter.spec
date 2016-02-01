@@ -302,7 +302,7 @@ EOF
 %endif
 %endif
 %{__mkdir_p} -- '%{buildroot}%{_defaultdocdir}/%{clufter_source}'
-%{__install} -pm 644 -- gpl-2.0.txt doc/*.txt \
+%{__install} -pm 644 -- gpl-2.0.txt doc/*.txt doc/rgmanager-pacemaker/* \
                         '%{buildroot}%{_defaultdocdir}/%{clufter_source}'
 
 %check
