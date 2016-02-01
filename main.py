@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Machinery entry point"""
@@ -25,6 +25,13 @@ from .error import EC
 from .facts import aliases_dist
 from .utils import args2sgpl, head_tail, identity
 from .utils_prog import ExpertOption, make_options, set_logging, which
+
+try:
+    from .defaults import REPORT_BUGS
+except ImportError:
+    report_bugs = ()
+else:
+    report_bugs = ("Report bugs to <{0}>.".format(REPORT_BUGS), )
 
 
 _system = system().lower()
@@ -226,6 +233,10 @@ class SharedOptionParser(OptionParser):
                          for l in self.get_description().split('\n\n')) \
                + (self.description_raw and '\n' + self.description_raw + '\n')
 
+    def format_epilog(self, formatter):
+        return ''.join(formatter.format_epilog(l)
+                       for l in self.epilog.split('\n'))
+
     # custom methods
 
     def format_customized_help(self, **kwargs):
@@ -321,8 +332,11 @@ def run(argv=None, *args):
                 usage="%prog [<global option> ...] [<cmd> [<cmd option ...>]]",
                 description=description_text(width=0),
                 description_raw=cmds,
-                epilog=("To get help for given command,"
-                        " just precede or follow it with `--help'.")
+                epilog='\n'.join(args2sgpl(
+                    "To get help for given command, just precede or follow"
+                    " it with `--help'.",
+                    *report_bugs
+                ))
             )
         return ec
     elif prog_simple != prog_real:
@@ -335,18 +349,18 @@ def run(argv=None, *args):
     modify_group.set_title("Command options")
     modify_group.set_description(None)
     parser.add_options(make_options(opts_nonmain))
-    parser.epilog = ("Arguments to value-based `command options' can go"
-                     " without labels when the order wrt. parsing logic"
-                     " respected;"
-                     " skipping those backed by default values otherwise"
-                     " requiring specification then allowed by syntactic"
-                     " sugar: all can be passed as a single, first,"
-                     " ::-delimited argument;"
-                     " magic files: `-', `@DIGIT+'."
-                     " `{{formula}}' in output file spec: input-backed"
-                     " (e.g. hash) substitution recipe."
-                     "  All available commands listed as `{0} --list'."
-                     .format(prog_simple))
+    parser.epilog = '\n'.join(args2sgpl(
+        "Arguments to value-based `command options' can go without labels"
+        " when the order wrt. parsing logic respected;"
+        " skipping those backed by default values otherwise requiring"
+        " specification then allowed by syntactic sugar: all can be passed"
+        " as a single, first, ::-delimited argument;"
+        " magic files: `-', `@DIGIT+'. `{{formula}}' in output file spec:"
+        " input-backed (e.g. hash) substitution recipe."
+        "  All available commands listed as `{0} --list'."
+        .format(prog_simple),
+        *report_bugs
+    ))
     #try:
     # note that the parser carries opts and "Common options" group
     ec = cm(parser, args)
