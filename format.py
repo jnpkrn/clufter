@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Base format stuff (metaclass, classes, etc.)"""
@@ -35,6 +35,7 @@ from .utils import arg2wrapped, args2sgpl, args2tuple, args2unwrapped, \
                    isinstanceupto, \
                    popattr, \
                    tuplist
+from .utils_lxml import etree_parser_safe
 from .utils_prog import ProtectedDict, getenv_namespaced
 from .utils_xml import rng_get_start, rng_pivot
 
@@ -722,7 +723,7 @@ class XML(SimpleFormat):
                 schema = None
             if schema is None:
                 try:
-                    schema = etree.parse(s)
+                    schema = etree.parse(s, parser=etree_parser_safe)
                     rng = etree.RelaxNG(schema)
                     cls._validation_cache[s] = schema, rng
                 except (etree.RelaxNGError, etree.XMLSyntaxError):
@@ -761,4 +762,5 @@ class XML(SimpleFormat):
                             # pre 2.7 compat:  http://bugs.python.org/issue5982
                             validator=etree_validator.__get__(1).im_func)
     def get_etree(self, *protodecl):
-        return etree.fromstring(self.BYTESTRING()).getroottree()
+        return etree.fromstring(self.BYTESTRING(),
+                                parser=etree_parser_safe).getroottree()

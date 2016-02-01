@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Base filter stuff (metaclass, decorator, etc.)"""
@@ -32,6 +32,7 @@ from .utils import args2tuple, arg2wrapped, \
                    filterdict_keep, filterdict_invkeep, filterdict_pop, \
                    head_tail, hybridproperty, \
                    identity, lazystring, tuplist
+from .utils_lxml import etree_XSLT_safe, etree_parser_safe
 from .utils_func import apply_preserving_depth, \
                         apply_aggregation_preserving_depth, \
                         apply_intercalate, \
@@ -422,7 +423,7 @@ class XMLFilter(Filter, MetaPlugin):
         if not reply:
             return False, force  # terminating
         elems = []
-        reply = etree.fromstring(reply)
+        reply = etree.fromstring(reply, parser=etree_parser_safe)
         if reply.attrib.get('force-block', '').lower() == 'true':
             force = 'block'
         for root_pi in xml_get_root_pi(reply):
@@ -521,7 +522,7 @@ class XMLFilter(Filter, MetaPlugin):
             cl = ret.xpath("//processing-instruction('{0}')".format(pi_comment))
             for e in cl:
                 # XXX could be done better?  (e.text.strip().join((' ', ) * 2))
-                reverted = etree.fromstring(e.text)
+                reverted = etree.fromstring(e.text, parser=etree_parser_safe)
                 element_juggler.rebind(nselem(CLUFTER_NS, 'comment', *tuple(
                                               reverted if len(reverted) else
                                               args2tuple(reverted.text))),
@@ -849,8 +850,7 @@ class XMLFilter(Filter, MetaPlugin):
                 elem = etree.ElementTree(elem)  # XXX not getroottree?
                 log.debug("Applying {0}, {1}".format(type(elem), etree.tostring(elem)))
                 log.debug("Applying on {0}".format(etree.tostring(xslt_root)))
-                #ret = elem.xslt(xslt_root)
-                xslt = etree.XSLT(xslt_root)
+                xslt = etree_XSLT_safe(xslt_root)
                 try:
                     ret = xslt(elem, profile_run=profile)
                 except etree.XSLTApplyError as e:
@@ -886,7 +886,8 @@ class XMLFilter(Filter, MetaPlugin):
 
             # XXX: ugly solution to get rid of the unneeded namespace
             # (cleanup_namespaces did not work here)
-            ret = etree.fromstring(etree.tostring(ret))
+            ret = etree.fromstring(etree.tostring(ret),
+                                   parser=etree_parser_safe)
             etree.cleanup_namespaces(ret)
             return ret
 
