@@ -251,6 +251,11 @@ while read cmd; do
       '1s:\(.*\):\1\n\\\&\\fIcluster.conf\\fR\\\|(5), \\\&\\fIccs\\fR\\\|(7), :' \
     .see-also
     ;;&
+  ccs2pcs*)
+    sed -i \
+      '1s:\(.*\):\1\n\\\&\\fI%{_defaultdocdir}/%{clufter_source}/rgmanager-pacemaker\\fR\\\|, :' \
+    .see-also
+    ;;&
   *[2-]pcscmd*)
     sed -i '1s:\(.*\):\1\n\\\&\\fIpcs\\fR\\\|(8), :' .see-also
     ;;&
