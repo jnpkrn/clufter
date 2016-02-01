@@ -18,3 +18,8 @@ etree_parser_safe_kwargs = dict(
 )
 
 etree_parser_safe = etree.XMLParser(**etree_parser_safe_kwargs)
+
+etree_parser_safe_unblanking = etree.XMLParser(**dict(
+    remove_blank_text=True,
+    **etree_parser_safe_kwargs
+))

@@ -32,7 +32,8 @@ from .utils import args2tuple, arg2wrapped, \
                    filterdict_keep, filterdict_invkeep, filterdict_pop, \
                    head_tail, hybridproperty, \
                    identity, lazystring, tuplist
-from .utils_lxml import etree_XSLT_safe, etree_parser_safe
+from .utils_lxml import etree_XSLT_safe, \
+                        etree_parser_safe, etree_parser_safe_unblanking
 from .utils_func import apply_preserving_depth, \
                         apply_aggregation_preserving_depth, \
                         apply_intercalate, \
@@ -1008,9 +1009,8 @@ class XMLFilter(Filter, MetaPlugin):
         if not raw and not textmode:
             # <http://lxml.de/FAQ.html#
             #  why-doesn-t-the-pretty-print-option-reformat-my-xml-output>
-            # XXX we could use a single shared un-blanking parser around
-            parser = etree.XMLParser(remove_blank_text=True)
-            ret = etree.fromstring(etree.tostring(ret), parser)
+            ret = etree.fromstring(etree.tostring(ret),
+                                   parser=etree_parser_safe_unblanking)
         elif textmode:
             ret = str(ret)
         return ret
