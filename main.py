@@ -31,7 +31,10 @@ try:
 except ImportError:
     report_bugs = ()
 else:
-    report_bugs = ("Report bugs to <{0}>.".format(REPORT_BUGS), )
+    report_bugs = ("Report bugs to", "<{0}>".format(REPORT_BUGS))
+    joint = ' '.join(report_bugs) + '.'
+    if len(joint) < 70:
+           report_bugs = (joint, )
 
 
 _system = system().lower()
@@ -234,8 +237,10 @@ class SharedOptionParser(OptionParser):
                + (self.description_raw and '\n' + self.description_raw + '\n')
 
     def format_epilog(self, formatter):
-        return ''.join(formatter.format_epilog(l)
-                       for l in self.epilog.split('\n'))
+        ret = '\n' + '\n'.join(formatter.format_epilog(l).strip('\n')
+                               if '<http' not in l else l
+                               for l in self.epilog.split('\n'))
+        return ret
 
     # custom methods
 
