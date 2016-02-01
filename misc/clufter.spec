@@ -16,6 +16,11 @@
 %global clufter_rel %(echo '%{clufter_githash}' \\
   | sed -n 'bS;:E;n;:S;s|\\(.\\+\\)|0.%{clufter_b}.a_\\1|p;tE;c\\%{clufter_b}')
 
+%bcond_without pagure
+%if %{_with_pagure}
+	%global pagure 1
+%fi
+
 %if "%{clufter_version}" == "%{clufter_version_norm}"
 %{!?clufter_source:  %global clufter_source   %{name}-%{version}}
 %{!?clufter_check:   %global clufter_check    2}
