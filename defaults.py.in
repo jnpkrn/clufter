@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Some usage-agnostic constants"""
@@ -12,3 +12,5 @@ CCS_FLATTEN = '''@CCS_FLATTEN@!'''[:-1]
 
 # also configurable via respective env. variables (see getenv_namespaced)
 HASHALGO    = '''@HASHALGO@!'''[:-1]  # not for security
+
+REPORT_BUGS = '''@REPORT_BUGS@!'''[:-1]

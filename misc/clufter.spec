@@ -31,6 +31,7 @@
 %{!?clufter_url_main:%global clufter_url_main %{?!pagure:https://github.com/jnpkrn/%{name}}%{?pagure:https://pagure.io/%{name}}}
 %{!?clufter_url_raw: %global clufter_url_raw  %{?!pagure:https://raw.githubusercontent.com/jnpkrn/%{name}/}%{?pagure:https://pagure.io/%{name}/raw/}}
 %{!?clufter_url_dist:%global clufter_url_dist %{?!pagure:https://people.redhat.com/jpokorny/pkgs/%{name}/}%{?pagure:https://pagure.io/releases/%{name}/}}
+%{!?clufter_url_bugs:%global clufter_url_bugs %{?!pagure:https://bugzilla.redhat.com/enter_bug.cgi?product=Fedora&component=%{name}&version=rawhide}%{?pagure:https://pagure.io/%{name}/issues}}
 
 %{!?clufter_pylib:   %global clufter_pylib    python-%{name}}
 %{!?clufter_extlib:  %global clufter_extlib   %{name}-lib}
@@ -213,7 +214,8 @@ formats and filters.
                       --ccs-flatten='%{clufter_ccs_flatten}' \
                       --editor='%{clufter_editor}' \
                       --ra-metadata-dir='%{clufter_ra_metadata_dir}' \
-                      --ra-metadata-ext='%{clufter_ra_metadata_ext}'
+                      --ra-metadata-ext='%{clufter_ra_metadata_ext}' \
+                      --report-bugs='%{clufter_url_bugs}'
 
 %build
 %{__python2} setup.py build

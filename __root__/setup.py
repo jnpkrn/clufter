@@ -522,6 +522,7 @@ pkg_prepare = setup_pkg_prepare(pkg_name, (
     ('hashalgo',        "which hash algorithm to use to generate output name"),
     ('ra_metadata_dir', "location of RGManager agents/metadata"),
     ('ra_metadata_ext', "extension used for RGManager agents' metadata"),
+    ('report_bugs',     "where to report bugs"),
 ))
 
 # Contains important values that are then referred to from ``package_data'',
