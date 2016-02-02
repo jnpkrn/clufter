@@ -17,7 +17,7 @@ elif _git_tags:
 
 license = 'GPLv2+'
 copyright = """\
-Copyright (C) 2015 Red Hat, Inc.
+Copyright (C) 2016 Red Hat, Inc.
 Licensed under {0}.
 """.format(license).rstrip()
 
