@@ -99,7 +99,7 @@ R: driven by `__independent_subtree` property of RESOURCE within GROUP
 P: in part, driven by `on-fail` property of `monitor` and `stop` operations
    for RESOURCE
 
-FAILURE-ISOLATION(GROUP, RESOURCE, NONE)  [1. recovery the group]
+FAILURE-ISOLATION(GROUP, RESOURCE, NONE)  [1. recover the group]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 R: default, no need for that, othewise specifying `@__independent_subtree`
