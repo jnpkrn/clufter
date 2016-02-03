@@ -49,4 +49,8 @@
 #  endif
 #endif
 
+#ifndef XML_PARSER_OPTIONS
+#  define XML_PARSER_OPTIONS        XML_PARSE_NONET
+#endif
+
 #endif

@@ -1,5 +1,5 @@
 /*
-  Copyright 2015 Red Hat, Inc.
+  Copyright 2016 Red Hat, Inc.
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -795,7 +795,7 @@ read_resource_agent_metadata(char *filename)
     waitpid(pid, NULL, 0);
     close(_pipe[0]);
 
-    doc = xmlParseMemory(data, size);
+    doc = xmlReadMemory(data, size, NULL, NULL, XML_PARSER_OPTIONS);
     free(data);
     return doc;
 }
@@ -825,7 +825,7 @@ load_resource_rulefile(char *filename, resource_rule_t ** rules,
         doc = read_resource_agent_metadata(filename);
 #ifdef RA_METADATA_EXT
     else
-        doc = xmlParseFile(filename);
+        doc = xmlReadFile(filename, NULL, XML_PARSER_OPTIONS);
 #endif
 
     if (!doc) {

@@ -1,5 +1,5 @@
 /*
-  Copyright 2015 Red Hat, Inc.
+  Copyright 2016 Red Hat, Inc.
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -22,6 +22,7 @@
 #include <libxml/xpath.h>
 #include <string.h>
 #include "xmlconf.h"
+#include "config.h"
 
 static xmlDocPtr conf_doc = NULL;
 static const char *conffile = "/etc/cluster/cluster.conf";
@@ -94,7 +95,7 @@ int
 conf_open(void)
 {
     xmlInitParser();
-    conf_doc = xmlParseFile(conffile);
+    conf_doc = xmlReadFile(conffile, NULL, XML_PARSER_OPTIONS);
     if (!conf_doc)
         return -1;
     return 0;
