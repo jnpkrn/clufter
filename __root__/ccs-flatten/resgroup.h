@@ -1,5 +1,5 @@
-#ifndef __RESGROUP_H
-#  define __RESGROUP_H
+#ifndef RESGROUP_H_
+#  define RESGROUP_H_
 
 #  include <pthread.h>
 #  include <stdio.h>

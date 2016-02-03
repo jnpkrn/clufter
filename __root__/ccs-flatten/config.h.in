@@ -1,5 +1,5 @@
 /*
-  Copyright 2014 Red Hat, Inc.
+  Copyright 2016 Red Hat, Inc.
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -17,8 +17,8 @@
   MA 02110-1301 USA
 */
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef CONFIG_H_
+#define CONFIG_H_
 
 /* heavily inspired from
    http://gustedt.wordpress.com/2010/06/08/detect-empty-macro-arguments/
