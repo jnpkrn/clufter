@@ -1,5 +1,5 @@
-#ifndef _RG_LOCKS_H
-#  define _RG_LOCKS_H
+#ifndef XMLCONF_H_
+#  define XMLCONF_H_
 
 int conf_open(void);
 int conf_close(void);

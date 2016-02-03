@@ -1,5 +1,5 @@
-#ifndef _LIST_H
-#  define _LIST_H
+#ifndef LIST_H_
+#  define LIST_H_
 
 /**
   Simple list handlig macros.
