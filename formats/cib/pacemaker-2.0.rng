@@ -1,0 +1,2029 @@
+<?xml version="1.0"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <ref name="cib"/>
+  </start>
+  <define name="cib">
+    <element name="cib">
+      <group>
+        <interleave>
+          <optional>
+            <attribute name="validate-with">
+              <choice>
+                <value type="token">none</value>
+                <value type="token">pacemaker-0.6</value>
+                <value type="token">transitional-0.6</value>
+                <value type="token">pacemaker-0.7</value>
+                <value type="token">pacemaker-1.1</value>
+                <value type="token">pacemaker-next</value>
+                <value type="token">pacemaker-1.0</value>
+                <value type="token">pacemaker-1.2</value>
+                <value type="token">pacemaker-1.3</value>
+                <value type="token">pacemaker-2.0</value>
+              </choice>
+            </attribute>
+          </optional>
+          <attribute name="admin_epoch">
+            <data type="nonNegativeInteger"/>
+          </attribute>
+          <attribute name="epoch">
+            <data type="nonNegativeInteger"/>
+          </attribute>
+          <attribute name="num_updates">
+            <data type="nonNegativeInteger"/>
+          </attribute>
+        </interleave>
+        <optional>
+          <attribute name="crm_feature_set">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="remote-tls-port">
+            <data type="nonNegativeInteger"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="remote-clear-port">
+            <data type="nonNegativeInteger"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="have-quorum">
+            <data type="boolean"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="dc-uuid">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="cib-last-written">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="no-quorum-panic">
+            <data type="boolean"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="update-origin">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="update-client">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="update-user">
+            <text/>
+          </attribute>
+        </optional>
+        <ref name="configuration"/>
+        <ref name="status"/>
+      </group>
+    </element>
+  </define>
+  <define name="configuration">
+    <element name="configuration">
+      <interleave>
+        <ref name="crm_config"/>
+        <optional>
+          <ref name="rsc_defaults"/>
+        </optional>
+        <optional>
+          <ref name="op_defaults"/>
+        </optional>
+        <ref name="nodes"/>
+        <ref name="resources"/>
+        <ref name="constraints"/>
+        <optional>
+          <ref name="fencing-topology"/>
+        </optional>
+        <optional>
+          <ref name="acls"/>
+        </optional>
+        <optional>
+          <ref name="tags"/>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+  <define name="status">
+    <element name="status">
+      <oneOrMore>
+        <choice>
+          <attribute>
+            <anyName/>
+            <text/>
+          </attribute>
+          <ref name="_1"/>
+          <text/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="crm_config">
+    <element name="crm_config">
+      <zeroOrMore>
+        <ref name="cluster_property_set"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="rsc_defaults">
+    <element name="rsc_defaults">
+      <zeroOrMore>
+        <ref name="meta_attributes"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="op_defaults">
+    <element name="op_defaults">
+      <zeroOrMore>
+        <ref name="meta_attributes_2"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="nodes">
+    <element name="nodes">
+      <zeroOrMore>
+        <ref name="node"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="resources">
+    <element name="resources">
+      <zeroOrMore>
+        <choice>
+          <ref name="primitive"/>
+          <ref name="template"/>
+          <ref name="group"/>
+          <ref name="clone"/>
+          <ref name="master"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="constraints">
+    <element name="constraints">
+      <zeroOrMore>
+        <choice>
+          <ref name="rsc_location"/>
+          <ref name="rsc_colocation"/>
+          <ref name="rsc_order"/>
+          <ref name="rsc_ticket"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="fencing-topology">
+    <element name="fencing-topology">
+      <zeroOrMore>
+        <ref name="fencing-level"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="acls">
+    <element name="acls">
+      <zeroOrMore>
+        <choice>
+          <ref name="acl_target"/>
+          <ref name="acl_group"/>
+          <ref name="acl_role"/>
+        </choice>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="tags">
+    <element name="tags">
+      <zeroOrMore>
+        <ref name="tag"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="_1">
+    <element>
+      <anyName/>
+      <oneOrMore>
+        <choice>
+          <attribute>
+            <anyName/>
+            <text/>
+          </attribute>
+          <ref name="_1"/>
+          <text/>
+        </choice>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="cluster_property_set">
+    <element name="cluster_property_set">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score">
+                <choice>
+                  <data type="integer"/>
+                  <value type="token">INFINITY</value>
+                  <value type="token">+INFINITY</value>
+                  <value type="token">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="meta_attributes">
+    <element name="meta_attributes">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule_2"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score">
+                <choice>
+                  <data type="integer"/>
+                  <value type="token">INFINITY</value>
+                  <value type="token">+INFINITY</value>
+                  <value type="token">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="meta_attributes_2">
+    <element name="meta_attributes">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule_3"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score">
+                <choice>
+                  <data type="integer"/>
+                  <value type="token">INFINITY</value>
+                  <value type="token">+INFINITY</value>
+                  <value type="token">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="node">
+    <element name="node">
+      <group>
+        <attribute name="id">
+          <text/>
+        </attribute>
+        <attribute name="uname">
+          <text/>
+        </attribute>
+        <optional>
+          <attribute name="type">
+            <choice>
+              <value type="token">normal</value>
+              <value type="token">member</value>
+              <value type="token">ping</value>
+              <value type="token">remote</value>
+            </choice>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="description">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="score">
+            <choice>
+              <data type="integer"/>
+              <value type="token">INFINITY</value>
+              <value type="token">+INFINITY</value>
+              <value type="token">-INFINITY</value>
+            </choice>
+          </attribute>
+        </optional>
+        <zeroOrMore>
+          <choice>
+            <ref name="instance_attributes"/>
+            <ref name="utilization"/>
+          </choice>
+        </zeroOrMore>
+      </group>
+    </element>
+  </define>
+  <define name="primitive">
+    <element name="primitive">
+      <interleave>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <choice>
+          <group>
+            <choice>
+              <group>
+                <attribute name="class">
+                  <value type="token">ocf</value>
+                </attribute>
+                <attribute name="provider">
+                  <text/>
+                </attribute>
+              </group>
+              <attribute name="class">
+                <choice>
+                  <value type="token">lsb</value>
+                  <value type="token">heartbeat</value>
+                  <value type="token">stonith</value>
+                  <value type="token">upstart</value>
+                  <value type="token">service</value>
+                  <value type="token">systemd</value>
+                  <value type="token">nagios</value>
+                </choice>
+              </attribute>
+            </choice>
+            <attribute name="type">
+              <text/>
+            </attribute>
+          </group>
+          <attribute name="template">
+            <data type="IDREF"/>
+          </attribute>
+        </choice>
+        <optional>
+          <attribute name="description">
+            <text/>
+          </attribute>
+        </optional>
+        <zeroOrMore>
+          <choice>
+            <ref name="meta_attributes_3"/>
+            <ref name="instance_attributes_2"/>
+          </choice>
+        </zeroOrMore>
+        <optional>
+          <ref name="operations"/>
+        </optional>
+        <zeroOrMore>
+          <ref name="utilization_2"/>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+  <define name="template">
+    <element name="template">
+      <interleave>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <choice>
+          <group>
+            <attribute name="class">
+              <value type="token">ocf</value>
+            </attribute>
+            <attribute name="provider">
+              <text/>
+            </attribute>
+          </group>
+          <attribute name="class">
+            <choice>
+              <value type="token">lsb</value>
+              <value type="token">heartbeat</value>
+              <value type="token">stonith</value>
+              <value type="token">upstart</value>
+            </choice>
+          </attribute>
+        </choice>
+        <attribute name="type">
+          <text/>
+        </attribute>
+        <optional>
+          <attribute name="description">
+            <text/>
+          </attribute>
+        </optional>
+        <zeroOrMore>
+          <choice>
+            <ref name="meta_attributes_3"/>
+            <ref name="instance_attributes_2"/>
+          </choice>
+        </zeroOrMore>
+        <optional>
+          <ref name="operations"/>
+        </optional>
+        <zeroOrMore>
+          <ref name="utilization_3"/>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+  <define name="group">
+    <element name="group">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <optional>
+          <attribute name="description">
+            <text/>
+          </attribute>
+        </optional>
+        <interleave>
+          <zeroOrMore>
+            <choice>
+              <ref name="meta_attributes_3"/>
+              <ref name="instance_attributes_2"/>
+            </choice>
+          </zeroOrMore>
+          <oneOrMore>
+            <ref name="primitive"/>
+          </oneOrMore>
+        </interleave>
+      </group>
+    </element>
+  </define>
+  <define name="clone">
+    <element name="clone">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <optional>
+          <attribute name="description">
+            <text/>
+          </attribute>
+        </optional>
+        <interleave>
+          <zeroOrMore>
+            <choice>
+              <ref name="meta_attributes_3"/>
+              <ref name="instance_attributes_2"/>
+            </choice>
+          </zeroOrMore>
+          <choice>
+            <ref name="primitive"/>
+            <ref name="group"/>
+          </choice>
+        </interleave>
+      </group>
+    </element>
+  </define>
+  <define name="master">
+    <element name="master">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <optional>
+          <attribute name="description">
+            <text/>
+          </attribute>
+        </optional>
+        <interleave>
+          <zeroOrMore>
+            <choice>
+              <ref name="meta_attributes_3"/>
+              <ref name="instance_attributes_2"/>
+            </choice>
+          </zeroOrMore>
+          <choice>
+            <ref name="primitive"/>
+            <ref name="group"/>
+          </choice>
+        </interleave>
+      </group>
+    </element>
+  </define>
+  <define name="rsc_location">
+    <element name="rsc_location">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <choice>
+          <group>
+            <attribute name="rsc">
+              <data type="IDREF"/>
+            </attribute>
+            <optional>
+              <attribute name="role">
+                <choice>
+                  <value type="token">Stopped</value>
+                  <value type="token">Started</value>
+                  <value type="token">Master</value>
+                  <value type="token">Slave</value>
+                </choice>
+              </attribute>
+            </optional>
+          </group>
+          <oneOrMore>
+            <ref name="resource_set"/>
+          </oneOrMore>
+        </choice>
+        <choice>
+          <group>
+            <attribute name="score">
+              <choice>
+                <data type="integer"/>
+                <value type="token">INFINITY</value>
+                <value type="token">+INFINITY</value>
+                <value type="token">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="node">
+              <text/>
+            </attribute>
+          </group>
+          <oneOrMore>
+            <ref name="rule_4"/>
+          </oneOrMore>
+        </choice>
+        <optional>
+          <ref name="lifetime"/>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="rsc_colocation">
+    <element name="rsc_colocation">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <optional>
+          <choice>
+            <attribute name="score">
+              <choice>
+                <data type="integer"/>
+                <value type="token">INFINITY</value>
+                <value type="token">+INFINITY</value>
+                <value type="token">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute">
+              <text/>
+            </attribute>
+            <attribute name="score-attribute-mangle">
+              <text/>
+            </attribute>
+          </choice>
+        </optional>
+        <optional>
+          <ref name="lifetime"/>
+        </optional>
+        <choice>
+          <oneOrMore>
+            <ref name="resource_set"/>
+          </oneOrMore>
+          <group>
+            <attribute name="rsc">
+              <data type="IDREF"/>
+            </attribute>
+            <attribute name="with-rsc">
+              <data type="IDREF"/>
+            </attribute>
+            <optional>
+              <attribute name="node-attribute">
+                <text/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="rsc-role">
+                <choice>
+                  <value type="token">Stopped</value>
+                  <value type="token">Started</value>
+                  <value type="token">Master</value>
+                  <value type="token">Slave</value>
+                </choice>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="with-rsc-role">
+                <choice>
+                  <value type="token">Stopped</value>
+                  <value type="token">Started</value>
+                  <value type="token">Master</value>
+                  <value type="token">Slave</value>
+                </choice>
+              </attribute>
+            </optional>
+          </group>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="rsc_order">
+    <element name="rsc_order">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <optional>
+          <ref name="lifetime"/>
+        </optional>
+        <optional>
+          <attribute name="symmetrical">
+            <data type="boolean"/>
+          </attribute>
+        </optional>
+        <optional>
+          <choice>
+            <attribute name="score">
+              <choice>
+                <data type="integer"/>
+                <value type="token">INFINITY</value>
+                <value type="token">+INFINITY</value>
+                <value type="token">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="kind">
+              <choice>
+                <value type="token">Optional</value>
+                <value type="token">Mandatory</value>
+                <value type="token">Serialize</value>
+              </choice>
+            </attribute>
+          </choice>
+        </optional>
+        <choice>
+          <oneOrMore>
+            <ref name="resource_set"/>
+          </oneOrMore>
+          <group>
+            <attribute name="first">
+              <data type="IDREF"/>
+            </attribute>
+            <attribute name="then">
+              <data type="IDREF"/>
+            </attribute>
+            <optional>
+              <attribute name="first-action">
+                <choice>
+                  <value type="token">start</value>
+                  <value type="token">promote</value>
+                  <value type="token">demote</value>
+                  <value type="token">stop</value>
+                </choice>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="then-action">
+                <choice>
+                  <value type="token">start</value>
+                  <value type="token">promote</value>
+                  <value type="token">demote</value>
+                  <value type="token">stop</value>
+                </choice>
+              </attribute>
+            </optional>
+          </group>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="rsc_ticket">
+    <element name="rsc_ticket">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <choice>
+          <oneOrMore>
+            <ref name="resource_set"/>
+          </oneOrMore>
+          <group>
+            <attribute name="rsc">
+              <data type="IDREF"/>
+            </attribute>
+            <optional>
+              <attribute name="rsc-role">
+                <choice>
+                  <value type="token">Stopped</value>
+                  <value type="token">Started</value>
+                  <value type="token">Master</value>
+                  <value type="token">Slave</value>
+                </choice>
+              </attribute>
+            </optional>
+          </group>
+        </choice>
+        <attribute name="ticket">
+          <text/>
+        </attribute>
+        <optional>
+          <attribute name="loss-policy">
+            <choice>
+              <value type="token">stop</value>
+              <value type="token">demote</value>
+              <value type="token">fence</value>
+              <value type="token">freeze</value>
+            </choice>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="fencing-level">
+    <element name="fencing-level">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <attribute name="target">
+          <text/>
+        </attribute>
+        <attribute name="index">
+          <data type="positiveInteger"/>
+        </attribute>
+        <attribute name="devices">
+          <data type="string">
+            <param name="pattern">([a-zA-Z0-9_\.\-]+)(,[a-zA-Z0-9_\.\-]+)*</param>
+          </data>
+        </attribute>
+      </group>
+    </element>
+  </define>
+  <define name="acl_target">
+    <element name="acl_target">
+      <group>
+        <attribute name="id">
+          <text/>
+        </attribute>
+        <zeroOrMore>
+          <ref name="role"/>
+        </zeroOrMore>
+      </group>
+    </element>
+  </define>
+  <define name="acl_group">
+    <element name="acl_group">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <zeroOrMore>
+          <ref name="role"/>
+        </zeroOrMore>
+      </group>
+    </element>
+  </define>
+  <define name="acl_role">
+    <element name="acl_role">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <optional>
+          <attribute name="description">
+            <text/>
+          </attribute>
+        </optional>
+        <zeroOrMore>
+          <ref name="acl_permission"/>
+        </zeroOrMore>
+      </group>
+    </element>
+  </define>
+  <define name="tag">
+    <element name="tag">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <oneOrMore>
+          <ref name="obj_ref"/>
+        </oneOrMore>
+      </group>
+    </element>
+  </define>
+  <define name="rule">
+    <element name="rule">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <choice>
+            <attribute name="score">
+              <choice>
+                <data type="integer"/>
+                <value type="token">INFINITY</value>
+                <value type="token">+INFINITY</value>
+                <value type="token">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op">
+              <choice>
+                <value type="token">or</value>
+                <value type="token">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression"/>
+              <ref name="rule"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="nvpair">
+    <element name="nvpair">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <attribute name="name">
+          <text/>
+        </attribute>
+        <optional>
+          <attribute name="value">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="rule_2">
+    <element name="rule">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <choice>
+            <attribute name="score">
+              <choice>
+                <data type="integer"/>
+                <value type="token">INFINITY</value>
+                <value type="token">+INFINITY</value>
+                <value type="token">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op">
+              <choice>
+                <value type="token">or</value>
+                <value type="token">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression"/>
+              <ref name="rule_2"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="rule_3">
+    <element name="rule">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <choice>
+            <attribute name="score">
+              <choice>
+                <data type="integer"/>
+                <value type="token">INFINITY</value>
+                <value type="token">+INFINITY</value>
+                <value type="token">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op">
+              <choice>
+                <value type="token">or</value>
+                <value type="token">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression"/>
+              <ref name="rule_3"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="instance_attributes">
+    <element name="instance_attributes">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule_5"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair_2"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score">
+                <choice>
+                  <data type="integer"/>
+                  <value type="token">INFINITY</value>
+                  <value type="token">+INFINITY</value>
+                  <value type="token">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="utilization">
+    <element name="utilization">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule_6"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair_2"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score">
+                <choice>
+                  <data type="integer"/>
+                  <value type="token">INFINITY</value>
+                  <value type="token">+INFINITY</value>
+                  <value type="token">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="meta_attributes_3">
+    <element name="meta_attributes">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule_7"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair_2"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score">
+                <choice>
+                  <data type="integer"/>
+                  <value type="token">INFINITY</value>
+                  <value type="token">+INFINITY</value>
+                  <value type="token">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="instance_attributes_2">
+    <element name="instance_attributes">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule_8"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair_2"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score">
+                <choice>
+                  <data type="integer"/>
+                  <value type="token">INFINITY</value>
+                  <value type="token">+INFINITY</value>
+                  <value type="token">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="operations">
+    <element name="operations">
+      <group>
+        <optional>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="id-ref">
+            <data type="IDREF"/>
+          </attribute>
+        </optional>
+        <zeroOrMore>
+          <ref name="op"/>
+        </zeroOrMore>
+      </group>
+    </element>
+  </define>
+  <define name="utilization_2">
+    <element name="utilization">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule_9"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair_2"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score">
+                <choice>
+                  <data type="integer"/>
+                  <value type="token">INFINITY</value>
+                  <value type="token">+INFINITY</value>
+                  <value type="token">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="utilization_3">
+    <element name="utilization">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="rule_10"/>
+            </optional>
+            <zeroOrMore>
+              <ref name="nvpair_2"/>
+            </zeroOrMore>
+            <optional>
+              <attribute name="score">
+                <choice>
+                  <data type="integer"/>
+                  <value type="token">INFINITY</value>
+                  <value type="token">+INFINITY</value>
+                  <value type="token">-INFINITY</value>
+                </choice>
+              </attribute>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="resource_set">
+    <element name="resource_set">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <optional>
+            <attribute name="sequential">
+              <data type="boolean"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="require-all">
+              <data type="boolean"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="action">
+              <choice>
+                <value type="token">start</value>
+                <value type="token">promote</value>
+                <value type="token">demote</value>
+                <value type="token">stop</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role">
+              <choice>
+                <value type="token">Stopped</value>
+                <value type="token">Started</value>
+                <value type="token">Master</value>
+                <value type="token">Slave</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="score">
+              <choice>
+                <data type="integer"/>
+                <value type="token">INFINITY</value>
+                <value type="token">+INFINITY</value>
+                <value type="token">-INFINITY</value>
+              </choice>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <ref name="resource_ref"/>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="rule_4">
+    <element name="rule">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <choice>
+            <attribute name="score">
+              <choice>
+                <data type="integer"/>
+                <value type="token">INFINITY</value>
+                <value type="token">+INFINITY</value>
+                <value type="token">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op">
+              <choice>
+                <value type="token">or</value>
+                <value type="token">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression"/>
+              <ref name="rule_4"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="lifetime">
+    <element name="lifetime">
+      <oneOrMore>
+        <ref name="rule_11"/>
+      </oneOrMore>
+    </element>
+  </define>
+  <define name="role">
+    <element name="role">
+      <attribute name="id">
+        <data type="IDREF"/>
+      </attribute>
+    </element>
+  </define>
+  <define name="acl_permission">
+    <element name="acl_permission">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <attribute name="kind">
+          <choice>
+            <value type="token">read</value>
+            <value type="token">write</value>
+            <value type="token">deny</value>
+          </choice>
+        </attribute>
+        <choice>
+          <attribute name="xpath">
+            <text/>
+          </attribute>
+          <attribute name="reference">
+            <data type="IDREF"/>
+          </attribute>
+          <group>
+            <attribute name="object-type">
+              <text/>
+            </attribute>
+            <optional>
+              <attribute name="attribute">
+                <text/>
+              </attribute>
+            </optional>
+          </group>
+        </choice>
+        <optional>
+          <attribute name="description">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="obj_ref">
+    <element name="obj_ref">
+      <attribute name="id">
+        <data type="IDREF"/>
+      </attribute>
+    </element>
+  </define>
+  <define name="expression">
+    <element name="expression">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <attribute name="attribute">
+          <text/>
+        </attribute>
+        <attribute name="operation">
+          <choice>
+            <value type="token">lt</value>
+            <value type="token">gt</value>
+            <value type="token">lte</value>
+            <value type="token">gte</value>
+            <value type="token">eq</value>
+            <value type="token">ne</value>
+            <value type="token">defined</value>
+            <value type="token">not_defined</value>
+          </choice>
+        </attribute>
+        <optional>
+          <attribute name="value">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="type">
+            <choice>
+              <value type="token">string</value>
+              <value type="token">number</value>
+              <value type="token">version</value>
+            </choice>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="date_expression">
+    <element name="date_expression">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <choice>
+          <group>
+            <attribute name="operation">
+              <value type="token">in_range</value>
+            </attribute>
+            <choice>
+              <group>
+                <optional>
+                  <attribute name="start">
+                    <text/>
+                  </attribute>
+                </optional>
+                <attribute name="end">
+                  <text/>
+                </attribute>
+              </group>
+              <group>
+                <attribute name="start">
+                  <text/>
+                </attribute>
+                <ref name="duration"/>
+              </group>
+            </choice>
+          </group>
+          <group>
+            <attribute name="operation">
+              <value type="token">gt</value>
+            </attribute>
+            <attribute name="start">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation">
+              <value type="token">lt</value>
+            </attribute>
+            <attribute name="end">
+              <text/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="operation">
+              <value type="token">date_spec</value>
+            </attribute>
+            <ref name="date_spec"/>
+          </group>
+        </choice>
+      </group>
+    </element>
+  </define>
+  <define name="rule_5">
+    <element name="rule">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <choice>
+            <attribute name="score">
+              <choice>
+                <data type="integer"/>
+                <value type="token">INFINITY</value>
+                <value type="token">+INFINITY</value>
+                <value type="token">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op">
+              <choice>
+                <value type="token">or</value>
+                <value type="token">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression"/>
+              <ref name="rule_5"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="nvpair_2">
+    <element name="nvpair">
+      <choice>
+        <group>
+          <attribute name="id-ref">
+            <data type="IDREF"/>
+          </attribute>
+          <optional>
+            <attribute name="name">
+              <text/>
+            </attribute>
+          </optional>
+        </group>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <attribute name="name">
+            <text/>
+          </attribute>
+          <optional>
+            <attribute name="value">
+              <text/>
+            </attribute>
+          </optional>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="rule_6">
+    <element name="rule">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <choice>
+            <attribute name="score">
+              <choice>
+                <data type="integer"/>
+                <value type="token">INFINITY</value>
+                <value type="token">+INFINITY</value>
+                <value type="token">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op">
+              <choice>
+                <value type="token">or</value>
+                <value type="token">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression"/>
+              <ref name="rule_6"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="rule_7">
+    <element name="rule">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <choice>
+            <attribute name="score">
+              <choice>
+                <data type="integer"/>
+                <value type="token">INFINITY</value>
+                <value type="token">+INFINITY</value>
+                <value type="token">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op">
+              <choice>
+                <value type="token">or</value>
+                <value type="token">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression"/>
+              <ref name="rule_7"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="rule_8">
+    <element name="rule">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <choice>
+            <attribute name="score">
+              <choice>
+                <data type="integer"/>
+                <value type="token">INFINITY</value>
+                <value type="token">+INFINITY</value>
+                <value type="token">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op">
+              <choice>
+                <value type="token">or</value>
+                <value type="token">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression"/>
+              <ref name="rule_8"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="op">
+    <element name="op">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <attribute name="name">
+          <text/>
+        </attribute>
+        <attribute name="interval">
+          <text/>
+        </attribute>
+        <optional>
+          <attribute name="description">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <choice>
+            <attribute name="start-delay">
+              <text/>
+            </attribute>
+            <attribute name="interval-origin">
+              <text/>
+            </attribute>
+          </choice>
+        </optional>
+        <optional>
+          <attribute name="timeout">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="enabled">
+            <data type="boolean"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="record-pending">
+            <data type="boolean"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="role">
+            <choice>
+              <value type="token">Stopped</value>
+              <value type="token">Started</value>
+              <value type="token">Slave</value>
+              <value type="token">Master</value>
+            </choice>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="requires">
+            <choice>
+              <value type="token">nothing</value>
+              <value type="token">quorum</value>
+              <value type="token">fencing</value>
+              <value type="token">unfencing</value>
+            </choice>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="on-fail">
+            <choice>
+              <value type="token">ignore</value>
+              <value type="token">block</value>
+              <value type="token">stop</value>
+              <value type="token">restart</value>
+              <value type="token">standby</value>
+              <value type="token">fence</value>
+              <value type="token">restart-container</value>
+            </choice>
+          </attribute>
+        </optional>
+        <zeroOrMore>
+          <choice>
+            <ref name="meta_attributes_3"/>
+            <ref name="instance_attributes_2"/>
+          </choice>
+        </zeroOrMore>
+      </group>
+    </element>
+  </define>
+  <define name="rule_9">
+    <element name="rule">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <choice>
+            <attribute name="score">
+              <choice>
+                <data type="integer"/>
+                <value type="token">INFINITY</value>
+                <value type="token">+INFINITY</value>
+                <value type="token">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op">
+              <choice>
+                <value type="token">or</value>
+                <value type="token">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression"/>
+              <ref name="rule_9"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="rule_10">
+    <element name="rule">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <choice>
+            <attribute name="score">
+              <choice>
+                <data type="integer"/>
+                <value type="token">INFINITY</value>
+                <value type="token">+INFINITY</value>
+                <value type="token">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op">
+              <choice>
+                <value type="token">or</value>
+                <value type="token">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression"/>
+              <ref name="rule_10"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="resource_ref">
+    <element name="resource_ref">
+      <attribute name="id">
+        <data type="IDREF"/>
+      </attribute>
+    </element>
+  </define>
+  <define name="rule_11">
+    <element name="rule">
+      <choice>
+        <attribute name="id-ref">
+          <data type="IDREF"/>
+        </attribute>
+        <group>
+          <attribute name="id">
+            <data type="ID"/>
+          </attribute>
+          <choice>
+            <attribute name="score">
+              <choice>
+                <data type="integer"/>
+                <value type="token">INFINITY</value>
+                <value type="token">+INFINITY</value>
+                <value type="token">-INFINITY</value>
+              </choice>
+            </attribute>
+            <attribute name="score-attribute">
+              <text/>
+            </attribute>
+          </choice>
+          <optional>
+            <attribute name="boolean-op">
+              <choice>
+                <value type="token">or</value>
+                <value type="token">and</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="role">
+              <text/>
+            </attribute>
+          </optional>
+          <oneOrMore>
+            <choice>
+              <ref name="expression"/>
+              <ref name="date_expression"/>
+              <ref name="rule_11"/>
+            </choice>
+          </oneOrMore>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="duration">
+    <element name="duration">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <optional>
+          <attribute name="hours">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+  <define name="date_spec">
+    <element name="date_spec">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <optional>
+          <attribute name="hours">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="monthdays">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekdays">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="yearsdays">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="months">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weeks">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="years">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="weekyears">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="moon">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
+</grammar>
