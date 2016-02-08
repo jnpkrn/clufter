@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Pacemaker configuration system/Cluster Information Base (CIB) format"""
@@ -20,7 +20,7 @@ class cib(XML):
     # XML
     root = 'cib'
     validator_specs = {
-        XML.ETREE: 'pacemaker-1.2.rng'
+        XML.ETREE: 'pacemaker-*.rng'
     }
 
     _void_file = 'pacemaker-1.2.minimal'
