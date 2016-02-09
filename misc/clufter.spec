@@ -97,10 +97,13 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-lxml
 %endif
 
+## global test_version 0.X.Y
+%global testver      %{?test_version}%{?!test_version:%{version}}
+
 %if "%{clufter_version}" == "%{clufter_version_norm}"
 Source0:        %{clufter_url_dist}%{name}-%{version}.tar.gz
 %if "0%{clufter_check}" == 2
-Source1:        %{clufter_url_dist}%{name}-%{version}-tests.tar.xz
+Source1:        %{clufter_url_dist}%{name}-%{testver}-tests.tar.xz
 %endif
 %else
 Source0:        %{clufter_source}.tar.gz
@@ -223,6 +226,9 @@ formats and filters.
 %if "%{clufter_version}" == "%{clufter_version_norm}"
 %if "0%{clufter_check}" == 2
 %autosetup -p1 -S git -b 1
+%if "%{testver}" != "%{version}"
+    %{__cp} -a ../"%{name}-%{testver}"/* .
+%endif
 %else
 %autosetup -p1 -S git
 %endif
