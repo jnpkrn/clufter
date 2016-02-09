@@ -746,7 +746,7 @@ class XML(SimpleFormat):
                 break
         else:
             log.warning("None of the validation attempts succeeded with"
-                        " validator spec `{0}' ".format(spec))
+                        " validator spec: {0}".format(', '.join(spec)))
 
         return fatal, master, master_snippet.strip()
 
