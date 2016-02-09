@@ -67,6 +67,13 @@
   %endif
 %endif
 
+%if 0%{rhel} < 7
+%bcond_with generated_schemas
+%else
+%bcond_without generated_schemas
+%endif
+
+
 # universality++
 # https://fedoraproject.org/wiki/EPEL:Packaging?rd=Packaging:EPEL#The_.25license_tag
 %{!?_licensedir:%global license %doc}
@@ -100,6 +107,10 @@ Source0:        %{clufter_source}.tar.gz
 # Source0 is created by Source1, just pass particular commit hash
 # via GITHASH env. variable
 Source1:        %{clufter_url_raw}%{clufter_githash}/%{?pagure:f/}misc/run-sdist-per-commit
+%endif
+%if %{with generated_schemas}
+# Helper in "borrow validation schemas from pacemaker installed along" process
+Source2:        %{clufter_url_raw}%{clufter_githash}/%{?pagure:f/}misc/fix-jing-simplified-rng.xsl
 %endif
 
 
@@ -147,6 +158,16 @@ License:        %{clufter_license} and GFDL
 # ccs_flatten helper
 # ~ libxml2-devel
 BuildRequires:  pkgconfig(libxml-2.0)
+%if %{with generated_schemas}
+# needed for schemadir path pointer
+BuildRequires:  pkgconfig(pacemaker)
+# needed for schemas themselves
+BuildRequires:  pacemaker
+# needed to squash multi-file schemas to single file
+BuildRequires:  jing
+# needed for xsltproc and xmllint respectively
+BuildRequires:  libxslt libxml2
+%endif
 #autodected# Requires:       libxml2
 Requires:       python-lxml
 # "extras"
@@ -265,6 +286,32 @@ while read cmd; do
   > ".manpages/man%{clufter_manpagesec}/%{name}-${cmd}.%{clufter_manpagesec}"
 done < .subcmds
 %endif
+%if %{with generated_schemas}
+schemadir=$(pkg-config --variable schemadir pacemaker)
+%{__mkdir_p} -- .schemas
+for f in "${schemadir}"/pacemaker-*.*.rng; do
+    test -f "${f}" || continue
+    base="$(basename "${f}")"
+    case "${base}" in
+    pacemaker-1.0.rng|pacemaker-2.[12].rng)
+        continue;;  # skip non-defaults of upstream releases (avoid clutter)
+    esac
+    sentinel=10; old=; new="${f}"
+    while [ "$(stat -c '%%s' "${old}")" != "$(stat -c '%%s' "${new}")" ]; do
+        [ "$((sentinel -= 1))" -gt 0 ] || break
+        [ "${old}" = "${f}" ] && old=".schemas/${base}";
+        [ "${new}" = "${f}" ] \
+          && { old="${f}"; new=".schemas/${base}.new"; } \
+          || %{__cp} -f "${new}" "${old}"
+        jing -is "${old}" > "${new}"
+    done
+    # xmllint drops empty lines caused by the applied transformation
+    xsltproc --stringparam filename-or-version "${base}" \
+      "%{SOURCE2}" "${new}" \
+      | xmllint --format - > "${old}"
+    %{__rm} -f -- "${new}"
+done
+%endif
 
 %install
 # '--root' implies setuptools involves distutils to do old-style install
@@ -311,6 +358,10 @@ EOF
 %if %{with manpage}
 %{__mkdir_p} -- '%{buildroot}%{_mandir}'
 %{__cp} -a -t '%{buildroot}%{_mandir}' -- .manpages/*
+%endif
+%if %{with generated_schemas}
+%{__cp} -a -f -t '%{buildroot}%{python2_sitelib}/%{name}/formats/cib' \
+              -- .schemas/pacemaker-*.*.rng
 %endif
 %endif
 %{__mkdir_p} -- '%{buildroot}%{_defaultdocdir}/%{clufter_source}'
