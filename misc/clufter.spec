@@ -253,9 +253,9 @@ formats and filters.
 %if %{with manpage}
 # generate man pages (proper commands and aliases from a sorted sequence)
 %{__mkdir_p} -- .manpages/man%{clufter_manpagesec}
-./run-dev -l | sed -n 's|^  \(\S\+\).*|\1|p' | sort > .subcmds
-sed -e 's:\(.*\):\\\&\\fIrun_dev-\1\\fR\\\|(%{clufter_manpagesec}), :' \
-  -e '1s|\(.*\)|\[SEE ALSO\]\n\1|' \
+{ echo; ./run-dev -l | sed -n 's|^  \(\S\+\).*|\1|p' | sort; } > .subcmds
+sed -e 's:\(.\+\):\\\&\\fIrun_dev-\1\\fR\\\|(%{clufter_manpagesec}), :' \
+  -e '1s|\(.*\)|\[SEE ALSO\]\n|' \
   -e '$s|\(.*\)|\1\nand perhaps more|' \
   .subcmds > .see-also
 help2man -N -h -H -i .see-also \
@@ -263,13 +263,14 @@ help2man -N -h -H -i .see-also \
   | sed 's|run\\\?[-_]dev|%{name}|g' \
   > ".manpages/man%{clufter_manpagesec}/%{name}.%{clufter_manpagesec}"
 while read cmd; do
+  [ -n "${cmd}" ] || continue
   echo -e "#\!/bin/sh\n{ [ \$# -ge 1 ] && [ \"\$1\" = \"--version\" ] \
   && ./run-dev \"\$@\" || ./run-dev \"${cmd}\" \"\$@\"; }" > ".tmp-${cmd}"
   chmod +x ".tmp-${cmd}"
   grep -v "^${cmd}\$" .subcmds \
-    | grep "$(echo ${cmd} | cut -d- -f1)\(-\|\$\)" \
-    | sed -e 's:\(.*\):\\\&\\fIrun_dev-\1\\fR\\\|(%{clufter_manpagesec}), :' \
-      -e '1s|\(.*\)|\[SEE ALSO\]\n\\\&\\fIrun_dev\\fR\\\|(1), \n\1|' \
+    | grep -e '^$' -e "$(echo ${cmd} | cut -d- -f1)\(-\|\$\)" \
+    | sed -e 's:\(.\+\):\\\&\\fIrun_dev-\1\\fR\\\|(%{clufter_manpagesec}), :' \
+      -e '1s|\(.*\)|\[SEE ALSO\]\n\\\&\\fIrun_dev\\fR\\\|(1), \n|' \
       -e '$s|\(.*\)|\1\nand perhaps more|' > .see-also
   # XXX uses ";;&" bashism
   case "${cmd}" in
