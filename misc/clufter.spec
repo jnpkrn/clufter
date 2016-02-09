@@ -19,7 +19,7 @@
 %bcond_without pagure
 %if %{_with_pagure}
 	%global pagure 1
-%fi
+%endif
 
 %if "%{clufter_version}" == "%{clufter_version_norm}"
 %{!?clufter_source:  %global clufter_source   %{name}-%{version}}
