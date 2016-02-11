@@ -121,6 +121,7 @@ Stable version
 Official released tarballs (as opposed to what you can `download from
 GitHub <https://github.com/jnpkrn/clufter/releases>`_) can be found,
 together with GPG signatures,
+at https://pagure.io/releases/clufter/ or, alternatively,
 at https://people.redhat.com/jpokorny/pkgs/clufter/.
 
 Also, the ``HEAD`` of ``master`` branch in the repository should always
