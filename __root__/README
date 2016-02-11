@@ -106,11 +106,13 @@ general:
 
 tests:
 
-- outside of Python 2.7+, `unittest2`_ (``python-unittest2``) is needed
+- outside of Python 2.7+, `unittest2`_ (``python-unittest2``)
+  or, alternatively, `nose`_ (``python-nose``) is needed
 
 .. _lxml: http://lxml.de
 .. _ordereddict: https://pypi.python.org/pypi/ordereddict
 .. _unittest2: https://pypi.python.org/pypi/unittest2
+.. _nose: https://pypi.python.org/pypi/nose
 
 
 Stable version

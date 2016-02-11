@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Setup script/data"""
@@ -683,6 +683,7 @@ setup(
 
     extras_require={
         'test': cond_require('unittest2', unittest='runner'),
+        'test-nose': cond_require('nose', unittest='runner'),
         'coverage': ('coverage', ),
     },
 
