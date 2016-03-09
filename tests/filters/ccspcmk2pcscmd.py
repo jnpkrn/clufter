@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing `ccspcmk2pcscmd' filter"""
@@ -25,10 +25,11 @@ class FiltersCcspcmk2pcscmdTestCase(TestCase):
         #print ret.BYTESTRING()
         self.assertEquals(
             ret.BYTESTRING(),
-            "pcs cluster setup --start --name test ju hele"
+            "pcs cluster setup --name test ju hele"
             " --consensus 200 --join 100 --token 5000\n"
-            "sleep {sleep}\n".format(sleep=ccspcmk2pcscmd
-                                           .defs['pcscmd_start_wait'])
+            "pcs cluster start --all --wait=-1 && sleep {sleep}"
+            " || pcs cluster start --all --wait={sleep}\n"
+            .format(sleep=ccspcmk2pcscmd.defs['pcscmd_start_wait'])
         )
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))

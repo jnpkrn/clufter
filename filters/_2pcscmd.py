@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """*2pcscmd filters helpers"""
@@ -97,7 +97,7 @@ def coro2pcscmd(**kwargs):
 ''' + (
         verbose_inform('"new cluster: ", $ClusterName')
 ) + '''
-        <xsl:value-of select="'pcs cluster setup --start'"/>
+        <xsl:value-of select="'pcs cluster setup'"/>
         <xsl:choose>
             <xsl:when test="$pcscmd_enable">
                 <xsl:value-of select="' --enable'"/>
@@ -113,19 +113,31 @@ def coro2pcscmd(**kwargs):
         %(descent_totem)s
         %(descent_quorum)s
         <xsl:value-of select="'%(NL)s'"/>
+
+        <xsl:choose>
+            <xsl:when test="$pcscmd_start_wait &gt; 0">
+''' + (
+                verbose_inform('"starting cluster and waiting for it to come up: ", $pcscmd_start_wait, " seconds"')
+) + '''
+            </xsl:when>
+            <xsl:otherwise>
+''' + (
+                verbose_inform('"starting cluster"')
+) + '''
+            </xsl:otherwise>
+        </xsl:choose>
+
+        <xsl:value-of select="'pcs cluster start --all'"/>
+        <xsl:if test="$pcscmd_start_wait &gt; 0">
+            <xsl:value-of select="concat(' --wait=-1 &amp;&amp; sleep ',
+                                         $pcscmd_start_wait,
+                                         ' || pcs cluster start --all --wait=',
+                                         $pcscmd_start_wait)"/>
+        </xsl:if>
+        <xsl:value-of select="'%(NL)s'"/>
 ''' + (
         verbose_ec_test
 ) + '''
-        <xsl:if test="$pcscmd_start_wait &gt; 0">
-''' + (
-            verbose_inform('"waiting for cluster to come up: ", $ClusterName, " seconds"')
-) + '''
-            <xsl:value-of select="concat('sleep ', $pcscmd_start_wait)"/>
-            <xsl:value-of select="'%(NL)s'"/>
-''' + (
-            verbose_ec_test
-) + '''
-        </xsl:if>
     </xsl:if>
 ''') % dict(
     NL=NL,
