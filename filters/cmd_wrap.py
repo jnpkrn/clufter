@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """cmd-wrap filter"""
@@ -61,6 +61,10 @@ def cmd_args_cutter(itemgroups):
                 acc = []
             else:
                 ret.extend((ii, ) for ii in i)
+        elif cmd.endswith('pcs') and len(i) == 2 and i[0] == '--wait':
+            # --wait NUM has to be reverted into --wait=NUM due to the
+            # way pcs parser is "extended"
+            ret.append(( '='.join(i), ))
         else:
             ret.append(i)
     return ret
