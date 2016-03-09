@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Format representing merged/isolated (1/2 levels) of single command to exec"""
@@ -92,12 +92,14 @@ class command(SimpleFormat):
             ret = split(self.BYTESTRING())
             if self._dict.get('enquote', True):
                 ret = self._escape(ret)
+            offset = 0
             for i, lexeme in enumerate(ret[:]):
                 # heuristic(!) method to normalize: '-a=b' -> '-a', 'b'
                 if (lexeme.count('=') == 1 and lexeme.startswith('-') and
                     ('"' not in lexeme or lexeme.count('"') % 2) and
                     ("'" not in lexeme or lexeme.count("'") % 2)):
-                    ret[i:i + 1] = lexeme.split('=')
+                    ret[i + offset:i + offset + 1] = lexeme.split('=')
+                    offset += 1
         elif self.DICT in self._representations:  # break the possible loop (2)
             d = self.DICT(protect_safe=True)
             if not isinstance(d, OrderedDict):
