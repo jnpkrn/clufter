@@ -15,6 +15,8 @@ from textwrap import TextWrapper
 
 log = getLogger(__name__)
 
+# man bash | grep -A2 '\s\+control operator$' (minus <newline>)
+_CONTROL_OPERATORS = '||', '&', '&&', ';', ';;', '(', ')', '|', '|&'
 
 def cmd_args_cutter(itemgroups):
     if not itemgroups:
@@ -23,7 +25,17 @@ def cmd_args_cutter(itemgroups):
     cmd = itemgroups[0][0] if itemgroups[0] else ""
     for i in itemgroups:
         if len(i) > 1 and (not(i[0].startswith('-')) or i[0] == '-'):
-            if cmd.endswith('pcs'):
+            js = [e for e, j in enumerate(i) if e and j in _CONTROL_OPERATORS]
+            if js:
+                js.append(len(i))
+                this_joint = 0
+                for next_joint in js:
+                    ret.extend(filter(bool, (tuple(acc), )))
+                    acc = list(i[this_joint:next_joint])
+                    this_joint = next_joint
+                ret.append(tuple(acc))
+                acc = []
+            elif cmd.endswith('pcs'):
                 pos = -1
                 end = len(i)
                 while pos + 1 < end:
@@ -147,7 +159,11 @@ def cmd_wrap(flt_ctxt, in_obj):
                     curlen += 1 + len(line[-1])
                 # merge previous group to the current one if it fits the length
                 if rline and not itemgroup \
-                        and remains - (curlen + 1 + len(' '.join(rline))) >= 0:
+                        and remains - (curlen + 1 + len(' '.join(rline))) >= 0 \
+                        and (line[0] not in _CONTROL_OPERATORS
+                             or not itemgroups or not itemgroups[-1]
+                             or not itemgroups[-1][0]
+                             or not itemgroups[-1][0][0] == '-'):
                     line = rline + line
                     rline = []
                     linecnt -= 1

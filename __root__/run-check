@@ -223,8 +223,8 @@ EOF
 pcs cluster auth rhel6-node1 rhel6-node2
 pcs cluster setup --name one rhel6-node1 rhel6-node2 --consensus 12000 \\
   --token 10000 --join 60
-pcs cluster start --all --wait=-1 && sleep 60 || pcs cluster start \\
-  --all --wait=60
+pcs cluster start --all --wait=-1 && sleep 60 \\
+  || pcs cluster start --all --wait=60
 pcs cluster cib tmp-cib.xml --config
 pcs -f tmp-cib.xml stonith create FENCEDEV-xvm fence_xvm \\
   pcmk_host_map=rhel6-node1:rhel6-node1,rhel6-node2:rhel6-node2
