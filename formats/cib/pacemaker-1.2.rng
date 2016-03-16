@@ -82,7 +82,9 @@
           </attribute>
         </optional>
         <ref name="configuration"/>
-        <ref name="status"/>
+        <optional>
+          <ref name="status"/>
+        </optional>
       </group>
     </element>
   </define>
