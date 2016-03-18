@@ -1,6 +1,8 @@
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                xmlns="http://relaxng.org/ns/structure/1.0"
+                exclude-result-prefixes="rng">
 
 <xsl:param name="filename-or-version" select="'99.99'"/>
 <xsl:variable name="version">
@@ -80,6 +82,17 @@
             </xsl:copy>
         </xsl:otherwise>
     </xsl:choose>
+</xsl:template>
+
+<!-- ensure "status" section is optional; see also:
+     - https://github.com/ClusterLabs/pacemaker/commit/89f5177
+     - https://pagure.io/clufter/f800468 (for next branch) -->
+<xsl:template match="*[name() != 'optional']/rng:ref[@name = 'status']">
+    <optional>
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()"/>
+        </xsl:copy>
+    </optional>
 </xsl:template>
 
 <xsl:template match="@*|node()">
