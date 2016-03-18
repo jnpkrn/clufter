@@ -3,6 +3,8 @@
                 xmlns:rng="http://relaxng.org/ns/structure/1.0"
                 xmlns="http://relaxng.org/ns/structure/1.0"
                 exclude-result-prefixes="rng">
+<xsl:output format="xml" indent="yes"/>
+<xsl:strip-space elements="*"/>
 
 <xsl:param name="filename-or-version" select="'99.99'"/>
 <xsl:variable name="version">
