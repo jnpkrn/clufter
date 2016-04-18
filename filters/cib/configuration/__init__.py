@@ -200,7 +200,7 @@ cib2pcscmd = ('''\
         verbose_inform('"get initial/working CIB: ", $pcscmd_tmpcib')
 ) + '''
         <xsl:value-of select="concat('pcs cluster cib ',
-                                     $pcscmd_tmpcib, ' --config')"/>
+                                     $pcscmd_tmpcib)"/>
         <xsl:value-of select="'%(NL)s'"/>
 ''' + (
         verbose_ec_test
