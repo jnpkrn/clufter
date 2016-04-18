@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-version, alpha = '0.56.2', False
+version, alpha = '0.56.3', True
 
 # https://www.python.org/dev/peps/pep-0440 + git export magic using export-subst
 _git_hash = "$Format:%h$".strip('$').replace("Format:%h", "")
