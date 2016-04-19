@@ -129,7 +129,8 @@ def coro2pcscmd(**kwargs):
 
         <xsl:value-of select="'pcs cluster start --all'"/>
         <xsl:if test="$pcscmd_start_wait &gt; 0">
-            <xsl:value-of select="concat(' --wait=-1 &amp;&amp; sleep ',
+            <xsl:value-of select="concat(' --wait=-1 &gt;/dev/null 2&gt;&amp;1',
+                                         ' &amp;&amp; sleep ',
                                          $pcscmd_start_wait,
                                          ' || pcs cluster start --all --wait=',
                                          $pcscmd_start_wait)"/>
