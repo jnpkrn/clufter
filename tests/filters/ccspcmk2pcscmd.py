@@ -27,7 +27,7 @@ class FiltersCcspcmk2pcscmdTestCase(TestCase):
             ret.BYTESTRING(),
             "pcs cluster setup --name test ju hele"
             " --consensus 200 --join 100 --token 5000\n"
-            "pcs cluster start --all --wait=-1 && sleep {sleep}"
+            "pcs cluster start --all --wait=-1 >/dev/null 2>&1 && sleep {sleep}"
             " || pcs cluster start --all --wait={sleep}\n"
             .format(sleep=ccspcmk2pcscmd.defs['pcscmd_start_wait'])
         )
