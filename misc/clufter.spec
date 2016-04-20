@@ -243,6 +243,9 @@ formats and filters.
                       --ra-metadata-dir='%{clufter_ra_metadata_dir}' \
                       --ra-metadata-ext='%{clufter_ra_metadata_ext}' \
                       --report-bugs='%{clufter_url_bugs}'
+# make Python interpreter execution sane (via -Es flags)
+%{__python2} setup.py saveopts -f setup.cfg build_scripts \
+                      --executable='%{__python2} -Es'
 
 %build
 %{__python2} setup.py build
