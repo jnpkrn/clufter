@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -14,7 +14,7 @@ cib2pcscmd = ('''\
 ''' + (
             verbose_inform('"new order constraint: ", @id')
 ) + '''
-            <xsl:value-of select="concat($pcscmd_pcs, 'pcs constraint order')"/>
+            <xsl:value-of select="concat($pcscmd_pcs, 'constraint order')"/>
             <xsl:if test="@first-action and @first-action != 'start'">
                 <xsl:value-of select="concat(' ', @first-action)"/>
             </xsl:if>
