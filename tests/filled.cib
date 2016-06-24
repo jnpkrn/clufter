@@ -14,7 +14,7 @@
           <nvpair id="FENCEDEV-fence-virt-063-ATTRS-hash" name="hash" value="sha256"/>
           <nvpair id="FENCEDEV-fence-virt-063-ATTRS-key_file" name="key_file" value="/etc/cluster/fence_xvm.key"/>
           <nvpair id="FENCEDEV-fence-virt-063-ATTRS-timeout" name="timeout" value="5"/>
-          <nvpair id="FENCEDEV-fence-virt-063-ATTRS-pcmk_host_map" name="pcmk_host_map" value="virt-063:virt-063.cluster-qe.lab.eng.brq.redhat.com"/>
+          <nvpair id="FENCEDEV-fence-virt-063-ATTRS-pcmk_host_map" name="pcmk_host_map" value="virt-063:virt-063.example.com"/>
         </instance_attributes>
       </primitive>
       <primitive id="FENCEDEV-fence-virt-064" class="stonith" type="fence_xvm">
@@ -23,7 +23,7 @@
           <nvpair id="FENCEDEV-fence-virt-064-ATTRS-hash" name="hash" value="sha256"/>
           <nvpair id="FENCEDEV-fence-virt-064-ATTRS-key_file" name="key_file" value="/etc/cluster/fence_xvm.key"/>
           <nvpair id="FENCEDEV-fence-virt-064-ATTRS-timeout" name="timeout" value="5"/>
-          <nvpair id="FENCEDEV-fence-virt-064-ATTRS-pcmk_host_map" name="pcmk_host_map" value="virt-064:virt-064.cluster-qe.lab.eng.brq.redhat.com"/>
+          <nvpair id="FENCEDEV-fence-virt-064-ATTRS-pcmk_host_map" name="pcmk_host_map" value="virt-064:virt-064.example.com"/>
         </instance_attributes>
       </primitive>
       <primitive id="FENCEDEV-fence-virt-069" class="stonith" type="fence_xvm">
@@ -32,7 +32,7 @@
           <nvpair id="FENCEDEV-fence-virt-069-ATTRS-hash" name="hash" value="sha256"/>
           <nvpair id="FENCEDEV-fence-virt-069-ATTRS-key_file" name="key_file" value="/etc/cluster/fence_xvm.key"/>
           <nvpair id="FENCEDEV-fence-virt-069-ATTRS-timeout" name="timeout" value="5"/>
-          <nvpair id="FENCEDEV-fence-virt-069-ATTRS-pcmk_host_map" name="pcmk_host_map" value="virt-069:virt-069.cluster-qe.lab.eng.brq.redhat.com"/>
+          <nvpair id="FENCEDEV-fence-virt-069-ATTRS-pcmk_host_map" name="pcmk_host_map" value="virt-069:virt-069.example.com"/>
         </instance_attributes>
       </primitive>
       <!-- RESOURCES+ARRANGEMENT -->
