@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing `ccsflat2cibprelude' filter"""
@@ -21,6 +21,30 @@ walk_transform = lambda walk: \
 
 
 class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
+    # XXX note there is something fishy as there's a difference
+    # between testSapInstance and the other test* methods:
+    # for the former, filter.Filter.proceed is called just
+    # once and twice for the rest, with the traceback, on the
+    # second attempt, like (nothing entirely surprising):
+    #
+    # File "tests/filters/ccsflat2cibprelude.py", line 96, in testNfsClient
+    #   out_obj = flt_obj(in_obj)
+    # File "clufter/filter.py", line 185, in __call__
+    #   outdecl = self._fnc(flt_ctxt, in_obj)
+    # File "tests/_com", line 36, in _fnc_wrapper
+    #   return fnc(flt_ctxt, *args, **kws)
+    # File "clufter/filter.py", line 1047, in <lambda>
+    #   **kwargsi)))
+    # File "clufter/command_context.py", line 89, in <lambda>
+    #   obj.__getattribute__(name)(self, *args, **kwargs)
+    # File "clufter/filter.py", line 1039, in ctxt_proceed_xslt
+    #   return self.filter_proceed_xslt(in_obj, **kwargs)
+    # File "clufter/filter.py", line 1019, in filter_proceed_xslt
+    #   ret = self.proceed_xslt(in_obj, **kwargs)
+    # File "clufter/filter.py", line 906, in proceed_xslt
+    #   return cls.proceed(in_obj, **defaults)
+    # File "clufter/filter.py", line 988, in proceed
+
     def testNfsClient(self):
         flt_obj = rewrite_root(self.flt_mgr.filters[flt], 'cluster/rm',
                                walk_transform=walk_transform)

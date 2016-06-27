@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Common base for testing"""
@@ -14,7 +14,7 @@ from sys import modules
 from unittest import TestCase
 
 from .filter_manager import FilterManager
-from .utils import filterdict_pop
+from .utils import filterdict_keep
 
 
 def rewrite_root(flt, new_root, **kwargs):
@@ -24,12 +24,16 @@ def rewrite_root(flt, new_root, **kwargs):
     old_root_dir = dirname(modules[flt.__class__.__module__].__file__)
     new_root_dir = join(old_root_dir, new_root_dir)
 
-    new_kws = filterdict_pop(kwargs, 'walk_transform',
-                             root_dir=new_root_dir, xml_root=new_xml_root)
-
-    flt._fnc = (lambda orig_fnc:
-        lambda *args, **kws: orig_fnc(*args, **dict(kws, **new_kws))
-    )(flt._fnc)
+    def _wrap(flt_cls):
+        fnc = flt_cls._fnc
+        def _fnc_wrapper(flt_ctxt, *args, **kws):
+            flt_ctxt.update(
+                filterdict_keep(kwargs, 'walk_transform',
+                               root_dir=new_root_dir, xml_root=new_xml_root)
+            )
+            return fnc(flt_ctxt, *args, **kws)
+        return _fnc_wrapper
+    flt._fnc = _wrap(flt)
     return flt
 
 
