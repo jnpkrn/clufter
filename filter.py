@@ -1020,6 +1020,7 @@ class XMLFilter(Filter, MetaPlugin):
         kwargs = filterdict_keep(ctxt,
             'profile', 'raw', 'system', 'system_extra',  # <- proceed_xslt
             'editor', 'interactive', 'validator_specs',  # <- atom_hook
+            'root_dir', 'walk_transform', 'xml_root',    # <- generic `proceed`
             **kwargs
         )
         kwargs['svc_output'] = ctxt.ctxt_svc_output
