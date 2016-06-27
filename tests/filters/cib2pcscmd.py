@@ -5,7 +5,8 @@
 """Testing `cib2pcscmd' filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
+# following makes available also: TeardownFilterTestCase, rewrite_root
+from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_com'))
 
 
 from os.path import dirname, join
@@ -35,5 +36,31 @@ pcs resource group add SERVICE-svc-GROUP RESOURCE-ip-10.34.71.234 RESOURCE-apach
 pcs resource clone memcached 'interleave=true'
 '''
         )
+
+
+class FiltersCib2pcscmdConstraintsTestCase(TeardownFilterTestCase):
+    def testTicketConstraints(self):
+        flt_obj = rewrite_root(self.flt_mgr.filters[flt],
+                               'cib/configuration/constraints')
+        in_fmt = flt_obj.in_format
+        io_strings = (
+            ('''\
+<rsc_ticket rsc="my-res" id="ticket-my-ticket-my-res" ticket="my-ticket"/>
+''', '''\
+pcs constraint ticket add my-ticket my-res id=ticket-my-ticket-my-res
+'''),
+        )
+        for (in_str, out_str) in io_strings:
+            in_str = '''\
+<constraints>
+''' + in_str + '''
+</constraints>
+'''
+            in_obj = in_fmt('bytestring', in_str,
+                            validator_specs={in_fmt.ETREE: ''})
+            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='')
+            #print out_obj.BYTESTRING()
+            self.assertEquals(out_obj.BYTESTRING(), out_str)
+
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))
