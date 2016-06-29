@@ -45,9 +45,15 @@ class FiltersCib2pcscmdConstraintsTestCase(TeardownFilterTestCase):
         in_fmt = flt_obj.in_format
         io_strings = (
             ('''\
-<rsc_ticket rsc="my-res" id="ticket-my-ticket-my-res" ticket="my-ticket"/>
+<rsc_ticket id="ticket-my-ticket-my-res" rsc="my-res" ticket="my-ticket"/>
 ''', '''\
 pcs constraint ticket add my-ticket my-res id=ticket-my-ticket-my-res
+'''),
+            ('''\
+<rsc_ticket id="ticket-my-ticket-my-res" rsc="my-res" rsc-role="Master"
+            ticket="my-ticket" loss-policy="demote"/>
+''', '''\
+pcs constraint ticket add my-ticket Master my-res loss-policy=demote id=ticket-my-ticket-my-res
 '''),
         )
         for (in_str, out_str) in io_strings:
