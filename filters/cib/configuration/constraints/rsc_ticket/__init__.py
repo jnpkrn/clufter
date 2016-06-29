@@ -21,8 +21,8 @@ cib2pcscmd = ('''\
 ) + '''
             <xsl:value-of select="concat($pcscmd_pcs, 'constraint ticket add')"/>
             <xsl:value-of select="concat(' ', @ticket)"/>
-            <xsl:if test="@role">
-                <xsl:value-of select="concat(' ', @role)"/>
+            <xsl:if test="@rsc-role">
+                <xsl:value-of select="concat(' ', @rsc-role)"/>
             </xsl:if>
             <xsl:value-of select="concat(' ', @rsc)"/>
             <xsl:for-each select="@*[
