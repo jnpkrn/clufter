@@ -53,7 +53,33 @@ pcs constraint ticket add my-ticket my-res id=ticket-my-ticket-my-res
 <rsc_ticket id="ticket-my-ticket-my-res" rsc="my-res" rsc-role="Master"
             ticket="my-ticket" loss-policy="demote"/>
 ''', '''\
-pcs constraint ticket add my-ticket Master my-res loss-policy=demote id=ticket-my-ticket-my-res
+pcs constraint ticket add my-ticket Master my-res loss-policy=demote \
+id=ticket-my-ticket-my-res
+'''),
+            ('''\
+<rsc_ticket id="ticket-my-ticket-my-rsc-set" ticket="my-ticket">
+    <resource_set id="my-rsc-set">
+        <resource_ref id="my-res-1"/>
+        <resource_ref id="my-res-2"/>
+    </resource_set>
+</rsc_ticket>
+''', '''\
+pcs constraint ticket set my-res-1 my-res-2 setoptions ticket=my-ticket \
+id=ticket-my-ticket-my-rsc-set
+'''),
+            ('''\
+<rsc_ticket id="ticket-my-ticket-my-rsc-set" ticket="my-ticket"
+             loss-policy="fence">
+    <resource_set id="my-rsc-set-1" role="Started">
+        <resource_ref id="my-res-1"/>
+    </resource_set>
+    <resource_set id="my-rsc-set-2" role="Master">
+        <resource_ref id="my-res-2"/>
+    </resource_set>
+</rsc_ticket>
+''', '''\
+pcs constraint ticket set my-res-1 role=Started set my-res-2 role=Master \
+setoptions ticket=my-ticket loss-policy=fence id=ticket-my-ticket-my-rsc-set
 '''),
         )
         for (in_str, out_str) in io_strings:
