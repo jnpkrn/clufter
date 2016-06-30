@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -29,14 +29,14 @@ cib2pcscmd = ('''\
                 <xsl:value-of select="concat(' ', @with-rsc-role)"/>
             </xsl:if>
             <xsl:value-of select="concat(' ', @with-rsc)"/>
-            <xsl:if test="@score and not(
-''' + (
-            xslt_is_member('@score', ('INFINITY', '+INFINITY'))
-) + ''')">
-                <xsl:value-of select="concat(' ', @score)"/>
-            </xsl:if>
-            <xsl:value-of select="concat(' ', 'id=', @id)"/>
             <xsl:choose>
+                <!-- missing score is considered INFINITY by pcs anyway -->
+                <xsl:when test="@score and not(
+''' + (
+                    xslt_is_member('@score', ('INFINITY', '+INFINITY'))
+) + ''')">
+                    <xsl:value-of select="concat(' ', @score)"/>
+                </xsl:when>
                 <xsl:when test="@score"/>
                 <xsl:when test="@score-attribute">
                     <xsl:value-of select="concat(' ', 'score-attribute=',
@@ -46,7 +46,12 @@ cib2pcscmd = ('''\
                     <xsl:value-of select="concat(' ', 'score-attribute-mangle=',
                                                  @score-attribute-mangle)"/>
                 </xsl:when>
+                <xsl:otherwise>
+                    <!-- missing score would be considered INFINITY by pcs -->
+                    <xsl:value-of select="' 0'"/>
+                </xsl:otherwise>
             </xsl:choose>
+            <xsl:value-of select="concat(' ', 'id=', @id)"/>
             <xsl:value-of select="'%(NL)s'"/>
 ''' + (
             verbose_ec_test

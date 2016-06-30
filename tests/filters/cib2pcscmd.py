@@ -39,6 +39,34 @@ pcs resource clone memcached 'interleave=true'
 
 
 class FiltersCib2pcscmdConstraintsTestCase(TeardownFilterTestCase):
+    def testColocationConstraints(self):
+        flt_obj = rewrite_root(self.flt_mgr.filters[flt],
+                               'cib/configuration/constraints')
+        in_fmt = flt_obj.in_format
+        io_strings = (
+            ('''\
+<rsc_colocation id="colocation-A-with-B" rsc="A" with-rsc="B" score="INFINITY"/>
+''', '''\
+pcs constraint colocation add A with B id=colocation-A-with-B
+'''),
+            ('''\
+<rsc_colocation id="colocation-A-with-B" rsc="A" with-rsc="B"/>
+''', '''\
+pcs constraint colocation add A with B 0 id=colocation-A-with-B
+'''),
+        )
+        for (in_str, out_str) in io_strings:
+            in_str = '''\
+<constraints>
+''' + in_str + '''
+</constraints>
+'''
+            in_obj = in_fmt('bytestring', in_str,
+                            validator_specs={in_fmt.ETREE: ''})
+            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='')
+            #print out_obj.BYTESTRING()
+            self.assertEquals(out_obj.BYTESTRING(), out_str)
+
     def testTicketConstraints(self):
         flt_obj = rewrite_root(self.flt_mgr.filters[flt],
                                'cib/configuration/constraints')
