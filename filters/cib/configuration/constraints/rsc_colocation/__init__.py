@@ -5,7 +5,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ....filters._2pcscmd import verbose_ec_test, verbose_inform
-from ....utils_xslt import NL, xslt_is_member
+from ....utils_xslt import NL, translate_lower, xslt_is_member
 
 
 cib2pcscmd_options = (
@@ -33,16 +33,24 @@ cib2pcscmd = ('''\
             <xsl:value-of select="concat($pcscmd_pcs, 'constraint colocation add')"/>
             <xsl:if test="
 ''' + (
-            xslt_is_member('@rsc-role', ('master', 'slave'))
+            xslt_is_member(translate_lower('@rsc-role'),
+                           ('master', 'slave'))
 ) + '''">
-                <xsl:value-of select="concat(' ', @rsc-role)"/>
+                <xsl:value-of select="concat(' ',
+''' + (
+                    translate_lower('@rsc-role')
+) + ''')"/>
             </xsl:if>
             <xsl:value-of select="concat(' ', @rsc, ' with')"/>
             <xsl:if test="
 ''' + (
-            xslt_is_member('@with-rsc-role', ('master', 'slave'))
+            xslt_is_member(translate_lower('@with-rsc-role'),
+                           ('master', 'slave'))
 ) + '''">
-                <xsl:value-of select="concat(' ', @with-rsc-role)"/>
+                <xsl:value-of select="concat(' ',
+''' + (
+                    translate_lower('@with-rsc-role')
+) + ''')"/>
             </xsl:if>
             <xsl:value-of select="concat(' ', @with-rsc)"/>
             <xsl:choose>
