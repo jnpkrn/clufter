@@ -90,15 +90,12 @@ cib2pcscmd = ('''\
                         translate_lower('@role')
 ) + ''')"/>
                 </xsl:if>
-                <xsl:choose>
-                    <xsl:when test="@score">
-                        <xsl:value-of select="concat(' score=', @score)"/>
-                    </xsl:when>
-                    <xsl:when test="@score-attribute">
-                        <xsl:value-of select="concat(' score-attribute=',
-                                                    @score-attribute)"/>
-                    </xsl:when>
-                </xsl:choose>
+                <xsl:for-each select="@*[
+''' + (
+                    xslt_is_member('name()', ('score', 'score-attribute'))
+) + ''']">
+                    <xsl:value-of select="concat(' ', name(), '=', .)"/>
+                </xsl:for-each>
 
                 <xsl:if test="rule">
                     <xsl:message
