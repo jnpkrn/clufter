@@ -9,6 +9,7 @@ from ....utils_xslt import NL, xslt_is_member
 
 
 cib2pcscmd_options = (
+    # ticket is required and has a special treatment
     'loss-policy',
 )
 
