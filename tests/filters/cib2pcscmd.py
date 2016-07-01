@@ -55,6 +55,11 @@ pcs constraint colocation add A with B id=colocation-A-with-B
 pcs constraint colocation add A with B 0 id=colocation-A-with-B
 '''),
             ('''\
+<rsc_colocation id="colocation-A-with-B" rsc="A" with-rsc="B" with-rsc-role="Master" score="INFINITY"/>
+''', '''\
+pcs constraint colocation add A with master B id=colocation-A-with-B
+'''),
+            ('''\
 <rsc_colocation id="colocation-my-rsc-set">
     <resource_set id="my-rsc-set">
         <resource_ref id="my-res-1"/>
