@@ -27,6 +27,8 @@ cib2pcscmd = ('''\
                 <xsl:choose>
                     <xsl:when test="@score = 'INFINITY'
                                     or
+                                    @score = '+INFINITY'
+                                    or
                                     @score &gt;= 0">
                         <xsl:value-of select="'prefers'"/>
                     </xsl:when>
@@ -38,7 +40,7 @@ cib2pcscmd = ('''\
             <xsl:value-of select="concat($pcscmd_pcs, 'constraint location',
                                         ' ', @rsc,
                                         ' ', $Relationship, ' ', @node)"/>
-            <xsl:if test="@score != 'INFINITY'">
+            <xsl:if test="not(contains(@score, 'INFINITY'))">
                 <xsl:value-of select="concat('=', @score)"/>
             </xsl:if>
             <xsl:value-of select="'%(NL)s'"/>
