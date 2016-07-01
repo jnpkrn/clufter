@@ -5,7 +5,13 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ....filters._2pcscmd import verbose_ec_test, verbose_inform
-from ....utils_xslt import NL
+from ....utils_xslt import NL, xslt_is_member
+
+cib2pcscmd_options = (
+    'symmetrical',
+    'score',
+    'kind',
+)
 
 cib2pcscmd = ('''\
     <xsl:choose>
@@ -23,13 +29,13 @@ cib2pcscmd = ('''\
                 <xsl:value-of select="concat(' ', @then-action)"/>
             </xsl:if>
             <xsl:value-of select="concat(' ', @then)"/>
+            <xsl:for-each select="@*[
+''' + (
+                xslt_is_member('name()', cib2pcscmd_options)
+) + ''']">
+                <xsl:value-of select="concat(' ', name(), '=', .)"/>
+            </xsl:for-each>
             <xsl:value-of select="concat(' ', 'id=', @id)"/>
-            <xsl:if test="@kind">
-                <xsl:value-of select="concat(' ', 'kind=', @kind)"/>
-            </xsl:if>
-            <xsl:if test="@symmetrical">
-                <xsl:value-of select="concat(' ', 'symmetrical=', @symmetrical)"/>
-            </xsl:if>
             <xsl:value-of select="'%(NL)s'"/>
 ''' + (
             verbose_ec_test
