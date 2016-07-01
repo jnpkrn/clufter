@@ -98,6 +98,22 @@ pcs constraint location A prefers X
 ''', '''\
 pcs constraint location A avoids X
 '''),
+            ('''\
+<rsc_location id="location-A-on-XYZ" rsc="A">
+    <rule id="location-X-on-XYZ-rule" boolean-op="or" score="INFINITY">
+        <expression id="location-X-on-XYZ-expr-X" attribute="#uname"
+                    operation="eq" value="X"/>
+        <expression id="location-X-on-XYZ-expr-Y" attribute="#uname"
+                    operation="eq" value="Y"/>
+        <expression id="location-X-on-XYZ-expr-Z" attribute="#uname"
+                    operation="eq" value="Z"/>
+    </rule>
+</rsc_location>
+''', '''\
+pcs constraint location A rule id=location-X-on-XYZ-rule \
+constraint-id=location-A-on-XYZ score=INFINITY \
+'#uname' eq 'X' or '#uname' eq 'Y' or '#uname' eq 'Z'
+'''),
         )
         for (in_str, out_str) in io_strings:
             in_str = '''\

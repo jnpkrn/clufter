@@ -245,7 +245,7 @@ pcs -f tmp-cib.xml \\
 pcs -f tmp-cib.xml \\
   constraint rule add CONSTRAINT-LOCATION-SERVICE-mm-GROUP \\
   id=CONSTRAINT-LOCATION-SERVICE-mm-GROUP-RESTRICTED score=-INFINITY \\
-  '#uname' ne rhel6-node1 '#uname' ne rhel6-node2
+  '#uname' ne rhel6-node1 and '#uname' ne rhel6-node2
 pcs cluster cib-push tmp-cib.xml --config
 EOF
     rm -f -- "${testcmd}"

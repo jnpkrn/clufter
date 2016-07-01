@@ -50,7 +50,6 @@ cib2pcscmd = ('''\
         <xsl:when test="rule">
             <xsl:variable name="Resource" select="@rsc"/>
             <xsl:variable name="ConstraintId" select="@id"/>
-            <xsl:variable name="BooleanOp" select="@boolean-op"/>
             <xsl:for-each select="rule[@id-ref]">
                 <!-- XXX: could eventually be unfolded in-place if found -->
                 <xsl:message
@@ -60,6 +59,7 @@ cib2pcscmd = ('''\
 ''' + (
                 verbose_inform('"new rule/location constraint: ", @id, "/", $ConstraintId')
 ) + '''
+                <xsl:variable name="BooleanOp" select="@boolean-op"/>
                 <xsl:choose>
                     <xsl:when test="position() = 1">
                         <xsl:value-of select="concat(
@@ -107,7 +107,7 @@ cib2pcscmd = ('''\
 
                 <xsl:for-each select="descendant::expression|descendant::date_expression">
                     <xsl:if test="count(preceding-sibling::expression|preceding-sibling::date_expression) &gt; 0">
-                        <xsl:value-of select="concat(' ', $BooleanOp, ' ')"/>
+                        <xsl:value-of select="concat(' ', $BooleanOp)"/>
                     </xsl:if>
                     <xsl:choose>
                         <xsl:when test="name() = 'expression'">
