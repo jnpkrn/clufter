@@ -98,6 +98,27 @@ pcs constraint order A then B id=order-A-then-B
 ''', '''\
 pcs constraint order A then B kind=Mandatory id=order-A-then-B
 '''),
+            ('''\
+<rsc_order id="order-my-rsc-set">
+    <resource_set id="my-rsc-set">
+        <resource_ref id="my-res-1"/>
+        <resource_ref id="my-res-2"/>
+    </resource_set>
+</rsc_order>
+''', '''\
+pcs constraint order set my-res-1 my-res-2 setoptions id=order-my-rsc-set
+'''),
+            ('''\
+<rsc_order id="order-my-rsc-set">
+    <resource_set id="my-rsc-set" sequential="false">
+        <resource_ref id="my-res-1"/>
+        <resource_ref id="my-res-2"/>
+    </resource_set>
+</rsc_order>
+''', '''\
+pcs constraint order set my-res-1 my-res-2 sequential=false \
+setoptions id=order-my-rsc-set
+'''),
         )
         for (in_str, out_str) in io_strings:
             in_str = '''\

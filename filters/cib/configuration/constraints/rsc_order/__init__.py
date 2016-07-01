@@ -13,6 +13,14 @@ cib2pcscmd_options = (
     'kind',
 )
 
+cib2pcscmd_set_options = (
+    'action',
+    'sequential',
+    'require-all',
+    # following seems not to be reflected in the schemas at all
+    #'kind',
+)
+
 cib2pcscmd = ('''\
     <xsl:choose>
         <!-- plain first-then -->
@@ -44,8 +52,38 @@ cib2pcscmd = ('''\
 
         <!-- resource sets -->
         <xsl:when test="resource_set">
-            <xsl:message
-            >WARNING: order constraint with resource sets not supported (yet)</xsl:message>
+''' + (
+            verbose_inform('"new order constraint (resource set): ", @id')
+) + '''
+            <xsl:value-of select="concat($pcscmd_pcs, 'constraint order')"/>
+
+            <xsl:for-each select="resource_set">
+                <xsl:value-of select="' set'"/>
+                <xsl:for-each select="resource_ref">
+                    <xsl:value-of select="concat(' ', @id)"/>
+                </xsl:for-each>
+
+                <xsl:for-each select="@*[
+''' + (
+                    xslt_is_member('name()', cib2pcscmd_set_options)
+) + ''']">
+                    <xsl:value-of select="concat(' ', name(), '=', .)"/>
+                </xsl:for-each>
+
+            </xsl:for-each>
+
+            <xsl:value-of select="' setoptions'"/>
+            <xsl:for-each select="@*[
+''' + (
+                xslt_is_member('name()', cib2pcscmd_options)
+) + ''']">
+                <xsl:value-of select="concat(' ', name(), '=', .)"/>
+            </xsl:for-each>
+            <xsl:value-of select="concat(' ', 'id=', @id)"/>
+            <xsl:value-of select="'%(NL)s'"/>
+''' + (
+            verbose_ec_test
+) + '''
         </xsl:when>
     </xsl:choose>
 
