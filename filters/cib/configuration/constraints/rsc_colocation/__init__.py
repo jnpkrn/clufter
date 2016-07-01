@@ -7,12 +7,28 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from ....filters._2pcscmd import verbose_ec_test, verbose_inform
 from ....utils_xslt import NL, xslt_is_member
 
+
+cib2pcscmd_options = (
+    'score',
+    # following are highly questionable:
+    # https://github.com/ClusterLabs/pacemaker/pull/1091
+    #'score-attribute',
+    #'score-attribute-mangle',
+)
+
+cib2pcscmd_set_options = (
+    'role',
+    'sequential',
+    'score',
+    'ordering',  # since constraints-2.1.rng
+)
+
 cib2pcscmd = ('''\
     <xsl:choose>
-        <!-- plain "with" -->
+        <!-- plain "A with B" -->
         <xsl:when test="@rsc and @with-rsc">
 ''' + (
-            verbose_inform('"new colocation constraint: ", @id')
+            verbose_inform('"new colocation constraint (resource pair): ", @id')
 ) + '''
             <xsl:value-of select="concat($pcscmd_pcs, 'constraint colocation add')"/>
             <xsl:if test="
@@ -38,14 +54,6 @@ cib2pcscmd = ('''\
                     <xsl:value-of select="concat(' ', @score)"/>
                 </xsl:when>
                 <xsl:when test="@score"/>
-                <xsl:when test="@score-attribute">
-                    <xsl:value-of select="concat(' ', 'score-attribute=',
-                                                 @score-attribute)"/>
-                </xsl:when>
-                <xsl:when test="@score-attribute-mangle">
-                    <xsl:value-of select="concat(' ', 'score-attribute-mangle=',
-                                                 @score-attribute-mangle)"/>
-                </xsl:when>
                 <xsl:otherwise>
                     <!-- missing score would be considered INFINITY by pcs -->
                     <xsl:value-of select="' 0'"/>
@@ -59,9 +67,39 @@ cib2pcscmd = ('''\
         </xsl:when>
 
         <!-- resource sets -->
-        <xsl:when test="rsc_colocation[resource_set]">
-            <xsl:message
-            >WARNING: colocation constraint with resource sets not supported (yet)</xsl:message>
+        <xsl:when test="resource_set">
+''' + (
+            verbose_inform('"new colocation constraint (resource set): ", @id')
+) + '''
+            <xsl:value-of select="concat($pcscmd_pcs, 'constraint colocation')"/>
+
+            <xsl:for-each select="resource_set">
+                <xsl:value-of select="' set'"/>
+                <xsl:for-each select="resource_ref">
+                    <xsl:value-of select="concat(' ', @id)"/>
+                </xsl:for-each>
+
+                <xsl:for-each select="@*[
+''' + (
+                    xslt_is_member('name()', cib2pcscmd_set_options)
+) + ''']">
+                    <xsl:value-of select="concat(' ', name(), '=', .)"/>
+                </xsl:for-each>
+
+            </xsl:for-each>
+
+            <xsl:value-of select="' setoptions'"/>
+            <xsl:for-each select="@*[
+''' + (
+                xslt_is_member('name()', cib2pcscmd_options)
+) + ''']">
+                <xsl:value-of select="concat(' ', name(), '=', .)"/>
+            </xsl:for-each>
+            <xsl:value-of select="concat(' ', 'id=', @id)"/>
+            <xsl:value-of select="'%(NL)s'"/>
+''' + (
+            verbose_ec_test
+) + '''
         </xsl:when>
     </xsl:choose>
 

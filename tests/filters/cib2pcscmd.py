@@ -54,6 +54,17 @@ pcs constraint colocation add A with B id=colocation-A-with-B
 ''', '''\
 pcs constraint colocation add A with B 0 id=colocation-A-with-B
 '''),
+            ('''\
+<rsc_colocation id="colocation-my-rsc-set">
+    <resource_set id="my-rsc-set">
+        <resource_ref id="my-res-1"/>
+        <resource_ref id="my-res-2"/>
+    </resource_set>
+</rsc_colocation>
+''', '''\
+pcs constraint colocation set my-res-1 my-res-2 \
+setoptions id=colocation-my-rsc-set
+'''),
         )
         for (in_str, out_str) in io_strings:
             in_str = '''\
