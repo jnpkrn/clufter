@@ -83,6 +83,34 @@ setoptions id=colocation-my-rsc-set
             #print out_obj.BYTESTRING()
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
+    def testLocationConstraints(self):
+        flt_obj = rewrite_root(self.flt_mgr.filters[flt],
+                               'cib/configuration/constraints')
+        in_fmt = flt_obj.in_format
+        io_strings = (
+            ('''\
+<rsc_location id="location-A-on-X" rsc="A" node="X" score="INFINITY"/>
+''', '''\
+pcs constraint location A prefers X
+'''),
+            ('''\
+<rsc_location id="location-A-on-X" rsc="A" node="X" score="-INFINITY"/>
+''', '''\
+pcs constraint location A avoids X
+'''),
+        )
+        for (in_str, out_str) in io_strings:
+            in_str = '''\
+<constraints>
+''' + in_str + '''
+</constraints>
+'''
+            in_obj = in_fmt('bytestring', in_str,
+                            validator_specs={in_fmt.ETREE: ''})
+            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='')
+            #print out_obj.BYTESTRING()
+            self.assertEquals(out_obj.BYTESTRING(), out_str)
+
     def testOrderConstraints(self):
         flt_obj = rewrite_root(self.flt_mgr.filters[flt],
                                'cib/configuration/constraints')
