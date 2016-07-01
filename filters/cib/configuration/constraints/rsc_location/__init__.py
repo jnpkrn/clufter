@@ -1,11 +1,11 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ....filters._2pcscmd import verbose_ec_test, verbose_inform
-from ....utils_xslt import NL, xslt_is_member
+from ....utils_xslt import NL, translate_lower, xslt_is_member
 
 cib2pcscmd_datespec = (
     'hours',
@@ -80,9 +80,13 @@ cib2pcscmd = ('''\
                 </xsl:choose>
                 <xsl:if test="
 ''' + (
-                xslt_is_member('@role', ('master', 'slave'))
+                xslt_is_member(translate_lower('@role'),
+                               ('master', 'slave'))
 ) + '''">
-                    <xsl:value-of select="concat(' ', 'role=', @role)"/>
+                    <xsl:value-of select="concat(' ',
+''' + (
+                        translate_lower('@role')
+) + ''')"/>
                 </xsl:if>
                 <xsl:choose>
                     <xsl:when test="@score">
