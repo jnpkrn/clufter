@@ -17,6 +17,9 @@
           <ref name="resources"/>
         </optional>
         <optional>
+          <ref name="qb"/>
+        </optional>
+        <optional>
           <ref name="quorum"/>
         </optional>
         <ref name="totem"/>
@@ -426,6 +429,29 @@ as denoted by its number (instead 0, there can be higher numbers).</a:documentat
         </optional>
       </group>
       
+    </element>
+  </define>
+  <define name="qb">
+    <element name="qb">
+      <a:documentation>In this configuration section, one can
+specify options for libqb.</a:documentation>
+      <group>
+        <optional>
+          <attribute name="ipc_type">
+            <a:documentation>This specifies type of IPC to use.
+Can be one of 'native' (default), 'shm' and 'socket'.  'Native'
+means one of 'shm' or 'socket', depending on what is supported
+by OS.  On systems with support for both, 'SHM' is selected.
+'SHM' is generally faster, but need to allocate ring buffer
+file in /dev/shm.</a:documentation>
+            <choice>
+              <value>native</value>
+              <value>shm</value>
+              <value>socket</value>
+            </choice>
+          </attribute>
+        </optional>
+      </group>
     </element>
   </define>
   <define name="quorum">
