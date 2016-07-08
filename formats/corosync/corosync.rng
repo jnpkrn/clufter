@@ -482,6 +482,15 @@ adjust quorum.</a:documentation>
           </attribute>
         </optional>
         <optional>
+          <attribute name="auto_tie_breaker_node" a:defaultValue="lowest">
+            <a:documentation>This further configures Auto Tie Breaker feature
+(see `votequorum(5)`).</a:documentation>
+            <data type="string">
+                <param name="pattern">lowest|highest|\d+(\D+\d+)*</param>
+            </data>
+          </attribute>
+        </optional>
+        <optional>
           <attribute name="expected_votes">
             <a:documentation>This specifies the number of expected votes, overriding the number
 implied by the number of *node* items within *nodes*.</a:documentation>
