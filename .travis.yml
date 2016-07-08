@@ -38,7 +38,12 @@ install:
 before_script:
         - ulimit -S -c unlimited  # ensure cores are generated (~after_failure)
 
-script: ./run-tests -c
+script:
+        - ./run-tests -c
+        # http://relaxng.org/relaxng.rng
+        - curl -Ss
+          https://raw.githubusercontent.com/relaxng/jing-trang/master/eg/relaxng.rng
+          | find -name '*.rng' -exec xmllint --noout --relaxng - {} +
 
 after_failure:
         - sudo apt-get install -qq gdb libc6-dbg
