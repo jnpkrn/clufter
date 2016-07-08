@@ -329,6 +329,10 @@ done
 # following is needed due to umask 022 not taking effect(?) leading to 775
 %{__chmod} -- g-w '%{buildroot}%{clufter_ccs_flatten}'
 %if %{with script}
+# fix excessive script interpreting "executable" quoting with old setuptools:
+# https://github.com/pypa/setuptools/issues/188
+# https://bugzilla.redhat.com/1353934
+sed -i '1s|^\(#!\)"\(.*\)"$|\1\2|' '%{buildroot}%{_bindir}/%{name}'
 # %%%%{_bindir}/%%%%{name} should have been created
 test -f '%{buildroot}%{clufter_script}' \
   || %{__install} -D -pm 644 -- '%{buildroot}%{_bindir}/%{name}' \
