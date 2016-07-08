@@ -490,6 +490,16 @@ implied by the number of *node* items within *nodes*.</a:documentation>
           </attribute>
         </optional>
         <optional>
+          <attribute name="expected_votes_tracking" a:defaultValue="0">
+            <a:documentation>This enables Expected Votes Tracking feature
+(see `votequorum(5)`).</a:documentation>
+            <choice>
+              <value>0</value>
+              <value>1</value>
+            </choice>
+          </attribute>
+        </optional>
+        <optional>
           <attribute name="last_man_standing" a:defaultValue="0">
             <a:documentation>This enables Last Man Standing feature
 (see `votequorum(5)`).</a:documentation>
