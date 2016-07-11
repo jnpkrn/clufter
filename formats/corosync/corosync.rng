@@ -486,7 +486,7 @@ adjust quorum.</a:documentation>
             <a:documentation>This further configures Auto Tie Breaker feature
 (see `votequorum(5)`).</a:documentation>
             <data type="string">
-                <param name="pattern">lowest|highest|\d+(\D+\d+)*</param>
+              <param name="pattern">lowest|highest|\d+(\D+\d+)*</param>
             </data>
           </attribute>
         </optional>
@@ -564,9 +564,125 @@ As of now, only 'corosync_votequorum' is supported.</a:documentation>
           </attribute>
         </optional>
       </group>
+      <optional>
+        <element name="device">
+          <a:documentation>In this configuration section, one can
+adjust quorum device, that is, selecte the type of the arbitrator
+(model) together with generic and model-specific parameters
+(see `corosync-qdevice(5)`).</a:documentation>
+          <optional>
+            <attribute name="sync-timeout" a:defaultValue="30000">
+              <a:documentation>Specifies how often corosync-qdevice should
+call the votequorum_poll function during a sync phase.  It is recommended
+that you don't change this value (see `corosync-qdevice(5)`).</a:documentation>
+              <data type="unsignedInt"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="timeout" a:defaultValue="10000">
+              <a:documentation>Specifies how often should corosync-qdevice
+call the votequorum_poll function.  It is also used by the net model to
+adjust its hearbeat timeout.  It is recommended that you don't change
+this value (see `corosync-qdevice(5)`).</a:documentation>
+              <data type="unsignedInt"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="votes">
+              <a:documentation>The number of votes provided to the
+cluster by qdevice.  Default is (number_of_nodes -  1) or generally
+sum(votes_per_node) - 1 (see `corosync-qdevice(5)`).</a:documentation>
+              <data type="unsignedInt"/>
+            </attribute>
+          </optional>
+          <ref name="qdevice-net"/>
+        </element>
+      </optional>
     </element>
   </define>
-  
+
+  <define name="qdevice-net">
+    <group>
+      <attribute name="model">
+        <a:documentation>This specifies what type of arbitrator
+is used to maintain quorum (see `corosync-qdevice(5)`).
+As of now, only 'net' is supported.</a:documentation>
+        <value>net</value>
+      </attribute>
+      <optional>
+        <attribute name="algorithm" a:defaultValue="ffsplit">
+          <a:documentation>Decision algorithm.  Can be one of
+'ffsplit' or 'lms'.  (actually there are also 'test' and '2nodelms',
+both of which are mainly for developers and shouldn't be used for
+production clusters; see `corosync-qdevice(5)`).</a:documentation>
+          <choice>
+            <value>2nodelms</value>
+            <value>ffsplit</value>
+            <value>lms</value>
+            <value>test</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="connect_timeout">
+          <a:documentation>Timeout when corosync-qdevice is trying to
+connect to corosync-qnetd host (see `corosync-qdevice(5)`).</a:documentation>
+          <data type="unsignedInt"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="force_ip_version" a:defaultValue="0">
+          <a:documentation>Forces the software to use the given IP version.
+'0' means IPv6 is prefered and IPv4 should be used as a fallback
+(see `corosync-qdevice(5)`).</a:documentation>
+          <data type="unsignedInt"/>
+        </attribute>
+      </optional>
+      <attribute name="host">
+        <a:documentation>Specifies the IP address or host name of the
+qnetd server to be used (see `corosync-qdevice(5)`).</a:documentation>
+      </attribute>
+      <optional>
+        <attribute name="port" a:defaultValue="5403">
+          <a:documentation>Specifies TCP port of qnetd server
+(see `corosync-qdevice(5)`).</a:documentation>
+          <data type="unsignedShort"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="tie_breaker">
+          <a:documentation>It's used as a fallback if qdevice has to
+decide between two or more equal partitions.  'lowest' means the
+partition with the lowest node id is chosen.  'highest' means the
+partition with highest node id is  chosen.  And specifying valid
+node id means that the partition containing the node with the given
+node id is chosen (see `corosync-qdevice(5)`).</a:documentation>
+          <data type="string">
+            <param name="pattern">lowest|highest|\d+</param>
+          </data>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="tls" a:defaultValue="on">
+          <a:documentation>Can be one of 'on', 'off' or 'required'
+and specifies if tls should be used.  'on' means a connection with
+TLS is attempted first, but if the server doesn't advertise TLS
+support then non-TLS will be used.  'off' is used then TLS is not
+required and it's then not even tried.  This mode is the only one
+which  doesn't need a properly initialized NSS  database.
+'required' means TLS is required and if the server doesn't support
+TLS, qdevice will exit with error message
+(see `corosync-qdevice(5)`).</a:documentation>
+          <choice>
+            <value>on</value>
+            <value>off</value>
+            <value>required</value>
+          </choice>
+        </attribute>
+      </optional>
+    </group>
+  </define>
+
   <define name="load_15min">
     <element name="load_15min">
       <optional>
