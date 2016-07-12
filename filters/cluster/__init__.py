@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -252,6 +252,13 @@ ccs2needlexml = lazystring(lambda: ('''\
         -->
         <quorum provider="corosync_votequorum">
             <clufter:descent at="cman"/>
+            <!-- XXX following is expected to yield effect once:
+                 1. "disk" model for corosync's qdevice is implemented
+                 2. ccs2needlexml symbol under quorumd implements
+                    the conversion if any such straightforward mapping
+                    exists
+                 NOTE: quorumd/@votes -> quorum.device.votes -->
+            <clufter:descent at="quorumd"/>
             <!-- xsl:if test="cman/@expected_votes
                           and
                           quorumd/@votes">
