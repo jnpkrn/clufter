@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -65,8 +65,8 @@ ccs2needlexml = '''\
 ) + '''">
                         <xsl:attribute name="{name()}">
                         <xsl:message>
-                            <xsl:value-of select="concat('Logging subsystem',
-                                                         ., ' originally had',
+                            <xsl:value-of select="concat('NOTE: Logging subsystem `',
+                                                         ., '` originally had',
                                                          ' a different meaning',
                                                          ' but kept as is')"/>
                         </xsl:message>
