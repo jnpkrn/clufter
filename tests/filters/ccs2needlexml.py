@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing `ccsflat2cibprelude' filter"""
@@ -19,6 +19,13 @@ class FiltersCcs2NeedleXmlTestCase(TeardownFilterTestCase):
 <logging_daemon name="corosync" subsys="CONFDB" to_syslog="yes"/>
 ''', '''\
 <logger_subsys subsys="CMAP" to_syslog="yes"/>
+'''),
+            ('''\
+<logging_daemon name="corosync" subsys="QDISKD"
+                to_logfile="yes" logfile="/var/log/corosync-qdiskd.log"
+                to_syslog="yes" syslog_priority="debug"/>
+''', '''\
+<logger_subsys subsys="QDEVICE" to_syslog="yes" syslog_priority="debug"/>
 '''),
         )
         for (in_str, out_str) in io_strings:
