@@ -571,7 +571,7 @@ adjust quorum device, that is, selecte the type of the arbitrator
 (model) together with generic and model-specific parameters
 (see `corosync-qdevice(5)`).</a:documentation>
           <optional>
-            <attribute name="sync-timeout" a:defaultValue="30000">
+            <attribute name="sync_timeout" a:defaultValue="30000">
               <a:documentation>Specifies how often corosync-qdevice should
 call the votequorum_poll function during a sync phase.  It is recommended
 that you don't change this value (see `corosync-qdevice(5)`).</a:documentation>
