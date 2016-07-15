@@ -43,5 +43,8 @@ cib2pcscmd_chain_exec = lambda cont=(): \
 cib2pcscmd_chain = cib2pcscmd_chain_exec()
 cib2pcscmd_output = cast_output(cib2pcscmd_chain)
 
-ccsflat2pcscmd_chain = (ccsflat2cibfinal_chain_exec(cib2pcscmd_chain))
+ccsflat2pcscmd_chain_exec = lambda cont=(): \
+    ccsflat2cibfinal_chain_exec(cib2pcscmd_chain_exec(cont))
+#ccsflat2pcscmd_chain = (ccsflat2cibfinal_chain_exec(cib2pcscmd_chain))
+ccsflat2pcscmd_chain = ccsflat2pcscmd_chain_exec()
 ccsflat2pcscmd_output = cast_output(ccsflat2pcscmd_chain)
