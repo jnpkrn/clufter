@@ -34,25 +34,27 @@ cluster_map = {
         {
             'debian': (
                 ((6, ), {
-                    # https://packages.debian.org/squeeze/{corosync,pacemaker}
+                    # https://packages.debian.org/squeeze/$PACKAGE
                     'corosync':                      (1, 2),
                     'pacemaker[coro,hb]':            (1, 0, 9),
                 }),
                 ((7, ), {
-                    # https://packages.debian.org/wheezy/{corosync,pacemaker}
+                    # https://packages.debian.org/wheezy/$PACKAGE
                     'corosync':                      (1, 4),
                     'pacemaker[coro,hb]':            (1, 1, 7),
                 }),
                 ((8, ), {
-                    # https://packages.debian.org/jessie/corosync
+                    # https://packages.debian.org/jessie/$PACKAGE
                     'corosync':                      (1, 4, 6),
                 }),
                 ((9, ), {
-                    # https://packages.debian.org/stretch/corosync
+                    # https://packages.debian.org/stretch/$PACKAGE
                     'corosync':                      (2, 3, 5),
                 }),
             ),
             'fedora': (
+                # see also
+                # https://fedoraproject.org/wiki/Releases/$RELEASE/Schedule
                 ((13, ), {
                     'corosync':                      (1, 3),
                     'pacemaker[cman]':               (1, 1, 4),
@@ -69,6 +71,7 @@ cluster_map = {
                     'corosync':                      (2, 3),
                     'pacemaker[coro]':               (1, 1, 7),
                     'pcs':                           (0, 9, 1),
+                    #'pcs':                           (0, 9, 3),  # updates
                 }),
                 ((18, ), {
                     'pacemaker[coro]':               (1, 1, 8),
@@ -76,27 +79,46 @@ cluster_map = {
                 }),
                 ((19, ), {
                     'pacemaker[coro]':               (1, 1, 9),
-                    'pcs':                           (0, 9, 34),
+                    'pcs':                           (0, 9, 36),
+                    #'pcs':                           (0, 9, 48),  # updates
                     #---
                     # https://fedoraproject.org/wiki/Features/ReplaceMySQLwithMariaDB
                     'pkg::mysql':                   'mariadb-server',
                 }),
                 ((20, ), {
                     'pcs':                           (0, 9, 44),
+                    #'pcs':                           (0, 9, 102),  # updates
+                    #'pcs':                           (0, 9, 115),  # updates
                 }),
                 ((21, ), {
-                    'pacemaker[coro]':               (1, 1, 11),
+                    'pacemaker[coro]':               (1, 1, 12),
+                    #'pacemaker[coro]':               (1, 1, 13),  # updates
                     'pcs':                           (0, 9, 115),
+                    #'pcs':                           (0, 9, 137),  # updates
                 }),
                 ((22, ), {
+                    #'pacemaker[coro]':               (1, 1, 13),  # updates
                     'pcs':                           (0, 9, 139),
+                    #'pcs':                           (0, 9, 149),  # updates
                     #---
                     # https://fedoraproject.org/wiki/Changes/ReplaceYumWithDNF
                     'cmd::pkg-install':             'dnf install -y {packages}',
                 }),
                 ((23, ), {
                     'pacemaker[coro]':               (1, 1, 13),
+                    #'pacemaker[coro]':               (1, 1, 14),  # updates
+                    #'pacemaker[coro]':               (1, 1, 15),  # updates
+                    'pcs':                           (0, 9, 144),
+                    #'pcs':                           (0, 9, 149),  # updates
                 }),
+                ((24, ), {
+                    'pacemaker[coro]':               (1, 1, 14),
+                    #'pacemaker[coro]':              (1, 1, 15),  # updates
+                    'pcs[u9n]':                      (0, 9, 150),
+                }),
+                #((25, ), {
+                #    'corosync[qdevice,qnet]':        (2, 4),
+                #}),
             ),
             'redhat': (
                 ((6, 0), {
@@ -128,8 +150,9 @@ cluster_map = {
                     'pcs':                           (0, 9, 139),
                 }),
                 ((6, 8), {
+                    'pacemaker[acls,cman]':          (1, 1, 14),
                     # u9n := utilization
-                    'pcs[u9n]':                      (0, 9, 148),  # XXX guess
+                    'pcs[u9n]':                      (0, 9, 148),
                 }),
                 ((7, 0), {
                     'corosync':                      (2, 3),
@@ -146,21 +169,31 @@ cluster_map = {
                     'pacemaker[acls,coro]':          (1, 1, 13),
                     'pcs':                           (0, 9, 143),
                 }),
+                ((7, 3), {
+                    'corosync[qdevice,qnet]':        (2, 4),
+                    'pacemaker[acls,alets,coro]':    (1, 1, 15),
+                    'pcs[u9n]':                           (0, 9, 152),  # XXX guess
+                }),
             ),
             'ubuntu': (
                 ((13, 04), {
-                    # https://packages.ubuntu.com/raring/{corosync,pacemaker}
+                    # https://packages.ubuntu.com/raring/$PACKAGE
                     'corosync':                      (1, 4),
                     'pacemaker[coro,hb]':            (1, 1, 7),
                 }),
                 ((13, 10), {
-                    # https://packages.ubuntu.com/saucy/{corosync,pacemaker}
+                    # https://packages.ubuntu.com/saucy/$PACKAGE
                     'corosync':                      (2, 3),
                     'pacemaker[coro,hb]':            (1, 1, 10),
                 }),
                 ((15, 04), {
-                    # https://packages.ubuntu.com/vivid/{corosync,pacemaker}
+                    # https://packages.ubuntu.com/vivid/$PACKAGE
                     'pacemaker[coro,hb]':            (1, 1, 12),
+                }),
+                ((16, 04), {
+                    # https://packages.ubuntu.com/xenial/$PACKAGE
+                    'pacemaker[coro]':               (1, 1, 14),
+                    'pcs':                           (0, 9, 149),  # universe
                 }),
             ),
         },
