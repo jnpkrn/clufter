@@ -87,12 +87,15 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
 @Command.deco(('simpleconfig-normalize',
                   ('simpleconfig2needlexml',
                       ('needlexml2pcscmd',
-                          ('stringiter-combine2',
-                              ('cmd-wrap'))))),
+                          ('stringiter-combine3',
+                              ('cmd-wrap'))),
+                      ('needleqdevicexml2pcscmd',
+                          ('stringiter-combine3'  # , ('cmd-wrap' ...
+                           )))),
               ('cib-revitalize',
                   ('cib-meld-templates',
                       ('cib2pcscmd',
-                          ('stringiter-combine2'  # , ('cmd-wrap' ...
+                          ('stringiter-combine3'  # , ('cmd-wrap' ...
                            )))))
 def pcs2pcscmd_needle(cmd_ctxt,
                       coro=PATH_COROCONF,
@@ -146,6 +149,11 @@ def pcs2pcscmd_needle(cmd_ctxt,
                             file_proto(output),
                         ),
                     ),
+                    #(
+                    #    (
+                    #        file_proto(output),  # already tracked
+                    #    ),
+                    #),
                 ),
             ),
             file_proto(cib),
