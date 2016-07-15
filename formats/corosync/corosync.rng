@@ -650,7 +650,7 @@ qnetd server to be used (see `corosync-qdevice(5)`).</a:documentation>
         </attribute>
       </optional>
       <optional>
-        <attribute name="tie_breaker">
+        <attribute name="tie_breaker" a:defaultValue="lowest">
           <a:documentation>It's used as a fallback if qdevice has to
 decide between two or more equal partitions.  'lowest' means the
 partition with the lowest node id is chosen.  'highest' means the
