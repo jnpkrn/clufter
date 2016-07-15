@@ -47,7 +47,6 @@ needleqdevicexml2pcscmd = ('''\
         </xsl:otherwise>
     </xsl:choose>
 
-    <xsl:value-of select="' || :'"/>
     <xsl:value-of select="'%(NL)s'"/>
 ''' + (
     verbose_ec_test

@@ -2,7 +2,7 @@
 # Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
-"""Testing `needlexml2pcscmd' filter"""
+"""Testing `needleqdevicexml2pcscmd' filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 # following makes available also: TeardownFilterTestCase, rewrite_root
@@ -25,7 +25,7 @@ class FiltersCib2pcscmdQuorumDeviceTestCase(TeardownFilterTestCase):
     <net host="191.168.10.20"/>
 </device>
 ''', '''\
-pcs quorum add --help >/dev/null 2>&1 && pcs quorum add model net host=191.168.10.20 || :
+pcs quorum add --help >/dev/null 2>&1 && pcs quorum add model net host=191.168.10.20
 '''),
         )
         for (in_str, out_str) in io_strings:
