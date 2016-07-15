@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing command"""
@@ -13,7 +13,6 @@ from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
 from unittest import TestCase
 from os.path import dirname, join
 from os import remove, stat
-#from pprint import pprint
 
 from .command import Command, CommandError
 from .filter_manager import FilterManager
@@ -56,6 +55,8 @@ class ChainResolve(TestCase):
                 ('file', input),
                 ('file', output),
             )
+        # [filter resolution #1 of output:
+        # `('file', 'tests/tmp/outTbmuFs.conf')' protocol not suitable]
         @Command.deco(('ccs2ccsflat'))
         def cmd_chain_nonmatch_01(cmd_ctxt,
                                   input=testfile,
@@ -68,6 +69,8 @@ class ChainResolve(TestCase):
                     ('file', coro),
                 )
             )
+        # [filter `ccs2needlexml' is feeded by `ccsflat2cibprelude' more than
+        # once]
         @Command.deco(('ccs2ccsflat',
                           ('ccsflat2cibprelude'),
                           ('ccs2needlexml'),
@@ -84,6 +87,7 @@ class ChainResolve(TestCase):
                 )
             )
         # malformed protocol name
+        # [filter resolution #2 of output: `life' protocol not suitable]
         @Command.deco(('ccs2ccsflat',
                           ('ccsflat2cibprelude'),
                           ('ccs2needlexml')))
