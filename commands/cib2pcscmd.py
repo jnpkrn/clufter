@@ -9,10 +9,10 @@ from ..command import Command
 from ..filter import XMLFilter
 from ..protocol import protocols
 from ..utils_cib import PATH_CIB
-from ._chains_pcs import cib2pcscmd_chain, cib2pcscmd_output
+from ._chains_pcs import cib2pcscmd_chain_exec, cib2pcscmd_output
 
 
-@Command.deco((cib2pcscmd_chain,
+@Command.deco(cib2pcscmd_chain_exec(
                   ('cmd-wrap')))
 def cib2pcscmd(cmd_ctxt,
                input=PATH_CIB,

@@ -10,7 +10,7 @@ from ..facts import cluster_pcs_flatiron
 from ..filter import XMLFilter
 from ..protocol import protocols
 from ..utils_cman import PATH_CLUSTERCONF
-from ._chains_pcs import ccsflat2pcscmd_chain, ccsflat2pcscmd_output
+from ._chains_pcs import ccsflat2pcscmd_chain_exec
 
 
 @Command.deco(('ccs2ccsflat',
@@ -20,9 +20,9 @@ from ._chains_pcs import ccsflat2pcscmd_chain, ccsflat2pcscmd_output
                               ('ccspcmk2pcscmd',
                                   ('stringiter-combine2',
                                        ('cmd-wrap')))))),
-                  (ccsflat2pcscmd_chain,
+                  (ccsflat2pcscmd_chain_exec(
                                   ('stringiter-combine2'  # , ('cmd-wrap' ...
-                                   ))))
+                                   )))))
 def ccs2pcscmd_flatiron(cmd_ctxt,
                         input=PATH_CLUSTERCONF,
                         output="-",
@@ -94,9 +94,9 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
                           ('needlexml2pcscmd',
                               ('stringiter-combine2',
                                    ('cmd-wrap'))))),
-                  (ccsflat2pcscmd_chain,
+                  (ccsflat2pcscmd_chain_exec(
                               ('stringiter-combine2'  # , ('cmd-wrap' ...
-                               ))))
+                               )))))
 def ccs2pcscmd_needle(cmd_ctxt,
                       input=PATH_CLUSTERCONF,
                       output="-",
