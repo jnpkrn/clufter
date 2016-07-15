@@ -29,6 +29,7 @@ ccs2needlexml_subsys = {
     'CPG':    True,
     'PLOAD':  True,
     'QDISKD': 'QDEVICE',  # see ccs2needlexml_attrs_exclude
+    'QUORUM': True,
     'SERV':   True,
     'SYNC':   False,
     'SYNCV2': 'SYNC',
