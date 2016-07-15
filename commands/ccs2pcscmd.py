@@ -92,10 +92,13 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
                   ('ccs-propagate-cman',
                       ('ccs2needlexml',
                           ('needlexml2pcscmd',
-                              ('stringiter-combine2',
-                                   ('cmd-wrap'))))),
+                              ('stringiter-combine3',
+                                  ('cmd-wrap'))),
+                          ('needleqdevicexml2pcscmd',
+                              ('stringiter-combine3'  # , ('cmd-wrap' ...
+                               )))),
                   (ccsflat2pcscmd_chain_exec(
-                              ('stringiter-combine2'  # , ('cmd-wrap' ...
+                              ('stringiter-combine3'  # , ('cmd-wrap' ...
                                )))))
 def ccs2pcscmd_needle(cmd_ctxt,
                       input=PATH_CLUSTERCONF,
@@ -147,6 +150,11 @@ def ccs2pcscmd_needle(cmd_ctxt,
                             file_proto(output),
                         ),
                     ),
+                    #(
+                    #    (
+                    #        file_proto(output),  # already tracked
+                    #    ),
+                    #),
                 ),
             ),
             #ccsflat2cibfinal_output(
