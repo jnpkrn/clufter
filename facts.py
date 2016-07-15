@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Utility functions wrt. cluster systems in general"""
@@ -204,6 +204,8 @@ aliases_releases = {
         'utopic':     '14.10',  # Utopic Unicorn
         'vivid':      '15.04',  # Vivid Vervet
         'wily':       '15.10',  # Wily Werewolf
+        'xenial':     '16.04',  # Xenial Xerus
+        'yakkety':    '16.10',  # Yakkety Yak
     }
 }
 
