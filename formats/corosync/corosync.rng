@@ -609,62 +609,64 @@ is used to maintain quorum (see `corosync-qdevice(5)`).
 As of now, only 'net' is supported.</a:documentation>
         <value>net</value>
       </attribute>
-      <optional>
-        <attribute name="algorithm" a:defaultValue="ffsplit">
-          <a:documentation>Decision algorithm.  Can be one of
+      <element name="net">
+        <group>
+          <optional>
+            <attribute name="algorithm" a:defaultValue="ffsplit">
+              <a:documentation>Decision algorithm.  Can be one of
 'ffsplit' or 'lms'.  (actually there are also 'test' and '2nodelms',
 both of which are mainly for developers and shouldn't be used for
 production clusters; see `corosync-qdevice(5)`).</a:documentation>
-          <choice>
-            <value>2nodelms</value>
-            <value>ffsplit</value>
-            <value>lms</value>
-            <value>test</value>
-          </choice>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="connect_timeout">
-          <a:documentation>Timeout when corosync-qdevice is trying to
+              <choice>
+                <value>2nodelms</value>
+                <value>ffsplit</value>
+                <value>lms</value>
+                <value>test</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="connect_timeout">
+              <a:documentation>Timeout when corosync-qdevice is trying to
 connect to corosync-qnetd host (see `corosync-qdevice(5)`).</a:documentation>
-          <data type="unsignedInt"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="force_ip_version" a:defaultValue="0">
-          <a:documentation>Forces the software to use the given IP version.
-'0' means IPv6 is prefered and IPv4 should be used as a fallback
+              <data type="unsignedInt"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="force_ip_version" a:defaultValue="0">
+              <a:documentation>Forces the software to use the given IP
+version.  '0' means IPv6 is prefered and IPv4 should be used as a fallback
 (see `corosync-qdevice(5)`).</a:documentation>
-          <data type="unsignedInt"/>
-        </attribute>
-      </optional>
-      <attribute name="host">
-        <a:documentation>Specifies the IP address or host name of the
+              <data type="unsignedInt"/>
+            </attribute>
+          </optional>
+          <attribute name="host">
+            <a:documentation>Specifies the IP address or host name of the
 qnetd server to be used (see `corosync-qdevice(5)`).</a:documentation>
-      </attribute>
-      <optional>
-        <attribute name="port" a:defaultValue="5403">
-          <a:documentation>Specifies TCP port of qnetd server
+          </attribute>
+          <optional>
+            <attribute name="port" a:defaultValue="5403">
+              <a:documentation>Specifies TCP port of qnetd server
 (see `corosync-qdevice(5)`).</a:documentation>
-          <data type="unsignedShort"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="tie_breaker" a:defaultValue="lowest">
-          <a:documentation>It's used as a fallback if qdevice has to
-decide between two or more equal partitions.  'lowest' means the
+              <data type="unsignedShort"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="tie_breaker" a:defaultValue="lowest">
+              <a:documentation>It's used as a fallback if qdevice has
+to decide between two or more equal partitions.  'lowest' means the
 partition with the lowest node id is chosen.  'highest' means the
 partition with highest node id is  chosen.  And specifying valid
 node id means that the partition containing the node with the given
 node id is chosen (see `corosync-qdevice(5)`).</a:documentation>
-          <data type="string">
-            <param name="pattern">lowest|highest|\d+</param>
-          </data>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="tls" a:defaultValue="on">
-          <a:documentation>Can be one of 'on', 'off' or 'required'
+              <data type="string">
+                <param name="pattern">lowest|highest|\d+</param>
+              </data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="tls" a:defaultValue="on">
+              <a:documentation>Can be one of 'on', 'off' or 'required'
 and specifies if tls should be used.  'on' means a connection with
 TLS is attempted first, but if the server doesn't advertise TLS
 support then non-TLS will be used.  'off' is used then TLS is not
@@ -673,13 +675,15 @@ which  doesn't need a properly initialized NSS  database.
 'required' means TLS is required and if the server doesn't support
 TLS, qdevice will exit with error message
 (see `corosync-qdevice(5)`).</a:documentation>
-          <choice>
-            <value>on</value>
-            <value>off</value>
-            <value>required</value>
-          </choice>
-        </attribute>
-      </optional>
+              <choice>
+                <value>on</value>
+                <value>off</value>
+                <value>required</value>
+              </choice>
+            </attribute>
+          </optional>
+        </group>
+      </element>
     </group>
   </define>
 
