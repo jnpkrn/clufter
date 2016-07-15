@@ -151,11 +151,23 @@ class Command(object):
 
         assert tuplist(filter_chain) and filter_chain
         # PASSDOWN or FILTERS
+        passed_filter_length = len(filter_chain)
         pass_through, filter_chain = head_tail(*filter_chain) \
                                      if len(filter_chain) > 1 \
                                      and (not isinstance(filter_chain[0], tuple) \
                                      or len(filter_chain[0]) < 2) \
                                      else (None, filter_chain)
+        # the condition handles differences between:
+        #    ('A',
+        #        ('B'),
+        #        ('C'))
+        # and
+        #    ('A',
+        #        ('B',
+        #            ('C')))
+        # XXX: regardless if isinstance(filter_chain[1], tuple)
+        if len(filter_chain) > (1 if passed_filter_length <= 2 and not new else 2):
+            filter_chain = (filter_chain, )
         for i_origin in filter_chain:
             if not i_origin:
                 continue
@@ -199,21 +211,13 @@ class Command(object):
                 # preparing a new list here for callee to fill) so it can
                 # move it to the right position afterwards
                 analysis_acc['terminal_chain'].append([])  # not terminal_chain
-                # the second part of the condition handles differences between:
-                #    ('A',
-                #        ('B'),
-                #        ('C'))
-                # and
-                #    ('A',
-                #        ('B',
-                #            ('C')))
-                # XXX: whole function still quite kludgy
-                if new and len(i_origin) > 2:
-                    me((i, ) + i_tail, analysis_acc)
-                else:
-                    me((i, ) + ((head_tail(*i_tail), ), ), analysis_acc)
+                # see "the condition handles differences between" comment
+                me(i_origin, analysis_acc)
                 # postorder
-                terminal_chain.append(analysis_acc['terminal_chain'].pop())
+                ret = analysis_acc['terminal_chain'].pop()
+                if ret:
+                    # not a another use of already used (merging) filter
+                    terminal_chain.append(ret)
             elif new:
                 # yes, terminal UPFILTER is tracked twice as terminal (I/O)
                 terminal_chain.append(i)
