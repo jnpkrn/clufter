@@ -26,7 +26,6 @@ from .plugin_registry import PluginRegistry
 from .protocol import protodictval
 from .utils import any2iter, \
                    areinstancesupto, \
-                   arg2wrapped, \
                    args2tuple, \
                    filterdict_keep, \
                    head_tail, \
@@ -154,14 +153,13 @@ class Command(object):
         # PASSDOWN or FILTERS
         pass_through, filter_chain = head_tail(*filter_chain) \
                                      if len(filter_chain) > 1 \
-                                     and( not isinstance(filter_chain[0], tuple) \
+                                     and (not isinstance(filter_chain[0], tuple) \
                                      or len(filter_chain[0]) < 2) \
                                      else (None, filter_chain)
-        for i in filter_chain:
-            if not i:
+        for i_origin in filter_chain:
+            if not i_origin:
                 continue
-            i_origin = arg2wrapped(i)
-            i, i_tail = head_tail(*i_origin)
+            i, i_tail = head_tail(i_origin)
             # bt denotes filters feeding this one
             bt = filter_backtrack.setdefault(i, OrderedDict())
             if new or not (bt or i_tail):  # preorder
