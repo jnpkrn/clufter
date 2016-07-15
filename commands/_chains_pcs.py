@@ -1,11 +1,11 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Chains of filters used in *2pcs* commands"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from ..utils import args2sgpl, args2unwrapped, tuplist
+from ..utils import args2tuple, args2unwrapped, tuplist
 from ..utils_func import apply_aggregation_preserving_passing_depth
 
 terminalize = lambda args: \
@@ -30,14 +30,16 @@ ccsflat2cibfinal_chain_exec = lambda cont=(): \
         ('ccsflat2cibprelude',
             ('cibprelude2cibcompact',
                 ('cibcompact2cib',
-                    (args2unwrapped('cib2cibfinal', *args2sgpl(cont)))))))
+                    (args2unwrapped('cib2cibfinal',
+                                    *(cont and args2tuple(cont))))))))
 ccsflat2cibfinal_chain = ccsflat2cibfinal_chain_exec()
 ccsflat2cibfinal_output = cast_output(ccsflat2cibfinal_chain)
 
 cib2pcscmd_chain_exec = lambda cont=(): \
     ('cib-revitalize',
         ('cib-meld-templates',
-            (args2unwrapped('cib2pcscmd', *args2sgpl(cont)))))
+            (args2unwrapped('cib2pcscmd',
+                            *(cont and args2tuple(cont))))))
 cib2pcscmd_chain = cib2pcscmd_chain_exec()
 cib2pcscmd_output = cast_output(cib2pcscmd_chain)
 
