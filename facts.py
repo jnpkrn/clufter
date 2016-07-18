@@ -269,8 +269,8 @@ def _cmp_ver(v1, v2):
 
 
 def _parse_extra(s):
-    name, extra = (lambda a, b=None: (a, b))(*s.split('[', 1))
-    extra = extra.strip(']').split(',') if extra and extra.endswith(']') else []
+    name, extra = (lambda a, b='': (a, b.rstrip(']')))(*s.split('[', 1))
+    extra = filter(len, (e.strip() for e in extra.split(',')))
     return name, extra
 
 
