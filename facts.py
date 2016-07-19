@@ -254,8 +254,14 @@ versions_extra = {
             '+alerts'),
     ),
     'pcs': (
+        ((0, 9, 145),
+            '+node-maintenance'),
         ((0, 9, 148),
             '+utilization'),
+        ((0, 9, 150),
+            '+wait-cluster-start'),
+        ((0, 9, 153),
+            '+alerts'),
     ),
 }
 
