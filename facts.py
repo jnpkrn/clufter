@@ -546,11 +546,7 @@ def cluster_pcs_needle(*sys_id):
 
 def cluster_pcs_1_2(*sys_id):
     """Whether particular `sys_id` corresponds to pacemaker with 1.2+ schema"""
-    return not any((
-        infer("comp:pacemaker=1.1.0", *sys_id),
-        infer("comp:pacemaker=1.0", *sys_id),
-        infer("comp:pacemaker=0", *sys_id),
-    ))
+    return bool(infer("comp:pacemaker[schema-1.2]", *sys_id))
 
 
 def _find_meta(meta, which, *sys_id, **kwargs):
