@@ -248,10 +248,16 @@ versions_extra = {
             '+qdevice,+qnet'),
     ),
     'pacemaker': (
+        ((1, 1, 8),
+            '+schema-1.2'),
         ((1, 1, 12),
-            '+acls'),
+            '+acls,+schema-2.0'),
+        ((1, 1, 13),
+            '+schema-2.3'),
+        ((1, 1, 14),
+            '+schema-2.4'),
         ((1, 1, 15),
-            '+alerts'),
+            '+alerts,+schema-2.5'),
     ),
     'pcs': (
         ((0, 9, 145),
