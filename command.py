@@ -515,7 +515,8 @@ class Command(object):
             'filter_noop':           getattr(opts, 'noop', ()),
             'filter_dump':           getattr(opts, 'dump', ()),
             'system':                getattr(opts, 'sys', ''),
-            'system_extra':          getattr(opts, 'dist', '').split(','),
+            'system_extra':          filter(len, getattr(opts, 'dist', '')
+                                                 .split(',')),
             'svc_output':            FancyOutput(f=stderr,
                                                  quiet=getattr(opts, 'quiet',
                                                                False),
