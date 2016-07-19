@@ -468,7 +468,8 @@ def _find_meta(meta, which, *sys_id, **kwargs):
 
 
 def package(which, *sys_id):
-    return _find_meta('pkg', which, *sys_id, default=which)
+    default, _ = _parse_extra(which)
+    return _find_meta('pkg', which, *sys_id, default=default)
 
 
 def cmd_pkg_install(pkgs, *sys_id):
