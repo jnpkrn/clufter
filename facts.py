@@ -142,7 +142,7 @@ cluster_map = {
                     'pcs':                           (0, 9, 90),
                 }),
                 ((6, 6), {
-                    'pacemaker[acls,cman]':          (1, 1, 11),
+                    'pacemaker[acls,cman]':          (1, 1, 12),
                     'pcs':                           (0, 9, 123),
                 }),
                 ((6, 7), {
