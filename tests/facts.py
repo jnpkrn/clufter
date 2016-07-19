@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing general cluster helpers"""
@@ -11,7 +11,7 @@ from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
 from unittest import TestCase
 
 from .facts import cluster_pcs_flatiron, cluster_pcs_1_2, cmd_pkg_install, \
-                   package
+                   infer, package
 
 
 class TestClusterSystem(TestCase):
@@ -89,6 +89,23 @@ class TestPkgInstall(TestCase):
     def test_pkg_install_generator_empty(self):
         sys_id = 'linux', ('fedora', ' 21')
         self.assertEqual(cmd_pkg_install(iter(()), *sys_id), '')
+
+
+class TestExtra(TestCase):
+    def test_extra_corosync_qnet(self):
+        check = 'comp:corosync[qnet]'
+        self.assertFalse(infer(check, 'linux', ('redhat', ' 7.2')))
+        self.assertTrue(infer(check, 'linux', ('redhat', ' 7.3')))
+
+    def test_extra_pacemaker_acl(self):
+        check = 'comp:pacemaker[acls]'
+        self.assertFalse(infer(check, 'linux', ('redhat', ' 6.5')))
+        self.assertTrue(infer(check, 'linux', ('redhat', ' 6.6')))
+
+    def test_extra_pcs_utilization(self):
+        check = 'comp:pcs[utilization]'
+        self.assertFalse(infer(check, 'linux', ('redhat', ' 6.0')))
+        self.assertTrue(infer(check, 'linux', ('redhat', ' 6.8')))
 
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))

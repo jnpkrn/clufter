@@ -36,12 +36,12 @@ cluster_map = {
                 ((6, ), {
                     # https://packages.debian.org/squeeze/$PACKAGE
                     'corosync':                      (1, 2),
-                    'pacemaker[coro,hb]':            (1, 0, 9),
+                    'pacemaker[+coro,+hb]':          (1, 0, 9),
                 }),
                 ((7, ), {
                     # https://packages.debian.org/wheezy/$PACKAGE
                     'corosync':                      (1, 4),
-                    'pacemaker[coro,hb]':            (1, 1, 7),
+                    'pacemaker[+coro,+hb]':          (1, 1, 7),
                 }),
                 ((8, ), {
                     # https://packages.debian.org/jessie/$PACKAGE
@@ -57,7 +57,7 @@ cluster_map = {
                 # https://fedoraproject.org/wiki/Releases/$RELEASE/Schedule
                 ((13, ), {
                     'corosync':                      (1, 3),
-                    'pacemaker[cman]':               (1, 1, 4),
+                    'pacemaker[+cman]':              (1, 1, 4),
                     #---
                     'pkg::mysql':                   'mysql-server',
                     #---
@@ -65,20 +65,20 @@ cluster_map = {
                 }),
                 ((14, ), {
                     'corosync':                      (1, 4),
-                    'pacemaker[cman]':               (1, 1, 6),
+                    'pacemaker[+cman]':              (1, 1, 6),
                 }),
                 ((17, ), {
                     'corosync':                      (2, 3),
-                    'pacemaker[coro]':               (1, 1, 7),
+                    'pacemaker[+coro]':              (1, 1, 7),
                     'pcs':                           (0, 9, 1),
                     #'pcs':                           (0, 9, 3),  # updates
                 }),
                 ((18, ), {
-                    'pacemaker[coro]':               (1, 1, 8),
+                    'pacemaker[+coro]':              (1, 1, 8),
                     'pcs':                           (0, 9, 27),
                 }),
                 ((19, ), {
-                    'pacemaker[coro]':               (1, 1, 9),
+                    'pacemaker[+coro]':              (1, 1, 9),
                     'pcs':                           (0, 9, 36),
                     #'pcs':                           (0, 9, 48),  # updates
                     #---
@@ -91,13 +91,13 @@ cluster_map = {
                     #'pcs':                           (0, 9, 115),  # updates
                 }),
                 ((21, ), {
-                    'pacemaker[coro]':               (1, 1, 12),
-                    #'pacemaker[coro]':               (1, 1, 13),  # updates
+                    'pacemaker[+coro]':              (1, 1, 12),
+                    #'pacemaker[+coro]':              (1, 1, 13),  # updates
                     'pcs':                           (0, 9, 115),
                     #'pcs':                           (0, 9, 137),  # updates
                 }),
                 ((22, ), {
-                    #'pacemaker[coro]':               (1, 1, 13),  # updates
+                    #'pacemaker[+coro]':              (1, 1, 13),  # updates
                     'pcs':                           (0, 9, 139),
                     #'pcs':                           (0, 9, 149),  # updates
                     #---
@@ -105,19 +105,19 @@ cluster_map = {
                     'cmd::pkg-install':             'dnf install -y {packages}',
                 }),
                 ((23, ), {
-                    'pacemaker[coro]':               (1, 1, 13),
-                    #'pacemaker[coro]':               (1, 1, 14),  # updates
-                    #'pacemaker[coro]':               (1, 1, 15),  # updates
+                    'pacemaker[+coro]':              (1, 1, 13),
+                    #'pacemaker[+coro]':              (1, 1, 14),  # updates
+                    #'pacemaker[+coro]':              (1, 1, 15),  # updates
                     'pcs':                           (0, 9, 144),
                     #'pcs':                           (0, 9, 149),  # updates
                 }),
                 ((24, ), {
-                    'pacemaker[coro]':               (1, 1, 14),
-                    #'pacemaker[coro]':              (1, 1, 15),  # updates
-                    'pcs[u9n]':                      (0, 9, 150),
+                    'pacemaker[+coro]':              (1, 1, 14),
+                    #'pacemaker[+coro]':              (1, 1, 15),  # updates
+                    'pcs':                           (0, 9, 150),
                 }),
                 #((25, ), {
-                #    'corosync[qdevice,qnet]':        (2, 4),
+                #    'corosync':                     (2, 4),
                 #}),
             ),
             'redhat': (
@@ -138,61 +138,60 @@ cluster_map = {
                     'pcs':                           (0, 9, 26),
                 }),
                 ((6, 5), {
-                    'pacemaker[cman]':               (1, 1, 10),
+                    'pacemaker[+cman]':              (1, 1, 10),
                     'pcs':                           (0, 9, 90),
                 }),
                 ((6, 6), {
-                    'pacemaker[acls,cman]':          (1, 1, 12),
+                    'pacemaker[+cman]':              (1, 1, 12),
                     'pcs':                           (0, 9, 123),
                 }),
                 ((6, 7), {
-                    'pacemaker[acls,cman]':          (1, 1, 12),
+                    'pacemaker[+cman]':              (1, 1, 12),
                     'pcs':                           (0, 9, 139),
                 }),
                 ((6, 8), {
-                    'pacemaker[acls,cman]':          (1, 1, 14),
-                    # u9n := utilization
-                    'pcs[u9n]':                      (0, 9, 148),
+                    'pacemaker[+cman]':              (1, 1, 14),
+                    'pcs':                           (0, 9, 148),
                 }),
                 ((7, 0), {
                     'corosync':                      (2, 3),
-                    'pacemaker[coro]':               (1, 1, 10),
+                    'pacemaker[+coro]':              (1, 1, 10),
                     'pcs':                           (0, 9, 115),
                     #---
                     'pkg::mysql':                   'mariadb-server',
                 }),
                 ((7, 1), {
-                    'pacemaker[acls,coro]':          (1, 1, 12),
+                    'pacemaker[+coro]':              (1, 1, 12),
                     'pcs':                           (0, 9, 137),
                 }),
                 ((7, 2), {
-                    'pacemaker[acls,coro]':          (1, 1, 13),
+                    'pacemaker[+coro]':              (1, 1, 13),
                     'pcs':                           (0, 9, 143),
                 }),
                 ((7, 3), {
-                    'corosync[qdevice,qnet]':        (2, 4),
-                    'pacemaker[acls,alets,coro]':    (1, 1, 15),
-                    'pcs[u9n]':                           (0, 9, 152),  # XXX guess
+                    'corosync':                      (2, 4),
+                    'pacemaker[+coro]':              (1, 1, 15),
+                    'pcs':                           (0, 9, 152),  # XXX guess
                 }),
             ),
             'ubuntu': (
                 ((13, 04), {
                     # https://packages.ubuntu.com/raring/$PACKAGE
                     'corosync':                      (1, 4),
-                    'pacemaker[coro,hb]':            (1, 1, 7),
+                    'pacemaker[+coro,+hb]':          (1, 1, 7),
                 }),
                 ((13, 10), {
                     # https://packages.ubuntu.com/saucy/$PACKAGE
                     'corosync':                      (2, 3),
-                    'pacemaker[coro,hb]':            (1, 1, 10),
+                    'pacemaker[+coro,+hb]':          (1, 1, 10),
                 }),
                 ((15, 04), {
                     # https://packages.ubuntu.com/vivid/$PACKAGE
-                    'pacemaker[coro,hb]':            (1, 1, 12),
+                    'pacemaker[+coro,+hb]':          (1, 1, 12),
                 }),
                 ((16, 04), {
                     # https://packages.ubuntu.com/xenial/$PACKAGE
-                    'pacemaker[coro]':               (1, 1, 14),
+                    'pacemaker[+coro]':              (1, 1, 14),
                     'pcs':                           (0, 9, 149),  # universe
                 }),
             ),
@@ -242,6 +241,23 @@ aliases_releases = {
     }
 }
 
+versions_extra = {
+    '__cache__': {},
+    'corosync': (
+        ((2, 4),
+            '+qdevice,+qnet'),
+    ),
+    'pacemaker': (
+        ((1, 1, 12),
+            '+acls'),
+        ((1, 1, 15),
+            '+alerts'),
+    ),
+    'pcs': (
+        ((0, 9, 148),
+            '+utilization'),
+    ),
+}
 
 #
 # ...then, define some executable inference rules, starting with their helpers:
@@ -268,10 +284,77 @@ def _cmp_ver(v1, v2):
     return 0
 
 
-def _parse_extra(s):
+def _parse_extra(s, version=None, version_map=versions_extra):
+    # Formalized "extra" specification:
+    # EXTRA_SPEC(MODS) ::= [ EXTRAS(MODS) ]
+    # EXTRAS(MODS)     ::= EXTRA(MODS) | EXTRA(MODS), EXTRAS(MODS)
+    # EXTRA(MODS)      ::=(for some modifier in MODS) modifier word
+    #
+    # depending on the context of use, MODS can be:
+    # - '' (empty string): parsing "extra" for public use, i.e.,
+    #   when `version` and `version_map` not provided
+    # - ''/'+'/'-': parsing "extra" for private use, i.e., when those
+    #   parameters are provided
+    #
+    # `version_map` is a mapping from component to an ordered pairs
+    # (VERSION, EXTRA_SPECS(('+', '-'))), where VERSION is encoded as
+    # a tuple of numerical components of the version (i.e., result of
+    # `_parse_ver`) and '+'/'-' modifier denotes the extras/features
+    # being introduced/removed as of a respective version of the
+    # component; `version` is a search entry between respective
+    # versions here and the intermediate result of this search
+    # is an extras snapshot (subsuming all the +/- changes till
+    # that moment) as of the closest lower version than `version`.
+    #
+    # Virtually, the parsed extras are, as a sequence, appended after
+    # the snapshot obtained per previous paragraph, and following rules
+    # are applied on the resulting ordered sequence:
+    #
+    #     |- +foo [,...]  ->  foo |- [,...]
+    #     |- -foo [,...]  ->      |- [,...]  # warning emitted
+    #
+    # foo |- +foo [,...]  ->  foo |- [,...]  # idempotency
+    # foo |- -foo [,...]  ->      |- [,...]  # elimination
     name, extra = (lambda a, b='': (a, b.rstrip(']')))(*s.split('[', 1))
-    extra = filter(len, (e.strip() for e in extra.split(',')))
-    return name, extra
+    allowed_mods, ret, worklist = ' ', set(), []
+    if version and version_map:
+        allowed_mods = '+-'
+        try:
+            ret = version_map['__cache__'][name][version]
+        except KeyError:
+            worklist = list(version_map.get(name, ()))
+    else:
+        version, version_map = (), {}
+    worklist.append((version, extra))
+    worklist.reverse()
+
+    while worklist:
+        v, es = worklist.pop()
+        c = 0
+        if worklist:
+            c = _cmp_ver(version, v)
+        elif version_map:
+            # cache the resolved "snapshot" for name and version
+            per_comp = version_map['__cache__'].setdefault(name, {})
+            per_comp[version] = ret.copy()
+        if c >= 0:
+            for e in filter(len, (e.strip() for e in es.split(','))):
+                if not version:
+                    mod = allowed_mods
+                else:
+                    mod, e = (lambda a, *b: (a, ''.join(b)))(*e)
+                if e and mod in allowed_mods:
+                    try:
+                        (set.remove if mod == '-' else set.add)(ret, e)
+                    except KeyError:
+                        log.warn("unexpected use of `{0}{1}'".format(mod, e))
+                else:
+                    log.warn("unexpected use of `{0}{1}',"
+                             " unexpected/missing modifier".format(mod, e))
+        else:
+            worklist[:] = worklist[0:1]
+
+    return name, ret
 
 
 def infer_error(smth, branches):
@@ -328,14 +411,15 @@ def infer_dist(dist, branches=None):
                                 continue  # only searching, no hit yet
 
                         for k, v in dver_branches.iteritems():
-                            kk, k_extra = _parse_extra(k)
-                            prev_extra = cur_acc.get(kk, '')
-                            cur_acc.pop("{0}{1}".format(kk, prev_extra), None)
-                            if k_extra:
-                                cur_acc[kk] = "[{0}]".format(','.join(k_extra))
-                            cur_acc[k] = v
-                        for k, v in cur_acc.iteritems():
-                            dver_branches[k] = v
+                            kk, k_extra = _parse_extra(k, version=v,
+                                                       version_map=versions_extra)
+                            cur_acc["{0}{1}".format(
+                                kk, ','.join(sorted(k_extra)).join("[]" if
+                                                                   k_extra
+                                                                   else '')
+                            )] = v
+                        dver_branches.clear()
+                        dver_branches.update(cur_acc)
                         dver_branches['__proceeded__'] = '[true]'
 
                 if dist_ver is None and not ret:  # alt. above: dist_ver = ''
@@ -359,7 +443,7 @@ def infer_comp(comp, branches=None):
         for c, c_ver in b.iteritems():
             c, c_extra = _parse_extra(c)
             if (c == comp
-                and (not comp_extra or not set(comp_extra).difference(c_extra))
+                and (not comp_extra or not comp_extra.difference(c_extra))
                 and _cmp_ver(comp_ver, c_ver) == 0):
                     ret.append(b)
                     break
