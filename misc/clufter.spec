@@ -303,7 +303,7 @@ for f in "${schemadir}"/pacemaker-*.*.rng; do
     test -f "${f}" || continue
     base="$(basename "${f}")"
     case "${base}" in
-    pacemaker-1.0.rng|pacemaker-2.[12].rng)
+    pacemaker-1.0.rng|pacemaker-2.[126].rng)
         continue;;  # skip non-defaults of upstream releases (avoid clutter)
     esac
     sentinel=10; old=; new="${f}"
