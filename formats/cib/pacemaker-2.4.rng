@@ -617,22 +617,14 @@
           <data type="ID"/>
         </attribute>
         <optional>
-          <choice>
-            <attribute name="score">
-              <choice>
-                <data type="integer"/>
-                <value type="token">INFINITY</value>
-                <value type="token">+INFINITY</value>
-                <value type="token">-INFINITY</value>
-              </choice>
-            </attribute>
-            <attribute name="score-attribute">
-              <text/>
-            </attribute>
-            <attribute name="score-attribute-mangle">
-              <text/>
-            </attribute>
-          </choice>
+          <attribute name="score">
+            <choice>
+              <data type="integer"/>
+              <value type="token">INFINITY</value>
+              <value type="token">+INFINITY</value>
+              <value type="token">-INFINITY</value>
+            </choice>
+          </attribute>
         </optional>
         <optional>
           <ref name="lifetime"/>

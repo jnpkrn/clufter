@@ -83,6 +83,11 @@
             <text/>
           </attribute>
         </optional>
+        <optional>
+          <attribute name="execution-date">
+            <text/>
+          </attribute>
+        </optional>
         <ref name="configuration"/>
         <optional>
           <ref name="status"/>
@@ -599,22 +604,14 @@
           <data type="ID"/>
         </attribute>
         <optional>
-          <choice>
-            <attribute name="score">
-              <choice>
-                <data type="integer"/>
-                <value type="token">INFINITY</value>
-                <value type="token">+INFINITY</value>
-                <value type="token">-INFINITY</value>
-              </choice>
-            </attribute>
-            <attribute name="score-attribute">
-              <text/>
-            </attribute>
-            <attribute name="score-attribute-mangle">
-              <text/>
-            </attribute>
-          </choice>
+          <attribute name="score">
+            <choice>
+              <data type="integer"/>
+              <value type="token">INFINITY</value>
+              <value type="token">+INFINITY</value>
+              <value type="token">-INFINITY</value>
+            </choice>
+          </attribute>
         </optional>
         <optional>
           <ref name="lifetime"/>
@@ -777,9 +774,14 @@
         <attribute name="id">
           <data type="ID"/>
         </attribute>
-        <attribute name="target">
-          <text/>
-        </attribute>
+        <choice>
+          <attribute name="target">
+            <text/>
+          </attribute>
+          <attribute name="target-pattern">
+            <text/>
+          </attribute>
+        </choice>
         <attribute name="index">
           <data type="positiveInteger"/>
         </attribute>
