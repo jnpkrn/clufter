@@ -129,16 +129,21 @@ def coro2pcscmd(**kwargs):
 
         <xsl:value-of select="'pcs cluster start --all'"/>
         <xsl:if test="$pcscmd_start_wait &gt; 0">
-            <xsl:value-of select="concat(' --wait=-1 &gt;/dev/null 2&gt;&amp;1',
-                                         ' &amp;&amp; sleep ',
-                                         $pcscmd_start_wait,
-                                         ' || pcs cluster start --all --wait=',
-                                         $pcscmd_start_wait)"/>
-        </xsl:if>
-        <xsl:value-of select="'%(NL)s'"/>
+            <xsl:choose>
+                <xsl:when test="$pcscmd_extra_wait_cluster_start">
+                    <xsl:value-of select="concat(' --wait=',
+                                                 $pcscmd_start_wait)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="concat(' &amp;&amp; sleep ',
+                                                  $pcscmd_start_wait)"/>
+                </xsl:otherwise>
+            </xsl:choose>
+            <xsl:value-of select="'%(NL)s'"/>
 ''' + (
-        verbose_ec_test
+            verbose_ec_test
 ) + '''
+        </xsl:if>
     </xsl:if>
 ''') % dict(
     NL=NL,

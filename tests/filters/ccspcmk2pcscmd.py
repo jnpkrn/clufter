@@ -20,16 +20,24 @@ ccs = ccspcmk2pcscmd.in_format
 class FiltersCcspcmk2pcscmdTestCase(TestCase):
     def testConversion(self):
         in_obj = ccs('file', join(dirname(dirname(__file__)), 'filled.conf'))
-        ret = ccspcmk2pcscmd(in_obj, pcscmd_verbose=False, pcscmd_noauth=True,
-                                     pcscmd_noguidance=True)
-        #print ret.BYTESTRING()
-        self.assertEquals(
-            ret.BYTESTRING(),
+        io_strings = (
+            (('rhel', '7.1'),
             "pcs cluster setup --name test ju hele"
             " --consensus 200 --join 100 --token 5000\n"
-            "pcs cluster start --all --wait=-1 >/dev/null 2>&1 && sleep {sleep}"
-            " || pcs cluster start --all --wait={sleep}\n"
-            .format(sleep=ccspcmk2pcscmd.defs['pcscmd_start_wait'])
+            "pcs cluster start --all && sleep {sleep}\n"
+            .format(sleep=ccspcmk2pcscmd.defs['pcscmd_start_wait'])),
+            (('rhel', '7.3'),
+            "pcs cluster setup --name test ju hele"
+            " --consensus 200 --join 100 --token 5000\n"
+            "pcs cluster start --all --wait={sleep}\n"
+            .format(sleep=ccspcmk2pcscmd.defs['pcscmd_start_wait'])),
         )
+        for system_extra, out_str in io_strings:
+            ret = ccspcmk2pcscmd(in_obj, pcscmd_verbose=False,
+                                         pcscmd_noauth=True,
+                                         pcscmd_noguidance=True,
+                                 system='linux', system_extra=system_extra)
+            #print ret.BYTESTRING()
+            self.assertEquals(ret.BYTESTRING(), out_str)
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))

@@ -1,10 +1,11 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """ccspcmk2pcscmd filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+from ..facts import infer
 from ..filter import XMLFilter
 from ..utils_xslt import xslt_params
 
@@ -33,6 +34,12 @@ def ccspcmk2pcscmd(flt_ctxt, in_obj):
                 pcscmd_enable=flt_ctxt['pcscmd_enable'],
                 pcscmd_start_wait=flt_ctxt['pcscmd_start_wait'],
                 pcscmd_noguidance=flt_ctxt['pcscmd_noguidance'],
+
+                pcscmd_extra_wait_cluster_start = bool(infer(
+                    'comp:pcs[wait-cluster-start]',
+                    flt_ctxt['system'],
+                    flt_ctxt['system_extra'],
+                )),
             ),
         ),
     )
