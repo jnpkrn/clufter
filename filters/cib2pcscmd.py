@@ -5,6 +5,7 @@
 """cib2pcscmd filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+from ..facts import infer
 from ..filter import XMLFilter
 from ..filters._2pcscmd import verbose_ec_test, verbose_inform
 from ..utils_xml import squote
@@ -70,6 +71,12 @@ def cib2pcscmd(flt_ctxt, in_obj):
                 pcscmd_dryrun=dry_run,
                 pcscmd_pcs=squote("pcs -f {0} ".format(tmp_cib)
                                   if tmp_cib else "pcs "),
+
+                pcscmd_extra_utilization = bool(infer(
+                    'comp:pcs[utilization]',
+                    flt_ctxt['system'],
+                    flt_ctxt['system_extra'],
+                )),
             ),
         ),
     )

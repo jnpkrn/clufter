@@ -14,13 +14,21 @@ cib2pcscmd = ((
                 inform='"set properties for ", @uname, " node"')
 
 ) + '''
-    <!-- XXX "pcs resource utilization" not supported with majority
-             of pcs versions -->
+    <!-- "pcs node utilization" only supported with certain newer
+         versions of pcs -->
+    <xsl:choose>
+        <xsl:when test="$pcscmd_extra_utilization">
 ''' + (
-    attrset_xsl("utilization",
-                cmd='$pcscmd_pcs, "node utilization -h",'
-                    ' " &gt;/dev/null &amp;&amp; ",'
-                    ' $pcscmd_pcs, "node utilization ",'
-                    ' @uname',
-                inform='"set utilization for resource: ", @uname, " node"')
-))
+        attrset_xsl("utilization",
+                    cmd='$pcscmd_pcs, "node utilization ", @uname',
+                    inform='"set utilization for node: ", @uname')
+) + '''
+        </xsl:when>
+        <xsl:when test="utilization/nvpair">
+            <xsl:message>%(utilization_msg)s</xsl:message>
+        </xsl:when>
+    </xsl:choose>
+''') % dict(
+    utilization_msg="WARNING: target pcs version does not support utilization"
+                    " attributes, hence omitted",
+)

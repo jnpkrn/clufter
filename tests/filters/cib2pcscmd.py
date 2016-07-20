@@ -21,7 +21,8 @@ cib = cib2pcscmd.in_format
 class FiltersCib2pcscmdTestCase(TestCase):
     def testConversion(self):
         in_obj = cib('file', join(dirname(dirname(__file__)), 'filled.cib'))
-        ret = cib2pcscmd(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='')
+        ret = cib2pcscmd(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
+                         system='linux', system_extra=('rhel', '7.3'))
         #print ret.BYTESTRING()
         self.assertEquals(
             ret.BYTESTRING(),
@@ -79,7 +80,8 @@ setoptions id=colocation-my-rsc-set
 '''
             in_obj = in_fmt('bytestring', in_str,
                             validator_specs={in_fmt.ETREE: ''})
-            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='')
+            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
+                              system='linux', system_extra=('rhel', '7.3'))
             #print out_obj.BYTESTRING()
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
@@ -123,7 +125,8 @@ constraint-id=location-A-on-XYZ score=INFINITY \
 '''
             in_obj = in_fmt('bytestring', in_str,
                             validator_specs={in_fmt.ETREE: ''})
-            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='')
+            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
+                              system='linux', system_extra=('rhel', '7.3'))
             #print out_obj.BYTESTRING()
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
@@ -172,7 +175,8 @@ setoptions id=order-my-rsc-set
 '''
             in_obj = in_fmt('bytestring', in_str,
                             validator_specs={in_fmt.ETREE: ''})
-            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='')
+            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
+                              system='linux', system_extra=('rhel', '7.3'))
             #print out_obj.BYTESTRING()
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
@@ -227,7 +231,8 @@ setoptions ticket=my-ticket loss-policy=fence id=ticket-my-ticket-my-rsc-set
 '''
             in_obj = in_fmt('bytestring', in_str,
                             validator_specs={in_fmt.ETREE: ''})
-            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='')
+            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
+                              system='linux', system_extra=('rhel', '7.3'))
             #print out_obj.BYTESTRING()
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
