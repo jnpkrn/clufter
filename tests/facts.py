@@ -107,7 +107,10 @@ class TestExtra(TestCase):
     def test_extra_pcs_utilization(self):
         check = 'comp:pcs[utilization]'
         self.assertFalse(infer(check, 'linux', ('redhat', ' 6.0')))
-        self.assertTrue(infer(check, 'linux', ('redhat', ' 6.8')))
+        self.assertTrue (infer(check, 'linux', ('redhat', ' 6.8')))
+        self.assertFalse(infer(check, 'linux', ('redhat', ' 7.1')))
+        self.assertFalse(infer(check, 'linux', ('redhat', ' 7.2')))
+        self.assertTrue (infer(check, 'linux', ('redhat', ' 7.3')))
 
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))
