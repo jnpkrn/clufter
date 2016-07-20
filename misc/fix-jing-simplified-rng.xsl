@@ -88,13 +88,22 @@
 
 <!-- ensure "status" section is optional; see also:
      - https://github.com/ClusterLabs/pacemaker/commit/89f5177
-     - https://pagure.io/clufter/f800468 (for next branch) -->
+     - https://pagure.io/clufter/c/a3985ec -->
 <xsl:template match="*[name() != 'optional']/rng:ref[@name = 'status']">
     <optional>
         <xsl:copy>
             <xsl:apply-templates select="@*|node()"/>
         </xsl:copy>
     </optional>
+</xsl:template>
+
+<!-- ensure neither "score-attribute" nor "score-attribute-mangle" attributes
+     of rsc_colocation are supported; see also:
+     - https://github.com/ClusterLabs/pacemaker/pull/1091/commits -->
+<xsl:template match="rng:element[@name = 'rsc_colocation']//rng:choice[
+                         rng:externalRef[@href = 'score.rng']
+                     ]">
+    <xsl:apply-templates select="rng:externalRef[@href = 'score.rng']"/>
 </xsl:template>
 
 <xsl:template match="@*|node()">
