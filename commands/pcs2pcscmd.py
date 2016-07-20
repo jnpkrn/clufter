@@ -12,16 +12,15 @@ from ..protocol import protocols
 from ..utils_cib import PATH_CIB
 from ..utils_cman import PATH_CLUSTERCONF
 from ..utils_corosync import PATH_COROCONF
+from ._chains_pcs import cib2pcscmd_chain_exec
 
 
 @Command.deco(('ccspcmk2pcscmd',
                           ('stringiter-combine2',
                               ('cmd-wrap'))),
-              ('cib-revitalize',
-                  ('cib-meld-templates',
-                      ('cib2pcscmd',
+              (cib2pcscmd_chain_exec(
                           ('stringiter-combine2'  # , ('cmd-wrap' ...
-                           )))))
+                           ))))
 def pcs2pcscmd_flatiron(cmd_ctxt,
                         ccs=PATH_CLUSTERCONF,
                         cib=PATH_CIB,
@@ -92,11 +91,9 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
                       ('needleqdevicexml2pcscmd',
                           ('stringiter-combine3'  # , ('cmd-wrap' ...
                            )))),
-              ('cib-revitalize',
-                  ('cib-meld-templates',
-                      ('cib2pcscmd',
+              (cib2pcscmd_chain_exec(
                           ('stringiter-combine3'  # , ('cmd-wrap' ...
-                           )))))
+                           ))))
 def pcs2pcscmd_needle(cmd_ctxt,
                       coro=PATH_COROCONF,
                       cib=PATH_CIB,
