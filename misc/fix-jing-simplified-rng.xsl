@@ -99,11 +99,12 @@
 
 <!-- ensure neither "score-attribute" nor "score-attribute-mangle" attributes
      of rsc_colocation are supported; see also:
-     - https://github.com/ClusterLabs/pacemaker/pull/1091/commits -->
+     - https://github.com/ClusterLabs/pacemaker/pull/1091/commits
+     - https://pagure.io/clufter/c/6b9054c (next branch) -->
 <xsl:template match="rng:element[@name = 'rsc_colocation']//rng:choice[
-                         rng:externalRef[@href = 'score.rng']
+                         rng:attribute[@name = 'score']
                      ]">
-    <xsl:apply-templates select="rng:externalRef[@href = 'score.rng']"/>
+    <xsl:apply-templates select="rng:attribute[@name = 'score']"/>
 </xsl:template>
 
 <xsl:template match="@*|node()">
