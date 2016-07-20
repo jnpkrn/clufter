@@ -400,7 +400,6 @@ def infer_dist(dist, branches=None):
         dist = aliases_dist[dist]
     except KeyError:
         pass
-    cur_acc = {}
     for b in branches:
         for d, d_branches in b.iteritems():
             if d == dist:
@@ -408,6 +407,7 @@ def infer_dist(dist, branches=None):
                 # releases, in-situ de-sparsifying particular packages releases;
                 # to avoid needlessly repeated de-sparsifying, we are using
                 # '__proceeded__' mark to denote already proceeded dicts
+                cur_acc = {}
                 if '__proceeded__' not in d_branches or dist_ver:
                     for i, (dver, dver_branches) in enumerate(d_branches):
                         if dist_ver:
@@ -425,11 +425,16 @@ def infer_dist(dist, branches=None):
                         for k, v in dver_branches.iteritems():
                             kk, k_extra = _parse_extra(k, version=v,
                                                        version_map=versions_extra)
-                            cur_acc["{0}{1}".format(
-                                kk, ','.join(sorted(k_extra)).join("[]" if
-                                                                   k_extra
-                                                                   else '')
-                            )] = v
+
+                            # prevent leaking of extra from previous cycles
+                            prev_extra = cur_acc.get(kk, '')
+                            cur_acc.pop("{0}{1}".format(kk, prev_extra), None)
+
+                            k_extra = ','.join(sorted(k_extra)).join("[]" if
+                                                                     k_extra
+                                                                     else '')
+                            cur_acc[kk] = k_extra
+                            cur_acc["{0}{1}".format(kk, k_extra)] = v
                         dver_branches.clear()
                         dver_branches.update(cur_acc)
                         dver_branches['__proceeded__'] = '[true]'
