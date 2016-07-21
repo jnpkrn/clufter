@@ -28,4 +28,7 @@ needleqdevicexml2pcscmd = '''\
             <xsl:value-of select="concat(' ', name(), '=', .)"/>
         </xsl:for-each>
     </xsl:when>
+    <xsl:when test="@model = 'net'">
+        <xsl:value-of select="'clufter:UNSUPPORTED'"/>
+    </xsl:when>
 '''
