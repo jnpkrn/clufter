@@ -14,45 +14,58 @@ needlexml2pcscmd_attrs = (
     'timeout',
     'votes',
 )
-
 needleqdevicexml2pcscmd = ('''\
     <!-- "pcs quorum device add" only supported with certain newer
          versions of pcs, support for qdevice itself in corosync
          ditto -->
     <xsl:choose>
         <xsl:when test="$pcscmd_extra_qdevice">
-''' + (
-            verbose_inform('"add quorum device: ", @model, " model"')
-) + '''
-            <xsl:value-of select="'pcs quorum device add'"/>
+            <xsl:variable name="ModelOpts">
+                <xsl:choose>
 
-            <xsl:for-each select="@*[
-''' + (
-                xslt_is_member('name()', needlexml2pcscmd_attrs)
-) + ''']">
-                <xsl:value-of select="concat(' ', name(), '=', .)"/>
-            </xsl:for-each>
+                    <!-- make sure there is at least a single "when" -->
+                    <xsl:when test="false()"/>
 
-            <xsl:value-of select="concat(' model ', @model)"/>
+                    <!-- the nested snippets should be guarded with
+                         xsl:when test="@model = 'foo'" -->
+                    <clufter:descent-mix at="*"/>
 
+                    <xsl:otherwise>
+                        <xsl:value-of select="'clufter:UNKNOWN'"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
             <xsl:choose>
+                <xsl:when test="not(starts-with($ModelOpts, 'clufter:'))">
+''' + (
+                    verbose_inform('"add quorum device: ", @model, " model"')
+) + '''
+                    <xsl:value-of select="'pcs quorum device add'"/>
 
-                <!-- make sure there is at least a single "when" -->
-                <xsl:when test="false()"/>
+                    <xsl:for-each select="@*[
+''' + (
+                        xslt_is_member('name()', needlexml2pcscmd_attrs)
+) + ''']">
+                        <xsl:value-of select="concat(' ', name(), '=', .)"/>
+                    </xsl:for-each>
 
-                <!-- the nested snippets should be guarded with
-                     xsl:when test="@model = 'foo'" -->
-                <clufter:descent-mix at="*"/>
+                    <xsl:value-of select="concat(' model ', @model, $ModelOpts)"/>
 
-                <xsl:otherwise>
+                    <xsl:value-of select="'%(NL)s'"/>
+''' + (
+                    verbose_ec_test
+) + '''
+                </xsl:when>
+                <xsl:when test="$ModelOpts = 'clufter:UNKNOWN'">
                     <xsl:message>%(note_unhandled)s</xsl:message>
+                </xsl:when>
+                <xsl:when test="$ModelOpts = 'clufter:UNSUPPORTED'">
+                    <xsl:message>%(qmodel_msg)s</xsl:message>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:message>WARNING: internal error</xsl:message>
                 </xsl:otherwise>
             </xsl:choose>
-
-            <xsl:value-of select="'%(NL)s'"/>
-''' + (
-            verbose_ec_test
-) + '''
         </xsl:when>
         <xsl:otherwise>
             <xsl:message>%(qdevice_msg)s</xsl:message>
@@ -66,4 +79,9 @@ needleqdevicexml2pcscmd = ('''\
                                                    ' in the conversion')"/>''',
     qdevice_msg="WARNING: target corosync+pcs versions do not support qdevice,"
                 " hence omitted",
+    qmodel_msg='''<xsl:value-of select="concat('WARNING: target corosync+pcs',
+                                               ' versions do not support quorum',
+                                               ' device model `',
+                                               @model,
+                                               '`, hence omitted')"/>''',
 )
