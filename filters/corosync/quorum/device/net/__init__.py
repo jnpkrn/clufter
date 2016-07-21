@@ -20,7 +20,7 @@ needlexml2pcscmd_attrs = (
 )
 
 needleqdevicexml2pcscmd = '''\
-    <xsl:when test="@model = 'net'">
+    <xsl:when test="@model = 'net' and $pcscmd_extra_qnet">
         <xsl:for-each select="net/@*[
 ''' + (
             xslt_is_member('name()', needlexml2pcscmd_attrs)

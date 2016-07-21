@@ -5,6 +5,7 @@
 """needleqdevicexml2pcscmd filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+from ..facts import infer
 from ..filter import XMLFilter
 from ..utils_xslt import xslt_params
 
@@ -25,6 +26,17 @@ def needleqdevicexml2pcscmd(flt_ctxt, in_obj):
                 pcscmd_force=flt_ctxt['pcscmd_force'],
                 pcscmd_verbose=flt_ctxt['pcscmd_verbose'],
                 pcscmd_noguidance=flt_ctxt['pcscmd_noguidance'],
+
+                pcscmd_extra_qdevice = bool(infer(
+                    'comp:corosync[qdevice] + comp:pcs[qdevice]',
+                    flt_ctxt['system'],
+                    flt_ctxt['system_extra'],
+                )),
+                pcscmd_extra_qnet = bool(infer(
+                    'comp:corosync[qnet] + comp:pcs[qnet]',
+                    flt_ctxt['system'],
+                    flt_ctxt['system_extra'],
+                )),
             ),
         ),
     )

@@ -25,13 +25,14 @@ class FiltersCib2pcscmdQuorumDeviceTestCase(TeardownFilterTestCase):
     <net host="191.168.10.20"/>
 </device>
 ''', '''\
-pcs quorum device add --help >/dev/null 2>&1 && pcs quorum device add model net host=191.168.10.20
+pcs quorum device add model net host=191.168.10.20
 '''),
         )
         for (in_str, out_str) in io_strings:
             in_obj = in_fmt('bytestring', in_str,
                             validator_specs={in_fmt.ETREE: ''})
-            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='')
+            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
+                              system='linux', system_extra=('rhel', '7.3'))
             #print out_obj.BYTESTRING()
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
