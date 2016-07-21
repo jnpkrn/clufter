@@ -443,12 +443,9 @@ cib2pcscmd = ('''\
             </xsl:for-each>
         </xsl:if>
         <!-- meta attrs -->
-        <xsl:if test="meta_attributes/nvpair">
-            <xsl:value-of select="' meta'"/>
 ''' + (
-            attrset_xsl("meta_attributes")
+        attrset_xsl("meta_attributes", cmd='" meta"')
 ) + '''
-        </xsl:if>
         <xsl:value-of select="'%(NL)s'"/>
 ''' + (
         verbose_ec_test
@@ -514,12 +511,9 @@ cib2pcscmd = ('''\
             </xsl:for-each>
         </xsl:if>
         <!-- meta attrs -->
-        <xsl:if test="meta_attributes/nvpair">
-            <xsl:value-of select="' meta'"/>
 ''' + (
-            attrset_xsl("meta_attributes")
+        attrset_xsl("meta_attributes", cmd='" meta"')
 ) + '''
-        </xsl:if>
         <!-- NOTE clone/master resource specifics handled separately later -->
         <xsl:value-of select="'%(NL)s'"/>
 ''' + (
