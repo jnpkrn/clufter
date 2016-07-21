@@ -6,7 +6,7 @@
 ###
 
 from ....filters._2pcscmd import verbose_ec_test, verbose_inform
-from ....utils_xslt import NL, xslt_is_member, xslt_string_mapping
+from ....utils_xslt import NL, xslt_is_member
 
 needlexml2pcscmd_attrs = (
     # model has a special role here
@@ -45,7 +45,6 @@ needleqdevicexml2pcscmd = ('''\
                 <clufter:descent-mix at="*"/>
 
                 <xsl:otherwise>
-                    <xsl:comment> %(note_unhandled)s </xsl:comment>
                     <xsl:message>%(note_unhandled)s</xsl:message>
                 </xsl:otherwise>
             </xsl:choose>
