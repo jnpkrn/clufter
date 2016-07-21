@@ -40,7 +40,7 @@ def attrset_xsl(attrset, cmd=None, inform=None):
                 </xsl:for-each>
 ''' + (
                 ('''<xsl:value-of select="'{NL}'"/>''' + '\n'
-                 + verbose_ec_test) if cmd else ''
+                 + verbose_ec_test) if cmd and inform else ''
 ) + '''
             </xsl:otherwise>
         </xsl:choose>
