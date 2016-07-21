@@ -171,7 +171,7 @@ cluster_map = {
                 ((7, 3), {
                     'corosync':                      (2, 4),
                     'pacemaker[+coro]':              (1, 1, 15),
-                    'pcs':                           (0, 9, 152),  # XXX guess
+                    'pcs':                           (0, 9, 153),  # 152+patches
                 }),
             ),
             'ubuntu': (
@@ -267,7 +267,8 @@ versions_extra = {
         ((0, 9, 150),
             '+wait-cluster-start'),
         ((0, 9, 153),
-            '+alerts'),
+            # qdevice+qnet preliminary support since 0.9.151, but...
+            '+alerts,+qdevice,+qnet'),
     ),
 }
 
