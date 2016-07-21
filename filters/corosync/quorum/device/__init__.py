@@ -19,9 +19,9 @@ needleqdevicexml2pcscmd = ('''\
 ''' + (
     verbose_inform('"add quorum device: ", @model, " model"')
 ) + '''
-    <xsl:value-of select="concat('pcs quorum add --help',
+    <xsl:value-of select="concat('pcs quorum device add --help',
                                  ' &gt;/dev/null 2&gt;&amp;1 &amp;&amp;',
-                                 ' pcs quorum add')"/>
+                                 ' pcs quorum device add')"/>
 
     <xsl:for-each select="@*[
 ''' + (

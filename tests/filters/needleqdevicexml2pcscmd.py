@@ -25,7 +25,7 @@ class FiltersCib2pcscmdQuorumDeviceTestCase(TeardownFilterTestCase):
     <net host="191.168.10.20"/>
 </device>
 ''', '''\
-pcs quorum add --help >/dev/null 2>&1 && pcs quorum add model net host=191.168.10.20
+pcs quorum device add --help >/dev/null 2>&1 && pcs quorum device add model net host=191.168.10.20
 '''),
         )
         for (in_str, out_str) in io_strings:
