@@ -70,19 +70,18 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
                 (
                     (
                         (
-                            (
-                                file_proto(output),
-                            ),
+                                            (
+                                                file_proto(output),
+                                            ),
                         ),
                     ),
                 ),
             ),
-            #ccsflat2cibfinal_output(
-            #            (
-            #                (
-            #                    file_proto(output),  # already tracked
-            #                ),
-            #            ),
+            # already tracked
+            #ccsflat2pcscmd_output(
+            #                                (
+            #                                    file_proto(output),
+            #                                ),
             #),
         ),
     )
@@ -145,24 +144,24 @@ def ccs2pcscmd_needle(cmd_ctxt,
         (
             (
                 (
-                    (
-                        (
-                            file_proto(output),
-                        ),
-                    ),
-                    #(
-                    #    (
-                    #        file_proto(output),  # already tracked
-                    #    ),
-                    #),
+                                        (
+                                            (
+                                                file_proto(output),
+                                            ),
+                                        ),
+                    # already tracked
+                    #                    (
+                    #                        (
+                    #                            file_proto(output),
+                    #                        ),
+                    #                    ),
                 ),
             ),
-            #ccsflat2cibfinal_output(
-            #        (
-            #            (
-            #                file_proto(output),  # already tracked
-            #            ),
-            #        ),
+            # already tracked
+            #ccsflat2pcscmd_output(
+            #                                (
+            #                                    file_proto(output),
+            #                                ),
             #),
         ),
     )
