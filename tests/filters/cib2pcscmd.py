@@ -237,4 +237,66 @@ setoptions ticket=my-ticket loss-policy=fence id=ticket-my-ticket-my-rsc-set
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
 
+class FiltersCib2pcscmdAlertsTestCase(TeardownFilterTestCase):
+    def testAlertsSimple(self):
+        flt_obj = rewrite_root(self.flt_mgr.filters[flt],
+                               'cib/configuration/alerts')
+        in_fmt = flt_obj.in_format
+        io_strings = (
+            ('''\
+<alert id="alert-foo" path="/bin/true"/>
+''', '''\
+pcs alert create 'path=/bin/true' id=alert-foo
+'''),
+            ('''\
+<alert id="alert-bar" path="/bin/yes" description="idling avoidance ;-)"/>
+''', '''\
+pcs alert create 'path=/bin/yes' id=alert-bar 'description=idling avoidance ;-)'
+'''),
+        )
+        for (in_str, out_str) in io_strings:
+            in_str = '''\
+<alerts>
+''' + in_str + '''
+</alerts>
+'''
+            in_obj = in_fmt('bytestring', in_str,
+                            validator_specs={in_fmt.ETREE: ''})
+            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
+                              system='linux', system_extra=('rhel', '7.3'))
+            #print out_obj.BYTESTRING()
+            self.assertEquals(out_obj.BYTESTRING(), out_str)
+
+    def testAlertsComplex(self):
+        flt_obj = rewrite_root(self.flt_mgr.filters[flt],
+                               'cib/configuration/alerts')
+        in_fmt = flt_obj.in_format
+        io_strings = (
+            ('''\
+<alert id="alert-foo" path="/bin/true">
+    <recipient id="alert-foo-recipient1" description="first!!1" value="1"/>
+    <recipient id="alert-foo-recipient2" value="2"/>
+    <recipient id="alert-foo-recipient3" value="3"/>
+</alert>
+''', '''\
+pcs alert create 'path=/bin/true' id=alert-foo
+pcs alert recipient add alert-foo '1' id=alert-foo-recipient1 'description=first!!1'
+pcs alert recipient add alert-foo '2' id=alert-foo-recipient2
+pcs alert recipient add alert-foo '3' id=alert-foo-recipient3
+'''),
+        )
+        for (in_str, out_str) in io_strings:
+            in_str = '''\
+<alerts>
+''' + in_str + '''
+</alerts>
+'''
+            in_obj = in_fmt('bytestring', in_str,
+                            validator_specs={in_fmt.ETREE: ''})
+            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
+                              system='linux', system_extra=('rhel', '7.3'))
+            #print out_obj.BYTESTRING()
+            self.assertEquals(out_obj.BYTESTRING(), out_str)
+
+
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))

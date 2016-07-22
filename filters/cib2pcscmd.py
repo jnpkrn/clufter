@@ -77,6 +77,11 @@ def cib2pcscmd(flt_ctxt, in_obj):
                     flt_ctxt['system'],
                     flt_ctxt['system_extra'],
                 )),
+                pcscmd_extra_alerts = bool(infer(
+                    'comp:pacemaker[alerts] + comp:pcs[alerts]',
+                    flt_ctxt['system'],
+                    flt_ctxt['system_extra'],
+                )),
             ),
         ),
     )

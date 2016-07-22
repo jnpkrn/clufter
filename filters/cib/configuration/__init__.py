@@ -213,6 +213,7 @@ cib2pcscmd = ('''\
     <clufter:descent-mix at="resources"/>
     <clufter:descent-mix at="constraints"/>
     <clufter:descent-mix at="fencing-topology"/>
+    <clufter:descent-mix at="alerts"/>
     <xsl:if test="not($pcscmd_dryrun) and $pcscmd_tmpcib">
 ''' + (
         verbose_inform('"push CIB: ", $pcscmd_tmpcib')
