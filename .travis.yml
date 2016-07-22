@@ -3,31 +3,42 @@ python:
         - 2.6
         # cf. https://github.com/travis-ci/travis-ci/issues/2219
         - "2.7_with_system_site_packages"
+env:
+        - MAINT_EXTRA=0
+        - MAINT_EXTRA=1
+matrix:
+        exclude:
+                - python: 2.6
+                  env:    MAINT_EXTRA=1
+
 before_install:
         # http://docs.travis-ci.com/user/installing-dependencies/#Installing-Ubuntu-packages
         # https://github.com/travis-ci/travis-ci/issues/2124#issuecomment-38992012
-        - sudo apt-get update -qq
+        - test $MAINT_EXTRA -ne 0 || sudo apt-get update -qq
         # speed the run up
-        - python2 -c
+        - test $MAINT_EXTRA -ne 0
+          || python2 -c
           'from sys import exit, version_info as v; exit(v[:2] in ((2, 7), (3, 2)))'
           || sudo apt-get install -qq python-lxml python-distribute
+
 install:
         - pushd __root__
-        - python2 setup.py -q
+        - test $MAINT_EXTRA -ne 0
+          || python2 setup.py -q
             saveopts -f setup.cfg pkg_prepare
               --ra-metadata-dir="$(pwd)/cluster"
               --ccs-flatten="$(dirname $(pwd))/ccs_flatten"
               --editor="sed -i 's|\(force-block=\"\)false|\1true|;w /dev/stdout'"
         #- cat setup.cfg
         # make following robust enough to deal with pip pre-6.0(?)
-        - true;{
+        - test $MAINT_EXTRA -ne 0 || {
                pip install --disable-pip-version-check -- pip >/dev/null
                && pip install --disable-pip-version-check -qe .[test,coverage]
                && pip install --disable-pip-version-check coveralls;
           } || {
                pip install --disable-pip-version-check -- pip 2>/dev/null >&2
                || pip install -qe .[test,coverage]
-               && pip install  coveralls;
+               && pip install coveralls;
           } || {
                ret=$?;
                echo "LOGS>"; cat ~/.pip/pip.log ~/.cache/pip/log/debug.log 2>/dev/null;
@@ -36,28 +47,29 @@ install:
         - popd
 
 before_script:
-        - ulimit -S -c unlimited  # ensure cores are generated (~after_failure)
+        # ensure cores are generated (~after_failure)
+        test $MAINT_EXTRA -ne 0 || ulimit -S -c unlimited
 
 script:
-        - ./run-tests -c
+        - test $MAINT_EXTRA -ne 0 || ./run-tests -c
         # http://relaxng.org/relaxng.rng
-        - curl -Ss
+        - test $MAINT_EXTRA -eq 0 || curl -Ss
           https://raw.githubusercontent.com/relaxng/jing-trang/master/eg/relaxng.rng
           | find -name '*.rng' -exec xmllint --noout --relaxng - {} +
 
 after_failure:
-        - sudo apt-get install -qq gdb libc6-dbg
+        - test $MAINT_EXTRA -ne 0 || sudo apt-get install -qq gdb libc6-dbg
         # examine core files
         # TODO: eu-readelf -n binary|sed -n 's/^.*Build ID: //p'
         #       etc. to ensure build-id match
-        - find -name 'core*' -print0
+        - test $MAINT_EXTRA -ne 0 || find -name 'core*' -print0
           | xargs -0I@ -- sh -xc
             'file "@";
              gdb -se $(file "@" | sed -n "s|.* core file .* from \x27\([^\x27 ]*\).*|\1|p")
                  -c "@" -batch -ex "t a a bt f" -ex "set pagination 0"'
 
 after_success:
-        coveralls
+        test $MAINT_EXTRA -ne 0 || coveralls
 
 notifications:
         irc: "irc.freenode.net#clusterlabs-dev"
