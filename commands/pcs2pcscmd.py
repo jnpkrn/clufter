@@ -67,17 +67,16 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
         (
             file_proto(ccs),
             (
-                (
-                         file_proto(output),
-                ),
+                    (
+                        file_proto(output),
+                    ),
             ),
             file_proto(cib),
-            #(
-            #    (
+            # already tracked
+            #cib2pcscmd_output(
             #        (
-            #            file_proto(output),  # already tracked
+            #            file_proto(output),
             #        ),
-            #    ),
             #),
         ),
     )
@@ -146,20 +145,20 @@ def pcs2pcscmd_needle(cmd_ctxt,
                             file_proto(output),
                         ),
                     ),
+                    # already tracked
                     #(
                     #    (
-                    #        file_proto(output),  # already tracked
+                    #        file_proto(output),
                     #    ),
                     #),
                 ),
             ),
             file_proto(cib),
-            #(
-            #    (
-            #        (
-            #            file_proto(output),  # already tracked
-            #        ),
-            #    ),
+            # already tracked
+            #cib2pcscmd_output(
+            #            (
+            #                file_proto(output),
+            #            ),
             #),
         ),
     )
