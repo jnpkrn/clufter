@@ -79,7 +79,7 @@ ccsflat2cibprelude = '''\
     <node>
         <xsl:attribute name="id">
             <xsl:choose>
-                <xsl:when test="$pcscmd_flatiron">
+                <xsl:when test="$pcscmd_cman">
                     <!-- pacemaker + cman -->
                     <xsl:value-of select="@name"/>
                 </xsl:when>
