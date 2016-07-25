@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -12,22 +12,17 @@ ccsflat2cibprelude = ('''\
      -->
     <xsl:when test="name() = 'samba'">
         <xsl:choose>
-            <!-- NOTE we rely on atmost single dot separator
-                 in the version, hence conformity with IEEE 754 -->
-            <xsl:when test="$system = 'linux' and (
-                $system_1 = 'redhat' and $system_2 &gt;= 7
-                or
-                $system_1 = 'fedora' and $system_2 &gt;= 15
-            )">
+            <xsl:when test="$pcscmd_init_sys = 'systemd'">
 ''' + (
                 ResourceSpec('systemd:smb').xsl_attrs
 ) + '''\
             </xsl:when>
-            <xsl:when test="$system = 'linux' and (
-                $system_1 = 'redhat' and $system_2 &lt; 7
-                or
-                $system_1 = 'fedora' and $system_2 &lt; 15
-            )">
+            <xsl:when test="$pcscmd_init_sys = 'sysvinit'">
+''' + (
+                ResourceSpec('lsb:smb').xsl_attrs
+) + '''\
+            </xsl:when>
+            <xsl:when test="$pcscmd_init_sys = 'upstart'">
                 <!-- XXX could be either lsb, service or upstart
                          (as far as RHEL 6 is concerned),
                          service seems to be most canonical, though -->
