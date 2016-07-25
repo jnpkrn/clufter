@@ -37,6 +37,8 @@ cluster_map = {
                     # https://packages.debian.org/squeeze/$PACKAGE
                     'corosync':                      (1, 2),
                     'pacemaker[+coro,+hb]':          (1, 0, 9),
+                    #---
+                    'sys::init-sys':                'sysvinit',
                 }),
                 ((7, ), {
                     # https://packages.debian.org/wheezy/$PACKAGE
@@ -46,6 +48,8 @@ cluster_map = {
                 ((8, ), {
                     # https://packages.debian.org/jessie/$PACKAGE
                     'corosync':                      (1, 4, 6),
+                    #---
+                    'sys::init-sys':                'systemd',
                 }),
                 ((9, ), {
                     # https://packages.debian.org/stretch/$PACKAGE
@@ -62,10 +66,15 @@ cluster_map = {
                     'pkg::mysql':                   'mysql-server',
                     #---
                     'cmd::pkg-install':             'yum install -y {packages}',
+                    #---
+                    'sys::init-sys':                'upstart',
                 }),
                 ((14, ), {
                     'corosync':                      (1, 4),
                     'pacemaker[+cman]':              (1, 1, 6),
+                }),
+                ((15, ), {
+                    'sys::init-sys':                'systemd',
                 }),
                 ((17, ), {
                     'corosync':                      (2, 3),
@@ -131,6 +140,8 @@ cluster_map = {
                     'pkg::virsh':                   'libvirt-client',
                     #---
                     'cmd::pkg-install':             'yum install -y {packages}',
+                    #---
+                    'sys::init-sys':                'upstart',
                 }),
                 ((6, 2), {
                     'corosync':                      (1, 4),
@@ -161,6 +172,8 @@ cluster_map = {
                     #---
                     'pkg::mysql':                   'mariadb-server',
                     'pkg::tomcat':                  'tomcat',  # do not inherit
+                    #---
+                    'sys::init-sys':                'systemd',
                 }),
                 ((7, 1), {
                     'pacemaker[+coro]':              (1, 1, 12),
@@ -181,6 +194,8 @@ cluster_map = {
                     # https://packages.ubuntu.com/raring/$PACKAGE
                     'corosync':                      (1, 4),
                     'pacemaker[+coro,+hb]':          (1, 1, 7),
+                    #---
+                    'sys::init-sys':                'upstart',
                 }),
                 ((13, 10), {
                     # https://packages.ubuntu.com/saucy/$PACKAGE
@@ -190,6 +205,8 @@ cluster_map = {
                 ((15, 04), {
                     # https://packages.ubuntu.com/vivid/$PACKAGE
                     'pacemaker[+coro,+hb]':          (1, 1, 12),
+                    #---
+                    'sys::init-sys':                'systemd',
                 }),
                 ((16, 04), {
                     # https://packages.ubuntu.com/xenial/$PACKAGE
@@ -571,6 +588,10 @@ def _find_meta(meta, which, *sys_id, **kwargs):
 def package(which, *sys_id):
     default, _ = _parse_extra(which)
     return _find_meta('pkg', which, *sys_id, default=default)
+
+
+def system(which, *sys_id):
+    return _find_meta('sys', which, *sys_id, default=which)
 
 
 def cmd_pkg_install(pkgs, *sys_id):
