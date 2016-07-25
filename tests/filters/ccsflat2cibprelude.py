@@ -112,7 +112,8 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
 </resources>
 '''
             in_obj = in_fmt('bytestring', in_str)
-            out_obj = flt_obj(in_obj)
+            out_obj = flt_obj(in_obj,
+                              system='linux', system_extra=('rhel', '7.3'))
             #print out_obj.BYTESTRING()
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
@@ -181,7 +182,8 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
 </resources>
 '''
             in_obj = in_fmt('bytestring', in_str)
-            out_obj = flt_obj(in_obj)
+            out_obj = flt_obj(in_obj,
+                              system='linux', system_extra=('rhel', '7.3'))
             #print out_obj.BYTESTRING()
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
@@ -234,7 +236,8 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
 </resources>
 '''
             in_obj = in_fmt('bytestring', in_str)
-            out_obj = flt_obj(in_obj)
+            out_obj = flt_obj(in_obj,
+                              system='linux', system_extra=('rhel', '7.3'))
             #print out_obj.BYTESTRING()
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
