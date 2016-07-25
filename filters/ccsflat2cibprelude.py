@@ -5,7 +5,7 @@
 """ccsflat2cibprelude filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from ..facts import cluster_pcs_flatiron, package
+from ..facts import cluster_pcs_flatiron, package, system
 from ..filter import XMLFilter
 from ..utils_xslt import xslt_params
 
@@ -23,6 +23,7 @@ def ccsflat2cibprelude(flt_ctxt, in_obj):
             in_obj,
             def_first=xslt_params(
                 pcscmd_cman=cluster_pcs_flatiron(*sys_pair),
+                pcscmd_init_sys=system('init-sys', *sys_pair),
                 pcscmd_tomcat_catalina_home=join(
                     '/usr/share',
                     package('tomcat', *sys_pair)
