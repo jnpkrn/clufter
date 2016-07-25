@@ -16,20 +16,16 @@ from os.path import join
 # check that it is indeed ccs-flat, by exploring flt_ctxt?
 @XMLFilter.deco('ccs-flat', 'cib-prelude')
 def ccsflat2cibprelude(flt_ctxt, in_obj):
+    sys_pair = flt_ctxt['system'], flt_ctxt['system_extra']
     return (
         'etree',
         flt_ctxt.ctxt_proceed_xslt(
             in_obj,
             def_first=xslt_params(
-                pcscmd_flatiron=cluster_pcs_flatiron(
-                    flt_ctxt['system'],
-                    flt_ctxt['system_extra'],
-                ),
-                pcscmd_tomcat_catalina_home=join('/usr/share',
-                    package('tomcat',
-                            flt_ctxt['system'],
-                            flt_ctxt['system_extra'],
-                    ),
+                pcscmd_cman=cluster_pcs_flatiron(*sys_pair),
+                pcscmd_tomcat_catalina_home=join(
+                    '/usr/share',
+                    package('tomcat', *sys_pair)
                 ),
             )
         )
