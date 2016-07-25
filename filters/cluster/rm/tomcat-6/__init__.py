@@ -29,38 +29,12 @@ ccsflat2cibprelude = ('''\
 
         <!-- INSTANCE_ATTRIBUTES -->
         <instance_attributes id="{concat($Prefix, '-ATTRS')}">
-            <xsl:choose>
-                <!-- NOTE we rely on atmost single dot separator
-                     in the version, hence conformity with IEEE 754 -->
-                <xsl:when test="$system = 'linux' and (
-                    $system_1 = 'fedora' and $system_2 &gt;= 20
-                    )">
 ''' + (
-                    rg2hb_xsl('java_home', '/usr/lib/jvm/jre-1.8.0', req=abs)
-                    +
-                    rg2hb_xsl('catalina_home', '/usr/share/tomcat', req=abs)
+            rg2hb_xsl('java_home', '/usr/lib/jvm/jre', req=abs)
+            +
+            rg2hb_xsl('catalina_home', '{$pcscmd_tomcat_catalina_home}',
+                      req=abs)
 ) + '''\
-                </xsl:when>
-                <xsl:when test="$system = 'linux' and (
-                    $system_1 = 'redhat' and $system_2 &gt;= 7
-                    or
-                    $system_1 = 'fedora' and $system_2 &gt;= 17
-                    )">
-''' + (
-                    rg2hb_xsl('java_home', '/usr/lib/jvm/jre-1.7.0', req=abs)
-                    +
-                    rg2hb_xsl('catalina_home', '/usr/share/tomcat', req=abs)
-) + '''\
-                </xsl:when>
-                <xsl:otherwise>
-''' + (
-                    # especially RHEL 6
-                    rg2hb_xsl('java_home', '/usr/lib/jvm/jre-1.5.0', req=abs)
-                    +
-                    rg2hb_xsl('catalina_home', '/usr/share/tomcat6', req=abs)
-) + '''\
-                </xsl:otherwise>
-            </xsl:choose>
         </instance_attributes>
 
         <!-- OPERATIONS -->
