@@ -127,6 +127,7 @@ cluster_map = {
                     'pkg::lvm':                     'lvm2',
                     'pkg::mysql':                   'mysql-server',
                     'pkg::postgresql':              'postgresql-server',
+                    'pkg::tomcat':                  'tomcat6',
                     'pkg::virsh':                   'libvirt-client',
                     #---
                     'cmd::pkg-install':             'yum install -y {packages}',
@@ -159,6 +160,7 @@ cluster_map = {
                     'pcs':                           (0, 9, 115),
                     #---
                     'pkg::mysql':                   'mariadb-server',
+                    'pkg::tomcat':                  'tomcat',  # do not inherit
                 }),
                 ((7, 1), {
                     'pacemaker[+coro]':              (1, 1, 12),

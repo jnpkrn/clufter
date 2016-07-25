@@ -5,9 +5,11 @@
 """ccsflat2cibprelude filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from ..facts import cluster_pcs_flatiron
+from ..facts import cluster_pcs_flatiron, package
 from ..filter import XMLFilter
 from ..utils_xslt import xslt_params
+
+from os.path import join
 
 
 # XXX temporary hack with plain ccs;
@@ -22,6 +24,12 @@ def ccsflat2cibprelude(flt_ctxt, in_obj):
                 pcscmd_flatiron=cluster_pcs_flatiron(
                     flt_ctxt['system'],
                     flt_ctxt['system_extra'],
+                ),
+                pcscmd_tomcat_catalina_home=join('/usr/share',
+                    package('tomcat',
+                            flt_ctxt['system'],
+                            flt_ctxt['system_extra'],
+                    ),
                 ),
             )
         )
