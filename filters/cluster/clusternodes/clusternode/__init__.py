@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -75,15 +75,11 @@ ccs2ccs_pcmk = '''\
 # following could be omitted but keep it around if we ever need
 # to add some node attributes in the future
 ccsflat2cibprelude = '''\
-    <!-- differentiate be tween RHEL 6 and higher (rhbz#1207345) -->
+    <!-- differentiate between RHEL 6 and higher (rhbz#1207345) -->
     <node>
         <xsl:attribute name="id">
             <xsl:choose>
-                <xsl:when test="$system = 'linux' and (
-                    $system_1 = 'redhat' and $system_2 &lt; 7
-                    or
-                    $system_1 = 'fedora' and $system_2 &lt; 15
-                )">
+                <xsl:when test="$pcscmd_flatiron">
                     <!-- pacemaker + cman -->
                     <xsl:value-of select="@name"/>
                 </xsl:when>
