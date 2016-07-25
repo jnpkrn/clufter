@@ -393,8 +393,9 @@ def infer_dist(dist, branches=None):
     if branches is None:
         branches = infer_sys('*')  # alt.: branches = [cluster_map.values()]
     if dist == '*':
-        return apply_intercalate([c[1] for b in branches
-                                  for c in b.itervalues()])
+        return apply_intercalate([per_distver[1] for b in branches
+                                  for per_dist in b.itervalues()
+                                  for per_distver in per_dist])
     ret = []
     dist, dist_ver = _parse_ver(dist)
     try:
