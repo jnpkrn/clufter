@@ -190,7 +190,7 @@ cluster_map = {
                 }),
             ),
             'ubuntu': (
-                ((13, 04), {
+                ((13, 4), {
                     # https://packages.ubuntu.com/raring/$PACKAGE
                     'corosync':                      (1, 4),
                     'pacemaker[+coro,+hb]':          (1, 1, 7),
@@ -202,13 +202,13 @@ cluster_map = {
                     'corosync':                      (2, 3),
                     'pacemaker[+coro,+hb]':          (1, 1, 10),
                 }),
-                ((15, 04), {
+                ((15, 4), {
                     # https://packages.ubuntu.com/vivid/$PACKAGE
                     'pacemaker[+coro,+hb]':          (1, 1, 12),
                     #---
                     'sys::init-sys':                'systemd',
                 }),
-                ((16, 04), {
+                ((16, 4), {
                     # https://packages.ubuntu.com/xenial/$PACKAGE
                     'pacemaker[+coro]':              (1, 1, 14),
                     'pcs':                           (0, 9, 149),  # universe
@@ -249,13 +249,17 @@ aliases_rel = {
         'jessie':     '8',
     },
     'ubuntu': {
-        'raring':     '13.04',  # Raring Ringtail
+        '13.04':      '13.4',
+        'raring':     '13.4',   # Raring Ringtail
         'saucy':      '13.10',  # Saucy Salamander
-        'trusty':     '14.04',  # Trusty Tahr
+        '14.04':      '14.4',
+        'trusty':     '14.4',   # Trusty Tahr
         'utopic':     '14.10',  # Utopic Unicorn
-        'vivid':      '15.04',  # Vivid Vervet
+        '15.04':      '15.4',
+        'vivid':      '15.4',   # Vivid Vervet
         'wily':       '15.10',  # Wily Werewolf
-        'xenial':     '16.04',  # Xenial Xerus
+        '16.04':      '16.4',
+        'xenial':     '16.4',   # Xenial Xerus
         'yakkety':    '16.10',  # Yakkety Yak
     }
 }
