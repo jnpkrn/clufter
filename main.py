@@ -351,13 +351,15 @@ def run(argv=None, *args):
             verbosity, acc = int(opts.list.split('dists_', 1)[1]), []
             if verbosity == 0:
                 acc.extend((
-                    "# boundary versions of what is explicitly supported;",
-                    "# increase verbosity to display more"
+                    "# boundary (or so) versions of what is explicitly"
+                    " supported;",
+                    "# increase verbosity to display more",
                 ))
             elif verbosity >= 1:
                 acc.extend((
-                    "# all versions any change/update is tracked at",
-                    "# (spanning subset of what is explicitly supported)"
+                    "# spanning, still possibly sparse subset of what is"
+                    " explicitly supported",
+                    "# (all versions any change/update is tracked at)",
                 ))
             print '\n'.join(acc + [format_dists(verbosity)])
         elif opts.completion:
