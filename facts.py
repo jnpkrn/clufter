@@ -7,6 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from logging import getLogger
 
+from .utils import args2sgpl
 from .utils_func import apply_intercalate
 
 log = getLogger(__name__)
@@ -612,3 +613,44 @@ cluster_systems = (cluster_pcs_flatiron, cluster_pcs_needle)
 
 def cluster_unknown(*sys_id):
     return not(any(cluster_sys(*sys_id) for cluster_sys in cluster_systems))
+
+
+def format_dists(verbosity=0, aliases_dist_inv={}, aliases_rel_inv={}):
+    # need to flip the translation tables first (if not already)
+    if not aliases_dist_inv:
+        aliases_dist_inv.update(reduce(
+            lambda acc, (k, v): (acc.setdefault(v, []).append(k), acc)[1],
+            aliases_dist.iteritems(), {}
+        ))
+    if not aliases_rel_inv:
+        aliases_rel_inv.update((
+            k,
+            reduce(
+                lambda a, (ik, iv): (a.setdefault(iv, []).append(ik), a)[1],
+                v.iteritems(), {}
+            )
+        ) for k, v in aliases_rel.iteritems() if k in supported_dists)
+
+    return '\n'.join('\n\t'.join(
+        args2sgpl(
+            '\t# aliases: '.join(
+                args2sgpl(k, *filter(
+                    len, ('|'.join(sorted(aliases_dist_inv.get(k, ()))), )
+                ))
+            ),
+            *tuple(
+                '\t# aliases: '.join(
+                    args2sgpl(
+                        vvv,
+                        *filter(
+                            len,
+                            ('|'.join(sorted(
+                                aliases_rel_inv.get(k, {}) .get(vvv, ())
+                            )), )
+                        )
+                    )
+                ) for vv in (v if verbosity else (v[0], ('..', ), v[-1]))
+                for vvv in ('.'.join(str(i) for i in vv[0]), )
+            )
+        )
+    ) for k, v in sorted(cluster_map['linux'].iteritems()))
