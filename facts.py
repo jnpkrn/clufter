@@ -237,7 +237,7 @@ aliases_dist = {
 
 # in the queries, one can use following aliases to wildcard versions
 # of particular packages
-aliases_releases = {
+aliases_rel = {
     'corosync': {
         'flatiron':   '1',
         'needle':     '2',
@@ -299,7 +299,7 @@ def _parse_ver(s):
     name, ver = (lambda a, b=None: (a, b))(*s.split('=', 1))
     if ver:
         try:
-            ver = aliases_releases[name][ver]
+            ver = aliases_rel[name][ver]
         except KeyError:
             pass
         ver = tuple(map(int, ver.split('.')))
