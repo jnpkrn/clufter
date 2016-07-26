@@ -17,7 +17,7 @@ from . import version_parts, version_text, description_text
 from .command_manager import CommandManager
 from .completion import Completion
 from .error import EC
-from .facts import aliases_dist, supported_dists
+from .facts import aliases_dist, format_dists, supported_dists
 from .utils import args2sgpl, head_tail, identity
 from .utils_prog import ExpertOption, make_options, set_logging, which
 
@@ -38,7 +38,7 @@ _system_extra = linux_distribution(full_distribution_name=0) \
 
 
 def parser_callback_help(option, opt_str, value, parser, arg=False, full=False):
-    """Makes 'help' option accept 'optional option arguments'"""
+    """Makes 'help' option accept 'optional option argument'"""
     if arg:
         rargs, val = parser.rargs, ''
         if rargs and not rargs[0].startswith('-'):
@@ -75,6 +75,19 @@ def parser_callback_dist(option, opt_str, value, parser, *args, **kwargs):
                                                            *orig_version)))
 
 
+def parser_callback_list_dists(option, opt_str, value, parser):
+    """Makes 'list-dists' option accept 'optional option argument'"""
+    val = 0
+    rargs = parser.rargs
+    if rargs and rargs[0]:
+        try:
+            val = int(rargs[0])
+            del rargs[:1]
+        except ValueError:
+            pass
+    setattr(parser.values, 'list', 'dists_{0}'.format(val))
+
+
 opts_common = (
     (('--sys', ), dict(
         type='string',  # for dest -> default
@@ -89,7 +102,8 @@ opts_common = (
         action='callback',
         callback=parser_callback_dist,
         default=','.join(_system_extra),
-        help="override autodetected target distro (for SYS ~ linux) [%default]"
+        help="override target distro (for SYS=linux; see --list-dists)"
+             " [%default]"
     )),
     (('-q', '--quiet', ), dict(
         action='store_true',
@@ -149,8 +163,18 @@ opts_main = (
         help="full help message (can be command-specific) and exit"
     )),
     (('-l', '--list'), dict(
-        action='store_true',
+        action='store_const',
+        const='cmds',
         help="list commands and exit"
+    )),
+    (('--list-dists', ), dict(
+        metavar="[VERBOSITY]",
+        type='string',
+        nargs=0,  # <- we take one if suitable
+        action='callback',
+        callback=parser_callback_list_dists,
+        expert=True,
+        help="list explicitly supported --dist option arguments and exit"
     )),
     (('-v', '--version'), dict(
         action='store_true',
@@ -321,8 +345,21 @@ def run(argv=None, *args):
                                          ' required:' if opts.skip_ext else
                                         ', use --list to get all:'),
                               ellip=opts.skip_ext or not opts.list)
-        if opts.list:
+        if opts.list == 'cmds':
             print cmds
+        elif opts.list and opts.list.startswith('dists_'):
+            verbosity, acc = int(opts.list.split('dists_', 1)[1]), []
+            if verbosity == 0:
+                acc.extend((
+                    "# boundary versions of what is explicitly supported;",
+                    "# increase verbosity to display more"
+                ))
+            elif verbosity >= 1:
+                acc.extend((
+                    "# all versions any change/update is tracked at",
+                    "# (spanning subset of what is explicitly supported)"
+                ))
+            print '\n'.join(acc + [format_dists(verbosity)])
         elif opts.completion:
             c = Completion.get_completion(opts.completion, prog,
                                           opts_common, opts_main, opts_nonmain)
