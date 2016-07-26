@@ -11,18 +11,13 @@ from optparse import OptionParser, \
                      IndentedHelpFormatter
 from os.path import basename, realpath
 from platform import system, linux_distribution
-try:
-    from platform import _supported_dists
-except ImportError:
-    _supported_dists = ()
-_supported_dists += ('fedora', 'redhat')  # actively used in the templates
 from sys import version
 
 from . import version_parts, version_text, description_text
 from .command_manager import CommandManager
 from .completion import Completion
 from .error import EC
-from .facts import aliases_dist
+from .facts import aliases_dist, supported_dists
 from .utils import args2sgpl, head_tail, identity
 from .utils_prog import ExpertOption, make_options, set_logging, which
 
@@ -63,7 +58,7 @@ def parser_callback_dist(option, opt_str, value, parser, *args, **kwargs):
     orig_distro, orig_version = head_tail(value.split(',', 1))
     distro = orig_distro
     for fn in (lambda x: x.lower(), lambda x: aliases_dist.get(x, x), identity):
-        if distro in _supported_dists:
+        if distro in supported_dists:
             if distro != orig_distro:
                 parser.values._deferred_log = dl = getattr(parser.values,
                                                            '_deferred_log', [])

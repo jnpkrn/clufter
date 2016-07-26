@@ -217,6 +217,8 @@ cluster_map = {
         },
 }
 
+supported_dists = cluster_map['linux'].keys()
+
 # mere aliases of the distributions (packages remain the same),
 # i.e., downstream rebuilders;
 # values (and keys when making "alias" association) in this dict should
