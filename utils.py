@@ -6,10 +6,12 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from itertools import takewhile
+from types import GeneratorType
 
 
 # inspired by http://stackoverflow.com/a/4374075
-immutable = lambda x: isinstance(x, (basestring, int, long, bool, float, tuple))
+immutable = lambda x: isinstance(x, (basestring, int, long, bool, float, tuple,
+                                     GeneratorType))
 
 tuplist = lambda x: isinstance(x, (tuple, list, set))
 # turn args into tuple unless single tuplist arg
