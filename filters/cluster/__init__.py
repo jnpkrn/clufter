@@ -323,7 +323,7 @@ try:
 except ValueError:
     from ... import package_name, version
     from ...utils_xslt import xslt_id_friendly
-ccsflat2cibprelude_self_id = "{0} {1}".format(package_name(), version)
+ccsflat2cibprelude_self_id = ' '.join((package_name(), version))
 
 # should roughly match the output of:
 # (exec 3>&1; exec >/dev/null; export CIB_shadow=test-shadow;

@@ -110,8 +110,8 @@ class Filter(object):
         # XXX should rather be implemented by CompositeFormat itself?
         composite_onthefly = \
             lambda protocol, *args, **kwargs: \
-                CompositeFormat(protocol, *args,**dict(kwargs.iteritems(),
-                                                       **{'formats': formats}))
+                CompositeFormat(protocol, *args, **dict(kwargs.iteritems(),
+                                                        **{'formats': formats}))
         # XXX currently instantiation only (no match for composite classes)
         composite_onthefly.as_instance = \
             lambda *decl_or_instance, **kwargs: \
