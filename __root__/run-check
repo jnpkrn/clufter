@@ -174,7 +174,8 @@ run_check_cmd() {
     # self-check for sanity usage
     testcmd="$(mktemp)"
     { ${PYTHONEXEC} run-dev --dist redhat,7.1,Maipo \
-                            ccs2pcscmd "${@}" -sg -- - "${testcmd}" \
+                            ccs2pcscmd "${@}" -sg -- - - \
+			    | tail -n+2 > "${testcmd}" \
       && echo "TEST: execution OK" \
       || { echo "TEST: execution FAIL"; ret=20; }; }<<EOF
 <?xml version="1.0"?>
@@ -220,6 +221,9 @@ EOF
     { diff -u -- - "${testcmd}" \
       && echo "TEST: cmd diff OK" \
       || { echo "TEST: cmd diff FAIL"; ret=21; }; }<<EOF
+# invoked as: ['run-dev', '--dist', 'redhat,7.1,Maipo', 'ccs2pcscmd',
+# '-sg', '--', '-', '-']
+# targeting system: ('linux', 'redhat', '7.1', 'Maipo')
 pcs cluster auth rhel6-node1 rhel6-node2
 pcs cluster setup --name one rhel6-node1 rhel6-node2 --consensus 12000 \\
   --token 10000 --join 60

@@ -13,15 +13,18 @@ from ..utils_cman import PATH_CLUSTERCONF
 from ._chains_pcs import ccsflat2pcscmd_chain_exec
 
 
-@Command.deco(('ccs2ccsflat',
+@Command.deco(('cmd-annotate',
+                                  ('stringiter-combine3',
+                                      ('cmd-wrap'))),
+              ('ccs2ccsflat',
                   ('ccs-disable-rg',
                       ('ccs2ccs-pcmk',
                           ('ccs-version-bump',
                               ('ccspcmk2pcscmd',
-                                  ('stringiter-combine2',
-                                       ('cmd-wrap')))))),
+                                  ('stringiter-combine3'  # , ('cmd-wrap' ...
+                                   ))))),
                   (ccsflat2pcscmd_chain_exec(
-                                  ('stringiter-combine2'  # , ('cmd-wrap' ...
+                                  ('stringiter-combine3'  # , ('cmd-wrap' ...
                                    )))))
 def ccs2pcscmd_flatiron(cmd_ctxt,
                         input=PATH_CLUSTERCONF,
@@ -62,42 +65,55 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
     cmd_ctxt['text_width'] = text_width
     # XXX possibility to disable cib-meld-templates
 
+    void_proto = protocols.plugins['void'].ensure_proto
     file_proto = protocols.plugins['file'].ensure_proto
     return (
-        file_proto(input),
         (
+            void_proto(),
             (
-                (
-                    (
-                        (
-                                            (
-                                                file_proto(output),
-                                            ),
-                        ),
-                    ),
-                ),
+                                                (
+                                                    file_proto(output),
+                                                ),
             ),
+            file_proto(input),
             # already tracked
-            #ccsflat2pcscmd_output(
-            #                                (
-            #                                    file_proto(output),
-            #                                ),
+            #(
+            #    (
+            #        (
+            #            (
+            #                (
+            #                                    (
+            #                                        file_proto(output),
+            #                                    ),
+            #                ),
+            #            ),
+            #        ),
+            #    ),
+            #    # already tracked
+            #    #ccsflat2pcscmd_output(
+            #    #                                (
+            #    #                                    file_proto(output),
+            #    #                                ),
+            #    #),
             #),
         ),
     )
 
 
-@Command.deco(('ccs2ccsflat',
+@Command.deco(('cmd-annotate',
+                              ('stringiter-combine4',
+                                  ('cmd-wrap'))),
+              ('ccs2ccsflat',
                   ('ccs-propagate-cman',
                       ('ccs2needlexml',
                           ('needlexml2pcscmd',
-                              ('stringiter-combine3',
-                                  ('cmd-wrap'))),
+                              ('stringiter-combine4'  # , ('cmd-wrap' ...
+                               )),
                           ('needleqdevicexml2pcscmd',
-                              ('stringiter-combine3'  # , ('cmd-wrap' ...
+                              ('stringiter-combine4'  # , ('cmd-wrap' ...
                                )))),
                   (ccsflat2pcscmd_chain_exec(
-                              ('stringiter-combine3'  # , ('cmd-wrap' ...
+                              ('stringiter-combine4'  # , ('cmd-wrap' ...
                                )))))
 def ccs2pcscmd_needle(cmd_ctxt,
                       input=PATH_CLUSTERCONF,
@@ -138,30 +154,39 @@ def ccs2pcscmd_needle(cmd_ctxt,
     cmd_ctxt['text_width'] = text_width
     # XXX possibility to disable cib-meld-templates
 
+    void_proto = protocols.plugins['void'].ensure_proto
     file_proto = protocols.plugins['file'].ensure_proto
     return (
-        file_proto(input),
         (
+            void_proto(),
             (
-                (
-                                        (
-                                            (
-                                                file_proto(output),
-                                            ),
-                                        ),
-                    # already tracked
-                    #                    (
-                    #                        (
-                    #                            file_proto(output),
-                    #                        ),
-                    #                    ),
-                ),
+                                                (
+                                                    file_proto(output),
+                                                ),
             ),
-            # already tracked
-            #ccsflat2pcscmd_output(
+            file_proto(input),
+            #(
+            #    (
+            #        (
             #                                (
-            #                                    file_proto(output),
+            #                                    (
+            #                                        file_proto(output),
+            #                                    ),
             #                                ),
+            #            # already tracked
+            #            #                    (
+            #            #                        (
+            #            #                            file_proto(output),
+            #            #                        ),
+            #            #                    ),
+            #        ),
+            #    ),
+            #    # already tracked
+            #    #ccsflat2pcscmd_output(
+            #    #                                (
+            #    #                                    file_proto(output),
+            #    #                                ),
+            #    #),
             #),
         ),
     )
