@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Base protocol stuff (metaclass, etc.)"""
@@ -43,9 +43,10 @@ class Protocol(str):
         ret = super(Protocol, cls).__new__(cls, *args, **kwargs)
         return protocols.register(ret)
 
-    def ensure_proto(self, value):
+    def ensure_proto(self, value=None):
         work_val = protodictval(value)
-        work_val = work_val if tuplist(work_val) else (str(self), work_val)
+        work_val = work_val if tuplist(work_val) else (str(self), work_val) \
+                            if work_val is not None else (str(self), )
         if protodict(value):
             value['passin'] = work_val
             work_val = value
