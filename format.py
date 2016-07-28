@@ -333,6 +333,15 @@ class Format(object):
         return deco_meth
 
 
+class Nothing(Format):
+    """Empty format, typically an input for "generator" type of filters"""
+    native_protocol = VOID = Protocol('void')
+
+    @Format.producing(VOID)
+    def get_void(self, *protodecl):
+        pass  # same as return None
+
+
 class SimpleFormat(Format):
     """This is what most of the format classes want to subclass"""
     native_protocol = BYTESTRING = Protocol('bytestring')
