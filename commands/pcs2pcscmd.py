@@ -15,11 +15,14 @@ from ..utils_corosync import PATH_COROCONF
 from ._chains_pcs import cib2pcscmd_chain_exec
 
 
-@Command.deco(('ccspcmk2pcscmd',
-                          ('stringiter-combine2',
+@Command.deco(('cmd-annotate',
+                          ('stringiter-combine3',
                               ('cmd-wrap'))),
+              ('ccspcmk2pcscmd',
+                          ('stringiter-combine3'  # , ('cmd-wrap' ...
+                           )),
               (cib2pcscmd_chain_exec(
-                          ('stringiter-combine2'  # , ('cmd-wrap' ...
+                          ('stringiter-combine3'  # , ('cmd-wrap' ...
                            ))))
 def pcs2pcscmd_flatiron(cmd_ctxt,
                         ccs=PATH_CLUSTERCONF,
@@ -62,15 +65,24 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
     cmd_ctxt['text_width'] = text_width
     # XXX possibility to disable cib-meld-templates
 
+    void_proto = protocols.plugins['void'].ensure_proto
     file_proto = protocols.plugins['file'].ensure_proto
+
     return (
         (
-            file_proto(ccs),
+            void_proto(),
             (
                     (
                         file_proto(output),
                     ),
             ),
+            file_proto(ccs),
+            # already tracked
+            #(
+            #        (
+            #            file_proto(output),
+            #        ),
+            #),
             file_proto(cib),
             # already tracked
             #cib2pcscmd_output(
@@ -82,16 +94,19 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
     )
 
 
-@Command.deco(('simpleconfig-normalize',
+@Command.deco(('cmd-annotate',
+                          ('stringiter-combine4',
+                              ('cmd-wrap'))),
+              ('simpleconfig-normalize',
                   ('simpleconfig2needlexml',
                       ('needlexml2pcscmd',
-                          ('stringiter-combine3',
-                              ('cmd-wrap'))),
+                          ('stringiter-combine4'  # , ('cmd-wrap' ...
+                           )),
                       ('needleqdevicexml2pcscmd',
-                          ('stringiter-combine3'  # , ('cmd-wrap' ...
+                          ('stringiter-combine4'  # , ('cmd-wrap' ...
                            )))),
               (cib2pcscmd_chain_exec(
-                          ('stringiter-combine3'  # , ('cmd-wrap' ...
+                          ('stringiter-combine4'  # , ('cmd-wrap' ...
                            ))))
 def pcs2pcscmd_needle(cmd_ctxt,
                       coro=PATH_COROCONF,
@@ -134,25 +149,33 @@ def pcs2pcscmd_needle(cmd_ctxt,
     cmd_ctxt['text_width'] = text_width
     # XXX possibility to disable cib-meld-templates
 
+    void_proto = protocols.plugins['void'].ensure_proto
     file_proto = protocols.plugins['file'].ensure_proto
     return (
         (
-            file_proto(coro),
+            void_proto(),
             (
-                (
-                    (
                         (
                             file_proto(output),
                         ),
-                    ),
-                    # already tracked
-                    #(
-                    #    (
-                    #        file_proto(output),
-                    #    ),
-                    #),
-                ),
             ),
+            file_proto(coro),
+            # already tracked
+            #(
+            #    (
+            #        (
+            #            (
+            #                file_proto(output),
+            #            ),
+            #        ),
+            #        # already tracked
+            #        #(
+            #        #    (
+            #        #        file_proto(output),
+            #        #    ),
+            #        #),
+            #    ),
+            #),
             file_proto(cib),
             # already tracked
             #cib2pcscmd_output(

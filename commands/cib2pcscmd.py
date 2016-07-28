@@ -12,8 +12,12 @@ from ..utils_cib import PATH_CIB
 from ._chains_pcs import cib2pcscmd_chain_exec, cib2pcscmd_output
 
 
-@Command.deco(cib2pcscmd_chain_exec(
-                  ('cmd-wrap')))
+@Command.deco(('cmd-annotate',
+                  ('stringiter-combine2',
+                      ('cmd-wrap'))),
+              (cib2pcscmd_chain_exec(
+                  ('stringiter-combine2'  # , ('cmd-wrap' ...
+                   ))))
 def cib2pcscmd(cmd_ctxt,
                input=PATH_CIB,
                output="-",
@@ -47,12 +51,22 @@ def cib2pcscmd(cmd_ctxt,
     cmd_ctxt['text_width'] = text_width
     # XXX possibility to disable cib-meld-templates
 
+    void_proto = protocols.plugins['void'].ensure_proto
     file_proto = protocols.plugins['file'].ensure_proto
     return (
-        file_proto(input),
         (
-            cib2pcscmd_output(
-                file_proto(output),
+            void_proto(),
+            (
+                    (
+                        file_proto(output),
+                    ),
             ),
+            file_proto(input),
+            # already tracked
+            #cib2pcscmd_output(
+            #        (
+            #            file_proto(output),
+            #        ),
+            #),
         ),
     )
