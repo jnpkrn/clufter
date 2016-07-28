@@ -25,4 +25,9 @@ def stringiter_combine2(flt_ctxt, in_objs):
 def stringiter_combine3(flt_ctxt, in_objs):
     return stringiter_combine(flt_ctxt, in_objs)
 
+
+@Filter.deco(('string-iter', ) * 4, 'string-iter')
+def stringiter_combine4(flt_ctxt, in_objs):
+    return stringiter_combine(flt_ctxt, in_objs)
+
 # ...
