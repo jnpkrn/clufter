@@ -99,8 +99,8 @@
 
 <!-- ensure neither "score-attribute" nor "score-attribute-mangle" attributes
      of rsc_colocation are supported; see also:
-     - https://github.com/ClusterLabs/pacemaker/pull/1091/commits
-     - https://pagure.io/clufter/c/6b9054c (next branch) -->
+     - https://github.com/ClusterLabs/pacemaker/commit/30383cc
+     - https://pagure.io/clufter/c/abd2d45 (+ 53b8215) -->
 <xsl:template match="rng:element[@name = 'rsc_colocation']//rng:choice[
                          rng:attribute[@name = 'score']
                      ]">
