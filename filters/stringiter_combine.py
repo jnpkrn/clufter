@@ -15,9 +15,11 @@ def stringiter_combine(flt_ctxt, in_objs):
     return ('stringiter',
             chain(*tuple(o('stringiter', protect_safe=True) for o in in_objs)))
 
+
 @Filter.deco(('string-iter', ) * 2, 'string-iter')
 def stringiter_combine2(flt_ctxt, in_objs):
     return stringiter_combine(flt_ctxt, in_objs)
+
 
 @Filter.deco(('string-iter', ) * 3, 'string-iter')
 def stringiter_combine3(flt_ctxt, in_objs):
