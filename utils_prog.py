@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Program-specific commons"""
@@ -340,6 +340,8 @@ class FancyOutput(object):
         'note',
         'subheader',
         'warning',
+
+        'pcscmd_comment',
     )
     re_color = re_compile(
         '\|(?P<logic>' + '|'.join(logic_colors) + '):(?P<msg>[^\|]*)\|'
@@ -373,6 +375,8 @@ class FancyOutput(object):
         note      = 'brown',
         subheader = 'blue',
         warning   = 'red',
+
+        pcscmd_comment = 'brown',
     )
 
     @classmethod
