@@ -351,10 +351,18 @@ def cmd_args_cutter(itemgroups, color_map):
                 acc = []
             else:
                 ret.extend((ii, ) for ii in i)
-        elif cmd.endswith('pcs') and len(i) == 2 and i[0] == '--wait':
-            # --wait NUM has to be reverted into --wait=NUM due to the
-            # way pcs parser is "extended"
-            ret.append(( '='.join(i), ))
+        elif cmd.endswith('pcs'):
+            if len(i) == 2:
+                if i[0] == '--wait':
+                    # --wait NUM has to be reverted into --wait=NUM due to the
+                    # way pcs parser is "extended"
+                    i = ( '='.join(i), )
+                elif i[0] == '-f':
+                    i = (ii.join((
+                        color_map['file'] if ee == 0 else '',
+                        color_map['restore'] if ee == 1 else ''
+                    )) for ee, ii in enumerate(i))
+            ret.append(tuple(i))
         else:
             ret.append(i)
     return ret
@@ -403,7 +411,7 @@ def cmd_wrap(flt_ctxt, in_obj):
     cw = TextWrapper(width=tw, subsequent_indent='# ')  # wrapper for comments
     color_map = (dict(((k, FancyOutput.get_color(
                                FancyOutput.table.get('pcscmd_' + k, '')))
-                       for k in ('comment', 'pcs')),
+                       for k in ('comment', 'file', 'pcs')),
                         restore=FancyOutput.colors['restore'])
                 if flt_ctxt.get('color') else defaultdict(lambda: ''))
 
