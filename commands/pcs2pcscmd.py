@@ -14,6 +14,8 @@ from ..utils_cman import PATH_CLUSTERCONF
 from ..utils_corosync import PATH_COROCONF
 from ._chains_pcs import cib2pcscmd_chain_exec
 
+from os import isatty
+
 
 @Command.deco(('cmd-annotate',
                           ('stringiter-combine3',
@@ -64,6 +66,10 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
     cmd_ctxt['pcscmd_noguidance'] = noguidance
     cmd_ctxt['text_width'] = text_width
     # XXX possibility to disable cib-meld-templates
+
+    cmd_ctxt.filter('cmd-wrap')['color'] = output == "-" and isatty(1) and \
+                                           cmd_ctxt['color'] is not False \
+                                           or cmd_ctxt['color']
 
     void_proto = protocols.plugins['void'].ensure_proto
     file_proto = protocols.plugins['file'].ensure_proto
@@ -148,6 +154,10 @@ def pcs2pcscmd_needle(cmd_ctxt,
     cmd_ctxt['pcscmd_noguidance'] = noguidance
     cmd_ctxt['text_width'] = text_width
     # XXX possibility to disable cib-meld-templates
+
+    cmd_ctxt.filter('cmd-wrap')['color'] = output == "-" and isatty(1) and \
+                                           cmd_ctxt['color'] is not False \
+                                           or cmd_ctxt['color']
 
     void_proto = protocols.plugins['void'].ensure_proto
     file_proto = protocols.plugins['file'].ensure_proto
