@@ -11,6 +11,8 @@ from ..protocol import protocols
 from ..utils_cib import PATH_CIB
 from ._chains_pcs import cib2pcscmd_chain_exec, cib2pcscmd_output
 
+from os import isatty
+
 
 @Command.deco(('cmd-annotate',
                   ('stringiter-combine2',
@@ -50,6 +52,10 @@ def cib2pcscmd(cmd_ctxt,
     cmd_ctxt['pcscmd_enable'] = enable
     cmd_ctxt['text_width'] = text_width
     # XXX possibility to disable cib-meld-templates
+
+    cmd_ctxt.filter('cmd-wrap')['color'] = output == "-" and isatty(1) and \
+                                           cmd_ctxt['color'] is not False \
+                                           or cmd_ctxt['color']
 
     void_proto = protocols.plugins['void'].ensure_proto
     file_proto = protocols.plugins['file'].ensure_proto
