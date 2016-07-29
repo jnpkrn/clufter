@@ -510,6 +510,9 @@ class Command(object):
         """Proceed the command"""
         ec = EC.EXIT_SUCCESS
         maxl = len(sorted(self._filters, key=len)[-1])
+        color = dict(auto=None, never=False, always=True)[
+            getattr(opts, 'color', 'auto')
+        ]
         cmd_ctxt = cmd_ctxt or CommandContext({
             'filter_chain_analysis': self.filter_chain_analysis,
             'filter_noop':           getattr(opts, 'noop', ()),
@@ -522,14 +525,9 @@ class Command(object):
                                                                False),
                                                  prefix=("|header:[{{0:{0}}}]| "
                                                          .format(maxl)),
-                                                 color=dict(auto=None,
-                                                            never=False,
-                                                            always=True)[
-                                                                getattr(opts,
-                                                                        'color',
-                                                                        'auto')
-                                                            ]
+                                                 color=color,
                                      ),
+            'color':                color,
         }, bypass=True)
         cmd_ctxt.ensure_filters(self._filters.itervalues())
         kwargs = {}
