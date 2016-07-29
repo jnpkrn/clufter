@@ -293,6 +293,7 @@ pcs_commands_hierarchy = {
 def cmd_args_cutter(itemgroups, color_map):
     if not itemgroups:
         return itemgroups
+
     ret, acc = [], []
     cmd = itemgroups[0][0] if itemgroups[0] else ""
     for e, i in enumerate(itemgroups):
@@ -310,9 +311,10 @@ def cmd_args_cutter(itemgroups, color_map):
             elif cmd.endswith('pcs'):
                 pos = -1
                 end = len(i)
-                # separate "pcs"
+                # separate and possibly colorize "pcs"
                 if not e and i[0] == 'pcs':
-                    ret.append(i[0:1])
+                    ret.append(cmd_args_colorizer_pcs(i[0:1], color_map,
+                                                      initial=True))
                     pos += 1
                 while pos + 1 < end:
                     pos += 1
@@ -401,7 +403,7 @@ def cmd_wrap(flt_ctxt, in_obj):
     cw = TextWrapper(width=tw, subsequent_indent='# ')  # wrapper for comments
     color_map = (dict(((k, FancyOutput.get_color(
                                FancyOutput.table.get('pcscmd_' + k, '')))
-                       for k in ('comment', )),
+                       for k in ('comment', 'pcs')),
                         restore=FancyOutput.colors['restore'])
                 if flt_ctxt.get('color') else defaultdict(lambda: ''))
 
