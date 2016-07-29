@@ -342,6 +342,7 @@ class FancyOutput(object):
         'warning',
 
         'pcscmd_comment',
+        'pcscmd_file',
         'pcscmd_pcs',
     )
     re_color = re_compile(
@@ -378,6 +379,7 @@ class FancyOutput(object):
         warning   = 'red',
 
         pcscmd_comment = 'brown',
+        pcscmd_file    = 'magenta',
         pcscmd_pcs     = 'blue',
     )
 
