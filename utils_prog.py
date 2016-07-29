@@ -344,6 +344,7 @@ class FancyOutput(object):
         'pcscmd_comment',
         'pcscmd_file',
         'pcscmd_pcs',
+        'pcscmd_subcmd',
     )
     re_color = re_compile(
         '\|(?P<logic>' + '|'.join(logic_colors) + '):(?P<msg>[^\|]*)\|'
@@ -381,6 +382,7 @@ class FancyOutput(object):
         pcscmd_comment = 'brown',
         pcscmd_file    = 'magenta',
         pcscmd_pcs     = 'blue',
+        pcscmd_subcmd  = 'green',
     )
 
     @classmethod
