@@ -23,9 +23,9 @@ def cmd_args_cutter(itemgroups):
         return itemgroups
     ret, acc = [], []
     cmd = itemgroups[0][0] if itemgroups[0] else ""
-    for i in itemgroups:
-        if len(i) > 1 and (not(i[0].startswith('-')) or i[0] == '-'):
-            js = [e for e, j in enumerate(i) if e and j in _CONTROL_OPERATORS]
+    for e, i in enumerate(itemgroups):
+        if len(i) and (not(i[0].startswith('-')) or i[0] == '-'):
+            js = [f for f, j in enumerate(i) if f and j in _CONTROL_OPERATORS]
             if js:
                 js.append(len(i))
                 this_joint = 0
@@ -38,6 +38,10 @@ def cmd_args_cutter(itemgroups):
             elif cmd.endswith('pcs'):
                 pos = -1
                 end = len(i)
+                # separate "pcs"
+                if not e and i[0] == 'pcs':
+                    ret.append(i[0:1])
+                    pos += 1
                 while pos + 1 < end:
                     pos += 1
                     # try to cut into "firm groups"
