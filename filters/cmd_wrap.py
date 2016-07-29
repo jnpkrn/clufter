@@ -7,7 +7,9 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..filter import Filter
 from ..formats.command import command
+from ..utils_prog import FancyOutput
 
+from collections import defaultdict
 from logging import getLogger
 from os import getenv
 from sys import maxint
@@ -397,11 +399,21 @@ def cmd_wrap(flt_ctxt, in_obj):
         tw = 20 if tw else 72
         log.info('Text width fallback: {0}'.format(tw))
     cw = TextWrapper(width=tw, subsequent_indent='# ')  # wrapper for comments
+    color_map = (dict(((k, FancyOutput.get_color(
+                               FancyOutput.table.get('pcscmd_' + k, '')))
+                       for k in ('comment', )),
+                        restore=FancyOutput.colors['restore'])
+                if flt_ctxt.get('color') else defaultdict(lambda: ''))
 
     ret, continuation = [], []
     for line in in_obj('stringiter', protect_safe=True):
         if line.lstrip().startswith('#'):
-            ret.extend(cw.wrap(line))
+            lines = cw.wrap(line)
+            last = len(lines) - 1
+            ret.extend(l.join((
+                color_map['comment'] if e == 0 else '',
+                color_map['restore'] if e == last else ''
+            )) for e, l in enumerate(lines))
             continue
         # rough overapproximation of what is indeed a line continuation
         if line.endswith('\\') and not line.endswith('\\\\'):
