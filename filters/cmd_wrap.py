@@ -290,7 +290,7 @@ pcs_commands_hierarchy = {
 }
 
 
-def cmd_args_cutter(itemgroups):
+def cmd_args_cutter(itemgroups, color_map):
     if not itemgroups:
         return itemgroups
     ret, acc = [], []
@@ -424,7 +424,8 @@ def cmd_wrap(flt_ctxt, in_obj):
         line = ' '.join(continuation) + line
         continuation = []
         linecnt, rline, remains = -1, [], tw - 2  # ' \'
-        itemgroups = cmd_args_cutter(command('bytestring', line)('separated'))
+        itemgroups = cmd_args_cutter(command('bytestring', line)('separated'),
+                                     color_map=color_map)
         itemgroups.reverse()
         while itemgroups:
             itemgroup = list(itemgroups.pop())
