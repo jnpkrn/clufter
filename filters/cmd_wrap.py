@@ -9,7 +9,7 @@ from ..filter import Filter
 from ..formats.command import command
 from ..utils_prog import FancyOutput
 
-from collections import defaultdict
+from collections import MutableMapping, defaultdict
 from logging import getLogger
 from os import getenv
 from sys import maxint
@@ -290,6 +290,30 @@ pcs_commands_hierarchy = {
 }
 
 
+def cmd_args_colorizer_pcs(in_seq, color_map, initial=False,
+                           level=pcs_commands_hierarchy):
+    output = in_seq
+    if len(in_seq) == 1 and initial and in_seq[0] == 'pcs':
+        output = (in_seq[0].join((color_map['pcs'], color_map['restore'])), )
+    else:
+        output = []
+        for i in in_seq:
+            if level is not None and i in level:
+                output.append(i)
+                level = level[i]
+                if not isinstance(level, MutableMapping):
+                    level = None  # XXX for the time being
+                if level is None:
+                    last = len(output) - 1
+                    output = [ii.join((
+                        color_map['subcmd'] if ee == 0 else '',
+                        color_map['restore'] if ee == last else ''
+                    )) for (ee, ii) in enumerate(output)]
+                continue
+            output.append(i)
+    return output
+
+
 def cmd_args_cutter(itemgroups, color_map):
     if not itemgroups:
         return itemgroups
@@ -411,7 +435,7 @@ def cmd_wrap(flt_ctxt, in_obj):
     cw = TextWrapper(width=tw, subsequent_indent='# ')  # wrapper for comments
     color_map = (dict(((k, FancyOutput.get_color(
                                FancyOutput.table.get('pcscmd_' + k, '')))
-                       for k in ('comment', 'file', 'pcs')),
+                       for k in ('comment', 'file', 'pcs', 'subcmd')),
                         restore=FancyOutput.colors['restore'])
                 if flt_ctxt.get('color') else defaultdict(lambda: ''))
 
