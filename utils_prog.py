@@ -342,6 +342,7 @@ class FancyOutput(object):
         'warning',
 
         'pcscmd_comment',
+        'pcscmd_pcs',
     )
     re_color = re_compile(
         '\|(?P<logic>' + '|'.join(logic_colors) + '):(?P<msg>[^\|]*)\|'
@@ -377,6 +378,7 @@ class FancyOutput(object):
         warning   = 'red',
 
         pcscmd_comment = 'brown',
+        pcscmd_pcs     = 'blue',
     )
 
     @classmethod
