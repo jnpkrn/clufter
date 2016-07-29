@@ -347,9 +347,10 @@ def cmd_args_cutter(itemgroups, color_map):
                         if i[pos:pos + 2] in (("resource", "create"),
                                               ("stonith", "create")):
                             # "resource/stonith create X Y" firm group
-                            ret.extend(
+                            ret.extend(map(
+                                lambda x: cmd_args_colorizer_pcs(x, color_map),
                                 filter(bool, (tuple(acc), tuple(i[pos:pos + 4])))
-                            )
+                            ))
                             pos += 4
                             acc = list(i[pos:pos])
                             pos += len(acc) - 1
@@ -358,20 +359,26 @@ def cmd_args_cutter(itemgroups, color_map):
                         if i[pos:pos + 2] in (('property', 'set'),
                                               ('property', 'unset')):
                             # "property set/unset non-option [non-option...]"
-                            ret.extend(filter(bool, (tuple(acc), )))
+                            ret.extend(map(
+                                lambda x: cmd_args_colorizer_pcs(x, color_map),
+                                filter(bool, (tuple(acc), ))
+                            ))
                             acc = list(i[pos:pos + 2])
                             pos += len(acc) - 1
                             continue
                     if pos <= end - 2:
                         if i[pos] in ("op", "meta"):
                             # "op/meta non-option [non-option...]"
-                            ret.extend(filter(bool, (tuple(acc), )))
+                            ret.extend(map(
+                                lambda x: cmd_args_colorizer_pcs(x, color_map),
+                                filter(bool, (tuple(acc), ))
+                            ))
                             acc = list(i[pos:pos + 1])
                             pos += len(acc) - 1
                             continue
                     # TBD
                     acc.append(i[pos])
-                ret.append(tuple(acc))
+                ret.append(cmd_args_colorizer_pcs(acc, color_map))
                 acc = []
             else:
                 ret.extend((ii, ) for ii in i)
