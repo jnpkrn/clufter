@@ -166,7 +166,7 @@ class Command(object):
         #        ('B',
         #            ('C')))
         # XXX: regardless if isinstance(filter_chain[1], tuple)
-        if len(filter_chain) > (1 if passed_filter_length <= 2 and not new else 2):
+        if len(filter_chain) >= passed_filter_length + int(new):
             filter_chain = (filter_chain, )
         for i_origin in filter_chain:
             if not i_origin:
