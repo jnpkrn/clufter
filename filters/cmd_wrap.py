@@ -230,6 +230,26 @@ pcs_commands_hierarchy = {
         'unblock': None,
         'update': None,
     },
+    'booth': {
+        'setup': None,
+        'destroy': None,
+        'ticket': {
+            'add': None,
+            'remove': None,
+            'grant': None,
+        },
+        'config': None,
+        'create': {
+            'ip': None,
+        },
+        'status': None,
+        'pull': None,
+        'sync': None,
+        'enable': None,
+        'disable': None,
+        'start': None,
+        'stop': None,
+    },
     'status': {
         None: None,
         'resources': None,
