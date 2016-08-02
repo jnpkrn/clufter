@@ -266,6 +266,12 @@ class Format(object):
                                                  **dict(kwargs, spec=spec))
 
     @property
+    def hash(self):
+        if self._hash is None:
+            raise NotImplementedError
+        return self._hash
+
+    @property
     def representations(self):
         """Mapping of `protocol: initializing_data`"""
         # XXX should be ProtectedDict
@@ -336,6 +342,8 @@ class Format(object):
 class Nothing(Format):
     """Empty format, typically an input for "generator" type of filters"""
     native_protocol = VOID = Protocol('void')
+
+    _hash = hash(None)
 
     @Format.producing(VOID)
     def get_void(self, *protodecl):
