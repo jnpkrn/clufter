@@ -344,14 +344,12 @@ def cmd_args_cutter(itemgroups, color_map):
         if len(i) and (not(i[0].startswith('-')) or i[0] == '-'):
             js = [f for f, j in enumerate(i) if f and j in _CONTROL_OPERATORS]
             if js:
-                js.append(len(i))
+                js.extend((len(i), ) * 2)
                 this_joint = 0
                 for next_joint in js:
                     ret.extend(filter(bool, (tuple(acc), )))
                     acc = list(i[this_joint:next_joint])
                     this_joint = next_joint
-                ret.append(tuple(acc))
-                acc = []
             elif cmd.endswith('pcs'):
                 pos = -1
                 end = len(i)
