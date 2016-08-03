@@ -191,7 +191,8 @@ class Format(object):
         """Format constructor, i.e., object = concrete internal data"""
         rs = {}
         self._representations, self._representations_ro = rs, ProtectedDict(rs)
-        self._hash = None
+        if not hasattr(self, '_hash'):  # can be defined at the class level
+            self._hash = None
         validator_specs = kwargs.pop('validator_specs', {})
         default = validator_specs.setdefault('', None)  # None ~ don't track
         validators = {}
