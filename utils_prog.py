@@ -388,7 +388,7 @@ class FancyOutput(object):
     @classmethod
     def get_color(cls, spec):
         return cls.colors.get(spec, spec if spec.startswith('\033[') or not spec
-                                    else '\033[' + spec)
+                                    else spec.join(('\033[', 'm')))
 
     # TODO use /etc/terminal-colors.d/clufter.{enable,disable,scheme}
     def __init__(self, f=stdout, recheck=False, color=None, quiet=False,
