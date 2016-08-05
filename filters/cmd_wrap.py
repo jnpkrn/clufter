@@ -6,7 +6,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..filter import Filter
-from ..formats.command import command
+from ..formats.command import command, _CONTROL_OPERATORS
 from ..utils_prog import FancyOutput
 
 from collections import MutableMapping, defaultdict
@@ -16,9 +16,6 @@ from sys import maxint
 from textwrap import TextWrapper
 
 log = getLogger(__name__)
-
-# man bash | grep -A2 '\s\+control operator$' (minus <newline>)
-_CONTROL_OPERATORS = '||', '&', '&&', ';', ';;', '(', ')', '|', '|&'
 
 pcs_commands_hierarchy = {
     'cluster': {
