@@ -25,6 +25,7 @@ from .utils import areinstances, \
                    isinstanceexcept, \
                    selfaware, \
                    tuplist
+from .utils_func import apply_split
 
 log = logging.getLogger(__name__)
 
@@ -389,6 +390,23 @@ class FancyOutput(object):
     def get_color(cls, spec):
         return cls.colors.get(spec, spec if spec.startswith('\033[') or not spec
                                     else spec.join(('\033[', 'm')))
+
+    @classmethod
+    def normalized(cls, s):
+        assert isinstance(s, basestring)
+        return ''.join(map(
+            lambda x: x.rsplit('\033[', 1)[0],
+            apply_split(
+                s,
+                lambda i, _, a: i == 'm' and a
+                                         and a[-1].rstrip('0123456789;')[-2:]
+                                             == '\033['
+            )
+        ))
+
+    @classmethod
+    def len_normalized(cls, s):
+        return len(cls.normalized(s))
 
     # TODO use /etc/terminal-colors.d/clufter.{enable,disable,scheme}
     def __init__(self, f=stdout, recheck=False, color=None, quiet=False,
