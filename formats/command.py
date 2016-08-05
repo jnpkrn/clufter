@@ -10,6 +10,7 @@ try:
 except ImportError:
     from ordereddict import OrderedDict
 from logging import getLogger
+from shlex import split
 
 log = getLogger(__name__)
 
@@ -90,7 +91,6 @@ class command(SimpleFormat):
     def get_merged(self, *protodecl):
         # try to look (indirectly) if we have "separated" at hand first
         if self.BYTESTRING in self._representations:  # break the possible loop
-            from shlex import split
             ret = split(self.BYTESTRING())
             if self._dict.get('enquote', True):
                 ret = self._escape(ret)
