@@ -19,6 +19,11 @@ from ..protocol import Protocol
 from ..utils import head_tail
 from ..utils_func import apply_intercalate
 
+# man bash | grep -A2 '\s\+metacharacter$'
+_META_CHARACTERS =  '|', '&', ';', '(', ')', '<', '>' , ' ', '\t'
+# man bash | grep -A2 '\s\+control operator$' (minus <newline>)
+_CONTROL_OPERATORS = '||', '&', '&&', ';', ';;', '(', ')', '|', '|&'  # , '\n'
+
 
 class command(SimpleFormat):
     native_protocol = SEPARATED = Protocol('separated')
