@@ -5,7 +5,7 @@
 """Various functional-paradigm helpers"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from .utils import tuplist
+from .utils import areinstances, args2sgpl, tuplist
 
 
 apply_preserving_depth = \
@@ -37,6 +37,43 @@ apply_intercalate = apply_aggregation_preserving_depth(
                i, [])
 )
 
+add_item = lambda seq, i: \
+    seq + (i if areinstances(seq, i) else type(seq)(args2sgpl(i)))
+
+# something like str.partition, but repeatable and applicable to sequences
+# in general (can be used as a one-level only inverse function to
+# apply_aggregation_preserving_depth (or, in special case, apply_intercalate),
+# which itself can loose granularity while this one provide a finer view);
+# note that special care was taken to make this function
+# uniformly handle both strings and generic iterables (unlike the other
+# functions)
+apply_partition = \
+    lambda i, partitioner: \
+        (lambda result: result[:-1] if result[-1] == type(i)() else result)(
+            reduce(
+                lambda acc, (ee, ii):
+                    acc[:-1] + [add_item(acc[-1], ii)]
+                    if not partitioner(ii, ee, acc) else (acc if ee else [])
+                        + [add_item(type(i)(), ii)] + [type(i)()],
+                enumerate(i),
+                [type(i)()]
+            )
+        )
+
+# ...and also something like str.split (unlimited variant)
+apply_split = \
+    lambda i, splitter: \
+        (lambda result: result[:-1] if result[-1] == type(i)() else result)(
+            reduce(
+                lambda acc, (ee, ii):
+                    acc[:-1] + [add_item(acc[-1], ii)]
+                    if not splitter(ii, ee, acc) else acc + [type(i)()],
+                enumerate(i),
+                [type(i)()]
+            )
+        )
+
+# Haskell: partition
 bifilter = \
     lambda fnc, seq: \
         reduce(lambda acc, x: acc[int(not fnc(x))].append(x) or acc,
