@@ -7,6 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..filter import Filter
 from ..formats.command import command, _CONTROL_OPERATORS, ismetaword
+from ..utils_func import add_item
 from ..utils_prog import FancyOutput
 
 from collections import MutableMapping, defaultdict
@@ -315,20 +316,26 @@ def cmd_args_colorizer_pcs(in_seq, color_map, initial=False,
         output = (in_seq[0].join((color_map['pcs'], color_map['restore'])), )
     else:
         output = []
-        for i in in_seq:
-            if level is not None and i in level:
+        for i in add_item(in_seq, ''):
+            if isinstance(level, MutableMapping):
+                if i in level:
+                    output.append(i)
+                    level = level[i]
+                    if level is None:
+                        level = True
+                    elif not isinstance(level, MutableMapping):
+                        level = None  # XXX for the time being
+                    continue  # need to yield new 'i' even if level is True
+                level = None in level
+            if level is True:
+                last = len(output) - 1
+                output = [ii.join((
+                    color_map['subcmd'] if ee == 0 else '',
+                    color_map['restore'] if ee == last else ''
+                )) for (ee, ii) in enumerate(output)]
+                level = None
+            if i:
                 output.append(i)
-                level = level[i]
-                if not isinstance(level, MutableMapping):
-                    level = None  # XXX for the time being
-                if level is None:
-                    last = len(output) - 1
-                    output = [ii.join((
-                        color_map['subcmd'] if ee == 0 else '',
-                        color_map['restore'] if ee == last else ''
-                    )) for (ee, ii) in enumerate(output)]
-                continue
-            output.append(i)
     return output
 
 
