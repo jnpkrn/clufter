@@ -6,7 +6,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..filter import Filter
-from ..formats.command import command, _CONTROL_OPERATORS
+from ..formats.command import command, _CONTROL_OPERATORS, ismetaword
 from ..utils_prog import FancyOutput
 
 from collections import MutableMapping, defaultdict
@@ -505,10 +505,13 @@ def cmd_wrap(flt_ctxt, in_obj):
                 if (rline
                     and not itemgroup
                     and remains - (curlen + 1 + len_n(' '.join(rline))) >= 0
-                    and (not itemgroups or not itemgroups[-1]
-                        or not itemgroups[-1][0]
-                        or not n(itemgroups[-1][0])[0] == '-'
-                        or n(line[0]) not in _CONTROL_OPERATORS)):
+                    and (not itemgroups
+                         or not itemgroups[-1]
+                         or not itemgroups[-1][0]
+                         or not n(itemgroups[-1][0])[0] == '-'
+                         or not ismetaword(n(line[0]))
+                         or len(itemgroups) == 1 or not itemgroups[-2]
+                         or ismetaword(n(itemgroups[-2][0])))):
                     line = rline + line
                     rline = []
                     linecnt -= 1
