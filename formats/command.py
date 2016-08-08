@@ -17,7 +17,7 @@ log = getLogger(__name__)
 from ..format import SimpleFormat
 from ..protocol import Protocol
 from ..utils import head_tail
-from ..utils_func import apply_intercalate
+from ..utils_func import add_item, apply_intercalate, apply_partition
 
 # man bash | grep -A2 '\s\+metacharacter$'
 _META_CHARACTERS =  '|', '&', ';', '(', ')', '<', '>' , ' ', '\t'
@@ -94,9 +94,56 @@ class command(SimpleFormat):
 
     @SimpleFormat.producing(MERGED, protect=True)
     def get_merged(self, *protodecl):
-        # try to look (indirectly) if we have "separated" at hand first
         if self.BYTESTRING in self._representations:  # break the possible loop
-            ret = split(self.BYTESTRING())
+            # XXX backticks not supported (yet)
+            preprocessed = apply_partition(
+                self.BYTESTRING(),
+                lambda x, _, acc:
+                    x == '(' and acc and not(acc[0].lstrip().startswith('#'))
+                             and acc[-1][-1:] in '$<'
+                             and not(any((
+                                (lambda y, z: 0 if z == 1 and y == '"' else z % 2)(
+                                    y, acc[-1].lstrip(' \t' + y).count(y) - acc[-1].count('\\' + y)
+                                )
+                             ) for y in "'\""))
+                    or
+                    x == ')' and acc and (not acc[-1] or acc[-1][-1] != '\\')
+                             and any(y in acc[-2:-1] for y in '()')
+                             and not(any((
+                                acc[-1].lstrip(' \t' + y).count(y) - acc[-1].count('\\' + y)
+                             ) % 2 for y in "'\""))
+                    or
+                    x == ';' and acc and not(acc[0].lstrip().startswith('#'))
+                             and not(any((
+                                acc[-1].lstrip(' \t' + y).count(y) - acc[-1].count('\\' + y)
+                             ) % 2 for y in "'\""))
+            )
+            ret, prev = [], ''
+            # XXX could check quotation pairs match using a stack
+            for p in add_item(preprocessed, ''):
+                tail1, tail2 = '', ''
+                if p == '(':
+                    if p == '(' and prev[-1:] in '$<':
+                        qs = tuple(
+                            x for x in '"' if
+                            (prev[:-1].count(x) - prev[:-1].count('\\' + x)) % 2
+                        )
+                        if qs and prev[:-1].rstrip(" \t")[-1:] in qs:
+                            prev, tail1, tail2 = prev.rpartition(qs[0])
+                    ret.extend(filter(bool, split(prev) + [tail1 + tail2]))
+                    ret[-1] += p
+                    p = ''
+                elif prev == ')':
+                    qs = tuple(
+                        x for x in '"' if
+                        (p[:-1].count(x) - p[:-1].count('\\' + x)) % 2
+                    )
+                    if qs and p.lstrip(" \t")[:1] in qs:
+                        tail1, tail2, p = p.partition(qs[0])
+                    ret.extend(filter(bool, [prev + tail1 + tail2]))
+                elif prev:
+                    ret.extend(split(prev))
+                prev = p
             if self._dict.get('enquote', True):
                 ret = self._escape(ret)
             offset = 0
