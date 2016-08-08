@@ -34,26 +34,29 @@ class command(SimpleFormat):
     @staticmethod
     def _escape(base, qs=("'", '"')):
         # rule: last but one item in qs cannot be escaped inside enquotion
+        # XXX: escaping _META_CHARACTERS
         ret = []
         for b in base:
-            use_qs = qs
-            if any(b.startswith(q) or b.endswith(q) for q in use_qs) \
-                    or (any(c in b for c in ' #$') and not b.startswith('<<')
-                    and not any(b.startswith(s) for s in ("$(", "<("))):
-                if '$' in b:
-                    use_qs = tuple(c for c in use_qs if c != "'")
-                use_q = ''
-                for q in use_qs:
-                    if q not in b:
-                        use_q = q
-                        break
-                else:
-                    use_q = use_qs[-1]
-                    if use_q != use_qs[0]:
-                        b = b.replace(use_q, '\\' + use_q)
+            if any(c in b for c in qs + tuple(' \t#$')):
+                use_q, prologue, epilogue = ('', ) * 3
+                if not(b.endswith('(') and b[-2:-1] in '$<'
+                       and b[:-2].rstrip(' \t') in ('', '"')
+                       or
+                       b.startswith(')') and b[1:].lstrip(' \t') in ('', '"')):
+                    if b.startswith('<<<'):
+                        _, prologue, b = b.partition('<<<')
+                    use_qs = tuple(c for c in qs if c != "'") if '$' in b else qs
+                    for q in use_qs:
+                        if q not in b:
+                            use_q = q
+                            break
                     else:
-                        raise RuntimeError('cannot quote the argument')
-                b = b.join((use_q, use_q))
+                        use_q = use_qs[-1]
+                        if use_q != qs[0]:
+                            b = b.replace(use_q, '\\' + use_q)
+                        else:
+                            raise RuntimeError('cannot quote the argument')
+                b = b.join((use_q, use_q)).join((prologue, epilogue))
             ret.append(b)
         return ret
 
