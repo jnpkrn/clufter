@@ -86,9 +86,10 @@ class command(SimpleFormat):
         ret, acc, takes = [], [], 2  # by convention, option takes at most 1 arg
         while merged:
             i = merged.pop()
-            # treat `-OPT` followed with `-NUMBER` just as if it was `NUMBER`
-            if acc == ['--'] or i is None or \
-                    i.startswith('-') and i != '-' and not i[1:].isdigit():
+            # treat `-OPT` followed with `-NUMBER` just as if it was `NUMBER`,
+            # also add an extra split on "meta words"
+            if acc == ['--'] or i is None or ismetaword(i) \
+                    or i.startswith('-') and i != '-' and not i[1:].isdigit():
                 if not acc:
                     pass
                 elif acc[0].startswith('-'):
