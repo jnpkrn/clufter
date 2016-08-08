@@ -79,19 +79,19 @@ def coro2pcscmd(**kwargs):
                     ' &lt;(python -m json.tool /var/lib/pcsd/tokens',
                         ' | sed -n &quot;s|^\s*\&quot;[^\&quot;]\+\&quot;:\s*\&quot;\([0-9a-f-]\+\)\&quot;.*|\1|1p&quot;',
                         ' | sort)',
-                ') @SENTINEL@; do %(NL)s',
-                'grep -Eq &quot;$(python -m json.tool /var/lib/pcsd/tokens',
+                ') @SENTINEL@; do',
+                ' grep -Eq &quot;$(python -m json.tool /var/lib/pcsd/tokens',
                     ' | sed -n &quot;s|^\s*\&quot;\([^\&quot;]\+\)\&quot;:\s*\&quot;${l}\&quot;.*|\1|1p&quot;)&quot;',
                     ' - &lt;&lt;&lt;&quot;')"/>
             %(descent_node)s
             <xsl:value-of select="concat(
-                '&quot; &amp;&amp; break%(NL)s',
-                'false%(NL)s',
-                'done || {%(NL)s',
-                'echo &quot;WARNING: cluster being created ought to include this very local machine&quot;%(NL)s',
-                'read -p &quot;Do you want to continue [yN] (60s timeout): &quot; -t 60 || :%(NL)s',
-                'test &quot;${REPLY}&quot; = &quot;y&quot; || kill -INT $$%(NL)s',
-                '}%(NL)s:%(NL)s'
+                '&quot; &amp;&amp; break;',
+                ' false;',
+                ' done || {',
+                ' echo &quot;WARNING: cluster being created ought to include this very local machine&quot;;',
+                ' read -p &quot;Do you want to continue [yN] (60s timeout): &quot; -t 60 || :;',
+                ' test &quot;${REPLY}&quot; = &quot;y&quot; || kill -INT $$;',
+                ' }%(NL)s'
             )"/>
         </xsl:if>
 ''' + (
