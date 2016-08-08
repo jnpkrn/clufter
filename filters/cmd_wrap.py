@@ -15,6 +15,7 @@ from os import getenv
 from sys import maxint
 from textwrap import TextWrapper
 
+n, len_n = FancyOutput.normalized, FancyOutput.len_normalized
 log = getLogger(__name__)
 
 pcs_commands_hierarchy = {
@@ -489,24 +490,25 @@ def cmd_wrap(flt_ctxt, in_obj):
             while itemgroup:
                 curlen = 0
                 line = [itemgroup.pop()]
-                curlen += len(line[-1])
+                curlen += len_n(line[-1])
                 # best match fill
                 while itemgroup \
-                        and remains - (curlen + 1 + len(itemgroup[-1])) >= 0:
+                        and remains - (curlen + 1 + len_n(itemgroup[-1])) >= 0:
                     line.append(itemgroup.pop())
-                    curlen += 1 + len(line[-1])
+                    curlen += 1 + len_n(line[-1])
                 # compensate for ' \' tail not necessary if very last item fits
                 if not itemgroups and len(itemgroup) == 1 \
-                        and len(itemgroup[-1]) == 1:
+                        and len_n(itemgroup[-1]) == 1:
                     line.append(itemgroup.pop())
-                    curlen += 1 + len(line[-1])
+                    curlen += 1 + len_n(line[-1])
                 # merge previous group to the current one if it fits the length
-                if rline and not itemgroup \
-                        and remains - (curlen + 1 + len(' '.join(rline))) >= 0 \
-                        and (line[0] not in _CONTROL_OPERATORS
-                             or not itemgroups or not itemgroups[-1]
-                             or not itemgroups[-1][0]
-                             or not itemgroups[-1][0][0] == '-'):
+                if (rline
+                    and not itemgroup
+                    and remains - (curlen + 1 + len_n(' '.join(rline))) >= 0
+                    and (not itemgroups or not itemgroups[-1]
+                        or not itemgroups[-1][0]
+                        or not n(itemgroups[-1][0])[0] == '-'
+                        or n(line[0]) not in _CONTROL_OPERATORS)):
                     line = rline + line
                     rline = []
                     linecnt -= 1
