@@ -23,6 +23,19 @@ from ..utils_func import add_item, apply_intercalate, apply_partition
 _META_CHARACTERS =  '|', '&', ';', '(', ')', '<', '>' , ' ', '\t'
 # man bash | grep -A2 '\s\+control operator$' (minus <newline>)
 _CONTROL_OPERATORS = '||', '&', '&&', ';', ';;', '(', ')', '|', '|&'  # , '\n'
+# man bash | grep -A4 '^RESERVED WORDS$' | tail -n1
+_RESERVED_WORDS = ('!', 'case', 'coproc', 'do', 'done', 'elif', 'else', 'esac',
+                   'fi', 'for', 'function', 'if', 'in', 'select', 'then',
+                   'until', 'while', '{', '}', 'time', '[[', ']]')
+
+_META_WORDS = _CONTROL_OPERATORS + _RESERVED_WORDS
+
+ismetaword = \
+    lambda x: \
+    x in _META_WORDS \
+        or x.endswith('(') and x[-2:-1] in '$<' \
+            and x[:-2].rstrip(' \t') in ('', '"') \
+        or x.startswith(')') and x[1:].lstrip(' \t') in ('', '"')
 
 
 class command(SimpleFormat):
