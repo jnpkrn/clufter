@@ -338,9 +338,10 @@ def cmd_args_cutter(itemgroups, color_map):
 
     ret, acc = [], []
     cmd = itemgroups[0][0] if itemgroups[0] else ""
+
     for e, i in enumerate(itemgroups):
         if len(i) and (not(i[0].startswith('-')) or i[0] == '-'):
-            js = [f for f, j in enumerate(i) if f and j in _CONTROL_OPERATORS]
+            js = [f for f, j in enumerate(i) if ismetaword(j)]
             if js:
                 js.extend((len(i), ) * 2)
                 this_joint = 0
