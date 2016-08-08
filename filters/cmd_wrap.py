@@ -346,7 +346,13 @@ def cmd_args_cutter(itemgroups, color_map):
                 js.extend((len(i), ) * 2)
                 this_joint = 0
                 for next_joint in js:
-                    ret.extend(filter(bool, (tuple(acc), )))
+                    ret.extend(map(
+                        lambda l: tuple(ii.join((
+                            color_map['metaword'] if ismetaword(ii) else '',
+                            color_map['restore'] if ismetaword(ii) else '',
+                        )) for ee, ii in enumerate(l)),
+                        filter(bool, (tuple(acc), ))
+                    ))
                     acc = list(i[this_joint:next_joint])
                     this_joint = next_joint
             elif cmd.endswith('pcs'):
@@ -459,7 +465,7 @@ def cmd_wrap(flt_ctxt, in_obj):
     cw = TextWrapper(width=tw, subsequent_indent='# ')  # wrapper for comments
     color_map = (dict(((k, FancyOutput.get_color(
                                FancyOutput.table.get('pcscmd_' + k, '')))
-                       for k in ('comment', 'file', 'pcs', 'subcmd')),
+                       for k in ('comment', 'file', 'metaword', 'pcs', 'subcmd')),
                         restore=FancyOutput.colors['restore'])
                 if flt_ctxt.get('color') else defaultdict(lambda: ''))
 
