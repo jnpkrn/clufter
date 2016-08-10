@@ -216,6 +216,16 @@ class SharedHelpFormatter(IndentedHelpFormatter):
     """IndentedHelpFormatter to expand choices along defaults"""
     choices_tag = "%choices"
 
+    def __init__(self, *args, **kwargs):
+        from textwrap import fill, wrap
+        IndentedHelpFormatter.__init__(self, *args, **kwargs)
+        tw = type('textwrap_mock', (object, ), dict(
+            fill=staticmethod(fill),
+            wrap=staticmethod(lambda *args, **kwargs:
+                wrap(*args, **dict(kwargs, break_on_hyphens=False)),
+            )))
+        self.format_option.func_globals['textwrap'] = tw
+
     def expand_default(self, option):
         ret = IndentedHelpFormatter.expand_default(self, option)
         if isinstance(option, ExpertOption):
@@ -373,7 +383,7 @@ def run(argv=None, *args):
                 description_raw=cmds,
                 epilog='\n'.join(args2sgpl(
                     "To get help for given command, just precede or follow"
-                    " it with `--help'.",
+                    " it with --help.",
                     *report_bugs
                 ))
             )
