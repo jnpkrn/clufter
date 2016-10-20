@@ -166,6 +166,9 @@ cluster_map = {
                     'pacemaker[+cman]':              (1, 1, 14),
                     'pcs':                           (0, 9, 148),
                 }),
+                ((6, 9), {
+                    'pacemaker[+cman]':              (1, 1, 15),  # XXX guess
+                }),
                 ((7, 0), {
                     'corosync':                      (2, 3),
                     'pacemaker[+coro]':              (1, 1, 10),
@@ -213,6 +216,11 @@ cluster_map = {
                     # https://packages.ubuntu.com/xenial/$PACKAGE
                     'pacemaker[+coro]':              (1, 1, 14),
                     'pcs':                           (0, 9, 149),  # universe
+                }),
+                ((16, 10), {
+                    # https://packages.ubuntu.com/yakkety/$PACKAGE
+                    'pacemaker[+coro]':              (1, 1, 15),
+                    'pcs':                           (0, 9, 153),  # universe
                 }),
             ),
         },
