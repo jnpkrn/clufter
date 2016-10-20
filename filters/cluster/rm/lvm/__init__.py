@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -11,14 +11,41 @@ ccsflat2cibprelude = '''\
     <!--
         LVM ~ lvm
      -->
+
+    <!-- SHOW-STOPPERS -->
+
+    <xsl:when test="name() = 'lvm'
+                    and
+                    @lv_name
+                    and
+                    count(
+                        (following-sibling::lvm
+                        |../following-sibling::service/lvm)[
+                            @vg_name = current()/@vg_name
+                            and
+                            @lv_name != current()/@lv_name
+                        ]
+                    ) = 1">
+        <xsl:message terminate="true">
+            <xsl:value-of select="concat('Cannot convert lvm when there are',
+                                         ' multiple LV bindings for single',
+                                         '`', @vg_name, '` VG')"/>
+        </xsl:message>
+    </xsl:when>
+
+    <!-- STANDARD MODE OF OPERATION -->
+
     <xsl:when test="name() = 'lvm'">
 ''' + (
         ResourceSpec('ocf:heartbeat:LVM').xsl_attrs
 ) + '''
-        <!-- SHOW-STOPPERS -->
         <xsl:if test="@lv_name">
-            <xsl:message terminate="true"
-            >Cannot convert LV binding, stick with whole VG one [https://bugzilla.redhat.com/1286292]</xsl:message>
+            <xsl:message>
+                <xsl:value-of select="concat('NOTE: LV binding `', @lv_name,
+                                             '` unused, it is assumed you have',
+                                             ' just a single LV at `', @vg_name,
+                                             '` VG')"/>
+            </xsl:message>
         </xsl:if>
 
         <!-- INSTANCE_ATTRIBUTES -->
