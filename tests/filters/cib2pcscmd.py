@@ -280,9 +280,9 @@ pcs alert create 'path=/bin/yes' id=alert-bar 'description=idling avoidance ;-)'
 </alert>
 ''', '''\
 pcs alert create 'path=/bin/true' id=alert-foo
-pcs alert recipient add alert-foo '1' id=alert-foo-recipient1 'description=first!!1'
-pcs alert recipient add alert-foo '2' id=alert-foo-recipient2
-pcs alert recipient add alert-foo '3' id=alert-foo-recipient3
+pcs alert recipient add alert-foo 'value=1' id=alert-foo-recipient1 'description=first!!1'
+pcs alert recipient add alert-foo 'value=2' id=alert-foo-recipient2
+pcs alert recipient add alert-foo 'value=3' id=alert-foo-recipient3
 '''),
         )
         for (in_str, out_str) in io_strings:
