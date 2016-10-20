@@ -19,7 +19,7 @@ cib2pcscmd = ('''\
 ''' + (
             verbose_inform('"add alert listener: ", $AlertId')
 ) + '''
-            <xsl:value-of select='concat("pcs alert create &apos;path=",
+            <xsl:value-of select='concat($pcscmd_pcs, "alert create &apos;path=",
                                          @path, "&apos; id=", $AlertId)'/>
             <xsl:if test="@description">
                 <xsl:value-of select='concat(" &apos;description=",
@@ -40,8 +40,9 @@ cib2pcscmd = ('''\
                 verbose_inform('"add recipient for alert listener: ",'
                                ' @id, " for ", $AlertId')
 ) + '''
-                <xsl:value-of select='concat("pcs alert recipient add ", $AlertId,
-                                             " &apos;", @value, "&apos;",
+                <xsl:value-of select='concat($pcscmd_pcs, "alert recipient add ",
+                                             $AlertId,
+                                             " &apos;value=", @value, "&apos;",
                                              " id=", @id)'/>
                 <xsl:if test="@description">
                     <xsl:value-of select='concat(" &apos;description=",
