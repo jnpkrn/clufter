@@ -10,6 +10,8 @@ from optparse import OptionParser, \
                      OptionGroup, \
                      IndentedHelpFormatter
 from os.path import basename, realpath
+# XXX should eventually switch/fallback to "distro" external package for
+# the latter (via https://bugzilla.redhat.com/1219172#c6, but see also #c9)
 from platform import system, linux_distribution
 from sys import version
 
