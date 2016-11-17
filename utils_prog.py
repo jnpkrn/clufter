@@ -212,7 +212,7 @@ OneoffWrappedStdinPopen = OneoffWrappedStdinPopen()
 # misc
 #
 
-# NB: distutils.spawn.find_executable
+# NB: distutils.spawn.find_executable + shutil.which (Python 3.3+)
 def which(name, single='', *paths, **redefine_check):
     """Mimic `which' UNIX utility
 
