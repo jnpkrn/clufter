@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Shell completion formatters"""
@@ -82,7 +82,7 @@ class BashCompletion(Completion):
     def scripts_prologue():
         return """\
 # bash completion start
-# add me to ~/.profile persistently or eval on-the-fly in bash"""
+# add me to ~/.profile persistently or eval (enquoted!) on-the-fly in bash"""
 
     def handle_script(self, cmd):
         clsname = cmd.__class__.__name__
