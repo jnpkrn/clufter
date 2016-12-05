@@ -55,6 +55,7 @@ cluster_map = {
                 ((9, ), {
                     # https://packages.debian.org/stretch/$PACKAGE
                     'corosync':                      (2, 3, 5),
+                    'pacemaker[+coro]':              (1, 1, 15),
                 }),
             ),
             'fedora': (
@@ -122,13 +123,16 @@ cluster_map = {
                     #'pcs':                           (0, 9, 149),  # updates
                 }),
                 ((24, ), {
+                    #'corosync':                      (2, 4),  # updates
                     'pacemaker[+coro]':              (1, 1, 14),
                     #'pacemaker[+coro]':              (1, 1, 15),  # updates
                     'pcs':                           (0, 9, 150),
                 }),
-                #((25, ), {
-                #    'corosync':                     (2, 4),
-                #}),
+                ((25, ), {
+                    'corosync':                      (2, 4),
+                    #'pacemaker[+coro]':              (1, 1, 16),  # updates
+                    'pcs':                           (0, 9, 154),
+                }),
             ),
             'redhat': (
                 ((6, 0), {
@@ -167,7 +171,8 @@ cluster_map = {
                     'pcs':                           (0, 9, 148),
                 }),
                 ((6, 9), {
-                    'pacemaker[+cman]':              (1, 1, 15),  # XXX guess
+                    'pacemaker[+cman]':              (1, 1, 15),
+                    'pcs':                           (0, 9, 155),  # XXX guess
                 }),
                 ((7, 0), {
                     'corosync':                      (2, 3),
@@ -256,8 +261,9 @@ aliases_rel = {
     'debian': {  # because of http://bugs.python.org/issue9514 @ 2.6 ?
         'squeeze':    '6',
         'wheezy':     '7',
-        'wheezy/sid': '7.999',  # XXX ?
         'jessie':     '8',
+        'stretch':    '9',
+        'stretch/sid': '9.999',  # XXX ?
     },
     'ubuntu': {
         '13.04':      '13.4',
@@ -272,6 +278,8 @@ aliases_rel = {
         '16.04':      '16.4',
         'xenial':     '16.4',   # Xenial Xerus
         'yakkety':    '16.10',  # Yakkety Yak
+        #'17.04':      '17.4',
+        #'zesty':      '17.4',   # Zesty Zapus
     }
 }
 
@@ -292,6 +300,8 @@ versions_extra = {
             '+schema-2.4'),
         ((1, 1, 15),
             '+alerts,+schema-2.5'),
+        ((1, 1, 16),
+            '+schema-2.6'),
     ),
     'pcs': (
         ((0, 9, 145),
