@@ -45,10 +45,12 @@ cluster_map = {
                     # https://packages.debian.org/wheezy/$PACKAGE
                     'corosync':                      (1, 4),
                     'pacemaker[+coro,+hb]':          (1, 1, 7),
+                    'resource-agents':               (3, 9, 2),
                 }),
                 ((8, ), {
                     # https://packages.debian.org/jessie/$PACKAGE
                     'corosync':                      (1, 4, 6),
+                    'resource-agents':               (3, 9, 3),
                     #---
                     'sys::init-sys':                'systemd',
                 }),
@@ -56,6 +58,7 @@ cluster_map = {
                     # https://packages.debian.org/stretch/$PACKAGE
                     'corosync':                      (2, 3, 5),
                     'pacemaker[+coro]':              (1, 1, 15),
+                    'resource-agents':               (3, 9, 7),
                 }),
             ),
             'fedora': (
@@ -92,6 +95,7 @@ cluster_map = {
                     'pacemaker[+coro]':              (1, 1, 9),
                     'pcs':                           (0, 9, 36),
                     #'pcs':                           (0, 9, 48),  # updates
+                    'resource-agents':               (3, 9, 5),
                     #---
                     # https://fedoraproject.org/wiki/Features/ReplaceMySQLwithMariaDB
                     'pkg::mysql':                   'mariadb-server',
@@ -111,6 +115,7 @@ cluster_map = {
                     #'pacemaker[+coro]':              (1, 1, 13),  # updates
                     'pcs':                           (0, 9, 139),
                     #'pcs':                           (0, 9, 149),  # updates
+                    'resource-agents':               (3, 9, 6),
                     #---
                     # https://fedoraproject.org/wiki/Changes/ReplaceYumWithDNF
                     'cmd::pkg-install':             'dnf install -y {packages}',
@@ -127,6 +132,7 @@ cluster_map = {
                     'pacemaker[+coro]':              (1, 1, 14),
                     #'pacemaker[+coro]':              (1, 1, 15),  # updates
                     'pcs':                           (0, 9, 150),
+                    'resource-agents':               (3, 9, 7),
                 }),
                 ((25, ), {
                     'corosync':                      (2, 4),
@@ -150,6 +156,8 @@ cluster_map = {
                 }),
                 ((6, 2), {
                     'corosync':                      (1, 4),
+                    # first time the upstream switch to HB agents happened
+                    'resource-agents':               (3, 9, 2),
                 }),
                 ((6, 4), {
                     'pcs':                           (0, 9, 26),
@@ -161,6 +169,7 @@ cluster_map = {
                 ((6, 6), {
                     'pacemaker[+cman]':              (1, 1, 12),
                     'pcs':                           (0, 9, 123),
+                    'resource-agents':               (3, 9, 5),
                 }),
                 ((6, 7), {
                     'pacemaker[+cman]':              (1, 1, 12),
@@ -178,6 +187,8 @@ cluster_map = {
                     'corosync':                      (2, 3),
                     'pacemaker[+coro]':              (1, 1, 10),
                     'pcs':                           (0, 9, 115),
+                    # may differ from latest 6.x
+                    'resource-agents':               (3, 9, 5),
                     #---
                     'pkg::mysql':                   'mariadb-server',
                     'pkg::tomcat':                  'tomcat',  # do not inherit
@@ -203,6 +214,7 @@ cluster_map = {
                     # https://packages.ubuntu.com/raring/$PACKAGE
                     'corosync':                      (1, 4),
                     'pacemaker[+coro,+hb]':          (1, 1, 7),
+                    'resource-agents':               (3, 9, 2),
                     #---
                     'sys::init-sys':                'upstart',
                 }),
@@ -210,6 +222,10 @@ cluster_map = {
                     # https://packages.ubuntu.com/saucy/$PACKAGE
                     'corosync':                      (2, 3),
                     'pacemaker[+coro,+hb]':          (1, 1, 10),
+                }),
+                ((14, 4), {
+                    # https://packages.ubuntu.com/trusty/$PACKAGE
+                    'resource-agents':               (3, 9, 3),
                 }),
                 ((15, 4), {
                     # https://packages.ubuntu.com/vivid/$PACKAGE
@@ -221,6 +237,7 @@ cluster_map = {
                     # https://packages.ubuntu.com/xenial/$PACKAGE
                     'pacemaker[+coro]':              (1, 1, 14),
                     'pcs':                           (0, 9, 149),  # universe
+                    'resource-agents':               (3, 9, 7),
                 }),
                 ((16, 10), {
                     # https://packages.ubuntu.com/yakkety/$PACKAGE
@@ -313,6 +330,30 @@ versions_extra = {
         ((0, 9, 153),
             # qdevice+qnet preliminary support since 0.9.151, but...
             '+alerts,+qdevice,+qnet'),
+    ),
+    'resource-agents': (
+        # http://lists.linux-ha.org/pipermail/linux-ha/2011-June/043321.html
+        #((3, 9, 1),
+        #    ),
+        # http://lists.linux-ha.org/pipermail/linux-ha/2011-June/043416.html
+        #((3, 9, 2),
+        #    ),
+        # http://lists.linux-ha.org/pipermail/linux-ha/2012-May/045193.html
+        ((3, 9, 3),
+            '+named'),
+        # http://lists.linux-ha.org/pipermail/linux-ha/2012-November/046049.html
+        ((3, 9, 4),
+            '+IPaddr2~IPv6'),
+        # http://lists.linux-ha.org/pipermail/linux-ha/2013-February/046461.html
+        #((3, 9, 5),
+        #    ),
+        # http://lists.linux-ha.org/pipermail/linux-ha/2015-January/048523.html
+        # XXX clvm
+        #((3, 9, 6),
+        #    ),
+        # http://oss.clusterlabs.org/pipermail/users/2016-February/002216.html
+        #((3, 9, 7),
+        #    ),
     ),
 }
 
