@@ -5,7 +5,7 @@
 """XSLT helpers"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from .utils_xml import NAMESPACES, XSL
+from .utils_xml import NAMESPACES, XSL, squote
 
 
 NL = '&#xa;'
@@ -40,7 +40,9 @@ def xslt_params(**d):
     ret = ""
     for k, v in d.iteritems():
         ret += '<xsl:param name="{0}" select="{1}"/>\n'.format(
-            k, xslt_boolean(v) if isinstance(v, bool) else v
+            k, xslt_boolean(v) if isinstance(v, bool)
+            else squote(v) if isinstance(v, basestring)
+            else v  # int and the like
         )
     return ret
 
