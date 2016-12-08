@@ -506,8 +506,8 @@ def infer_dist(dist, branches=None):
                                     break
                                 else:
                                     dist_ver = None  # only desparsify since now
-                            if '__proceeded__' in dver_branches:
-                                continue  # only searching, no hit yet
+                        if '__proceeded__' in dver_branches:
+                            continue  # only searching, no hit yet
 
                         for k, v in dver_branches.iteritems():
                             kk, k_extra = _parse_extra(k, version=v,
