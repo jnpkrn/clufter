@@ -656,6 +656,49 @@ def package(which, *sys_id):
     return _find_meta('pkg', which, *sys_id, default=default)
 
 
+def component_or_state(which, *sys_id, **kwargs):
+    """Return empty string if satisfying component found, diagnostics if not"""
+    ret, found = '', infer(':'.join(('comp', which)), *sys_id)
+    if not found:
+        pkg, extra = _parse_extra(which)
+        system, system_extra = sys_id
+        ret_acc, sysextra = [], list(system_extra[:2])
+        while sysextra:
+            found = infer(':'.join(('comp', pkg)), system, sysextra)
+            for i in found:
+                for j in i:
+                    p, e = _parse_extra(j)
+                    if p == pkg:
+                        ret_item = ''
+                        if len(sysextra) == 2:
+                            ret_item = p + '='.join(
+                                (', '.join(e).join('[]' if e else ''),
+                                 '.'.join(str(x) for x in i[j]) if not
+                                 isinstance(i[j], basestring) else i[j])
+                            )
+                        else:
+                            ret_item = kwargs.get(
+                                'notyetmsg', '({0} yet untracked)'
+                            ).format(p)
+                        ret_acc.append(ret_item)
+                        if len(sysextra) == 1:
+                            break
+                else:
+                    continue
+                break
+            if ret_acc:
+                break
+            sysextra.pop()
+
+        if not ret_acc:
+            ret = kwargs.get('nohitmsg', '(no hit for {0})').format(pkg)
+        else:
+            ret = ' / '.join((', '.join(ret_acc),
+                              '-'.join(args2sgpl(system, *system_extra))))
+
+    return ret
+
+
 def system(which, *sys_id):
     return _find_meta('sys', which, *sys_id, default=which)
 
