@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2016 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -9,8 +9,15 @@ from ....utils_cib import ResourceSpec, rg2hb_xsl
 
 ccsflat2cibprelude = '''\
     <!--
-        named ~ named
+        named ~ named (but only since resource-agents[named])
      -->
+    <xsl:when test="name() = 'named' and $pcscmd_named_qual">
+        <xsl:message terminate="true">
+            <xsl:value-of select="concat('Cannot convert named when the',
+                                         ' target distro does not qualify: ',
+                                         $pcscmd_named_qual)"/>
+        </xsl:message>
+    </xsl:when>
     <xsl:when test="name() = 'named'">
 ''' + (
         ResourceSpec('ocf:heartbeat:named').xsl_attrs
