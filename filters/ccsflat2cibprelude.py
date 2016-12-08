@@ -5,7 +5,7 @@
 """ccsflat2cibprelude filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from ..facts import cluster_pcs_flatiron, package, system
+from ..facts import cluster_pcs_flatiron, component_or_state, package, system
 from ..filter import XMLFilter
 from ..utils_xslt import xslt_params
 
@@ -28,6 +28,8 @@ def ccsflat2cibprelude(flt_ctxt, in_obj):
                     '/usr/share',
                     package('tomcat', *sys_pair)
                 ),
+                pcscmd_named_qual=component_or_state('resource-agents[named]',
+                                                     nohitmsg='', *sys_pair),
             )
         )
     )
