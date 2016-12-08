@@ -11,7 +11,7 @@ from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
 from unittest import TestCase
 
 from .facts import cluster_pcs_flatiron, cluster_pcs_1_2, cmd_pkg_install, \
-                   infer, package
+                   component_or_state, infer, package
 
 
 class TestClusterSystem(TestCase):
@@ -111,6 +111,21 @@ class TestExtra(TestCase):
         self.assertFalse(infer(check, 'linux', ('redhat', '7.1')))
         self.assertFalse(infer(check, 'linux', ('redhat', '7.2')))
         self.assertTrue (infer(check, 'linux', ('redhat', '7.3')))
+
+    def test_extra_resource_agents_named(self):
+        check = 'resource-agents[named]'
+        self.assertEqual(component_or_state(check, 'linux', ('redhat', '6.0')),
+                         "(resource-agents yet untracked) / linux-redhat-6.0")
+        self.assertEqual(component_or_state(check, 'linux', ('redhat', '6.5')),
+                         "resource-agents=3.9.2 / linux-redhat-6.5")
+        self.assertEqual(component_or_state(check, 'linux', ('redhat', '6.6')),
+                         "")
+        self.assertEqual(component_or_state(check, 'linux', ('debian', 'squeeze')),
+                         "(resource-agents yet untracked) / linux-debian-squeeze")
+        self.assertEqual(component_or_state(check, 'linux', ('debian', 'wheezy')),
+                         "resource-agents=3.9.2 / linux-debian-wheezy")
+        self.assertEqual(component_or_state(check, 'linux', ('debian', 'jessie')),
+                         "")
 
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))
