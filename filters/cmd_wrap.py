@@ -447,7 +447,7 @@ def cmd_wrap(flt_ctxt, in_obj):
       - positive ~ hard-limit the width (no smartness involved)
       - negative ~ high-limit the width, apply the inverse value only when not
                    exceeding the value per the next item
-    - COLUMNS environmental variable, if defined and possesses integer value
+    - COLUMNS environment variable, if defined and possesses integer value
     - hard-coded default of 72
     If absolute value at this point is lower than 20, fallback to 20.
     """
