@@ -519,6 +519,8 @@ pkg_name = pkg.package_name()
 pkg_prepare = setup_pkg_prepare(pkg_name, (
     ('ccs_flatten',     "location of bundled helper ccs_flatten"),
     ('editor',          "which editor to use if EDITOR env variable not set"),
+    ('shell_posix',     "POSIX compliant shell for shebangs"),
+    ('shell_bashlike',  "bash-like shell (process subst.) for  shebangs"),
     ('hashalgo',        "which hash algorithm to use to generate output name"),
     ('ra_metadata_dir', "location of RGManager agents/metadata"),
     ('ra_metadata_ext', "extension used for RGManager agents' metadata"),
