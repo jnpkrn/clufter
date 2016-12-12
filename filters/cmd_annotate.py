@@ -19,13 +19,15 @@ cmd_annotate_self_id = ' '.join((package_name(), version))
 @Filter.deco('Nothing', 'string-iter')
 def cmd_annotate(flt_ctxt, in_obj):
     """Emit a comment block with clufter version + command used + target info"""
-    ret = (''.join(('# ', l)) for l in (
-        "sequence generated on {0} with: {1}".format(
+    ret = (''.join(('#', l)) for l in (
+        (flt_ctxt['annotate_shell'], ) if flt_ctxt['annotate_shell'] else ()
+    ) + (
+        " sequence generated on {0} with: {1}".format(
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             cmd_annotate_self_id,
         ),
-        "invoked as: {0}".format(repr(argv)),
-        "targeting system: {0}".format(
+        " invoked as: {0}".format(repr(argv)),
+        " targeting system: {0}".format(
             repr(args2tuple(flt_ctxt['system'], *flt_ctxt['system_extra']))
         )
     ))
