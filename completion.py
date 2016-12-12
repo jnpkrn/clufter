@@ -93,12 +93,12 @@ local opts="{0}"
 
 [[ "$1" =~ -.* ]] && compgen -W "${{opts}}" -- $1"""\
         .format(
-            ' '.join(reduce(lambda a, b:
-                            a + [i + j for i in b[0] for j in (('', '=')
-                                if b[1].get('action', 'store')
-                                    in ('callback', 'store')
-                                else ('', )
-                            )], opts, []))
+            '\n'.join(reduce(lambda a, b:
+                             a + [' '.join(i + j for i in b[0] for j in (('', '=')
+                                 if b[1].get('action', 'store')
+                                     in ('callback', 'store')
+                                 else ('', )
+                             ))], opts, []))
         ).splitlines()
 
         handle = cli_undecor(handle)
@@ -107,12 +107,12 @@ local opts="{0}"
     def scripts_epilogue(self, handles, aliases):
         handle = self._namespaced_identifier(self._name)
         opts_common, opts_main, opts_nonmain = tuple(
-            ' '.join(reduce(lambda a, b:
-                            a + [i + j for i in b[0] for j in (('', '=')
-                                if b[1].get('action', 'store')
-                                    in ('callback', 'store')
-                                else ('', )
-                            )], o, []))
+            '\n'.join(reduce(lambda a, b:
+                             a + [' '.join(i + j for i in b[0] for j in (('', '=')
+                                 if b[1].get('action', 'store')
+                                     in ('callback', 'store')
+                                 else ('', )
+                             ))], o, []))
             for o in (self._opts_common, self._opts_main, self._opts_nonmain)
         )
         alias_case = '    ' + '\n    '.join(
@@ -147,7 +147,7 @@ case "$2" in
 -*) COMPREPLY=( $(compgen -W "${{opts_common}} ${{opts_main}}" -- $2) );;
 *)  COMPREPLY=( $(compgen -W "${{commands}}" -- $2) );;
 esac""" .format(
-            self._name, ' '.join(a for a, _ in (aliases + handles)),
+            self._name, '\n'.join(a for a, _ in (aliases + handles)),
             opts_common, opts_main, opts_nonmain, alias_case
         ).splitlines()
         epilogue = "complete -o default -F {0} {1}".format(handle, self._prog)
