@@ -6,6 +6,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..command import Command
+from ..defaults import SHELL_POSIX
 from ..filter import XMLFilter
 from ..protocol import protocols
 from ..utils_cib import PATH_CIB
@@ -51,6 +52,8 @@ def cib2pcscmd(cmd_ctxt,
     cmd_ctxt['pcscmd_dryrun'] = dry_run
     cmd_ctxt['pcscmd_enable'] = enable
     cmd_ctxt['text_width'] = text_width
+
+    cmd_ctxt['annotate_shell'] = SHELL_POSIX
     # XXX possibility to disable cib-meld-templates
 
     cmd_ctxt.filter('cmd-wrap')['color'] = output == "-" and isatty(1) and \

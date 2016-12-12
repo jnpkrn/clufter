@@ -70,7 +70,7 @@ automagic), or just pipe that into the shell interpreter, for instance:
 
 .. code-block:: bash
 
-  $ ./run-dev ccs2pcscmd -gsq tests/filled.conf | sh -x
+  $ ./run-dev ccs2pcscmd -gsq tests/filled.conf | bash -x
 
 which will also turn on echoing of what is being executed, just in case.
 

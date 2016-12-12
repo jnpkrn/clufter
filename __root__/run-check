@@ -175,7 +175,7 @@ run_check_cmd() {
     testcmd="$(mktemp)"
     { ${PYTHONEXEC} run-dev --dist redhat,7.1,Maipo \
                             ccs2pcscmd "${@}" -sg -- - - \
-			    | tail -n+2 > "${testcmd}" \
+			    | tail -n+3 > "${testcmd}" \
       && echo "TEST: execution OK" \
       || { echo "TEST: execution FAIL"; ret=20; }; }<<EOF
 <?xml version="1.0"?>

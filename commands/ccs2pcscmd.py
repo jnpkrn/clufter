@@ -6,6 +6,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..command import Command, CommandAlias
+from ..defaults import SHELL_BASHLIKE, SHELL_POSIX
 from ..facts import cluster_pcs_flatiron
 from ..filter import XMLFilter
 from ..protocol import protocols
@@ -65,6 +66,10 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
     cmd_ctxt['pcscmd_start_wait'] = start_wait
     cmd_ctxt['pcscmd_noguidance'] = noguidance
     cmd_ctxt['text_width'] = text_width
+
+    # possible use of process substitution (https://bugzilla.redhat.com/1381531)
+    cmd_ctxt['annotate_shell'] = (SHELL_POSIX if dry_run or noguidance
+                                  else SHELL_BASHLIKE)
     # XXX possibility to disable cib-meld-templates
 
     cmd_ctxt.filter('cmd-wrap')['color'] = output == "-" and isatty(1) and \
@@ -158,6 +163,10 @@ def ccs2pcscmd_needle(cmd_ctxt,
     cmd_ctxt['pcscmd_start_wait'] = start_wait
     cmd_ctxt['pcscmd_noguidance'] = noguidance
     cmd_ctxt['text_width'] = text_width
+
+    # possible use of process substitution (https://bugzilla.redhat.com/1381531)
+    cmd_ctxt['annotate_shell'] = (SHELL_POSIX if dry_run or noguidance
+                                  else SHELL_BASHLIKE)
     # XXX possibility to disable cib-meld-templates
 
     cmd_ctxt.filter('cmd-wrap')['color'] = output == "-" and isatty(1) and \
