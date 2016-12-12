@@ -6,7 +6,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..filter import Filter
-from ..formats.command import command, _CONTROL_OPERATORS, ismetaword
+from ..formats.command import command, ismetaword
 from ..utils_func import add_item
 from ..utils_prog import FancyOutput
 
