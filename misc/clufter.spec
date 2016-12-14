@@ -17,7 +17,7 @@
   | sed -n 'bS;:E;n;:S;s|\\(.\\+\\)|0.%{clufter_b}.a_\\1|p;tE;c\\%{clufter_b}')
 
 %bcond_without pagure
-%if %{_with_pagure}
+%if 0%{defined:_with_pagure}
 	%global pagure 1
 %endif
 
@@ -69,7 +69,7 @@
   %endif
 %endif
 
-%if 0%{rhel} < 7
+%if 0%{?rhel} < 7
 %bcond_with generated_schemas
 %else
 %bcond_without generated_schemas
@@ -95,7 +95,7 @@ BuildRequires:  git
 # Python side (first item for python2* macros + overall Python run-time)
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
-%if "0%{clufter_check}"
+%if 0%{?clufter_check}
 BuildRequires:  python-lxml
 %endif
 
@@ -107,7 +107,7 @@ BuildRequires:  bash which
 
 %if "%{clufter_version}" == "%{clufter_version_norm}"
 Source0:        %{clufter_url_dist}%{name}-%{version}.tar.gz
-%if "0%{clufter_check}" == 2
+%if 0%{?clufter_check} == 2
 Source1:        %{clufter_url_dist}%{name}-%{testver}-tests.tar.xz
 %endif
 %else
@@ -229,7 +229,7 @@ formats and filters.
 
 %prep
 %if "%{clufter_version}" == "%{clufter_version_norm}"
-%if "0%{clufter_check}" == 2
+%if 0%{?clufter_check} == 2
 %autosetup -p1 -S git -b 1
 %if "%{testver}" != "%{version}"
     %{__cp} -a ../"%{name}-%{testver}"/* .
