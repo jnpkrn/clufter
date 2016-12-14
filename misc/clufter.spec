@@ -39,8 +39,8 @@
 # Python package customizations
 %{!?clufter_ccs_flatten:     %global clufter_ccs_flatten     %{_libexecdir}/%{clufter_source}/ccs_flatten}
 %{!?clufter_editor:          %global clufter_editor          %{_bindir}/nano}
-%{!?clufter_shell_posix:     %global clufter_shell_posix     %{_bindir}/sh}
-%{!?clufter_shell_bashlike:  %global clufter_shell_bashlike  %{_bindir}/bash}
+%{!?clufter_shell_posix:     %global clufter_shell_posix     %(which sh 2>/dev/null || echo /bin/SHELL-POSIX)}
+%{!?clufter_shell_bashlike:  %global clufter_shell_bashlike  %(which bash 2>/dev/null || echo /bin/SHELL-BASHLIKE)}
 %{!?clufter_ra_metadata_dir: %global clufter_ra_metadata_dir %{_datadir}/cluster}
 %{!?clufter_ra_metadata_ext: %global clufter_ra_metadata_ext metadata}
 
@@ -98,6 +98,9 @@ BuildRequires:  python-setuptools
 %if "0%{clufter_check}"
 BuildRequires:  python-lxml
 %endif
+
+# following to ensure "which bash" (and, in extension, "which sh") works
+BuildRequires:  bash which
 
 ## global test_version 0.X.Y
 %global testver      %{?test_version}%{?!test_version:%{version}}
@@ -244,6 +247,8 @@ formats and filters.
                       --editor='%{clufter_editor}' \
                       --ra-metadata-dir='%{clufter_ra_metadata_dir}' \
                       --ra-metadata-ext='%{clufter_ra_metadata_ext}' \
+                      --shell-posix='%{clufter_shell_posix}' \
+                      --shell-bashlike='%{clufter_shell_bashlike}' \
                       --report-bugs='%{clufter_url_bugs}'
 # make Python interpreter execution sane (via -Es flags)
 %{__python2} setup.py saveopts -f setup.cfg build_scripts \
