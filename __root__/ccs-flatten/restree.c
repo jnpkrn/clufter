@@ -142,6 +142,9 @@ res_do_flatten(xmlNode ** xpp, xmlNode * rmp, resource_node_t * node, const char
         xmlSetProp(n, (xmlChar *) "__independent_subtree",
                       (xmlChar *) (node->rn_flags&RF_NON_CRITICAL ? "2" : "1"));
     }
+    if (node->rn_flags & RF_ENFORCE_TIMEOUTS) {
+        xmlSetProp(n, (xmlChar *) "__enforce_timeouts", "1");
+    }
 
     if (!*xpp) {
         /* Add top-level container */
