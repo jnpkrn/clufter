@@ -141,6 +141,17 @@ res_do_flatten(xmlNode ** xpp, xmlNode * rmp, resource_node_t * node, const char
     if (node->rn_flags & RF_INDEPENDENT) {  /* implied by RF_NON_CRITICAL */
         xmlSetProp(n, (xmlChar *) "__independent_subtree",
                       (xmlChar *) (node->rn_flags&RF_NON_CRITICAL ? "2" : "1"));
+
+        /* note that restart_expire_time and max_restarts are proper
+           parameters of top-level resources -> handled natively */
+        if (node->rn_restart_counter.active) {
+            snprintf(buf, sizeof(buf), "%ld", node->rn_restart_counter.expire);
+            xmlSetProp(n, (xmlChar *) "__restart_expire_time",
+                          (xmlChar *) (xmlChar *) buf);
+            snprintf(buf, sizeof(buf), "%d", node->rn_restart_counter.max);
+            xmlSetProp(n, (xmlChar *)  "__max_restarts",
+                          (xmlChar *) (xmlChar *) buf);
+        }
     }
     if (node->rn_flags & RF_ENFORCE_TIMEOUTS) {
         xmlSetProp(n, (xmlChar *) "__enforce_timeouts", (xmlChar *) "1");
@@ -202,9 +213,9 @@ assign_restart_policy(resource_t * curres, resource_node_t * parent,
                 restart_expire_time = 0;
             free(val);
         }
-        //if (restart_expire_time == 0 || max_restarts == 0)
-        return;
-        //goto out_assign;
+        if (restart_expire_time == 0 || max_restarts == 0)
+            return;
+        goto out_assign;
     }
 
     val = (char *)res_attr_value(curres, "max_restarts");
@@ -219,8 +230,9 @@ assign_restart_policy(resource_t * curres, resource_node_t * parent,
         if ((int64_t) restart_expire_time < 0)
             return;
     }
-//out_assign:
-    return;
+out_assign:
+    /* only needed for independent subtrees, kept for code similarity */
+    node->rn_restart_counter = restart_init(restart_expire_time, max_restarts);
 }
 
 static inline int
