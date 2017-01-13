@@ -131,6 +131,7 @@ typedef struct _rg_node {
     struct _rg_node *rn_child, *rn_parent;
     resource_t *rn_resource;
     resource_act_t *rn_actions;
+    restart_counter_t rn_restart_counter;
     restart_counter_t rn_failure_counter;
     int rn_state;               /* State of this instance of rn_resource */
     int rn_flags;
