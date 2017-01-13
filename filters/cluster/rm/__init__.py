@@ -248,13 +248,7 @@ ccsflat2cibprelude = ('''\
 
                 <xsl:variable name="IndependentSubtree">
                     <xsl:choose>
-                        <xsl:when test="number(@__independent_subtree) = 1
-                                        or
-                                        translate(
-                                            @__independent_subtree,
-                                            'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-                                            'abcdefghijklmnopqrstuvwxyz'
-                                        ) = 'yes'">
+                        <xsl:when test="number(@__independent_subtree) = 1">
                             <!-- xsl:value-of select="'1'"/ -->
                             <xsl:message>
                                 <xsl:value-of select="concat('WARNING: __independent_subtree=1',
@@ -263,13 +257,7 @@ ccsflat2cibprelude = ('''\
                                                             ' (', $Spec, ')')"/>
                             </xsl:message>
                         </xsl:when>
-                        <xsl:when test="number(@__independent_subtree) = 2
-                                        or
-                                        translate(
-                                            @__independent_subtree,
-                                            'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-                                            'abcdefghijklmnopqrstuvwxyz'
-                                        ) = 'non-critical'">
+                        <xsl:when test="number(@__independent_subtree) = 2">
                             <xsl:value-of select="'2'"/>
                         </xsl:when>
                     </xsl:choose>
