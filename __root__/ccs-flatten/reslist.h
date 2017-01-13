@@ -1,5 +1,5 @@
 /*
-  Copyright 2016 Red Hat, Inc.
+  Copyright 2017 Red Hat, Inc.
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -70,6 +70,14 @@
 /* Include OCF definitions */
 //#include <res-ocf.h>
 
+/* Stub simplifying original restart_counter.h usage (record only) */
+typedef struct {
+	int active;
+	time_t expire;
+	int max;
+} restart_counter_t;
+#define restart_init(expire, max)  ((restart_counter_t) {1,expire,max})
+
 typedef struct _resource_attribute {
     char *ra_name;
     char *ra_value;
@@ -123,6 +131,7 @@ typedef struct _rg_node {
     struct _rg_node *rn_child, *rn_parent;
     resource_t *rn_resource;
     resource_act_t *rn_actions;
+    restart_counter_t rn_failure_counter;
     int rn_state;               /* State of this instance of rn_resource */
     int rn_flags;
     int rn_last_status;
