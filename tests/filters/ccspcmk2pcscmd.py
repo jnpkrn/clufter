@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing `ccspcmk2pcscmd' filter"""
@@ -23,12 +23,14 @@ class FiltersCcspcmk2pcscmdTestCase(TestCase):
         io_strings = (
             (('rhel', '7.1'),
             "pcs cluster setup --name test ju hele"
-            " --consensus 200 --join 100 --token 5000\n"
+            " --consensus 200 --join 100 --token 5000"
+            " --mcastport0 1002\n"
             "pcs cluster start --all && sleep {sleep}\n"
             .format(sleep=ccspcmk2pcscmd.defs['pcscmd_start_wait'])),
             (('rhel', '7.3'),
             "pcs cluster setup --name test ju hele"
-            " --consensus 200 --join 100 --token 5000\n"
+            " --consensus 200 --join 100 --token 5000"
+            " --mcastport0 1002\n"
             "pcs cluster start --all --wait={sleep}\n"
             .format(sleep=ccspcmk2pcscmd.defs['pcscmd_start_wait'])),
         )
