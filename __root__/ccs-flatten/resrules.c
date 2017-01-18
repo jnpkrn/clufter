@@ -1,5 +1,5 @@
 /*
-  Copyright 2016 Red Hat, Inc.
+  Copyright 2017 Red Hat, Inc.
 
   This program is free software; you can redistribute it and/or modify it
   under the terms of the GNU General Public License as published by the
@@ -199,68 +199,93 @@ _get_version(xmlDocPtr doc, xmlXPathContextPtr ctx, char *base, resource_rule_t 
     rr->rr_version = NULL;
 }
 
+
+/* Relying on compiler to cope with constants efficiently */
+#define TIMEF_M  (  60 * 1       )
+#define TIMEF_H  (  60 * TIMEF_M )
+#define TIMEF_D  (  24 * TIMEF_H )
+#define TIMEF_W  (   7 * TIMEF_D )
+#define TIMEF_Y  ( 365 * TIMEF_D )
+
+/* NOTE: Only int type oveflows are checked (no targeted against time_t)  */
 int
-expand_time(char *val)
+expand_time (const char *val)
 {
-    int curval, len;
-    int ret = 0;
-    char *start = val, ival[16];
+    int curval, tmp, ret = 0;
 
-    if (!val)
-        return (time_t) 0;
+    if (!val || *val == '\0')
+        return 0;
 
-    while (start[0]) {
-
-        len = 0;
+    do {
         curval = 0;
-        memset(ival, 0, sizeof(ival));
 
-        while (isdigit(start[len])) {
-            ival[len] = start[len];
-            len++;
-        }
+        while (isdigit(*val)) {
+            tmp = *val - '0';
 
-        if (len) {
-            curval = atoi(ival);
-        } else {
-            len = 1;
-        }
-
-        switch (start[len]) {
-            case 0:
-            case 'S':
-            case 's':
+            if (curval > INT_MAX/10
+                || (curval == INT_MAX/10 && tmp > INT_MAX%10))
+                /* Overflow */
                 break;
-            case 'M':
+
+            curval *= 10;
+            curval += tmp;
+            ++val;
+        }
+
+        if (isdigit(*val))
+            /* Overflow detected */
+            return 0;
+
+        /* Watch for overflow also here */
+        switch(*val) {
+        case '\0':
+            /* compensate for index increment to come;
+               valid as we checked empty string on input already */
+            --val;
+            /* fall-through */
+        case 'S':
+        case 's':
+            break;
+        case 'M':
             case 'm':
-                curval *= 60;
-                break;
-            case 'h':
-            case 'H':
-                curval *= 3600;
-                break;
-            case 'd':
-            case 'D':
-                curval *= 86400;
-                break;
-            case 'w':
-            case 'W':
-                curval *= 604800;
-                break;
-            case 'y':
-            case 'Y':
-                curval *= 31536000;
-                break;
-            default:
-                curval = 0;
+            if (curval > INT_MAX/TIMEF_M)
+                return 0;
+            curval *= TIMEF_M;
+            break;
+        case 'h':
+        case 'H':
+            if (curval > INT_MAX/TIMEF_H)
+                return 0;
+            curval *= TIMEF_H;
+            break;
+        case 'd':
+        case 'D':
+            if (curval > INT_MAX/TIMEF_D)
+                return 0;
+            curval *= TIMEF_D;
+            break;
+        case 'w':
+        case 'W':
+            if (curval > INT_MAX/TIMEF_W)
+                return 0;
+            curval *= TIMEF_W;
+            break;
+        case 'y':
+        case 'Y':
+            if (curval > INT_MAX/TIMEF_Y)
+                return 0;
+            curval *= TIMEF_Y;
+            break;
+        default:
+            curval = 0;
         }
+        ret += curval;
 
-        ret += (time_t) curval;
-        start += len;
-    }
+    } while (*++val != '\0');
 
     return ret;
 }
+
 
 /**
  * Store a resource action

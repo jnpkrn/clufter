@@ -161,7 +161,7 @@ typedef struct _fod {
  */
 int res_flatten(xmlNode ** n, xmlNode * r, resource_node_t ** tree, resource_t * res);
 
-int expand_time(char *val);
+int expand_time(const char *val);
 int store_action(resource_act_t ** actsp, char *name, int depth, int timeout, int interval);
 
 /*
