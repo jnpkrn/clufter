@@ -224,7 +224,7 @@ EOF
 # invoked as: ['run-dev', '--dist', 'redhat,7.1,Maipo', 'ccs2pcscmd',
 # '-sg', '--', '-', '-']
 # targeting system: ('linux', 'redhat', '7.1', 'Maipo')
-pcs cluster auth rhel6-node1 rhel6-node2
+pcs cluster auth rhel6-node1 rhel6-node2 <>/dev/tty
 pcs cluster setup --name one rhel6-node1 rhel6-node2 --consensus 12000 \\
   --token 10000 --join 60
 pcs cluster start --all && sleep 60

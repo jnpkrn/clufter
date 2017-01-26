@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """*2pcscmd filters helpers"""
@@ -61,6 +61,7 @@ def coro2pcscmd(**kwargs):
             <xsl:if test="$pcscmd_force">
                 <xsl:value-of select="' --force'"/>
             </xsl:if>
+            <xsl:value-of select="' &lt;&gt;/dev/tty'"/>
             <xsl:value-of select="'%(NL)s'"/>
 ''' + (
             verbose_ec_test
