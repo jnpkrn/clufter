@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Base command stuff (TBD)"""
@@ -425,8 +425,8 @@ class Command(object):
             with flt_ctxt.prevented_taint():
                 fmt_kws = filterdict_keep(flt_ctxt, *flt.in_format.context)
             if not filter_backtrack[flt] and 'out' not in flt_ctxt:
-                # INFILTER in in-mode
-                log.debug("Run `{0}' filter with `{1}' io decl. as INFILTER"
+                # UPFILTER in in-mode
+                log.debug("Run `{0}' filter with `{1}' io decl. as UPFILTER"
                           .format(flt.__class__.__name__, io_decl))
                 if io_decl in input_cache:
                     in_obj = input_cache[io_decl]
@@ -439,7 +439,7 @@ class Command(object):
                         in_obj = flt.in_format.as_instance(*io_decl, **fmt_kws)
                     input_cache[io_decl] = flt_ctxt['in'] = in_obj
             elif filter_backtrack[flt] and 'out' not in flt_ctxt:
-                # not INFILTER in either mode (nor output already precomputed?)
+                # not UPFILTER in either mode (nor output already precomputed?)
                 log.debug("Run `{0}' filter with `{1}' io decl. as DOWNFILTER"
                           .format(flt.__class__.__name__, io_decl))
                 ok, notyet = bifilter(lambda x: 'out' in
@@ -490,7 +490,7 @@ class Command(object):
                                                      " |highlight:{0}|"
                                                      .format(fn))
                     continue
-            # output time!  (INFILTER terminal listed twice in io_chain)
+            # output time!  (incl. UPFILTER terminal listed twice in io_chain)
             with cmd_ctxt.prevented_taint():
                 io_decl = SimpleFormat.io_decl_specials(io_decl, 0, magic_fds,
                                                         cmd_ctxt['__filters__'])
@@ -622,17 +622,18 @@ class Command(object):
 
         where, for filter x (in {A, ..., D, O, P} for the example at hand):
 
-            EXPRESSION  ::= UPFILTERS
+            FILTERCHAIN ::= UPFILTERS
             UPFILTERS   ::= TERMINAL | ( FILTERS )
             FILTERS     ::= FILTER, | FILTERS FILTER
             FILTER      ::= PASSDOWN | TERMINAL
-            PASSDOWN    ::= (TERMINAL, DOWNFILTERS)
+            PASSDOWN    ::= (TERMINAL, FILTERS)  # ~ DOWNFILTERS from that down
             TERMINAL    ::= x
-            DOWNFILTERS ::= FILTERS
 
         where:
             - {UP,DOWN}FILTERS dichotomy is present only as
-              a forward-reference for easier explanation
+              a forward-reference for easier explanation;
+              it's asymmetric, meaning that UPFILTERS are terminals
+              in the graph, whereas DOWNFILTERS can also be PASSDOWNs
             - there is a limitation such that each filter can
               be contained as at most one node in the graph as above
               (this corresponds to the notion of inputs merge for
