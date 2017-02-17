@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Base protocol stuff (metaclass, etc.)"""
@@ -36,7 +36,7 @@ class protocols(PluginRegistry):
 
 
 class Protocol(str):
-    """Class intended to be (exceptionally) instantioned (enhanced string)"""
+    """Class intended to be (exceptionally) instantiated (enhanced string)"""
     __metaclass__ = protocols
 
     def __new__(cls, *args, **kwargs):
