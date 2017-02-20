@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Program-specific commons"""
@@ -15,6 +15,11 @@ from os.path import abspath, dirname, samefile, \
                     join as path_join
 from re import compile as re_compile
 from subprocess import Popen
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 from sys import stderr, stdin, stdout
 
 from . import package_name
@@ -37,7 +42,10 @@ log = logging.getLogger(__name__)
 mutables = (MutableMapping, MutableSequence, MutableSet)
 
 class TweakedDict(MutableMapping):
-    """Object representing command context"""
+    """Object representing command context
+
+       Note: not suitable for wrapping OrderedDict or the like as that
+             extra property will get disregarded (+ warning emitted)."""
 
     class notaint_context(object):
         def __init__(self, self_outer, exit_off):
@@ -65,6 +73,8 @@ class TweakedDict(MutableMapping):
                     # silently? follow the immutability
                     notaint = True
                     bypass = True
+                elif isinstance(initial, OrderedDict):
+                    log.warn("Possibly dropping 'ordered' property of dict")
                 if bypass or notaint:
                     self._dict = initial
                 if not bypass:
