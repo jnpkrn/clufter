@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """cib2pcscmd command"""
@@ -70,6 +70,7 @@ def cib2pcscmd(cmd_ctxt,
                         file_proto(output),
                     ),
             ),
+        ), (
             file_proto(input),
             # already tracked
             #cib2pcscmd_output(
