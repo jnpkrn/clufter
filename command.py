@@ -165,6 +165,13 @@ class Command(object):
         #    ('A',
         #        ('B',
         #            ('C')))
+        # note also need to treat correctly, e.g.:
+        #    (
+        #      ('A',
+        #          ('B')),
+        #      ('C',
+        #          ('B'))
+        #    )
         # XXX: regardless if isinstance(filter_chain[1], tuple)
         if len(filter_chain) >= passed_filter_length + int(new):
             filter_chain = (filter_chain, )
@@ -176,7 +183,13 @@ class Command(object):
             bt = filter_backtrack.setdefault(i, OrderedDict())
             if new or not (bt or i_tail):  # preorder
                 # new for UPFILTERs, which are also terminals (input ones)
-                terminal_chain.append(i)
+                if new and terminal_chain:
+                    if isinstance(terminal_chain[0], list):
+                        terminal_chain = terminal_chain.append([i])
+                    else:
+                        terminal_chain[:] = [terminal_chain[:]] + [[i]]
+                else:
+                    terminal_chain.append(i)
             if pass_through:
                 if pass_through in bt:
                     raise CommandError(me,
@@ -360,6 +373,8 @@ class Command(object):
             # see `deco`: 2.
             io_chain = args2tuple(io_chain)
         to_check = apply_loose_zip_preserving_depth(terminal_chain, io_chain)
+        if to_check and fltiodecl(to_check[0]):
+            to_check = [to_check]  # restore _iochain_proceed-clipped wrapping
         for to_check_inner in to_check:
             for passno, check in enumerate(head_tail(to_check_inner)):
                 checked = apply_aggregation_preserving_depth(
@@ -399,7 +414,7 @@ class Command(object):
         #     item so to prevent deadlocks on cond. var. wait)
         #     - see also `heapq` standard module
         filter_backtrack = cmd_ctxt['filter_chain_analysis']['filter_backtrack']
-        terminal_chain = cmd_ctxt['filter_chain_analysis']['terminal_chain']
+        terminal_chain = cmd_ctxt['filter_chain_analysis']['terminal_chain'][-1]
         terminals = apply_intercalate(terminal_chain)
 
         terminal_chain = self._iochain_check_terminals(io_chain, terminal_chain)
@@ -613,13 +628,15 @@ class Command(object):
 
         when reformatted as per the only Approved Indenting Convention (TM):
 
-            (A,
-                (B),
-                (C,
-                    (D),
-                    (P))),
-            (O,
-                (P))
+            (
+               (A,
+                   (B),
+                   (C,
+                       (D),
+                       (P))),
+               (O,
+                       (P))
+            )
 
         where, for filter x (in {A, ..., D, O, P} for the example at hand):
 

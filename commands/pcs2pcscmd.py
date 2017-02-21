@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """pcs2pcscmd{,-flatiron,-needle} commands"""
@@ -87,6 +87,7 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
                         file_proto(output),
                     ),
             ),
+        ), (
             file_proto(ccs),
             # already tracked
             #(
@@ -94,6 +95,7 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
             #            file_proto(output),
             #        ),
             #),
+        ), (
             file_proto(cib),
             # already tracked
             #cib2pcscmd_output(
@@ -178,6 +180,7 @@ def pcs2pcscmd_needle(cmd_ctxt,
                             file_proto(output),
                         ),
             ),
+        ), (
             file_proto(coro),
             # already tracked
             #(
@@ -195,6 +198,7 @@ def pcs2pcscmd_needle(cmd_ctxt,
             #        #),
             #    ),
             #),
+        ), (
             file_proto(cib),
             # already tracked
             #cib2pcscmd_output(
