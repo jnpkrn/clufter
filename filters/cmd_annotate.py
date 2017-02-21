@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """cmd-annotate filter"""
@@ -20,7 +20,7 @@ cmd_annotate_self_id = ' '.join((package_name(), version))
 def cmd_annotate(flt_ctxt, in_obj):
     """Emit a comment block with clufter version + command used + target info"""
     ret = (''.join(('#', l)) for l in (
-        (flt_ctxt['annotate_shell'], ) if flt_ctxt['annotate_shell'] else ()
+        (flt_ctxt['annotate_shell'], ) if 'annotate_shell' in flt_ctxt else ()
     ) + (
         " sequence generated on {0} with: {1}".format(
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
