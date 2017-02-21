@@ -47,7 +47,7 @@ from .utils_prog import FancyOutput, \
 
 log = getLogger(__name__)
 
-protodecl = lambda x: len(x) == 2 and isinstance(x[0], Filter)
+fltiodecl = lambda x: len(x) == 2 and isinstance(x[0], Filter)
 
 # expected to be lowercase for more straightforward case-insensitive comparison
 CMD_HELP_OPTSEP_PRIMARY = 'options:'
@@ -367,7 +367,7 @@ class Command(object):
                         head_tail(protodictval(i[1]))[0] not in getattr(i[0],
                             ('in_format', 'out_format')[passno])._protocols
                             and str(head_tail(i[1])[0]) or None
-                        if protodecl(i) else i if any(i) else None
+                        if fltiodecl(i) else i if any(i) else None
                 )(check)
                 checked_flat = apply_intercalate((checked,))
                 for order, proto in filter(lambda (i, x): x,
@@ -409,7 +409,7 @@ class Command(object):
         input_cache = cmd_ctxt.setdefault('input_cache', {}, bypass=True)
         worklist = list(reversed(tailshake(terminal_chain,
                                            partitioner=lambda x:
-                                           not (tuplist(x)) or protodecl(x))))
+                                           not (tuplist(x)) or fltiodecl(x))))
         # if any "EMPTY" (zip_empty) value present, respective class name ~ str
         unused, tstmp = {}, hex(int(time()))[2:]
         while worklist:

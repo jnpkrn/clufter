@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Base format stuff (metaclass, classes, etc.)"""
@@ -347,7 +347,7 @@ class Nothing(Format):
     _hash = hash(None)
 
     @Format.producing(VOID)
-    def get_void(self, *protodecl):
+    def get_void(self, *iodecl):
         pass  # same as return None
 
 
@@ -365,7 +365,7 @@ class SimpleFormat(Format):
         super(SimpleFormat, self).__init__(protocol, *args, **kwargs)
 
     @Format.producing(BYTESTRING)
-    def get_bytestring(self, *protodecl):
+    def get_bytestring(self, *iodecl):
         if self.FILE in self._representations:  # break the possible loop
             infile = self.FILE()
             if hasattr(infile, 'read'):
@@ -377,8 +377,8 @@ class SimpleFormat(Format):
                 return f.read()
 
     @Format.producing(FILE)
-    def get_file(self, *protodecl):
-        outfile = protodecl[-1]
+    def get_file(self, *iodecl):
+        outfile = iodecl[-1]
         if hasattr(outfile, 'write'):
             # assume fileobj out of our control, do not close
             outfile.write(self.BYTESTRING())
@@ -771,7 +771,7 @@ class XML(SimpleFormat):
     etree_validator = etree_rng_validator
 
     @SimpleFormat.producing(BYTESTRING, chained=True)
-    def get_bytestring(self, *protodecl):
+    def get_bytestring(self, *iodecl):
         # chained fallback
         return etree.tostring(self.ETREE(protect_safe=True),
                               pretty_print=True)
@@ -779,6 +779,6 @@ class XML(SimpleFormat):
     @SimpleFormat.producing(ETREE, protect=True,
                             # pre 2.7 compat:  http://bugs.python.org/issue5982
                             validator=etree_validator.__get__(1).im_func)
-    def get_etree(self, *protodecl):
+    def get_etree(self, *iodecl):
         return etree.fromstring(self.BYTESTRING(),
                                 parser=etree_parser_safe).getroottree()

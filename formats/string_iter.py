@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Format representing a list of strings (new-line delimited)"""
@@ -14,7 +14,7 @@ class string_iter(SimpleFormat):
     BYTESTRING = SimpleFormat.BYTESTRING
 
     @SimpleFormat.producing(BYTESTRING, chained=True)
-    def get_bytestring(self, *protodecl):
+    def get_bytestring(self, *iodecl):
         """Return command as canonical single string"""
         # chained fallback
         return (
@@ -24,7 +24,7 @@ class string_iter(SimpleFormat):
         )
 
     @SimpleFormat.producing(STRINGITER, protect=True)
-    def get_stringiter(self, *protodecl):
+    def get_stringiter(self, *iodecl):
         return (s.strip() for s in (self.BYTESTRING().rstrip('\n')).split('\n'))
 
 
@@ -32,7 +32,7 @@ class string_list(string_iter):
     native_protocol = STRINGLIST = Protocol('stringlist')
 
     @SimpleFormat.producing(STRINGLIST, protect=True)
-    def get_stringlist(self, *protodecl):
+    def get_stringlist(self, *iodecl):
         return list(self.STRINGITER(protect_safe=True))
 
 
@@ -40,5 +40,5 @@ class string_set(string_iter):
     native_protocol = STRINGSET = Protocol('stringset')
 
     @SimpleFormat.producing(STRINGSET, protect=True)
-    def get_stringset(self, *protodecl):
+    def get_stringset(self, *iodecl):
         return set(self.STRINGITER(protect_self=True))
