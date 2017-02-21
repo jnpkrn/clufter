@@ -514,7 +514,6 @@ class Command(object):
             getattr(opts, 'color', 'auto')
         ]
         cmd_ctxt = cmd_ctxt or CommandContext({
-            'filter_chain_analysis': self.filter_chain_analysis,
             'filter_noop':           getattr(opts, 'noop', ()),
             'filter_dump':           getattr(opts, 'dump', ()),
             'system':                getattr(opts, 'sys', ''),
@@ -529,6 +528,8 @@ class Command(object):
                                      ),
             'color':                color,
         }, bypass=True)
+        cmd_ctxt.setdefault('filter_chain_analysis',
+                            self.filter_chain_analysis, bypass=True)
         cmd_ctxt.ensure_filters(self._filters.itervalues())
         kwargs = {}
         # desugaring, which is useful mainly if non-contiguous sequence
