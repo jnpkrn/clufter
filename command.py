@@ -501,7 +501,7 @@ class Command(object):
                     else:
                         # re io_decl: allow terminal filters have a peek at
                         # respective resolved(!) filter IO declaration, so they
-                        # can, e.g., choose a final formatting
+                        # can, e.g., choose a final formatting (see cmd-wrap)
                         # XXX useful just for output terminals, really
                         if flt in terminals:
                             flt_ctxt['io_decl'] = io_decl
