@@ -366,16 +366,19 @@ class Command(object):
 
     @staticmethod
     @selfaware
-    def _iochain_check_terminals(me, io_chain, terminal_chain):
-        # validate "terminal filter chain" vs "io chain"
+    def _iochain_check_terminals(me, io_chain, terminal_chain, magic_fds,
+                                 interpolations={}):
+        # validate "terminal filter chain" vs "io chain" while solving magic_fds
         # 1. "shapes" match incl. input (head)/output (tail) protocol match
         if len(terminal_chain) == 1 and len(io_chain) == len(terminal_chain[0]):
             # see `deco`: 2.
             io_chain = args2tuple(io_chain)
+        ret = []
         to_check = apply_loose_zip_preserving_depth(terminal_chain, io_chain)
         if to_check and fltiodecl(to_check[0]):
             to_check = [to_check]  # restore _iochain_proceed-clipped wrapping
         for to_check_inner in to_check:
+            ret_to_check_inner = []
             for passno, check in enumerate(head_tail(to_check_inner)):
                 checked = apply_aggregation_preserving_depth(
                     lambda i:
@@ -397,7 +400,17 @@ class Command(object):
                         if isinstance(proto, (type(zip_empty), Filter))
                         else "`{0}' protocol not suitable".format(proto)
                     )
-        return to_check
+                # handle "magic files"
+                resolved = apply_aggregation_preserving_depth(
+                    lambda i:
+                        (i[0], SimpleFormat.io_decl_specials(i[1], passno == 0,
+                                                             magic_fds,
+                                                             interpolations))
+                        if fltiodecl(i) else i
+                )(check)
+                ret_to_check_inner.append(resolved)
+            ret.append(ret_to_check_inner)
+        return ret
 
     def _iochain_proceed(self, cmd_ctxt, io_chain):
         # currently works sequentially, jumping through the terminals in-order;
@@ -417,10 +430,16 @@ class Command(object):
         terminal_chain = cmd_ctxt['filter_chain_analysis']['terminal_chain'][-1]
         terminals = apply_intercalate(terminal_chain)
 
-        terminal_chain = self._iochain_check_terminals(io_chain, terminal_chain)
-
         native_fds = dict((f.fileno(), f) for f in (stderr, stdin, stdout))
         magic_fds = native_fds.copy()
+        # XXX using with cmd_ctxt.prevented_taint() would be too pedantic
+        #     and, furthermore, would destroy order-preserving because of
+        #     OrderedDict to plain dict artificial "downcasting"
+        terminal_chain = self._iochain_check_terminals(io_chain,
+                                                       terminal_chain,
+                                                       magic_fds,
+                                                       cmd_ctxt['__filters__'])
+
         input_cache = cmd_ctxt.setdefault('input_cache', {}, bypass=True)
         worklist = list(reversed(tailshake(terminal_chain,
                                            partitioner=lambda x:
@@ -447,10 +466,6 @@ class Command(object):
                     in_obj = input_cache[io_decl]
                 else:
                     with cmd_ctxt.prevented_taint():
-                        io_decl = SimpleFormat.io_decl_specials(
-                                      io_decl, 1, magic_fds,
-                                      cmd_ctxt['__filters__']
-                        )
                         in_obj = flt.in_format.as_instance(*io_decl, **fmt_kws)
                     input_cache[io_decl] = flt_ctxt['in'] = in_obj
             elif filter_backtrack[flt] and 'out' not in flt_ctxt:
@@ -484,8 +499,16 @@ class Command(object):
                     if flt.__class__.name in cmd_ctxt['filter_noop']:
                         ret = in_obj
                     else:
+                        # re io_decl: allow terminal filters have a peek at
+                        # respective resolved(!) filter IO declaration, so they
+                        # can, e.g., choose a final formatting
+                        # XXX useful just for output terminals, really
+                        if flt in terminals:
+                            flt_ctxt['io_decl'] = io_decl
                         with cmd_ctxt.prevented_taint():
                             ret = flt(in_obj, flt_ctxt)
+                        if flt in terminals:
+                            flt_ctxt.pop('io_decl')
                     flt_ctxt['out'] = ret
                 if flt not in terminals or not filter_backtrack[flt]:
                     if (flt.__class__.name in cmd_ctxt['filter_dump']
@@ -506,9 +529,6 @@ class Command(object):
                                                      .format(fn))
                     continue
             # output time!  (incl. UPFILTER terminal listed twice in io_chain)
-            with cmd_ctxt.prevented_taint():
-                io_decl = SimpleFormat.io_decl_specials(io_decl, 0, magic_fds,
-                                                        cmd_ctxt['__filters__'])
             log.debug("Run `{0}' filter with `{1}' io decl. as TERMINAL"
                       .format(flt.__class__.name, io_decl))
             # store output somewhere, which even can be useful (use as a lib)
