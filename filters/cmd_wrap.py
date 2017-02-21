@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """cmd-wrap filter"""
@@ -7,12 +7,13 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..filter import Filter
 from ..formats.command import command, ismetaword
+from ..utils import head_tail
 from ..utils_func import add_item
 from ..utils_prog import FancyOutput
 
 from collections import MutableMapping, defaultdict
 from logging import getLogger
-from os import getenv
+from os import getenv, isatty
 from sys import maxint
 from textwrap import TextWrapper
 
@@ -451,21 +452,30 @@ def cmd_wrap(flt_ctxt, in_obj):
     - hard-coded default of 72
     If absolute value at this point is lower than 20, fallback to 20.
     """
+    proto, rest = head_tail(flt_ctxt.get('io_decl'))
     try:
-        tw_system = int(getenv('COLUMNS'))
+        term = proto == 'file' and isatty(rest[0].fileno())
+    except AttributeError:
+        term = False
+    color = flt_ctxt.get('color')
+    color = color or (term and color is not False)
+    tw, tw_system = 0, 0
+    try:
+        tw_system = int(getenv('COLUMNS')) if term else tw_system
     except TypeError:
-        tw_system = 0
+        pass
     try:
         tw = int(flt_ctxt.get('text_width'))
-        if not tw:
-            raise TypeError
-        elif tw < -1:
-            tw = -tw
-            tw = tw if not tw_system or tw < tw_system else tw_system
-        elif tw == -1:
-            tw = maxint >> 1  # one order of magnitude less to avoid overflows
     except TypeError:
+        pass
+    if tw > 0:
+        pass
+    elif tw < -1:
+        tw = -tw if not tw_system or -tw < tw_system else tw_system
+    elif tw == 0 and term:
         tw = tw_system
+    else:
+        tw = maxint >> 1  # one order of magnitude less to avoid overflows
     if tw < 20:  # watch out for deliberate lower limit
         tw = 20 if tw else 72
         log.info('Text width fallback: {0}'.format(tw))
@@ -474,7 +484,7 @@ def cmd_wrap(flt_ctxt, in_obj):
                                FancyOutput.table.get('pcscmd_' + k, '')))
                        for k in ('comment', 'file', 'metaword', 'pcs', 'subcmd')),
                         restore=FancyOutput.colors['restore'])
-                if flt_ctxt.get('color') else defaultdict(lambda: ''))
+                if color else defaultdict(lambda: ''))
 
     ret, continuation = [], []
     for line in in_obj('stringiter', protect_safe=True):
