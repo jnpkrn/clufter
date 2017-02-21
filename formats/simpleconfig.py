@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Structured configuration formats such as corosync.conf"""
@@ -52,7 +52,7 @@ class simpleconfig(SimpleFormat):
     csep = '#'
 
     @SimpleFormat.producing(BYTESTRING)
-    def get_bytestring(self, *protodecl):
+    def get_bytestring(self, *iodecl):
         """Externalize 'struct', that is basically, pretty print it
 
         For example above, the result is something like:
@@ -106,7 +106,7 @@ class simpleconfig(SimpleFormat):
         return ret
 
     @SimpleFormat.producing(STRUCT, protect=True)
-    def get_struct(self, *protodecl):
+    def get_struct(self, *iodecl):
         # similar to pcs.corosync_conf._parse_section (and Corosync itself)
         lbrace, rbrace, optsep = self.lbrace_i, self.rbrace_i, self.optsep_i
         csep = self.csep
