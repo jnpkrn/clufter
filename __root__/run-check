@@ -227,8 +227,8 @@ EOF
 # '--text-width=72', '--silent', '--noguidance', '--', '-', '-']
 # targeting system: ('linux', 'redhat', '7.1', 'Maipo')
 pcs cluster auth rhel6-node1 rhel6-node2 <>/dev/tty
-pcs cluster setup --name one rhel6-node1 rhel6-node2 --consensus 12000 \\
-  --token 10000 --join 60
+pcs cluster setup --name one rhel6-node1 rhel6-node2 --join 60 \\
+  --token 10000 --consensus 12000
 pcs cluster start --all && sleep 60
 pcs cluster cib tmp-cib.xml
 pcs -f tmp-cib.xml stonith create FENCEDEV-xvm fence_xvm \\
