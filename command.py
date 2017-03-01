@@ -529,6 +529,9 @@ class Command(object):
                                                      .format(fn))
                     continue
             # output time!  (incl. UPFILTER terminal listed twice in io_chain)
+            with cmd_ctxt.prevented_taint():  # still needed for late binding
+                io_decl = SimpleFormat.io_decl_specials(io_decl, 0, magic_fds,
+                                                        cmd_ctxt['__filters__'])
             log.debug("Run `{0}' filter with `{1}' io decl. as TERMINAL"
                       .format(flt.__class__.name, io_decl))
             # store output somewhere, which even can be useful (use as a lib)
