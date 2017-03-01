@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Utility functions wrt. cluster systems in general"""
@@ -546,11 +546,12 @@ def infer_comp(comp, branches=None):
     for b in branches:
         for c, c_ver in b.iteritems():
             c, c_extra = _parse_extra(c)
-            if (c == comp
-                and (not comp_extra or not comp_extra.difference(c_extra))
-                and _cmp_ver(comp_ver, c_ver) == 0):
-                    ret.append(b)
-                    break
+            if c == comp:
+                if (isinstance(c_ver, tuple) and _cmp_ver(comp_ver, c_ver)
+                        or comp_extra and comp_extra.difference(c_extra)):
+                    continue
+                ret.append(b)
+                break
 
     return ret
 
