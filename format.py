@@ -458,6 +458,8 @@ class SimpleFormat(Format):
                                      *io_decl[2:])
             except (ValueError, KeyError):
                 pass
+            except ((AttributeError, ) if not in_mode else ()):
+                pass  # input terminals have to be interpolation-complete by now
             fdef = io_decl[1]
             fdef = "@{0}".format(int(not(in_mode))) if fdef == '-' else fdef
             if fdef.rstrip('0123456789') == '@':
