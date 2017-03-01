@@ -7,11 +7,14 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from logging import getLogger
 
+from .error import ClufterPlainError
 from .utils import args2sgpl
 from .utils_func import apply_intercalate
 
 log = getLogger(__name__)
 
+class FactsError(ClufterPlainError):
+    pass
 
 #
 # EXECUTABLE KNOWLEDGE ABOUT THE CLUSTER PACKAGES PER SYSTEM/DISTROS
@@ -616,6 +619,8 @@ def infer(query, system=None, system_extra=None):
         inference_rule = inference_rules.get(q_type, rule_error)[1]
         if q_type != level:
             prev = ret
+        if not q_content:
+            raise FactsError("Cannot resolve `{0}' when empty".format(q_type))
         inferred = inference_rule(q_content, prev)
         log.debug("inferred: {0}".format(inferred))
         ret = [i for i in ret if i in inferred] if q_type == level else inferred
