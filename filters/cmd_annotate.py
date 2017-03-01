@@ -10,6 +10,7 @@ from ..filter import Filter
 from ..utils import args2tuple
 
 from datetime import datetime
+from platform import python_implementation, python_version
 from sys import argv
 
 
@@ -30,6 +31,9 @@ def cmd_annotate(flt_ctxt, in_obj):
         " invoked as: {0}".format(repr(argv)),
         " targeting system: {0}".format(
             repr(args2tuple(flt_ctxt['system'], *flt_ctxt['system_extra']))
-        )
+        ),
+        " using interpreter: {0}".format(' '.join((
+            python_implementation(), python_version(),
+        ))),
     ))
     return ('stringiter', ret)

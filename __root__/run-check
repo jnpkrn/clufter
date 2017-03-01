@@ -177,7 +177,7 @@ run_check_cmd() {
                             ccs2pcscmd "${@}" \
 			    --text-width=72 --silent --noguidance \
 			    -- - - \
-			    | tail -n+3 > "${testcmd}" \
+			    | sed '1,2d;6d' > "${testcmd}" \
       && echo "TEST: execution OK" \
       || { echo "TEST: execution FAIL"; ret=20; }; }<<EOF
 <?xml version="1.0"?>
