@@ -462,7 +462,8 @@ class SimpleFormat(Format):
                 pass  # input terminals have to be interpolation-complete by now
             fdef = io_decl[1]
             fdef = "@{0}".format(int(not(in_mode))) if fdef == '-' else fdef
-            if fdef.rstrip('0123456789') == '@':
+            if (isinstance(fdef, basestring)
+                    and fdef.rstrip('0123456789') == '@'):
                 fd = int(fdef[1:])
                 if fd not in magic_fds:
                     # XXX be careful about not duplicating? (especially '-')
