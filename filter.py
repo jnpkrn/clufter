@@ -751,7 +751,9 @@ class XMLFilter(Filter, MetaPlugin):
                     if s.tag == namespaced(CLUFTER_NS, 'snippet'):
                         # only single root "detached" supported (first == last)
                         dst = parent
-                        dst.attrib.update(dict(s.attrib))
+                        # cannot use dict.update(dict) because of losing order
+                        for k in s.attrib:
+                            dst.attrib[k] = s.attrib[k]
                         #dst[index:index] = s
                         tag.extend(s)
                     elif mix:

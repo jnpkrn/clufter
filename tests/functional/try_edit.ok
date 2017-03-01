@@ -7,7 +7,7 @@
   <logging>
     <logger_subsys debug="on" subsys="CMAP"/>
   </logging>
-  <totem version="2" cluster_name="test" consensus="200" token="5000" token_retransmits_before_loss_const="4" join="100" key="_NOT_SECRET_">
+  <totem version="2" cluster_name="test" consensus="200" join="100" token="5000" token_retransmits_before_loss_const="4" key="_NOT_SECRET_">
     <interface ttl="1"/>
   </totem>
 </corosync>
