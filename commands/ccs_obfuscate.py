@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """ccs-obfuscate command"""
@@ -15,7 +15,7 @@ from ..utils_cman import PATH_CLUSTERCONF
 def ccs_obfuscate(cmd_ctxt,
                   input=PATH_CLUSTERCONF,
                   output="cluster-obfuscated-"
-                         "{ccs-obfuscate-identifiers.in.hash}.conf",
+                         "{ccs-obfuscate-credentials.in.hash}.conf",
                   skip='none'):
     """Obfuscate credentials/IDs in CMAN-based cluster config.
 
