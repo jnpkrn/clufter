@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """ccs2ccsflat filter"""
@@ -11,6 +11,7 @@ from subprocess import PIPE
 from sys import stdin
 
 from ..filter import Filter, FilterError
+from ..utils_2to3 import basestring
 from ..utils_prog import OneoffWrappedStdinPopen, dirname_x, which
 
 try:

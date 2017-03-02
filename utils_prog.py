@@ -7,6 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import logging
 from collections import Mapping, MutableMapping, MutableSequence, MutableSet
+from functools import reduce
 from optparse import Option
 from os import environ, fdopen, isatty, pathsep
 from os.path import abspath, dirname, samefile, \
@@ -30,7 +31,14 @@ from .utils import areinstances, \
                    isinstanceexcept, \
                    selfaware, \
                    tuplist
+from .utils_2to3 import basestring, xrange
 from .utils_func import apply_split
+
+# do not alias it other way around to avoid accidental "file(f, 'w')"
+try:
+    IOBase = file
+except NameError:  # PY3 forward compability
+    from io import IOBase
 
 log = logging.getLogger(__name__)
 
@@ -423,7 +431,7 @@ class FancyOutput(object):
     # TODO use /etc/terminal-colors.d/clufter.{enable,disable,scheme}
     def __init__(self, f=stdout, recheck=False, color=None, quiet=False,
                  prefix='', **cfg):
-        if not isinstance(f, file):
+        if not isinstance(f, IOBase):
             f = fdopen(f, "a")
         self._f = f
         self._quiet = quiet

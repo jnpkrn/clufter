@@ -22,6 +22,7 @@ from .utils import args2tuple, \
                    filterdict_remove, \
                    hybridproperty, \
                    tuplist
+from .utils_2to3 import StandardError
 from .utils_func import apply_intercalate
 from .utils_prog import ProtectedDict, cli_decor, getenv_namespaced
 
@@ -74,8 +75,8 @@ class PluginRegistry(type):
                 # (e.g., specific plugin was imported natively)
                 registry.setup()
                 PluginRegistry._registries.add(registry)
-                # rely on __builtin__ being always present, hence failing test
-                if (registry.namespace or '__builtin__') not in modules:
+                # rely on sys being always present (tautology) -> failing test
+                if (registry.namespace or 'sys') not in modules:
                     # XXX hack to prevent RuntimeWarning due to missing parent
                     #     module (e.g., some tests in the test suite)
                     __import__(registry.namespace)

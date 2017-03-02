@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Command manager"""
@@ -16,6 +16,7 @@ from .error import ClufterError, ClufterPlainError, \
 from .filter_manager import FilterManager
 from .plugin_registry import PluginManager
 from .utils import filterdict_keep
+from .utils_2to3 import basestring
 from .utils_func import apply_intercalate, bifilter
 from .utils_prog import make_options, set_logging
 

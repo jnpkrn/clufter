@@ -1,11 +1,12 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """XSLT helpers"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from .utils_xml import NAMESPACES, XSL, squote
+from .utils_2to3 import basestring, xrange
 
 
 NL = '&#xa;'

@@ -9,6 +9,7 @@ from logging import getLogger
 
 from .error import ClufterPlainError
 from .utils import args2sgpl
+from .utils_2to3 import basestring
 from .utils_func import apply_intercalate
 
 log = getLogger(__name__)

@@ -8,13 +8,14 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from ..filter import Filter
 from ..formats.command import command, ismetaword
 from ..utils import head_tail
+from ..utils_2to3 import xrange
 from ..utils_func import add_item
 from ..utils_prog import FancyOutput
 
 from collections import MutableMapping, defaultdict
 from logging import getLogger
 from os import getenv, isatty
-from sys import maxint
+from sys import maxsize
 from textwrap import TextWrapper
 
 n, len_n = FancyOutput.normalized, FancyOutput.len_normalized
@@ -475,7 +476,7 @@ def cmd_wrap(flt_ctxt, in_obj):
     elif tw == 0 and term:
         tw = tw_system
     else:
-        tw = maxint >> 1  # one order of magnitude less to avoid overflows
+        tw = maxsize >> 1  # one order of magnitude less to avoid overflows
     if tw < 20:  # watch out for deliberate lower limit
         tw = 20 if tw else 72
         log.info('Text width fallback: {0}'.format(tw))

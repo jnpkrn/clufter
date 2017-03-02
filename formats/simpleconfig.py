@@ -7,6 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..format import SimpleFormat
 from ..protocol import Protocol
+from ..utils_2to3 import basestring
 from ..utils_func import apply_aggregation_preserving_passing_depth
 from ..utils_prog import getenv_namespaced
 
