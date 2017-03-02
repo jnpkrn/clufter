@@ -632,6 +632,10 @@ class XML(SimpleFormat):
         result = {}
         tree_stack = [(root_dir, None, result)]  # for bottom-up reconstruction
         for root, dirs, files in walk(root_dir):
+            try:
+                dirs.remove('__pycache__')  # PY3
+            except ValueError:
+                pass
             # multi-step upwards and (followed by)/or single step downwards
             while commonprefix((root, tree_stack[-1][0])) != tree_stack[-1][0]:
                 cls._walk_schema_step_up(tree_stack)
