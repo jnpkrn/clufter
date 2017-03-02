@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Various little+independent helpers"""
@@ -151,12 +151,12 @@ def func_defaults_varnames(func, skip=0):
     Parameters:
         skip                how many initial arguments to skip
     """
-    code = func.func_code
+    code = func.__code__
     func_varnames = code.co_varnames[skip:code.co_argcount]
 
     func_defaults = dict(zip(
         reversed(func_varnames),
-        reversed(func.func_defaults)
+        reversed(func.__defaults__),
     ))
 
     return func_defaults, func_varnames
