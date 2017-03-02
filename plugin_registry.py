@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Easy (at least for usage) plugin framework"""
@@ -230,6 +230,10 @@ class PluginRegistry(type):
                 for root, dirs, files in walk(path):
                     if root != path:
                         break  # ATM we only support flat dir (nested ~ private)
+                    #try:
+                    #    dirs.remove('__pycache__')  # PY3 (if we ever nest)
+                    #except ValueError:
+                    #    pass
                     for name, ext in filter(
                         lambda (name, ext):
                             fp.match(name) and
