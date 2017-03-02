@@ -8,12 +8,16 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from itertools import takewhile
 from types import GeneratorType
 
-from .utils_2to3 import basestring
+from .utils_2to3 import PY3, basestring
 
 
 # inspired by http://stackoverflow.com/a/4374075
-immutable = lambda x: isinstance(x, (basestring, int, long, bool, float, tuple,
-                                     GeneratorType))
+if PY3:
+    immutable = lambda x: isinstance(x, (basestring, int, bool, float, tuple,
+                                         GeneratorType))
+else:
+    immutable = lambda x: isinstance(x, (basestring, int, long, bool, float,
+                                         tuple, GeneratorType))
 
 tuplist = lambda x: isinstance(x, (tuple, list, set))
 # turn args into tuple unless single tuplist arg
