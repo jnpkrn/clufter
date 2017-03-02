@@ -6,6 +6,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from copy import deepcopy
+from functools import reduce
 from logging import getLogger
 from os import environ, isatty, stat
 from os.path import dirname, join
@@ -32,6 +33,7 @@ from .utils import args2tuple, arg2wrapped, \
                    filterdict_keep, filterdict_invkeep, filterdict_pop, \
                    head_tail, hybridproperty, \
                    identity, lazystring, tuplist
+from .utils_2to3 import xrange
 from .utils_lxml import etree_XSLT_safe, \
                         etree_parser_safe, etree_parser_safe_unblanking
 from .utils_func import apply_preserving_depth, \

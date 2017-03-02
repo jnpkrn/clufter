@@ -8,6 +8,8 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from itertools import takewhile
 from types import GeneratorType
 
+from .utils_2to3 import basestring
+
 
 # inspired by http://stackoverflow.com/a/4374075
 immutable = lambda x: isinstance(x, (basestring, int, long, bool, float, tuple,

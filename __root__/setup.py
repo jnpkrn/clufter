@@ -57,6 +57,7 @@ chdir(here)  # make setup.py possess expected CWD + play better with pip install
 
 true_gen = lambda this: True
 # XXX copy-paste of utils_func.py
+# from functools import reduce
 #bifilter = \
 #    lambda fnc, seq: \
 #        reduce(lambda acc, x: acc[int(not fnc(x))].append(x) or acc,

@@ -1,13 +1,15 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Shell completion formatters"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+from functools import reduce
 from os.path import basename
 
 from .utils import args2sgpl
+from .utils_2to3 import basestring
 from .utils_func import bifilter
 from .utils_prog import cli_undecor
 

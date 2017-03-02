@@ -9,6 +9,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 import hashlib
 from copy import deepcopy
+from functools import reduce
 from glob import glob
 from imp import find_module, load_module
 from logging import getLogger
@@ -35,6 +36,7 @@ from .utils import arg2wrapped, args2sgpl, args2tuple, args2unwrapped, \
                    isinstanceupto, \
                    popattr, \
                    tuplist
+from .utils_2to3 import basestring, xrange
 from .utils_lxml import etree_parser_safe
 from .utils_prog import ProtectedDict, getenv_namespaced
 from .utils_xml import rng_get_start, rng_pivot

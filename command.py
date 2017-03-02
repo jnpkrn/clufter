@@ -6,7 +6,11 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from collections import MutableMapping
-from itertools import izip_longest
+from functools import reduce
+try:
+    from itertools import zip_longest
+except ImportError:  # PY2 backward compatibility
+    from itertools import izip_longest as zip_longest
 from logging import getLogger
 from optparse import OptionParser
 from sys import stderr, stdin, stdout
@@ -33,6 +37,7 @@ from .utils import any2iter, \
                    nonetype, \
                    selfaware, \
                    tuplist
+from .utils_2to3 import basestring, xrange
 from .utils_func import apply_aggregation_preserving_depth, \
                         apply_intercalate, \
                         apply_loose_zip_preserving_depth, \
@@ -618,7 +623,7 @@ class Command(object):
                   .format(self.__class__.name, args, kwargs))
         io_driver = any2iter(self._fnc(cmd_ctxt, **kwargs))
         io_handler = (self._iochain_proceed, lambda c, ec=EC.EXIT_SUCCESS: ec)
-        io_driver_map = izip_longest(io_driver, io_handler)
+        io_driver_map = zip_longest(io_driver, io_handler)
         for driver, handler in io_driver_map:
             driver = () if driver is None else (driver, )
             ec = handler(cmd_ctxt, *driver)
