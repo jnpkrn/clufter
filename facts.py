@@ -380,9 +380,10 @@ def _cmp_ver(v1, v2):
     if v1 and v2:
         v1, v2 = list(reversed(v1)), list(reversed(v2))
         while v1 and v2:
-            ret = cmp(v1.pop(), v2.pop())
-            if ret:
-                return ret
+            i1, i2 = v1.pop(), v2.pop()
+            if i1 == i2:
+                continue
+            return 1 if i1 > i2 else -1
     return 0
 
 
