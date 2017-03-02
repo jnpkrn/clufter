@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Machinery entry point"""
@@ -226,7 +226,7 @@ class SharedHelpFormatter(IndentedHelpFormatter):
             wrap=staticmethod(lambda *args, **kwargs:
                 wrap(*args, **dict(kwargs, break_on_hyphens=False)),
             )))
-        self.format_option.func_globals['textwrap'] = tw
+        self.format_option.__globals__['textwrap'] = tw
 
     def expand_default(self, option):
         ret = IndentedHelpFormatter.expand_default(self, option)

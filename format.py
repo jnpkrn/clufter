@@ -784,8 +784,7 @@ class XML(SimpleFormat):
                               pretty_print=True)
 
     @SimpleFormat.producing(ETREE, protect=True,
-                            # pre 2.7 compat:  http://bugs.python.org/issue5982
-                            validator=etree_validator.__get__(1).im_func)
+                            validator=etree_validator.__get__(1).__func__)
     def get_etree(self, *iodecl):
         return etree.fromstring(self.BYTESTRING(),
                                 parser=etree_parser_safe).getroottree()
