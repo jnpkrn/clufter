@@ -27,7 +27,7 @@ class ChainResolve(TestCase):
                                             'ccsflat2cibprelude',
                                             'ccs2needlexml',
                                             'cmd-annonate',
-                                            'stringiter-combine2',
+                                            'stringiter-combine3',
                                             'cmd-wrap',
                                             'ccs-propagate-cman',
                                             'needlexml2pcscmd',
