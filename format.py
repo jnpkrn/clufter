@@ -37,6 +37,7 @@ from .utils import arg2wrapped, args2sgpl, args2tuple, args2unwrapped, \
                    popattr, \
                    tuplist
 from .utils_2to3 import basestring, xrange
+from .utils_func import foreach
 from .utils_lxml import etree_parser_safe
 from .utils_prog import ProtectedDict, getenv_namespaced
 from .utils_xml import rng_get_start, rng_pivot
@@ -646,7 +647,7 @@ class XML(SimpleFormat):
             else:
                 assert root == root_dir
                 # at root, we do not traverse to any other dir than `xml_root`
-                map(lambda d: d != xml_root and dirs.remove(d), dirs[:])
+                foreach(lambda d: d != xml_root and dirs.remove(d), dirs[:])
                 current_tracking = tree_stack[-1][2]
                 files = []
 

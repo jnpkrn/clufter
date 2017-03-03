@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing filter manager"""
@@ -67,7 +67,7 @@ class CompositeFormatIO(FilterManagerTestCase):
             outs = []
             for in_obj in in_objs:
                 outs.append(('bytestring', ccs2ccsflat(in_obj)('bytestring')))
-            subprotos, subresults = head_tail(zip(*outs))
+            subprotos, subresults = head_tail(tuple(zip(*outs)))
             return ('composite', subprotos), subresults
         super(CompositeFormatIO, self).setUp()
 

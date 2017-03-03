@@ -14,6 +14,7 @@ from os.path import dirname, exists, join
 
 from .command_manager import CommandManager
 from .utils_2to3 import iter_values
+from .utils_func import foreach
 
 
 class Main(TestCase):
@@ -40,7 +41,7 @@ class Main(TestCase):
     #    cmd_manager = CommandManager.implicit()
     #    self.assertFalse(cmd_manager.commands["ccs2pcs-needle"](clufter_args))
     #    # just the existence of the files is enough for now...
-    #    map(lambda f: self.assertTrue(exists(f)), iter_values(outputs))
+    #    foreach(lambda f: self.assertTrue(exists(f)), iter_values(outputs))
 
     def testCcs2PcsNeedleBetter(self):
         testfile = join(dirname(__file__), 'filled.conf')
@@ -68,7 +69,7 @@ class Main(TestCase):
         cmd = CommandManager.init_lookup('ccs2pcs').commands['ccs2pcs-needle']
         self.assertFalse(cmd(clufter_args))
         # just the existence of non-null strings is enough for now...
-        map(lambda fspec: self.assertTrue(fspec['passout']), iter_values(outputs))
+        foreach(lambda fsp: self.assertTrue(fsp['passout']), iter_values(outputs))
         #from pprint import pprint
         #pprint(outputs['coro']['passout'])
 

@@ -10,7 +10,7 @@ from lxml import etree
 from .error import ClufterPlainError
 from .utils import selfaware
 from .utils_2to3 import basestring, iter_items
-from .utils_func import bifilter
+from .utils_func import bifilter, foreach
 
 
 NAMESPACES = {
@@ -20,9 +20,12 @@ NAMESPACES = {
 }
 
 # X=x and X_NS=url for each (x, url) in NAMESPACES
-map(lambda ns: globals().setdefault(ns.upper(), ns), NAMESPACES)
-map(lambda (ns, url): globals().setdefault(ns.upper() + '_NS', url),
-    iter_items(NAMESPACES))
+foreach(
+    lambda (ns, url):
+        foreach(lambda (k, v): globals().setdefault(k, v),
+                ((ns.upper(), ns), (ns.upper() + '_NS', url))),
+    iter_items(NAMESPACES)
+)
 
 
 class UtilsXmlError(ClufterPlainError):

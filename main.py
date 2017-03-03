@@ -22,6 +22,7 @@ from .error import EC
 from .facts import aliases_dist, format_dists, supported_dists
 from .utils import args2sgpl, head_tail, identity
 from .utils_2to3 import iter_items, xrange
+from .utils_func import foreach
 from .utils_prog import ExpertOption, make_options, set_logging, which
 
 try:
@@ -140,9 +141,9 @@ opts_common = (
         dest='loglevel',
         default=logging.getLevelName(logging.WARNING),
         type='choice',
-        choices=map(logging.getLevelName,
-                    xrange(logging.NOTSET, logging.CRITICAL + 1,
-                           logging.DEBUG - logging.NOTSET)),
+        choices=list(map(logging.getLevelName,
+                         xrange(logging.NOTSET, logging.CRITICAL + 1,
+                                logging.DEBUG - logging.NOTSET))),
         help="specify log level [%default out of %choices]"
     )),
     # TODO other logging related stuff (if any)
@@ -341,7 +342,7 @@ def run(argv=None, *args):
         pass
     set_logging(opts)
     log = logging.getLogger(__name__)
-    map(lambda args: log.log(*args), getattr(opts, '_deferred_log', ()))
+    foreach(lambda args: log.log(*args), getattr(opts, '_deferred_log', ()))
 
     cm = CommandManager.init_lookup(ext_plugins=not opts.skip_ext,
                                     ext_plugins_user=opts.ext_user,
@@ -397,7 +398,7 @@ def run(argv=None, *args):
     # prepare option parser to be reused by sub-commands
     parser.enable_interspersed_args()
     modify_group = parser.get_option_group(opts_main[0][0][0])
-    map(parser.remove_option, map(lambda x: x[0][0], opts_main))
+    foreach(parser.remove_option, map(lambda x: x[0][0], opts_main))
     modify_group.set_title("Command options")
     modify_group.set_description(None)
     parser.add_options(make_options(opts_nonmain))

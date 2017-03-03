@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Chains of filters used in *2pcs* commands"""
@@ -8,10 +8,11 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from ..utils import args2tuple, args2unwrapped, tuplist
 from ..utils_func import apply_aggregation_preserving_passing_depth
 
+
 terminalize = lambda args: \
     apply_aggregation_preserving_passing_depth(
         lambda i, d:
-            filter(tuplist, i[:-1])
+            tuple(a for a in i[:-1] if tuplist(a))
             + tuple([args.pop() if not tuplist(i[-1]) else i[-1]])
     )
 

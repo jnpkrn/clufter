@@ -176,8 +176,8 @@ def selfaware(func):
     """Decorator suitable for recursive staticmethod"""
     def selfaware_inner(*args, **kwargs):
         return func(selfaware(func), *args, **kwargs)
-    map(lambda a: setattr(selfaware_inner, a, getattr(func, a)),
-        ('__doc__', '__name__'))
+    for attr in ('__doc__', '__name__'):
+        setattr(selfaware_inner, attr, getattr(func, attr))
     return selfaware_inner
 
 

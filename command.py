@@ -43,6 +43,7 @@ from .utils_func import apply_aggregation_preserving_depth, \
                         apply_loose_zip_preserving_depth, \
                         apply_preserving_depth, \
                         bifilter, \
+                        foreach, \
                         tailshake, \
                         zip_empty
 from .utils_prog import FancyOutput, \
@@ -85,9 +86,9 @@ class Command(object):
             return res_output
         # drop the command if cannot resolve any of the filters
         res_input = apply_intercalate(res_input)
-        map(lambda (i, x): log.warning("Resolve at `{0}' command:"
-                                       " `{1}' (#{2}) filter fail"
-                                       .format(cls.name, res_input[i], i)),
+        foreach(lambda (i, x): log.warning("Resolve at `{0}' command:"
+                                           " `{1}' (#{2}) filter fail"
+                                           .format(cls.name, res_input[i], i)),
             filter(lambda (i, x): not(x),
                    enumerate(apply_intercalate(res_output))))
         return None
@@ -492,9 +493,8 @@ class Command(object):
                                              for ny in notyet)))
                     continue
 
-                inputs = map(lambda x: cmd_ctxt.filter(x.__class__.__name__)
-                                       .get('out'),
-                             filter_backtrack[flt])
+                inputs = tuple(cmd_ctxt.filter(x.__class__.__name__).get('out')
+                               for x in filter_backtrack[flt])
                 assert all(inputs)
                 with cmd_ctxt.prevented_taint():
                     in_obj = flt.in_format.as_instance(*inputs, **fmt_kws)
@@ -546,7 +546,7 @@ class Command(object):
                                          .format(passout['passout']))
 
         # close "magic" fds
-        map(lambda k: k in native_fds or magic_fds[k].close(), magic_fds)
+        foreach(lambda k: k in native_fds or magic_fds[k].close(), magic_fds)
         return EC.EXIT_SUCCESS  # XXX some better decision?
 
     def __call__(self, opts, args=None, cmd_ctxt=None):
@@ -560,8 +560,9 @@ class Command(object):
             'filter_noop':           getattr(opts, 'noop', ()),
             'filter_dump':           getattr(opts, 'dump', ()),
             'system':                getattr(opts, 'sys', ''),
-            'system_extra':          filter(len, getattr(opts, 'dist', '')
-                                                 .split(',')),
+            'system_extra':          tuple(se for se in
+                                           getattr(opts, 'dist', '').split(',')
+                                           if se),
             'svc_output':            FancyOutput(f=stderr,
                                                  quiet=getattr(opts, 'quiet',
                                                                False),

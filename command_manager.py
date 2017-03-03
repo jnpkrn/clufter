@@ -43,8 +43,8 @@ class CommandManager(PluginManager):
         if flt_mgr is None:
             flts = set()
             for cmd in iter_values(commands):
-                map(lambda flt: flts.add(flt),
-                    apply_intercalate(getattr(cmd, 'filter_chain', ())))
+                for flt in apply_intercalate(getattr(cmd, 'filter_chain', ())):
+                    flts.add(flt)
             flt_mgr = FilterManager.init_lookup(flts, **kwargs)
         return cls._resolve(flt_mgr.filters, commands, *args,
                             **filterdict_keep(kwargs, 'system', 'system_extra'))
