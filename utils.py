@@ -51,13 +51,13 @@ identity = lambda x: x
 
 filterdict_map = \
     lambda fn, src, *which, **update: \
-        dict((x, fn(x)) for x in which if x in src, **update)
+        dict(((x, fn(x)) for x in which if x in src), **update)
 
 # .copy() so as to allow for in-situ manipulations like .pop() without
 # affecting the running iteration
 filterdict_invmap = \
     lambda fn, src, *which, **update: \
-        dict((x, fn(x)) for x in src.copy() if x not in which, **update)
+        dict(((x, fn(x)) for x in src.copy() if x not in which), **update)
 
 #
 
