@@ -70,3 +70,43 @@ reduce_uu = \
         ),*sequence_initial)
 
 foreach_u = lambda *args: deque(map_u(*args), maxlen=0)
+
+
+# Compatibility with different way to use metaclasses in Python 2/3
+
+class MimicMeta(object):
+    """
+
+    https://www.python.org/dev/peps/pep-3115/
+    https://wiki.python.org/moin/PortingToPy3k/BilingualQuickRef#metaclasses
+    """
+    _sm = staticmethod  # workaround the identifiers-in-scope clash (deco)
+    @_sm
+    def method(m):
+        setattr(m, '__mimicmeta__', None)
+        return staticmethod(m)
+    @_sm
+    def staticmethod(m):
+        setattr(m, '__mimicmeta__', staticmethod)
+        return staticmethod(m)
+    @_sm
+    def classmethod(m):
+        setattr(m, '__mimicmeta__', classmethod)
+        return staticmethod(m)
+    @_sm
+    def passdeco(d):
+        def _passdeco(m):
+            setattr(m, '__mimicmeta__', d)
+            return staticmethod(m)
+        return _passdeco
+
+    def __new__(cls, name, metaclass, deriveclass, bases=()):
+        attrs = dict(__doc__=deriveclass.__doc__, __metaclass__=metaclass)
+        for n in dir(deriveclass):
+            attr = getattr(deriveclass, n)
+            try:
+                wrapper = attr.__mimicmeta__ or (lambda x: x)
+                attrs.setdefault(n, wrapper(attr))
+            except AttributeError:
+                pass
+        return metaclass(str(name), bases, attrs)
