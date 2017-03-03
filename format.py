@@ -440,7 +440,7 @@ class SimpleFormat(Format):
                 h.update(str(hash(self)))
 
             # only use first quarter of the whole hexdigest
-            self._hash = h.hexdigest()[:h.digest_size/2]
+            self._hash = h.hexdigest()[:h.digest_size//2]  # expected even
         return self._hash
 
     @classmethod
