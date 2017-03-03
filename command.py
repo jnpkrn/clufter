@@ -765,8 +765,8 @@ class CommandAlias(object):
         ic, sys, sys_extra = (lambda i={}, s='', e='', *a: (i, s, e))(*args)
         # XXX really pass mutable cmds dict?
         use_obj = cls
-        use_obj = use_obj._fnc(cmds, sys.lower(),
-                               tuple(sys_extra.lower().split(',')))
+        use_obj = use_obj._fnc(cmds, sys,  # see Command.__call__ (cmd_ctxt)
+                               tuple(se for se in sys_extra.split(',') if se))
         for i in xrange(1, 100):  # prevent infloop by force
             if isinstance(use_obj, basestring):
                 use_obj = cmds.get(use_obj, None)
