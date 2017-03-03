@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Base filter stuff (metaclass, decorator, etc.)"""
@@ -959,7 +959,6 @@ class XMLFilter(Filter, MetaPlugin):
 
         assert not len(scheduled_subst)  # XXX either fail or remove forcibly
         map(lambda x: etree.cleanup_namespaces(x), ret)
-        ret = map(lambda x: x, ret)
 
         return (lambda x: x[0] if len(x) == 1 else x)(ret)
 
