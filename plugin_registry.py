@@ -22,7 +22,7 @@ from .utils import args2tuple, \
                    filterdict_remove, \
                    hybridproperty, \
                    tuplist
-from .utils_2to3 import StandardError
+from .utils_2to3 import StandardError  #, iter_values
 from .utils_func import apply_intercalate
 from .utils_prog import ProtectedDict, cli_decor, getenv_namespaced
 
@@ -346,4 +346,4 @@ class PluginManager(object):
         return self._plugins
 
     #def __iter__(self):
-    #    return self._plugins.itervalues()
+    #    return iter_values(self._plugins)

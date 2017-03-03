@@ -33,7 +33,7 @@ from .utils import args2tuple, arg2wrapped, \
                    filterdict_keep, filterdict_invkeep, filterdict_pop, \
                    head_tail, hybridproperty, \
                    identity, lazystring, tuplist
-from .utils_2to3 import xrange
+from .utils_2to3 import iter_items, iter_values, xrange
 from .utils_lxml import etree_XSLT_safe, \
                         etree_parser_safe, etree_parser_safe_unblanking
 from .utils_func import apply_preserving_depth, \
@@ -112,7 +112,7 @@ class Filter(object):
         # XXX should rather be implemented by CompositeFormat itself?
         composite_onthefly = \
             lambda protocol, *args, **kwargs: \
-                CompositeFormat(protocol, *args, **dict(kwargs.iteritems(),
+                CompositeFormat(protocol, *args, **dict(iter_items(kwargs),
                                                         **{'formats': formats}))
         # XXX currently instantiation only (no match for composite classes)
         composite_onthefly.as_instance = \
@@ -328,8 +328,8 @@ class XMLFilter(Filter, MetaPlugin):
                 #    skip_until = [('end', tree_stack[-1][0])]
                 #    log.debug("Skipping (C) until: {0}".format(skip_until))
 
-        ret = tree_stack[-1][2].values()
-        # XXX can be [] in case of not finding anything, should we emit error?
+        ret = tuple(iter_values(tree_stack[-1][2]))
+        # XXX can be () in case of not finding anything, should we emit error?
         #     addendum: sometimes comments (top-level only?) will cause this
         return postprocess(ret)
 
@@ -570,7 +570,7 @@ class XMLFilter(Filter, MetaPlugin):
                        base=reduce(
                            lambda now, (new, new_l):
                                now or (emsg.startswith(new) and new_l),
-                           {'WARNING:': 'warning', 'NOTE:': 'note'}.iteritems(),
+                           iter_items({'WARNING:': 'warning', 'NOTE:': 'note'}),
                            ''
                        ) or urgent and 'error')
             if urgent:
@@ -742,7 +742,7 @@ class XMLFilter(Filter, MetaPlugin):
                             l = scheduled.setdefault(h, [])
                             l.append(children[c_elem].getroot())
 
-            for (index_history, mix), substitutes in scheduled.iteritems():
+            for (index_history, mix), substitutes in iter_items(scheduled):
                 tag = reduce(lambda x, y: x[y], index_history, snippet)
                 parent = tag.getparent()
                 index = parent.index(tag)
@@ -915,7 +915,7 @@ class XMLFilter(Filter, MetaPlugin):
         ret = []
         while len(scheduled_walk):
             cur_walk = scheduled_walk.pop()
-            for key, (transformer, children) in cur_walk.iteritems():
+            for key, (transformer, children) in iter_items(cur_walk):
                 scheduled_walk.append(children)
                 if transformer is None or callable(transformer):
                     if callable(transformer):
@@ -955,8 +955,8 @@ class XMLFilter(Filter, MetaPlugin):
                         parent[parent.index(tag)] = e
                         ret[-1].append(snippet)
                 # in parallel: 2?
-                for target_tag, at_hooks in hooks.iteritems():
-                    for (index_history, mix) in at_hooks:
+                for target_tag, at_hooks in iter_items(hooks):
+                    for index_history, mix in at_hooks:
                         tag = reduce(lambda x, y: x[y], index_history, snippet)
                         l = scheduled_subst.setdefault(target_tag, [])
                         l.append(tag)

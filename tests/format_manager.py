@@ -14,6 +14,7 @@ from .format_manager import FormatManager
 from .formats.ccs import ccs
 from .formats.ccs import ccs_flat
 from .formats.cib import cib
+from .utils_2to3 import iter_items
 
 
 class FormatManagerTestCase(TestCase):
@@ -47,7 +48,7 @@ class Injection(FormatManagerTestCase):
         formats = self.fmt_mgr.formats
         #print formats
         self.assertEqual(len(formats), len(self.formats))
-        for fmt_id, fmt_cls in self.formats.iteritems():
+        for fmt_id, fmt_cls in iter_items(self.formats):
             self.assertTrue(fmt_id in formats)
             self.assertEqual(fmt_cls, formats[fmt_id])
 

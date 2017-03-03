@@ -8,7 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from itertools import takewhile
 from types import GeneratorType
 
-from .utils_2to3 import PY3, basestring
+from .utils_2to3 import PY3, basestring, iter_items
 
 
 # inspired by http://stackoverflow.com/a/4374075
@@ -146,9 +146,9 @@ def popattr(obj, what, *args):
 def iterattrs(obj, skip_private=True):
     """Iterate through (unbound) attributes of obj, skipping private or not"""
     if skip_private:
-        return ((n, v) for n, v in obj.__dict__.iteritems()
+        return ((n, v) for n, v in iter_items(obj.__dict__)
                 if not n.startswith('__'))
-    return obj.__dict__.iteritems()
+    return iter_items(obj.__dict__)
 
 
 def func_defaults_varnames(func, skip=0):

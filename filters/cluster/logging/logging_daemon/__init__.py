@@ -1,8 +1,9 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
+from ....utils_2to3 import iter_items
 from ....utils_xslt import xslt_is_member, xslt_string_mapping
 
 from logging import getLogger
@@ -45,8 +46,8 @@ ccs2needlexml_attrs_exclude = {
 # ...converted to pre-conversion mapping using xslt_is_member-friendly format
 ccs2needlexml_attrs_exclude_ = dict(
     (kk, '|'.join(('', ) + v + ('', )))
-        for (k, v) in ccs2needlexml_attrs_exclude.iteritems()
-            for (kk, vv) in ccs2needlexml_subsys.iteritems() if vv == k
+        for (k, v) in iter_items(ccs2needlexml_attrs_exclude)
+            for (kk, vv) in iter_items(ccs2needlexml_subsys) if vv == k
 )
 
 ccs2needlexml = '''\

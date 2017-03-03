@@ -27,3 +27,16 @@ try:
     xrange = xrange
 except NameError:
     xrange = range
+
+
+# Compatibility with dictionary methods not present in Python 3
+
+# See https://www.python.org/dev/peps/pep-0469/#id9
+try:
+    dict.iteritems
+except AttributeError:  # Python 3
+    iter_values = lambda d: iter(d.values())
+    iter_items = lambda d: iter(d.items())
+else:  # Python 2
+    iter_values = lambda d: d.itervalues()
+    iter_items = lambda d: d.iteritems()

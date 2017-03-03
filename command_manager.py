@@ -16,7 +16,7 @@ from .error import ClufterError, ClufterPlainError, \
 from .filter_manager import FilterManager
 from .plugin_registry import PluginManager
 from .utils import filterdict_keep
-from .utils_2to3 import basestring
+from .utils_2to3 import basestring, iter_items, iter_values
 from .utils_func import apply_intercalate, bifilter
 from .utils_prog import make_options, set_logging
 
@@ -42,7 +42,7 @@ class CommandManager(PluginManager):
         log.debug("Commands before resolving: {0}".format(commands))
         if flt_mgr is None:
             flts = set()
-            for cmd in commands.itervalues():
+            for cmd in iter_values(commands):
                 map(lambda flt: flts.add(flt),
                     apply_intercalate(getattr(cmd, 'filter_chain', ())))
             flt_mgr = FilterManager.init_lookup(flts, **kwargs)
@@ -53,7 +53,7 @@ class CommandManager(PluginManager):
     def _resolve(filters, commands, system='', system_extra=''):
         # name -> (cmd obj if not alias or resolvable name)
         aliases = []
-        inverse_commands = dict((b, a) for a, b in commands.iteritems())
+        inverse_commands = dict((b, a) for a, b in iter_items(commands))
 
         # first, resolve end-use commands
         for cmd_name, cmd_cls in commands.items():
@@ -157,7 +157,7 @@ class CommandManager(PluginManager):
             )
             for i, cat in enumerate(
                 bifilter(lambda (name, obj): not isinstance(obj, basestring),
-                         self._plugins.iteritems())
+                         iter_items(self._plugins))
             )
         ]
         width = max(i[1] for i in cmds_aliases) + linesep_width

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Filter manager"""
@@ -11,6 +11,7 @@ from .error import ClufterError
 from .filter import filters
 from .format_manager import FormatManager
 from .plugin_registry import PluginManager
+from .utils_2to3 import iter_values
 
 log = getLogger(__name__)
 
@@ -28,7 +29,7 @@ class FilterManager(PluginManager):
         log.debug("Filters before resolving: {0}".format(filters))
         if fmt_mgr is None:
             fmts = set()
-            for flt in filters.itervalues():
+            for flt in iter_values(filters):
                 # XXX composite format
                 map(lambda a: fmts.add(getattr(flt, a)),
                     ('in_format', 'out_format'))

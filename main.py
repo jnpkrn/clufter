@@ -21,7 +21,7 @@ from .completion import Completion
 from .error import EC
 from .facts import aliases_dist, format_dists, supported_dists
 from .utils import args2sgpl, head_tail, identity
-from .utils_2to3 import xrange
+from .utils_2to3 import iter_items, xrange
 from .utils_prog import ExpertOption, make_options, set_logging, which
 
 try:
@@ -378,7 +378,7 @@ def run(argv=None, *args):
         elif opts.completion:
             c = Completion.get_completion(opts.completion, prog,
                                           opts_common, opts_main, opts_nonmain)
-            print c(cm.plugins.iteritems())
+            print c(iter_items(cm.plugins))
         else:
             print parser.format_customized_help(
                 usage="%prog [<global option> ...] [<cmd> [<cmd option ...>]]",
