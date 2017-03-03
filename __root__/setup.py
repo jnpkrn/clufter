@@ -451,7 +451,7 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                             for key in filter(
                                 lambda k: not k.startswith("_")
                                           and k not in self.boolean_options,
-                                self.pkg_params.iterkeys()
+                                self.pkg_params
                             ):
                                 if DEBUG:
                                     print (DBGPFX + "\tReplace %s -> %s"

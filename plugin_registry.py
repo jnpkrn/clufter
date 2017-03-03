@@ -285,7 +285,7 @@ class PluginManager(object):
         kwargs = filterdict_keep(kwargs, 'paths')
         ret.update(registry.discover(fname_start=tuple(to_discover), **kwargs))
 
-        to_discover.difference_update(ret.iterkeys())
+        to_discover.difference_update(ret)
         native_plugins = registry.native_plugins
         ret.update(filterdict_remove(to_discover,
                                      _fn_=lambda x: native_plugins[x],

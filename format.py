@@ -198,7 +198,7 @@ class Format(object):
         validator_specs = kwargs.pop('validator_specs', {})
         default = validator_specs.setdefault('', None)  # None ~ don't track
         validators = {}
-        for p in self._validators.iterkeys():
+        for p in self._validators:
             spec = validator_specs.get(p, default)
             if spec is None:
                 continue
