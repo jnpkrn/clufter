@@ -37,7 +37,7 @@ from .utils import any2iter, \
                    nonetype, \
                    selfaware, \
                    tuplist
-from .utils_2to3 import basestring, \
+from .utils_2to3 import MimicMeta, basestring, \
                         foreach_u, filter_u, \
                         iter_items, iter_values, \
                         xrange
@@ -72,14 +72,13 @@ class commands(PluginRegistry):
     pass
 
 
-class Command(object):
+class _Command(object):
     """Base for commands, i.e., encapsulations of filter chains
 
     Also see the docstring for `deco`.
     """
-    __metaclass__ = commands
 
-    @classmethod
+    @MimicMeta.classmethod
     def _resolve_filter_chain(cls, filters):
         res_input = cls._filter_chain
         res_output = apply_preserving_depth(filters.get)(res_input)
@@ -96,11 +95,12 @@ class Command(object):
                      enumerate(apply_intercalate(res_output))))
         return None
 
-    @hybridproperty
+    @MimicMeta.passdeco(hybridproperty)
     def filter_chain(this):
         """Chain of filter identifiers/classes for the command"""
         return this._filter_chain
 
+    @MimicMeta.method
     def __new__(cls, filters, *args):
         filter_chain = cls._resolve_filter_chain(filters)
         if filter_chain is None:
@@ -132,14 +132,14 @@ class Command(object):
     # filter chain related
     #
 
-    @property
+    @MimicMeta.passdeco(property)
     def filter_chain_analysis(self):
         if self._filter_chain_analysis is None:
             filter_chain = self._filter_chain
             self._filter_chain_analysis = self.analyse_chain(filter_chain)
         return self._filter_chain_analysis
 
-    @staticmethod
+    @MimicMeta.staticmethod
     @selfaware
     def analyse_chain(me, filter_chain, analysis_acc=None):
         """Given the filter chain, return filter backtrack and terminal chain
@@ -250,6 +250,7 @@ class Command(object):
     # self-introspection (arguments, description, options)
     #
 
+    @MimicMeta.method
     def _figure_parser_opt_dumpnoop(self, options, shortopts):
         choices = []
         for fname, f in iter_items(self._filters):
@@ -277,6 +278,7 @@ class Command(object):
             )
             options.append([["--" + optname_used], opt])
 
+    @MimicMeta.method
     def _figure_parser_opt_unofficial(self, options, shortopts, fnc_varnames):
         # unofficial/unsupported ones
         for var in fnc_varnames:
@@ -286,6 +288,7 @@ class Command(object):
                 help="(undocumented expert option)",
             )])
 
+    @MimicMeta.method
     def _figure_parser_desc_opts(self, fnc_defaults, fnc_varnames,
                                  opt_group=None):
         readopts, common_tail = False, False
@@ -361,6 +364,7 @@ class Command(object):
         description = '\n'.join(description)
         return description, options
 
+    @MimicMeta.method
     def parser_desc_opts(self, opt_group=None):
         """Parse docstring as description + Option constructor args list"""
         if self._desc_opts is None:
@@ -373,7 +377,7 @@ class Command(object):
     # execution related
     #
 
-    @staticmethod
+    @MimicMeta.staticmethod
     @selfaware
     def _iochain_check_terminals(me, io_chain, terminal_chain, magic_fds,
                                  interpolations={}):
@@ -421,6 +425,7 @@ class Command(object):
             ret.append(ret_to_check_inner)
         return ret
 
+    @MimicMeta.method  # should be classmethod?
     def _iochain_proceed(self, cmd_ctxt, io_chain):
         # currently works sequentially, jumping through the terminals in-order;
         # when any of them (apparently the output one) hasn't its prerequisites
@@ -552,6 +557,7 @@ class Command(object):
         foreach(lambda k: k in native_fds or magic_fds[k].close(), magic_fds)
         return EC.EXIT_SUCCESS  # XXX some better decision?
 
+    @MimicMeta.method
     def __call__(self, opts, args=None, cmd_ctxt=None):
         """Proceed the command"""
         ec = EC.EXIT_SUCCESS
@@ -635,7 +641,7 @@ class Command(object):
                 break
         return ec
 
-    @classmethod
+    @MimicMeta.classmethod
     def deco(cls, *filter_chain):
         """Decorator as an easy factory of actual commands
 
@@ -766,10 +772,13 @@ class Command(object):
         return deco_fnc
 
 
-class CommandAlias(object):
-    """Way to define either static or dynamic command alias"""
-    __metaclass__ = commands
+Command = MimicMeta('Command', commands, _Command)
 
+
+class _CommandAlias(object):
+    """Way to define either static or dynamic command alias"""
+
+    @MimicMeta.method
     def __new__(cls, flts, cmds, *args):
         ic, sys, sys_extra = (lambda i={}, s='', e='', *a: (i, s, e))(*args)
         # XXX really pass mutable cmds dict?
@@ -800,7 +809,7 @@ class CommandAlias(object):
             assert isinstance(use_obj, (nonetype, Command)), repr(use_obj)
             return use_obj
 
-    @classmethod
+    @MimicMeta.classmethod
     def deco(outer_cls, decl):
         if not hasattr(decl, '__call__'):
             assert issubclass(decl, Command)
@@ -816,3 +825,6 @@ class CommandAlias(object):
         # optimization: shorten type() -> new() -> probe
         ret = outer_cls.probe(fnc.__name__, (outer_cls, ), attrs)
         return ret
+
+
+CommandAlias = MimicMeta('CommandAlias', commands, _CommandAlias)

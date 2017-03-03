@@ -36,7 +36,7 @@ from .utils import arg2wrapped, args2sgpl, args2tuple, args2unwrapped, \
                    isinstanceupto, \
                    popattr, \
                    tuplist
-from .utils_2to3 import basestring, xrange
+from .utils_2to3 import MimicMeta, basestring, xrange
 from .utils_func import foreach
 from .utils_lxml import etree_parser_safe
 from .utils_prog import ProtectedDict, getenv_namespaced
@@ -95,7 +95,7 @@ class formats(PluginRegistry):
                 cls._validators[protocol] = validator, newspec
 
 
-class Format(object):
+class _Format(object):
     """Base for configuration formats
 
     Base principles:
@@ -135,21 +135,20 @@ class Format(object):
         that takes protocol name as a parameter.
 
     """
-    __metaclass__ = formats
-
     context_specs = 'validator_specs',
 
-    @classproperty
+    @MimicMeta.passdeco(classproperty)
     def context(self):
         return tuple(self._context)
 
-    @classproperty
+    @MimicMeta.passdeco(classproperty)
     def native_protocol(self):
         """Native protocol"""
         raise AttributeError
 
     ###
 
+    @MimicMeta.method
     def swallow(self, protocol, *args):
         """"Called by implicit constructor to get a format instance"""
         if protocol == 'native':
@@ -171,12 +170,14 @@ class Format(object):
         prev = self._representations.setdefault(protocol, args)
         assert prev is args
 
+    @MimicMeta.method
     def producer(self, protocol):
         protocol_cls, protocol_attr = self._protocols[protocol]
         if protocol_cls is self.__class__:
             return getattr(self, protocol_attr)  # has to be self
         return getattr(super(self.__class__, self), protocol_attr)
 
+    @MimicMeta.method
     def produce(self, protocol, *args, **kwargs):
         """"Called by implicit invocation to get data externalized"""
         if protocol == 'native':
@@ -190,6 +191,7 @@ class Format(object):
                                     .format(self.__class__.name, protocol))
         return ret
 
+    @MimicMeta.method
     def __init__(self, protocol, *args, **kwargs):
         """Format constructor, i.e., object = concrete internal data"""
         rs = {}
@@ -227,7 +229,7 @@ class Format(object):
             setattr(self, attr, get_protocol_proxy(getattr(self, attr)))
         self.swallow(protocol, *args)
 
-    @classmethod
+    @MimicMeta.classmethod
     def as_instance(cls, *decl_or_instance, **kwargs):
         """Create an instance or verify and return existing one"""
         if decl_or_instance and isinstance(decl_or_instance[0], Format):
@@ -241,16 +243,17 @@ class Format(object):
             instance = cls(*decl_or_instance, **kwargs)
         return instance
 
+    @MimicMeta.method
     def __call__(self, protocol='native', *args, **kwargs):
         """Way to externalize object's internal data"""
         return self.produce(protocol, *args, **kwargs)
 
-    @classproperty
+    @MimicMeta.passdeco(classproperty)
     def protocols(self):
         """Set of supported protocols for int-/externalization"""
         return self._protocols.keys()  # installed by meta-level
 
-    @hybridmethod
+    @MimicMeta.passdeco(hybridmethod)
     def validator(this, protocol=None, spec=None):
         """Return validating function or None
 
@@ -269,19 +272,19 @@ class Format(object):
         return lambda *args, **kwargs: validator(this, *args,
                                                  **dict(kwargs, spec=spec))
 
-    @property
+    @MimicMeta.passdeco(property)
     def hash(self):
         if self._hash is None:
             raise NotImplementedError
         return self._hash
 
-    @property
+    @MimicMeta.passdeco(property)
     def representations(self):
         """Mapping of `protocol: initializing_data`"""
         # XXX should be ProtectedDict
         return self._representations_ro
 
-    @staticmethod
+    @MimicMeta.staticmethod
     def producing(protocol, chained=False, protect=False, validator=None):
         """Decorator for externalizing method understood by the `Format` magic
 
@@ -341,6 +344,9 @@ class Format(object):
                 deco_args._validator = validator
             return deco_args
         return deco_meth
+
+
+Format = MimicMeta('Format', formats, _Format)
 
 
 class Nothing(Format):

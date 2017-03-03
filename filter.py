@@ -34,7 +34,7 @@ from .utils import args2tuple, arg2wrapped, \
                    filterdict_keep, filterdict_invkeep, filterdict_pop, \
                    head_tail, hybridproperty, \
                    identity, lazystring, tuplist
-from .utils_2to3 import basestring, \
+from .utils_2to3 import MimicMeta, basestring, \
                         iter_items, iter_values, \
                         filter_u, foreach_u, reduce_u, \
                         xrange
@@ -102,7 +102,7 @@ class filters(PluginRegistry):
     pass
 
 
-class Filter(object):
+class _Filter(object):
     """Base for filters performing the actual conversion
 
     Base principles:
@@ -110,9 +110,8 @@ class Filter(object):
         - create filter instance = pass particular formats,
           call = start conversion
     """
-    __metaclass__ = filters
 
-    @staticmethod
+    @MimicMeta.staticmethod
     def _resolve_formats_composite(formats):
         # XXX should rather be implemented by CompositeFormat itself?
         composite_onthefly = \
@@ -129,7 +128,7 @@ class Filter(object):
         composite_onthefly.context = CompositeFormat.context
         return composite_onthefly
 
-    @classmethod
+    @MimicMeta.classmethod
     def _resolve_formats(cls, formats):
         res_input = [cls.in_format, cls.out_format]
         res_output = apply_preserving_depth(formats.get)(res_input)
@@ -158,6 +157,7 @@ class Filter(object):
                            enumerate(apply_intercalate(res_output))))
         return None
 
+    @MimicMeta.method
     def __new__(cls, formats):
         io_formats = cls._resolve_formats(formats)
         if io_formats is None:
@@ -166,16 +166,17 @@ class Filter(object):
         (self._in_format, self._out_format), self._validated = io_formats, False
         return self
 
-    @hybridproperty
+    @MimicMeta.passdeco(hybridproperty)
     def in_format(this):
         """Input format identifier/class for the filter"""
         return this._in_format
 
-    @hybridproperty
+    @MimicMeta.passdeco(hybridproperty)
     def out_format(this):
         """Output format identifier/class for the filter"""
         return this._out_format
 
+    @MimicMeta.method
     def __call__(self, in_obj, flt_ctxt=None, **kws):
         """Default is to use a function decorated with `deco`"""
         fmt_kws = filterdict_pop(kws, *self.out_format.context)
@@ -197,7 +198,7 @@ class Filter(object):
             fmt_kws['validator_specs'] = {'': ''}
         return self.out_format(outdecl_head, *outdecl_tail, **fmt_kws)
 
-    @classmethod
+    @MimicMeta.classmethod
     def deco(cls, in_format, out_format, defs=None):
         """Decorator as an easy factory of actual filters"""
         def deco_fnc(fnc):
@@ -215,13 +216,16 @@ class Filter(object):
             return ret
         return deco_fnc
 
-    @classmethod
+    @MimicMeta.classmethod
     def ctxt_svc_output(cls, ctxt, msg, **kwargs):
         if 'svc_output' in ctxt:
             svc_output = ctxt['svc_output']
         else:
             svc_output = FancyOutput(f=stderr, prefix="[{0}] ")
         svc_output(msg, prefix_arg=cls.name, **kwargs)
+
+
+Filter = MimicMeta('Filter', filters, _Filter)
 
 
 def tag_log(s, elem):
