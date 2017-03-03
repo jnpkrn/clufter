@@ -20,7 +20,7 @@ NAMESPACES = {
 }
 
 # X=x and X_NS=url for each (x, url) in NAMESPACES
-map(lambda ns: globals().setdefault(ns.upper(), ns), NAMESPACES.iterkeys())
+map(lambda ns: globals().setdefault(ns.upper(), ns), NAMESPACES)
 map(lambda (ns, url): globals().setdefault(ns.upper() + '_NS', url),
     NAMESPACES.iteritems())
 

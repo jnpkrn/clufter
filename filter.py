@@ -923,7 +923,7 @@ class XMLFilter(Filter, MetaPlugin):
                                     " callable present")
                     if key in scheduled_subst:
                         for tag in scheduled_subst.pop(key)[:]:
-                            for child_tag in children.iterkeys():
+                            for child_tag in children:
                                 l = scheduled_subst.setdefault(child_tag, [])
                                 l.append(tag)
                     continue
