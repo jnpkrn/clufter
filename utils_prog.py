@@ -32,7 +32,7 @@ from .utils import areinstances, \
                    selfaware, \
                    tuplist
 from .utils_2to3 import basestring, iter_items, xrange
-from .utils_func import apply_split
+from .utils_func import apply_split, foreach
 
 # do not alias it other way around to avoid accidental "file(f, 'w')"
 try:
@@ -87,9 +87,9 @@ class TweakedDict(MutableMapping):
                     self._dict = initial
                 if not bypass:
                     # full examination
-                    self._notaint = False  # temporarily need to to allow
-                    map(lambda (k, v): self.__setitem__(k, v),
-                                       iter_items(initial))
+                    self._notaint = False  # temporarily need to allow
+                    foreach(lambda (k, v): self.__setitem__(k, v),
+                            iter_items(initial))
         self._notaint = notaint
 
     def __delitem__(self, key):
@@ -173,7 +173,7 @@ longopt_letters_reprio = \
         (lambda lo:
             lo[0] + ''.join(sorted(lo[1:],
                                    key=lambda x: int(x.lower() in 'aeiouy')))
-        )(filter(lambda c: c.isalpha(), longopt))
+        )(tuple(c for c in longopt if c.isalpha()))
 
 class ExpertOption(Option):
     pass

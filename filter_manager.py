@@ -31,8 +31,8 @@ class FilterManager(PluginManager):
             fmts = set()
             for flt in iter_values(filters):
                 # XXX composite format
-                map(lambda a: fmts.add(getattr(flt, a)),
-                    ('in_format', 'out_format'))
+                for attr in ('in_format', 'out_format'):
+                    fmts.add(getattr(flt, attr))
             fmt_mgr = FormatManager.init_lookup(fmts, **kwargs)
         return cls._resolve(fmt_mgr.formats, filters)
 

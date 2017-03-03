@@ -7,6 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from copy import deepcopy
 from functools import reduce
+from itertools import dropwhile, islice
 from logging import getLogger
 from os import environ, isatty, stat
 from os.path import dirname, join
@@ -39,6 +40,7 @@ from .utils_lxml import etree_XSLT_safe, \
 from .utils_func import apply_preserving_depth, \
                         apply_aggregation_preserving_depth, \
                         apply_intercalate, \
+                        foreach, \
                         loose_zip, \
                         zip_empty
 from .utils_prog import FancyOutput, ProtectedDict, \
@@ -146,11 +148,11 @@ class Filter(object):
             return res_output
         # drop the filter if cannot resolve any of the formats
         res_input = apply_intercalate(res_input)
-        map(lambda (i, x): log.warning("Resolve at `{0}' filter:"
-                                       " `{1}' (#{2}) format fail"
-                                       .format(cls.name, res_input[i], i)),
-            filter(lambda (i, x): not(x),
-                   enumerate(apply_intercalate(res_output))))
+        foreach(lambda (i, x): log.warning("Resolve at `{0}' filter:"
+                                           " `{1}' (#{2}) format fail"
+                                           .format(cls.name, res_input[i], i)),
+                filter(lambda (i, x): not(x),
+                       enumerate(apply_intercalate(res_output))))
         return None
 
     def __new__(cls, formats):
@@ -181,8 +183,9 @@ class Filter(object):
             cmd_ctxt = CommandContext()
             flt_ctxt = cmd_ctxt.ensure_filter(self)
             # following only possibly without taint protection (this branch)
-            map(lambda d: flt_ctxt.parent.update(filterdict_invkeep(d, *flt_ctxt)),
-                (dict(self.defs), kws))
+            foreach(lambda d:
+                    flt_ctxt.parent.update(filterdict_invkeep(d, *flt_ctxt)),
+                    (dict(self.defs), kws))
         fmt_kws = filterdict_keep(flt_ctxt, *self.out_format.context, **fmt_kws)
         outdecl = self._fnc(flt_ctxt, in_obj)
         outdecl_head, outdecl_tail = head_tail(outdecl)
@@ -818,7 +821,7 @@ class XMLFilter(Filter, MetaPlugin):
                     xslt_root.append(e)
 
             # if something still remains, we assume it is "template"
-            if filter(lambda x: x.tag not in TOP_LEVEL_XSL, snippet):
+            if tuple(islice(dropwhile(lambda x: x.tag in TOP_LEVEL_XSL, snippet), 1)):
                 log.debug("snippet0: {0}, {1}, {2}".format(do_mix, elem.tag, etree.tostring(snippet)))
                 template = nselem(XSL_NS, 'template', match=elem.tag)
                 if do_mix:
@@ -962,7 +965,7 @@ class XMLFilter(Filter, MetaPlugin):
                         l.append(tag)
 
         assert not len(scheduled_subst)  # XXX either fail or remove forcibly
-        map(lambda x: etree.cleanup_namespaces(x), ret)
+        foreach(lambda x: etree.cleanup_namespaces(x), ret)
 
         return (lambda x: x[0] if len(x) == 1 else x)(ret)
 

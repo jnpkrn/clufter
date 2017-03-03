@@ -23,7 +23,7 @@ from .utils import args2tuple, \
                    hybridproperty, \
                    tuplist
 from .utils_2to3 import StandardError  #, iter_values
-from .utils_func import apply_intercalate
+from .utils_func import apply_intercalate, foreach
 from .utils_prog import ProtectedDict, cli_decor, getenv_namespaced
 
 log = getLogger(__name__)
@@ -199,10 +199,10 @@ class PluginRegistry(type):
         attrs = (('_path_context', None), ('_path_mapping', {}),
                  ('_plugins', ps), ('_plugins_ro', ProtectedDict(ps)))
         if reset:
-            map(lambda (a, d): setattr(registry, a, d), attrs)
+            foreach(lambda (a, d): setattr(registry, a, d), attrs)
         else:
-            map(lambda (a, d): setattr(registry, a, getattr(registry, a, d)),
-                attrs)
+            foreach(lambda (a, d): setattr(registry, a,
+                                           getattr(registry, a, d)), attrs)
         registry._native_plugins = np = getattr(registry, '_native_plugins', {})
         registry._native_plugins_ro = ProtectedDict(np)
         if reset:

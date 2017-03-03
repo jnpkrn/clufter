@@ -5,10 +5,14 @@
 """Various functional-paradigm helpers"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+from collections import deque
 from functools import reduce
 
 from .utils import areinstances, args2sgpl, tuplist
 
+# Non-lazy (materialized at one point) variant of map
+# (http://stackoverflow.com/a/18433519).
+foreach = lambda *args: deque(map(*args), maxlen=0)
 
 apply_preserving_depth = \
     lambda action: \

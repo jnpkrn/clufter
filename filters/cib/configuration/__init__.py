@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -233,6 +233,8 @@ cib2pcscmd = ('''\
 
 from ....utils_xslt import xslt_is_member, xslt_string_mapping
 
+from itertools import chain
+
 cib_revitalize_deprecated_props_cluster_rsc = {
     'default-resource-stickiness': 'resource-stickiness',
     'is-managed-default':          'is-managed',
@@ -243,8 +245,8 @@ cib_revitalize_deprecated_props_cluster_op = {
 }
 
 cib_revitalize_deprecated_props_cluster = \
-    cib_revitalize_deprecated_props_cluster_rsc.keys() \
-    + cib_revitalize_deprecated_props_cluster_op.keys()
+    chain(cib_revitalize_deprecated_props_cluster_rsc,
+          cib_revitalize_deprecated_props_cluster_op)
 
 cib_revitalize = ('''\
     <xsl:copy>
