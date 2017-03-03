@@ -9,8 +9,8 @@ from functools import reduce
 from os.path import basename
 
 from .utils import args2sgpl
-from .utils_2to3 import basestring
-from .utils_func import bifilter
+from .utils_2to3 import basestring, reduce_uu
+from .utils_func import bifilter_unpack
 from .utils_prog import cli_undecor
 
 
@@ -33,12 +33,12 @@ class Completion(object):
         return ''
 
     def __call__(self, commands):
-        cmds, aliases = bifilter(
-            lambda (name, obj): not isinstance(obj, basestring),
+        cmds, aliases = bifilter_unpack(
+            lambda name, obj: not isinstance(obj, basestring),
             commands
         )
-        handles, scripts = reduce(
-            lambda (acc_handle, acc_script), (cmd_name, cmd):
+        handles, scripts = reduce_uu(
+            lambda acc_handle, acc_script, cmd_name, cmd:
                 (lambda handle, script: (
                     acc_handle + [(cmd_name, handle)],
                     acc_script + [script]

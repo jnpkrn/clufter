@@ -37,7 +37,10 @@ from .utils import any2iter, \
                    nonetype, \
                    selfaware, \
                    tuplist
-from .utils_2to3 import basestring, iter_items, iter_values, xrange
+from .utils_2to3 import basestring, \
+                        foreach_u, filter_u, \
+                        iter_items, iter_values, \
+                        xrange
 from .utils_func import apply_aggregation_preserving_depth, \
                         apply_intercalate, \
                         apply_loose_zip_preserving_depth, \
@@ -86,11 +89,11 @@ class Command(object):
             return res_output
         # drop the command if cannot resolve any of the filters
         res_input = apply_intercalate(res_input)
-        foreach(lambda (i, x): log.warning("Resolve at `{0}' command:"
+        foreach_u(lambda i, x: log.warning("Resolve at `{0}' command:"
                                            " `{1}' (#{2}) filter fail"
                                            .format(cls.name, res_input[i], i)),
-            filter(lambda (i, x): not(x),
-                   enumerate(apply_intercalate(res_output))))
+            filter_u(lambda i, x: not(x),
+                     enumerate(apply_intercalate(res_output))))
         return None
 
     @hybridproperty
@@ -394,8 +397,8 @@ class Command(object):
                         if fltiodecl(i) else i if any(i) else None
                 )(check)
                 checked_flat = apply_intercalate((checked,))
-                for order, proto in filter(lambda (i, x): x,
-                                           enumerate(checked_flat)):
+                for order, proto in filter_u(lambda i, x: x,
+                                             enumerate(checked_flat)):
                     if proto is zip_empty:
                         continue
                     raise CommandError(me,

@@ -17,7 +17,7 @@ from .filter_manager import FilterManager
 from .plugin_registry import PluginManager
 from .utils import filterdict_keep
 from .utils_2to3 import basestring, iter_items, iter_values
-from .utils_func import apply_intercalate, bifilter
+from .utils_func import apply_intercalate, bifilter_unpack
 from .utils_prog import make_options, set_logging
 
 log = getLogger(__name__)
@@ -155,10 +155,10 @@ class CommandManager(PluginManager):
                                     modules[obj.__class__.__module__].__file__
                                 ) == pth)))
             )
-            for i, cat in enumerate(
-                bifilter(lambda (name, obj): not isinstance(obj, basestring),
-                         iter_items(self._plugins))
-            )
+            for i, cat in enumerate(bifilter_unpack(
+                lambda name, obj: not isinstance(obj, basestring),
+                iter_items(self._plugins)
+            ))
         ]
         width = max(i[1] for i in cmds_aliases) + linesep_width
         desc_indent = ind + (width * ' ')

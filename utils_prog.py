@@ -31,8 +31,8 @@ from .utils import areinstances, \
                    isinstanceexcept, \
                    selfaware, \
                    tuplist
-from .utils_2to3 import basestring, iter_items, xrange
-from .utils_func import apply_split, foreach
+from .utils_2to3 import basestring, foreach_u, iter_items, xrange
+from .utils_func import apply_split
 
 # do not alias it other way around to avoid accidental "file(f, 'w')"
 try:
@@ -88,8 +88,8 @@ class TweakedDict(MutableMapping):
                 if not bypass:
                     # full examination
                     self._notaint = False  # temporarily need to allow
-                    foreach(lambda (k, v): self.__setitem__(k, v),
-                            iter_items(initial))
+                    foreach_u(lambda k, v: self.__setitem__(k, v),
+                              iter_items(initial))
         self._notaint = notaint
 
     def __delitem__(self, key):

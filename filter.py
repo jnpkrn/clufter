@@ -34,7 +34,10 @@ from .utils import args2tuple, arg2wrapped, \
                    filterdict_keep, filterdict_invkeep, filterdict_pop, \
                    head_tail, hybridproperty, \
                    identity, lazystring, tuplist
-from .utils_2to3 import iter_items, iter_values, xrange
+from .utils_2to3 import basestring, \
+                        iter_items, iter_values, \
+                        filter_u, foreach_u, reduce_u, \
+                        xrange
 from .utils_lxml import etree_XSLT_safe, \
                         etree_parser_safe, etree_parser_safe_unblanking
 from .utils_func import apply_preserving_depth, \
@@ -148,11 +151,11 @@ class Filter(object):
             return res_output
         # drop the filter if cannot resolve any of the formats
         res_input = apply_intercalate(res_input)
-        foreach(lambda (i, x): log.warning("Resolve at `{0}' filter:"
+        foreach_u(lambda i, x: log.warning("Resolve at `{0}' filter:"
                                            " `{1}' (#{2}) format fail"
                                            .format(cls.name, res_input[i], i)),
-                filter(lambda (i, x): not(x),
-                       enumerate(apply_intercalate(res_output))))
+                  filter_u(lambda i, x: not(x),
+                           enumerate(apply_intercalate(res_output))))
         return None
 
     def __new__(cls, formats):
@@ -570,8 +573,8 @@ class XMLFilter(Filter, MetaPlugin):
             emsg = cls._re_highlight.sub('\g<lp>|highlight:\g<msg>|\g<rp>',
                                          emsg)
             svc_output("|subheader:xslt:| {0}".format(emsg), urgent=urgent,
-                       base=reduce(
-                           lambda now, (new, new_l):
+                       base=reduce_u(
+                           lambda now, new, new_l:
                                now or (emsg.startswith(new) and new_l),
                            iter_items({'WARNING:': 'warning', 'NOTE:': 'note'}),
                            ''
