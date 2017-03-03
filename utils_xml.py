@@ -9,8 +9,8 @@ from lxml import etree
 
 from .error import ClufterPlainError
 from .utils import selfaware
-from .utils_2to3 import basestring, iter_items
-from .utils_func import bifilter, foreach
+from .utils_2to3 import basestring, foreach_u, iter_items
+from .utils_func import bifilter
 
 
 NAMESPACES = {
@@ -20,10 +20,10 @@ NAMESPACES = {
 }
 
 # X=x and X_NS=url for each (x, url) in NAMESPACES
-foreach(
-    lambda (ns, url):
-        foreach(lambda (k, v): globals().setdefault(k, v),
-                ((ns.upper(), ns), (ns.upper() + '_NS', url))),
+foreach_u(
+    lambda ns, url:
+        foreach_u(lambda k, v: globals().setdefault(k, v),
+                  ((ns.upper(), ns), (ns.upper() + '_NS', url))),
     iter_items(NAMESPACES)
 )
 

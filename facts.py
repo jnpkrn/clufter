@@ -9,7 +9,7 @@ from logging import getLogger
 
 from .error import ClufterPlainError
 from .utils import args2sgpl
-from .utils_2to3 import basestring, iter_items, iter_values
+from .utils_2to3 import basestring, iter_items, iter_values, reduce_u
 from .utils_func import apply_intercalate
 
 log = getLogger(__name__)
@@ -729,15 +729,15 @@ def cluster_unknown(*sys_id):
 def format_dists(verbosity=0, aliases_dist_inv={}, aliases_rel_inv={}):
     # need to flip the translation tables first (if not already)
     if not aliases_dist_inv:
-        aliases_dist_inv.update(reduce(
-            lambda acc, (k, v): (acc.setdefault(v, []).append(k), acc)[1],
+        aliases_dist_inv.update(reduce_u(
+            lambda acc, k, v: (acc.setdefault(v, []).append(k), acc)[1],
             iter_items(aliases_dist), {}
         ))
     if not aliases_rel_inv:
         aliases_rel_inv.update((
             k,
-            reduce(
-                lambda a, (ik, iv): (a.setdefault(iv, []).append(ik), a)[1],
+            reduce_u(
+                lambda a, ik, iv: (a.setdefault(iv, []).append(ik), a)[1],
                 iter_items(v), {}
             )
         ) for k, v in iter_items(aliases_rel) if k in supported_dists)
