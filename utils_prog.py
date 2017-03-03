@@ -31,7 +31,7 @@ from .utils import areinstances, \
                    isinstanceexcept, \
                    selfaware, \
                    tuplist
-from .utils_2to3 import basestring, xrange
+from .utils_2to3 import basestring, iter_items, xrange
 from .utils_func import apply_split
 
 # do not alias it other way around to avoid accidental "file(f, 'w')"
@@ -89,7 +89,7 @@ class TweakedDict(MutableMapping):
                     # full examination
                     self._notaint = False  # temporarily need to to allow
                     map(lambda (k, v): self.__setitem__(k, v),
-                                       initial.iteritems())
+                                       iter_items(initial))
         self._notaint = notaint
 
     def __delitem__(self, key):

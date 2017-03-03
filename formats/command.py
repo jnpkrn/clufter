@@ -17,6 +17,7 @@ log = getLogger(__name__)
 from ..format import SimpleFormat
 from ..protocol import Protocol
 from ..utils import head_tail
+from ..utils_2to3 import iter_items
 from ..utils_func import add_item, apply_intercalate, apply_partition
 
 # man bash | grep -A2 '\s\+metacharacter$'
@@ -178,8 +179,8 @@ class command(SimpleFormat):
                     self.__class__.name
                 ))
             ret = list(d.get('__cmd__', ()))
-            ret.extend((k, v) for k, vs in d.iteritems() for v in (vs or ((), ))
-                                  if k not in ('__cmd__', '__args__'))
+            ret.extend((k, v) for k, vs in iter_items(d) for v in (vs or ((), ))
+                                        if k not in ('__cmd__', '__args__'))
             ret.extend(d.get('__args__', ()))
         else:
             ret = self.SEPARATED(protect_safe=True)

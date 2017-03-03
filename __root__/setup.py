@@ -118,8 +118,8 @@ def pkgconfig(*packages, **kw):
             kw.setdefault(flag_map.get(token[:2]), []).append(token[2:])
         else:  # throw others to extra_link_args
             kw.setdefault('extra_link_args', []).append(token)
-    for k, v in kw.iteritems():  # remove duplicates
-        kw[k] = list(set(v))
+    for k in kw:  # remove duplicates
+        kw[k] = list(set(kw[k]))
     return kw
 
 # inspired from speaklater: http://pypi.python.org/pypi/speaklater
@@ -175,7 +175,7 @@ class build_binary(build_ext):
         compiler.link_shared_object = \
             lambda *args, **kwargs: \
                 compiler.link_executable(
-                    *args, **dict(((k, v) for k, v in kwargs.iteritems()
+                    *args, **dict(((k, kwargs[k]) for k in kwargs
                                   if k not in ('build_temp', 'export_symbols',
                                                'libraries')),
                                   libraries=[l for l in
@@ -243,8 +243,8 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
         @classmethod
         def inject_cmdclass(cls, *new_classes, **orig_classes):
             cmdclass = {}
-            for name, injectclass in orig_classes.iteritems():
-                cmdclass[name], new = cls._inject(name, injectclass)
+            for name in orig_classes:
+                cmdclass[name], new = cls._inject(name, orig_classes[name])
                 new_classes += new
             for c in (cls, ) + new_classes:
                 cmdclass[c.__name__] = c
@@ -311,7 +311,8 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                 else:
                     self.pkg_params[key] = value
             # Evaluate all functions within pkg_params (semi-lazy evaluation)
-            for key, value in self.pkg_params.iteritems():
+            for key in self.pkg_params:
+                value = self.pkg_params[key]
                 if hasattr(value, "__call__") or isinstance(value, Callable):
                     self.pkg_params[key] = value(self.pkg_params)
             dist = self.distribution
@@ -351,14 +352,15 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                 log.debug("``pkg_name'' command used with no effect")
 
         def _pkg_prepare_build(self):
-            for pkg_name, filedefs in (self.package_data or {}).iteritems():
+            package_data = self.package_data or {}
+            for pkg_name in package_data:
                 dst_top = self.distribution.package_dir.get('', '')
                 dst_pkg = path_join(
                               dst_top,
                               self.distribution.package_dir.get(pkg_name, pkg_name)
                 )
                 if DEBUG: print (DBGPFX + "\tbuild dst_pkg %s" % dst_pkg)
-                for filedef in filedefs:
+                for filedef in package_data[pkg_name]:
                     self._pkg_prepare_file(
                         self.pkg_params[filedef['src']],
                         path_join(dst_pkg, self.pkg_params[filedef['dst']]),
@@ -556,7 +558,8 @@ pkg_params = {
 def cond_require(package, *packages, **preferred):
     packages = (lambda *args: args)(package, *packages)
     for package in packages:
-        for preferred_package, sym in preferred.iteritems():
+        for preferred_package in preferred:
+            sym = preferred[preferred_package]
             try:
                 preferred_module = __import__(preferred_package)
                 for symbol in ((sym, ) if isinstance(sym, basestring) else sym):

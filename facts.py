@@ -9,7 +9,7 @@ from logging import getLogger
 
 from .error import ClufterPlainError
 from .utils import args2sgpl
-from .utils_2to3 import basestring
+from .utils_2to3 import basestring, iter_items, iter_values
 from .utils_func import apply_intercalate
 
 log = getLogger(__name__)
@@ -471,7 +471,7 @@ def infer_sys(sys, branches=None):
     if branches is None:
         branches = [cluster_map]
     if sys == "*":
-        return apply_intercalate([b.values() for b in branches])
+        return apply_intercalate([list(iter_values(b)) for b in branches])
     return [b[sys] for b in branches if sys in b]
 
 
@@ -484,7 +484,7 @@ def infer_dist(dist, branches=None):
         branches = infer_sys('*')  # alt.: branches = [cluster_map.values()]
     if dist == '*':
         return apply_intercalate([per_distver[1] for b in branches
-                                  for per_dist in b.itervalues()
+                                  for per_dist in iter_values(b)
                                   for per_distver in per_dist])
     ret = []
     dist, dist_ver = _parse_ver(dist)
@@ -493,12 +493,13 @@ def infer_dist(dist, branches=None):
     except KeyError:
         pass
     for b in branches:
-        for d, d_branches in b.iteritems():
+        for d in b:
             if d == dist:
                 # first time, we (also) traverse whole sequence of per-distro
                 # releases, in-situ de-sparsifying particular packages releases;
                 # to avoid needlessly repeated de-sparsifying, we are using
                 # '__proceeded__' mark to denote already proceeded dicts
+                d_branches = b[d]
                 cur_acc = {}
                 if '__proceeded__' not in d_branches or dist_ver:
                     for i, (dver, dver_branches) in enumerate(d_branches):
@@ -514,7 +515,7 @@ def infer_dist(dist, branches=None):
                         if '__proceeded__' in dver_branches:
                             continue  # only searching, no hit yet
 
-                        for k, v in dver_branches.iteritems():
+                        for k, v in iter_items(dver_branches):
                             kk, k_extra = _parse_extra(k, version=v,
                                                        version_map=versions_extra)
 
@@ -549,7 +550,7 @@ def infer_comp(comp, branches=None):
     comp, comp_ver = _parse_ver(comp)
     comp, comp_extra = _parse_extra(comp)
     for b in branches:
-        for c, c_ver in b.iteritems():
+        for c, c_ver in iter_items(b):
             c, c_extra = _parse_extra(c)
             if c == comp:
                 if (isinstance(c_ver, tuple) and _cmp_ver(comp_ver, c_ver)
@@ -730,16 +731,16 @@ def format_dists(verbosity=0, aliases_dist_inv={}, aliases_rel_inv={}):
     if not aliases_dist_inv:
         aliases_dist_inv.update(reduce(
             lambda acc, (k, v): (acc.setdefault(v, []).append(k), acc)[1],
-            aliases_dist.iteritems(), {}
+            iter_items(aliases_dist), {}
         ))
     if not aliases_rel_inv:
         aliases_rel_inv.update((
             k,
             reduce(
                 lambda a, (ik, iv): (a.setdefault(iv, []).append(ik), a)[1],
-                v.iteritems(), {}
+                iter_items(v), {}
             )
-        ) for k, v in aliases_rel.iteritems() if k in supported_dists)
+        ) for k, v in iter_items(aliases_rel) if k in supported_dists)
 
     return '\n'.join('\n\t'.join(
         args2sgpl(
@@ -763,4 +764,4 @@ def format_dists(verbosity=0, aliases_dist_inv={}, aliases_rel_inv={}):
                 for vvv in ('.'.join(str(i) for i in vv[0]), )
             )
         )
-    ) for k, v in sorted(cluster_map['linux'].iteritems()))
+    ) for k, v in sorted(iter_items(cluster_map['linux'])))

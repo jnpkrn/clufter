@@ -1,11 +1,12 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """xml2simpleconfig filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..filter import XMLFilter
+from ..utils_2to3 import iter_items
 from lxml import etree
 
 
@@ -25,7 +26,7 @@ def xml2simpleconfig(flt_ctxt, in_obj):
             #print ">>> start", e.tag, root
             current = [e.tag, None, None]
             root.append(current)
-            current[1] = tuple((n, v) for n, v in sorted(e.attrib.iteritems()))
+            current[1] = tuple(sorted(iter_items(e.attrib)))
             #print "<<< start", e.tag, root
         elif action == 'end':
             #print ">>> end", e.tag, root

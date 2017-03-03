@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing direct command run (e.g., when clufter used as a library)"""
@@ -13,6 +13,7 @@ from os.path import dirname, exists, join
 #from os import unlink
 
 from .command_manager import CommandManager
+from .utils_2to3 import iter_values
 
 
 class Main(TestCase):
@@ -31,15 +32,15 @@ class Main(TestCase):
     #        batch=True,
     #        **outputs)
     #    )
-    #    for f in outputs.itervalues():
+    #    for o in outputs:
     #        try:
-    #            unlink(f)
+    #            unlink(outputs[o])
     #        except OSError:
     #            pass
     #    cmd_manager = CommandManager.implicit()
     #    self.assertFalse(cmd_manager.commands["ccs2pcs-needle"](clufter_args))
     #    # just the existence of the files is enough for now...
-    #    map(lambda f: self.assertTrue(exists(f)), outputs.itervalues())
+    #    map(lambda f: self.assertTrue(exists(f)), iter_values(outputs))
 
     def testCcs2PcsNeedleBetter(self):
         testfile = join(dirname(__file__), 'filled.conf')
@@ -67,7 +68,7 @@ class Main(TestCase):
         cmd = CommandManager.init_lookup('ccs2pcs').commands['ccs2pcs-needle']
         self.assertFalse(cmd(clufter_args))
         # just the existence of non-null strings is enough for now...
-        map(lambda fspec: self.assertTrue(fspec['passout']), outputs.values())
+        map(lambda fspec: self.assertTrue(fspec['passout']), iter_values(outputs))
         #from pprint import pprint
         #pprint(outputs['coro']['passout'])
 

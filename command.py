@@ -37,7 +37,7 @@ from .utils import any2iter, \
                    nonetype, \
                    selfaware, \
                    tuplist
-from .utils_2to3 import basestring, xrange
+from .utils_2to3 import basestring, iter_items, iter_values, xrange
 from .utils_func import apply_aggregation_preserving_depth, \
                         apply_intercalate, \
                         apply_loose_zip_preserving_depth, \
@@ -106,7 +106,7 @@ class Command(object):
         self._filters = OrderedDict((f.__class__.name, f) for f in
                                     apply_intercalate(filter_chain))
         fnc_defaults, fnc_varnames = self._fnc_defaults_varnames
-        for varname, default in fnc_defaults.iteritems():
+        for varname, default in iter_items(fnc_defaults):
             if not isinstance(default, basestring):
                 continue
             try:
@@ -248,7 +248,7 @@ class Command(object):
 
     def _figure_parser_opt_dumpnoop(self, options, shortopts):
         choices = []
-        for fname, f in self._filters.iteritems():
+        for fname, f in iter_items(self._filters):
             if issubclass(f.in_format.__class__, f.out_format.__class__):
                 choices.append(fname)
         # XXX NOOPizing doesn't make sense for input filters?
@@ -335,7 +335,7 @@ class Command(object):
             else:
                 description.append(line)
 
-        for short, aliases in shortopts.iteritems():  # foreach in ideal shorts
+        for short, aliases in iter_items(shortopts):  # foreach in ideal shorts
             for i, alias in enumerate(aliases):  # foreach in conflicting ones
                 for c in longopt_letters_reprio(options[alias][0][0]):
                     use = '-' + c
@@ -546,7 +546,7 @@ class Command(object):
                                          .format(passout['passout']))
 
         # close "magic" fds
-        map(lambda (k, f): k in native_fds or f.close(), magic_fds.iteritems())
+        map(lambda k: k in native_fds or magic_fds[k].close(), magic_fds)
         return EC.EXIT_SUCCESS  # XXX some better decision?
 
     def __call__(self, opts, args=None, cmd_ctxt=None):
@@ -573,7 +573,7 @@ class Command(object):
         }, bypass=True)
         cmd_ctxt.setdefault('filter_chain_analysis',
                             self.filter_chain_analysis, bypass=True)
-        cmd_ctxt.ensure_filters(self._filters.itervalues())
+        cmd_ctxt.ensure_filters(iter_values(self._filters))
         kwargs = {}
         # desugaring, which is useful mainly if non-contiguous sequence
         # of value-based options need to be specified

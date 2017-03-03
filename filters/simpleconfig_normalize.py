@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """simpleconfig-normalize filter"""
@@ -15,6 +15,7 @@ log = getLogger(__name__)
 
 from ..filter import Filter
 from ..utils import selfaware
+from ..utils_2to3 import iter_items
 
 
 @selfaware
@@ -33,12 +34,12 @@ def _simpleconfig_normalize(me, parent_section):
             else:
                 vals.append(v)
         options = []
-        for n, vals in opts.iteritems():
+        for n, vals in iter_items(opts):
             options.append((n, vals[0]))
             vals[:] = vals[1:]
         parent_sections_new.append((tag, options, [me(s) for s in sections]))
-        for i, (n, vals) in enumerate((n, vals) for n, vals in opts.iteritems()
-                                    if vals):
+        for i, (n, vals) in enumerate((n, vals) for n, vals in iter_items(opts)
+                                      if vals):
             if not i and sections:
                 log.warning("current section `{0}' needs normalization but"
                             " contains subsections (not expected)".format(tag))

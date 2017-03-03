@@ -9,7 +9,7 @@ from lxml import etree
 
 from .error import ClufterPlainError
 from .utils import selfaware
-from .utils_2to3 import basestring
+from .utils_2to3 import basestring, iter_items
 from .utils_func import bifilter
 
 
@@ -22,7 +22,7 @@ NAMESPACES = {
 # X=x and X_NS=url for each (x, url) in NAMESPACES
 map(lambda ns: globals().setdefault(ns.upper(), ns), NAMESPACES)
 map(lambda (ns, url): globals().setdefault(ns.upper() + '_NS', url),
-    NAMESPACES.iteritems())
+    iter_items(NAMESPACES))
 
 
 class UtilsXmlError(ClufterPlainError):
