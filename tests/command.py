@@ -13,7 +13,11 @@ try:  # because of ./run-tests vs. direct execution difference (also PY2/3)
 except ModuleNotFoundError:
     from ._shared import empty_opts
 
-from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
+from os.path import join, dirname; from sys import modules as m  # 2/3 compat
+b = m.get('builtins', m.get('__builtin__')); e, E, h = 'exec', 'execfile', hash
+c = lambda x: compile(x.read(), x.name, 'exec')
+with open(join(dirname(__file__), '_go')) as f:
+    getattr(b, e, getattr(b, E, h)(f.name).__repr__.__name__.__ne__)(c(f))
 
 
 from unittest import TestCase
@@ -190,4 +194,7 @@ class ChainResolve(TestCase):
             continue
 
 
-from os.path import join, dirname as d; execfile(join(d(__file__), '_gone'))
+from os.path import join, dirname; from sys import modules as m  # 2/3 compat
+b = m.get('builtins', m.get('__builtin__')); e, E, h = 'exec', 'execfile', hash
+with open(join(dirname(__file__), '_gone')) as f:
+    getattr(b, e, getattr(b, E, h)(f.name).__repr__.__name__.__ne__)(f.read())

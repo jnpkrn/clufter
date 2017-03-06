@@ -9,7 +9,11 @@ from __future__ import print_function
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 # following makes available also: TeardownFilterTestCase, rewrite_root
-from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_com'))
+from os.path import join, dirname; from sys import modules as m  # 2/3 compat
+b = m.get('builtins', m.get('__builtin__')); e, E, h = 'exec', 'execfile', hash
+c = lambda x: compile(x.read(), x.name, 'exec')
+with open(join(dirname(dirname(__file__)), '_com')) as f:
+    getattr(b, e, getattr(b, E, h)(f.name).__repr__.__name__.__ne__)(c(f))
 
 
 from .filter_manager import FilterManager
@@ -40,4 +44,7 @@ pcs quorum device add model net host=191.168.10.20
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
 
-from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))
+from os.path import join, dirname; from sys import modules as m  # 2/3 compat
+b = m.get('builtins', m.get('__builtin__')); e, E, h = 'exec', 'execfile', hash
+with open(join(dirname(dirname(__file__)), '_gone')) as f:
+    getattr(b, e, getattr(b, E, h)(f.name).__repr__.__name__.__ne__)(f.read())

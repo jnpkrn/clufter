@@ -8,7 +8,11 @@ from __future__ import print_function
 """Testing `ccs-version-bump' filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
+from os.path import join, dirname; from sys import modules as m  # 2/3 compat
+b = m.get('builtins', m.get('__builtin__')); e, E, h = 'exec', 'execfile', hash
+c = lambda x: compile(x.read(), x.name, 'exec')
+with open(join(dirname(dirname(__file__)), '_go')) as f:
+    getattr(b, e, getattr(b, E, h)(f.name).__repr__.__name__.__ne__)(c(f))
 
 
 from os.path import dirname, join
@@ -29,4 +33,7 @@ class FiltersCcsVersionBumpTestCase(TestCase):
         new_ver = int(ret.ETREE().xpath("/cluster/@config_version")[0])
         self.assertEquals(old_ver + 1, new_ver)
 
-from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))
+from os.path import join, dirname; from sys import modules as m  # 2/3 compat
+b = m.get('builtins', m.get('__builtin__')); e, E, h = 'exec', 'execfile', hash
+with open(join(dirname(dirname(__file__)), '_gone')) as f:
+    getattr(b, e, getattr(b, E, h)(f.name).__repr__.__name__.__ne__)(f.read())

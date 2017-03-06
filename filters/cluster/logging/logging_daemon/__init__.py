@@ -3,15 +3,16 @@
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
-from ....utils_2to3 import iter_items
+from ....utils_2to3 import execfile, iter_items
+from ....utils_prog import dirname_x
 from ....utils_xslt import xslt_is_member, xslt_string_mapping
 
 from logging import getLogger
 log = getLogger(__name__)
 
 # XXX a bit dirty DRY approach
-from os.path import dirname, join
-use = join(reduce(lambda a, b: dirname(a), xrange(2), __file__), '__init__.py')
+from os.path import join
+use = join(dirname_x(__file__, 2), '__init__.py')
 myglobals = dict(__package__=__package__, __name__=__name__)
 try:
     execfile(use, myglobals)
