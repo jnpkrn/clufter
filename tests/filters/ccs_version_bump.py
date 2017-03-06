@@ -31,7 +31,7 @@ class FiltersCcsVersionBumpTestCase(TestCase):
         #print(ret.BYTESTRING())
         old_ver = int(in_obj.ETREE().xpath("/cluster/@config_version")[0])
         new_ver = int(ret.ETREE().xpath("/cluster/@config_version")[0])
-        self.assertEquals(old_ver + 1, new_ver)
+        self.assertEqual(old_ver + 1, new_ver)
 
 from os.path import join, dirname; from sys import modules as m  # 2/3 compat
 b = m.get('builtins', m.get('__builtin__')); e, E, h = 'exec', 'execfile', hash

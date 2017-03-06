@@ -34,7 +34,7 @@ class FiltersCmdWrapTestCase(TestCase):
 """.splitlines()
         ), text_width=60)
         #print(result.BYTESTRING())
-        self.assertEquals(str_enc(result.BYTESTRING(), 'utf-8'), """\
+        self.assertEqual(str_enc(result.BYTESTRING(), 'utf-8'), """\
 # this is a long long long long long long long long,
 # terribly long shell comment
 /usr/bin/python setup.py saveopts -f setup.cfg pkg_prepare \\
@@ -46,7 +46,7 @@ class FiltersCmdWrapTestCase(TestCase):
 pcs -f tmp-cib.xml resource create RESOURCE-apache-webserver ocf:heartbeat:apache 'options= -Dwebserver' op stop 'id=RESOURCE-apache-webserver-OP-stop' 'name=stop' 'interval=0' 'timeout=122s'
 """), text_width=80)
         #print(result.BYTESTRING())
-        self.assertEquals(str_enc(result.BYTESTRING()), """\
+        self.assertEqual(str_enc(result.BYTESTRING()), """\
 pcs -f tmp-cib.xml \\
   resource create RESOURCE-apache-webserver ocf:heartbeat:apache \\
   'options= -Dwebserver' \\
