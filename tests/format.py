@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing format"""
@@ -52,12 +52,12 @@ class XMLFormatWalkTestCase(TestCase):
     def testWalkFull(self):
         r = ccs.walk_schema(self.walk_dir, 'full')
         #pprint(r, width=8)  # --> expected
-        self.assertTrue(r == self.result_walk_full)
+        self.assertEqual(r, self.result_walk_full)
 
     def testWalkSparse(self):
         r = ccs.walk_schema(self.walk_dir, 'sparse')
         #pprint(r, width=8)  # --> expected
-        self.assertTrue(r == self.result_walk_sparse)
+        self.assertEqual(r, self.result_walk_sparse)
 
 
 class XMLValidationTestCase(TestCase):

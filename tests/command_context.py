@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing command context"""
@@ -17,13 +17,13 @@ class TestCommandContextBase(TestCase):
     def testAnabasisConstructor(self):
         ccb = CommandContextBase({'a': {'b': {'c': {'d': {'e': 42}}}}})
         e = ccb['a']['b']['c']['d']
-        self.assertTrue(len(tuple(e.anabasis)) == 5)
+        self.assertEqual(len(tuple(e.anabasis)), 5)
 
     def testAnabasisBuilt(self):
         ccb = CommandContextBase()
         ccb['a'] =  {'b': {'c': {'d': {'e': 42}}}}
         e = ccb['a']['b']['c']['d']
-        self.assertTrue(len(tuple(e.anabasis)) == 5)
+        self.assertEqual(len(tuple(e.anabasis)), 5)
 
     def testPreventedTaint(self):
         ccb = CommandContextBase({'a': 42})
@@ -31,7 +31,7 @@ class TestCommandContextBase(TestCase):
             try:
                 ccb['a'] = 43
             except RuntimeError:
-                self.assertTrue(ccb['a'] == 42)
+                self.assertEqual(ccb['a'], 42)
             else:
                 self.assertTrue(False)
         try:
@@ -39,7 +39,7 @@ class TestCommandContextBase(TestCase):
         except RuntimeError:
             self.assertTrue(False)
         else:
-            self.assertTrue(ccb['a'] == 43)
+            self.assertEqual(ccb['a'], 43)
 
     def testPreventedTaintTransitive(self):
         ccb = CommandContextBase({'a': {'b': 42}})
@@ -47,7 +47,7 @@ class TestCommandContextBase(TestCase):
             try:
                 ccb['a']['b'] = 43
             except RuntimeError:
-                self.assertTrue(ccb['a']['b'] == 42)
+                self.assertEqual(ccb['a']['b'], 42)
             else:
                 self.assertTrue(False)
         try:
@@ -55,7 +55,7 @@ class TestCommandContextBase(TestCase):
         except RuntimeError:
             self.assertTrue(False)
         else:
-            self.assertTrue(ccb['a']['b'] == 43)
+            self.assertEqual(ccb['a']['b'], 43)
 
 
 from os.path import join, dirname as d; execfile(join(d(__file__), '_gone'))

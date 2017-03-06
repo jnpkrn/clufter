@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing XML helpers"""
@@ -30,7 +30,7 @@ class TestRngPivot(TestCase):
         else:
             with open(p) as f:
                 expected = f.read()
-            self.assertTrue(etree.tostring(et) == expected)
+            self.assertEqual(etree.tostring(et), expected)
 
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))

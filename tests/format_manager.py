@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing format manager"""
@@ -46,7 +46,7 @@ class Injection(FormatManagerTestCase):
     def test_injection(self):
         formats = self.fmt_mgr.formats
         #print formats
-        self.assertTrue(len(formats) == len(self.formats))
+        self.assertEqual(len(formats), len(self.formats))
         for fmt_id, fmt_cls in self.formats.iteritems():
             self.assertTrue(fmt_id in formats)
             self.assertEqual(fmt_cls, formats[fmt_id])
