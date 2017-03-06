@@ -124,7 +124,7 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
             out_obj = flt_obj(in_obj,
                               system='linux', system_extra=('rhel', '7.3'))
             #print(out_obj.BYTESTRING())
-            self.assertEquals(out_obj.BYTESTRING(), bytes_enc(out_str))
+            self.assertEqual(out_obj.BYTESTRING(), bytes_enc(out_str))
 
     def testSapDatabase(self):
         flt_obj = rewrite_root(self.flt_mgr.filters[flt], 'cluster/rm',
@@ -194,7 +194,7 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
             out_obj = flt_obj(in_obj,
                               system='linux', system_extra=('rhel', '7.3'))
             #print(out_obj.BYTESTRING())
-            self.assertEquals(out_obj.BYTESTRING(), bytes_enc(out_str))
+            self.assertEqual(out_obj.BYTESTRING(), bytes_enc(out_str))
 
     def testSapInstance(self):
         flt_obj = rewrite_root(self.flt_mgr.filters[flt], 'cluster/rm',
@@ -248,7 +248,7 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
             out_obj = flt_obj(in_obj,
                               system='linux', system_extra=('rhel', '7.3'))
             #print(out_obj.BYTESTRING())
-            self.assertEquals(out_obj.BYTESTRING(), out_str)
+            self.assertEqual(out_obj.BYTESTRING(), bytes_enc(out_str))
 
 
 from os.path import join, dirname; from sys import modules as m  # 2/3 compat

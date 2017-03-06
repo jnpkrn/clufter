@@ -42,7 +42,7 @@ class FiltersCcs2NeedleXmlTestCase(TeardownFilterTestCase):
             in_obj = in_fmt('bytestring', in_str)
             out_obj = flt_obj(in_obj)
             #print(out_obj.BYTESTRING())
-            self.assertEquals(out_obj.BYTESTRING(), bytes_enc(out_str))
+            self.assertEqual(out_obj.BYTESTRING(), bytes_enc(out_str))
 
 
 from os.path import join, dirname; from sys import modules as m  # 2/3 compat

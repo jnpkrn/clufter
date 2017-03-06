@@ -47,7 +47,7 @@ class FiltersCcspcmk2pcscmdTestCase(TestCase):
                                          pcscmd_noguidance=True,
                                  system='linux', system_extra=system_extra)
             #print(ret.BYTESTRING())
-            self.assertEquals(ret.BYTESTRING(), out_str)
+            self.assertEqual(ret.BYTESTRING(), out_str)
 
 from os.path import join, dirname; from sys import modules as m  # 2/3 compat
 b = m.get('builtins', m.get('__builtin__')); e, E, h = 'exec', 'execfile', hash

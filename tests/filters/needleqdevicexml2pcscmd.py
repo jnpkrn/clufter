@@ -41,7 +41,7 @@ pcs quorum device add model net host=191.168.10.20
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                               system='linux', system_extra=('rhel', '7.3'))
             #print(out_obj.BYTESTRING())
-            self.assertEquals(out_obj.BYTESTRING(), out_str)
+            self.assertEqual(out_obj.BYTESTRING(), out_str)
 
 
 from os.path import join, dirname; from sys import modules as m  # 2/3 compat

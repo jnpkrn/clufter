@@ -39,7 +39,7 @@ class FiltersStringitercombineTestCase(TestCase):
             )
         )
         #print(result.BYTESTRING())
-        self.assertEquals(str_enc(result.BYTESTRING(), 'utf-8'),
+        self.assertEqual(str_enc(result.BYTESTRING(), 'utf-8'),
                          '\n'.join("ABCDEF") + '\n')
 
 

@@ -30,7 +30,7 @@ class FiltersCcsDisableRGTestCase(TestCase):
         ret = ccs_disable_rg(in_obj)
         #print(ret.BYTESTRING())
         disabled = bool(ret.ETREE().xpath("/cluster/rm/@disabled")[0])
-        self.assertEquals(disabled, True)
+        self.assertEqual(disabled, True)
 
 from os.path import join, dirname; from sys import modules as m  # 2/3 compat
 b = m.get('builtins', m.get('__builtin__')); e, E, h = 'exec', 'execfile', hash

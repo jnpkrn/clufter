@@ -43,7 +43,7 @@ class FiltersSimpleconfig2NeedlexmlTestCase(TestCase):
                [])])
         ))
         #print(result.BYTESTRING())
-        self.assertEquals(result.BYTESTRING(), bytes_enc("""\
+        self.assertEqual(result.BYTESTRING(), bytes_enc("""\
 <corosync>
   <totem version="2" cluster_name="aus-cluster"/>
   <nodelist>

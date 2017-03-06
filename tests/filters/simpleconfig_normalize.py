@@ -34,7 +34,7 @@ class FiltersSimpleconfigNormalizeTestCase(TestCase):
             [('uidgid', [('uid', '0'), ('uid', '1000'), ('gid', '0')], [])])
         ))
         #print(result.BYTESTRING())
-        self.assertEquals(str_enc(result.BYTESTRING(), 'utf-8'), """\
+        self.assertEqual(str_enc(result.BYTESTRING(), 'utf-8'), """\
 uidgid {
 	uid: 0
 	gid: 0
