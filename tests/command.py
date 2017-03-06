@@ -8,7 +8,10 @@ from __future__ import print_function
 """Testing command"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from _shared import empty_opts
+try:  # because of ./run-tests vs. direct execution difference (also PY2/3)
+    from _shared import empty_opts
+except ModuleNotFoundError:
+    from ._shared import empty_opts
 
 from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
 
