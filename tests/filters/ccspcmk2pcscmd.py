@@ -2,6 +2,9 @@
 # Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Testing `ccspcmk2pcscmd' filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -39,7 +42,7 @@ class FiltersCcspcmk2pcscmdTestCase(TestCase):
                                          pcscmd_noauth=True,
                                          pcscmd_noguidance=True,
                                  system='linux', system_extra=system_extra)
-            #print ret.BYTESTRING()
+            #print(ret.BYTESTRING())
             self.assertEquals(ret.BYTESTRING(), out_str)
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))

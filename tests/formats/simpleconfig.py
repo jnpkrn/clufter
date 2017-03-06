@@ -66,7 +66,7 @@ totem {
 
     def testStruct2Bytestring(self):
         sc = simpleconfig('struct', self.struct)
-        #print sc.BYTESTRING()
+        #print(sc.BYTESTRING())
         self.assertEqual(sc.BYTESTRING(), self.bytestring)
 
     def testBytestring2Struct(self):

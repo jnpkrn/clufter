@@ -2,6 +2,9 @@
 # Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Testing `simpleconfig2needlexml' filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -35,7 +38,7 @@ class FiltersSimpleconfig2NeedlexmlTestCase(TestCase):
                 ('two_node', '1')],
                [])])
         ))
-        #print result.BYTESTRING()
+        #print(result.BYTESTRING())
         self.assertEquals(result.BYTESTRING(), bytes_enc("""\
 <corosync>
   <totem version="2" cluster_name="aus-cluster"/>

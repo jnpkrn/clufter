@@ -2,6 +2,9 @@
 # Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Command manager"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -121,7 +124,7 @@ class CommandManager(PluginManager):
                     sorted(set([cmd, canonical_cmd]),
                            key=lambda i: int(i == canonical_cmd))
                 ))
-                print parser.format_customized_help(usage=usage)
+                print(parser.format_customized_help(usage=usage))
                 return ec
 
             set_logging(opts)
@@ -130,11 +133,11 @@ class CommandManager(PluginManager):
             ec = command(opts, args)
         except ClufterError as e:
             ec = EC.EXIT_FAILURE
-            print e
+            print(e)
             if isinstance(e, CommandNotFoundError):
-                print "\n" + self.pretty_cmds()
+                print("\n" + self.pretty_cmds())
         #except Exception as e:
-        #    print "OOPS: underlying unexpected exception:\n{0}".format(e)
+        #    print("OOPS: underlying unexpected exception:\n{0}".format(e))
         #    ec = EC.EXIT_FAILURE
         return ec
 

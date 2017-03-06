@@ -1,7 +1,10 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Testing `ccs-disable-rg' filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -21,7 +24,7 @@ class FiltersCcsDisableRGTestCase(TestCase):
     def testDisableRG(self):
         in_obj = ccs('file', join(dirname(dirname(__file__)), 'filled.conf'))
         ret = ccs_disable_rg(in_obj)
-        #print ret.BYTESTRING()
+        #print(ret.BYTESTRING())
         disabled = bool(ret.ETREE().xpath("/cluster/rm/@disabled")[0])
         self.assertEquals(disabled, True)
 

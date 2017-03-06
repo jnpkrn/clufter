@@ -1,7 +1,10 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Testing `cib2pcscmd' filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -23,7 +26,7 @@ class FiltersCib2pcscmdTestCase(TestCase):
         in_obj = cib('file', join(dirname(dirname(__file__)), 'filled.cib'))
         ret = cib2pcscmd(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                          system='linux', system_extra=('rhel', '7.3'))
-        #print ret.BYTESTRING()
+        #print(ret.BYTESTRING())
         self.assertEquals(
             ret.BYTESTRING(),
             '''\
@@ -82,7 +85,7 @@ setoptions id=colocation-my-rsc-set
                             validator_specs={in_fmt.ETREE: ''})
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                               system='linux', system_extra=('rhel', '7.3'))
-            #print out_obj.BYTESTRING()
+            #print(out_obj.BYTESTRING())
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
     def testLocationConstraints(self):
@@ -127,7 +130,7 @@ constraint-id=location-A-on-XYZ score=INFINITY \
                             validator_specs={in_fmt.ETREE: ''})
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                               system='linux', system_extra=('rhel', '7.3'))
-            #print out_obj.BYTESTRING()
+            #print(out_obj.BYTESTRING())
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
     def testOrderConstraints(self):
@@ -177,7 +180,7 @@ setoptions id=order-my-rsc-set
                             validator_specs={in_fmt.ETREE: ''})
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                               system='linux', system_extra=('rhel', '7.3'))
-            #print out_obj.BYTESTRING()
+            #print(out_obj.BYTESTRING())
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
     def testTicketConstraints(self):
@@ -233,7 +236,7 @@ setoptions ticket=my-ticket loss-policy=fence id=ticket-my-ticket-my-rsc-set
                             validator_specs={in_fmt.ETREE: ''})
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                               system='linux', system_extra=('rhel', '7.3'))
-            #print out_obj.BYTESTRING()
+            #print(out_obj.BYTESTRING())
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
 
@@ -264,7 +267,7 @@ pcs alert create 'path=/bin/yes' id=alert-bar 'description=idling avoidance ;-)'
                             validator_specs={in_fmt.ETREE: ''})
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                               system='linux', system_extra=('rhel', '7.3'))
-            #print out_obj.BYTESTRING()
+            #print(out_obj.BYTESTRING())
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
     def testAlertsComplex(self):
@@ -295,7 +298,7 @@ pcs alert recipient add alert-foo 'value=3' id=alert-foo-recipient3
                             validator_specs={in_fmt.ETREE: ''})
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                               system='linux', system_extra=('rhel', '7.3'))
-            #print out_obj.BYTESTRING()
+            #print(out_obj.BYTESTRING())
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
 

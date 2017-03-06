@@ -2,6 +2,9 @@
 # Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Testing format manager"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -29,7 +32,7 @@ class FormatManagerTestCase(TestCase):
 class Default(FormatManagerTestCase):
     def test_default(self):
         formats = self.fmt_mgr.formats
-        #print formats
+        #print(formats)
         for cls in ccs, ccs_flat, cib:
             self.assertTrue(cls.__name__ in formats)
             # the first was needed in the past, but now the more restrictive
@@ -46,7 +49,7 @@ class Injection(FormatManagerTestCase):
 
     def test_injection(self):
         formats = self.fmt_mgr.formats
-        #print formats
+        #print(formats)
         self.assertEqual(len(formats), len(self.formats))
         for fmt_id, fmt_cls in iter_items(self.formats):
             self.assertTrue(fmt_id in formats)

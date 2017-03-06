@@ -1,8 +1,11 @@
 #!/usr/bin/env python2
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Machinery entry point -- to be run from in-repo location"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -65,7 +68,7 @@ while True:
                                        for p in fnfilter(listdir(root),
                                                          '*.egg-info'))
         if not self_discovery_plan:
-            print "Cannot find myself, please help me with __project__ symlink"
+            print("Cannot find myself, please help me with __project__ symlink")
             raise
 sys.path.pop(0)
 
