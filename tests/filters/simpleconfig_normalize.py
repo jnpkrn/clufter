@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing `simpleconfig-normalize' filter"""
@@ -13,6 +13,7 @@ from unittest import TestCase
 
 from .filter_manager import FilterManager
 from .formats.simpleconfig import simpleconfig
+from .utils_2to3 import str_enc
 
 flt = 'simpleconfig-normalize'
 simpleconfig_normalize = FilterManager.init_lookup(flt).filters[flt]
@@ -26,7 +27,7 @@ class FiltersSimpleconfigNormalizeTestCase(TestCase):
             [('uidgid', [('uid', '0'), ('uid', '1000'), ('gid', '0')], [])])
         ))
         #print result.BYTESTRING()
-        self.assertEquals(result.BYTESTRING(), """\
+        self.assertEquals(str_enc(result.BYTESTRING(), 'utf-8'), """\
 uidgid {
 	uid: 0
 	gid: 0

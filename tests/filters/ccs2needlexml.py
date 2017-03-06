@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing `ccsflat2cibprelude' filter"""
@@ -7,6 +7,9 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 # following makes available also: TeardownFilterTestCase, rewrite_root
 from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_com'))
+
+
+from .utils_2to3 import bytes_enc
 
 flt = 'ccs2needlexml'
 
@@ -31,8 +34,8 @@ class FiltersCcs2NeedleXmlTestCase(TeardownFilterTestCase):
         for (in_str, out_str) in io_strings:
             in_obj = in_fmt('bytestring', in_str)
             out_obj = flt_obj(in_obj)
-            #print out_obj.BYTESTRING()
-            self.assertEquals(out_obj.BYTESTRING(), out_str)
+            #print(out_obj.BYTESTRING())
+            self.assertEquals(out_obj.BYTESTRING(), bytes_enc(out_str))
 
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))

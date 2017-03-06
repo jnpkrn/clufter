@@ -72,6 +72,17 @@ reduce_uu = \
 foreach_u = lambda *args: deque(map_u(*args), maxlen=0)
 
 
+# Compatibility with bytes/string materialized dichotomy in Python 3
+
+if PY3:
+    bytes_enc = (lambda s, encoding='ascii':
+                    bytes(s, encoding) if not isinstance(s, bytes) else s)
+    str_enc = lambda s, encoding='ascii': str(s, encoding)
+else:
+    bytes_enc = lambda s, *args: bytes(s)
+    str_enc = lambda s, *args: str(s)
+
+
 # Compatibility with different way to use metaclasses in Python 2/3
 
 class MimicMeta(object):

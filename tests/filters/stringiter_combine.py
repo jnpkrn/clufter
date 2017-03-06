@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing `stringiter-combine*' filter(s)"""
@@ -14,6 +14,8 @@ from unittest import TestCase
 from .filter_manager import FilterManager
 from .format import CompositeFormat
 from .formats.string_iter import string_iter
+from .utils_2to3 import str_enc
+
 flt = 'stringiter-combine2'
 stringiter_combine2 = FilterManager.init_lookup(flt).filters[flt]
 #ccs = ccspcmk2pcscmd.in_format
@@ -30,7 +32,8 @@ class FiltersStringitercombineTestCase(TestCase):
             )
         )
         #print result.BYTESTRING()
-        self.assertEquals(result.BYTESTRING(), '\n'.join("ABCDEF") + '\n')
+        self.assertEquals(str_enc(result.BYTESTRING(), 'utf-8'),
+                         '\n'.join("ABCDEF") + '\n')
 
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))

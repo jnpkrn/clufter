@@ -1,13 +1,15 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 # following 2nd chance import is to allow direct usage context (testing, etc.)
 try:
+    from ....utils_2to3 import bytes_enc, str_enc
     from ....utils_xslt import xslt_is_member
 except ValueError:  # Value?
+    from ...utils_2to3 import bytes_enc, str_enc
     from ...utils_xslt import xslt_is_member
 
 ###
@@ -303,9 +305,9 @@ ccs2needlexml = lazystring(lambda: ('''\
     # NB: nothing against second parameter to b64encode, but it seems to be
     #     slower than simple chained replacement (a la urlsafe_b64encode)
     key='_NOT_SECRET' + (
-        '--' + b64encode(sha256(
-            str(getpid()) + '_REALLY_' + str(int(time()))
-        ).digest()).replace('+', '-').replace('/', '_').rstrip('=')
+        '--' + str_enc(b64encode(sha256(
+            bytes_enc(str(getpid()) + '_REALLY_' + str(int(time())), 'ascii')
+        ).digest()), 'ascii').replace('+', '-').replace('/', '_').rstrip('=')
         if getenv_namespaced('NOSALT', '0') in ('0', 'false') else '_'
     ),
     key_message='WARNING: secret key used by corosync for encryption/integrity'

@@ -35,6 +35,7 @@ from .utils import args2tuple, arg2wrapped, \
                    head_tail, hybridproperty, \
                    identity, lazystring, tuplist
 from .utils_2to3 import MimicMeta, basestring, \
+                        bytes_enc, str_enc, \
                         iter_items, iter_values, \
                         filter_u, foreach_u, reduce_u, \
                         xrange
@@ -329,7 +330,7 @@ class XMLFilter(Filter, MetaPlugin):
                     tree_stack[-1][2][elem] = proceed(walk[0], elem, children)
                     try:
                         log.debug("Proceeded {0}".format(
-                                  etree.tostring(tree_stack[-1][2][elem]).replace('\n', '')))
+                                  etree.tostring(tree_stack[-1][2][elem], encoding='unicode').replace('\n', '')))
                     except AttributeError:
                         log.debug("Proceeded {0}".format(tree_stack[-1][2][elem]))
 
@@ -399,9 +400,10 @@ class XMLFilter(Filter, MetaPlugin):
         reply, force = '', ''
         try:
             tmp_name = ""
-            tmp = NamedTemporaryFile(dir=tmpdir, suffix='.xml', delete=False)
+            tmp = NamedTemporaryFile(mode='wb', dir=tmpdir, suffix='.xml',
+                                     delete=False)
             with tmp as tmpfile:
-                tmpfile.write(prompt)
+                tmpfile.write(bytes_enc(prompt, 'utf-8'))
                 tmpfile.flush()
                 tmp_name = tmp.name
             old_stat = stat(tmp_name)
@@ -429,7 +431,7 @@ class XMLFilter(Filter, MetaPlugin):
             # modifications (sed definitely doesn't; see also
             # http://www.pixelbeat.org/docs/unix_file_replacement.html),
             # otherwise tmpfile.seek(0) would be enough
-            with open(tmp_name, 'r') as tmpfile:
+            with open(tmp_name, 'rb') as tmpfile:
                 reply = tmpfile.read().strip()
         finally:
             rmtree(tmpdir)
@@ -494,7 +496,9 @@ class XMLFilter(Filter, MetaPlugin):
                     global_msgs.extend(msgs)
                     break
                 parent_pos = element_juggler.grab(elem)
-                res_snippet = etree.tostring(elem, pretty_print=True)
+                res_snippet = str_enc(etree.tostring(elem, pretty_print=True,
+                                                     encoding='UTF-8'),
+                                      'utf-8').strip()
                 force = False
                 for i in xrange(2, 0, -1):  # 2 subsequent NOOPs -> termination
                     try:

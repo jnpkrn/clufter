@@ -7,6 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..format import SimpleFormat
 from ..protocol import Protocol
+from ..utils_2to3 import bytes_enc
 
 
 class string_iter(SimpleFormat):
@@ -20,7 +21,11 @@ class string_iter(SimpleFormat):
         return (
             # add a trailing new-line as per conventions
             # XXX should there be a knob for that?
-            '\n'.join(s for s in self.STRINGITER(protect_safe=True) if s) + '\n'
+            bytes_enc(
+                '\n'.join(s for s in self.STRINGITER(protect_safe=True) if s)
+                + '\n',
+                'utf-8'
+            )
         )
 
     @SimpleFormat.producing(STRINGITER, protect=True)

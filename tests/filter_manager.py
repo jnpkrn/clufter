@@ -19,6 +19,7 @@ formats = formats.plugins
 from .filter import Filter
 from .filter_manager import FilterManager
 from .utils import head_tail
+from .utils_2to3 import str_enc
 
 
 class FilterManagerTestCase(TestCase):
@@ -50,10 +51,10 @@ class Default(FilterManagerTestCase):
         # CHECK the auto-discovered filter properly tracked
         self.assertTrue('ccs2ccsflat' in self.flt_mgr.filters)
         out_obj = self.flt_mgr('ccs2ccsflat', ('file', testfile))
-        result = out_obj('bytestring')
+        result = str_enc(out_obj('bytestring'), 'utf-8')
         # XXX print result
         # CHECK the externalized representation matches the original
-        with file(testfile) as f:
+        with open(testfile) as f:
             self.assertEqual(norm_whitespace(result), norm_whitespace(f.read()))
 
 
@@ -89,8 +90,8 @@ class CompositeFormatIO(FilterManagerTestCase):
         # CHECK resulting externalized representation is, however, tha same
         self.assertEqual(*tuple(norm_whitespace for r in results))
         # CHECK picked externalized representation matches the original
-        with file(testfile) as f:
-            self.assertEqual(norm_whitespace(results[0]),
+        with open(testfile) as f:
+            self.assertEqual(norm_whitespace(str_enc(results[0], 'utf-8')),
                              norm_whitespace(f.read()))
 
 
