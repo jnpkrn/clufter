@@ -25,10 +25,10 @@ class TestRngPivot(TestCase):
         rng_pivot(et, 'logging')
         p = join(dirname(__file__), 'corosync.rng.exp')
         if False:  # to regenerate the expected file (manual review)
-            with open(p, 'w') as f:
+            with open(p, 'wb') as f:
                 f.write(etree.tostring(et))
         else:
-            with open(p) as f:
+            with open(p, 'rb') as f:
                 expected = f.read()
             self.assertEqual(etree.tostring(et), expected)
 

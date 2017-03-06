@@ -36,7 +36,7 @@ from .utils import arg2wrapped, args2sgpl, args2tuple, args2unwrapped, \
                    isinstanceupto, \
                    popattr, \
                    tuplist
-from .utils_2to3 import MimicMeta, basestring, xrange
+from .utils_2to3 import MimicMeta, basestring, bytes_enc, xrange
 from .utils_func import foreach
 from .utils_lxml import etree_parser_safe
 from .utils_prog import ProtectedDict, getenv_namespaced
@@ -382,7 +382,7 @@ class SimpleFormat(Format):
                 return infile.read()
 
             assert isinstance(infile, basestring)
-            with file(infile, 'rb') as f:
+            with open(infile, 'rb') as f:
                 return f.read()
 
     @Format.producing(FILE)
@@ -390,12 +390,15 @@ class SimpleFormat(Format):
         outfile = iodecl[-1]
         if hasattr(outfile, 'write'):
             # assume fileobj out of our control, do not close
-            outfile.write(self.BYTESTRING())
+            if hasattr(outfile, 'buffer'):  # PY3: std{in,out,err} text mode
+                outfile.buffer.write(self.BYTESTRING())
+            else:
+                outfile.write(self.BYTESTRING())
             return outfile.name
 
         assert isinstance(outfile, basestring)
-        with file(outfile, 'wb') as f:
-            f.write(self.BYTESTRING())
+        with open(outfile, 'wb') as f:
+            f.write(bytes_enc(self.BYTESTRING(), 'utf-8'))
         return outfile
 
     @property
@@ -416,7 +419,7 @@ class SimpleFormat(Format):
             # manual verification (provided HASHALGO=md5, default):
             # w/o salt:   md5sum $FILE
             # with salt:  { stat --printf "%Y" $FILE; cat $FILE; } | md5sum
-            salt = ''
+            content, salt = '', ''
             hash_algo = getenv_namespaced('HASHALGO', HASHALGO)
             do_salt = getenv_namespaced('NOSALT', '0') in ('0', 'false')
             try:
@@ -439,12 +442,13 @@ class SimpleFormat(Format):
 
             if not salt and do_salt:
                 salt = str(int(time()))
-            h.update(salt)
+            h.update(bytes_enc(salt))
 
             if self.BYTESTRING in self._representations:
-                h.update(self.BYTESTRING())
+                content = self.BYTESTRING()
             else:
-                h.update(str(hash(self)))
+                content = str(hash(self))
+            h.update(bytes_enc(content))
 
             # only use first quarter of the whole hexdigest
             self._hash = h.hexdigest()[:h.digest_size//2]  # expected even
@@ -790,7 +794,7 @@ class XML(SimpleFormat):
     def get_bytestring(self, *iodecl):
         # chained fallback
         return etree.tostring(self.ETREE(protect_safe=True),
-                              pretty_print=True)
+                              encoding='UTF-8', pretty_print=True)
 
     @SimpleFormat.producing(ETREE, protect=True,
                             validator=etree_validator.__get__(1).__func__)

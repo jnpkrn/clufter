@@ -18,6 +18,7 @@ from .format import formats
 formats = formats.plugins
 from .formats.ccs import ccs
 from .filter import XMLFilter
+from .utils_2to3 import bytes_enc
 
 WALK_DIR = join(dirname(__file__), 'XMLFormat-walk')
 
@@ -49,7 +50,8 @@ class XMLTraverse(TestCase):
         #print "\n".join([etree.tostring(i) for i in ret])  # --> expected
 
         assert not isinstance(r, list)
-        self.assertEqual(etree.tostring(r), RESULT_DIRECT_XSLT)
+        self.assertEqual(etree.tostring(r, encoding='unicode'),
+                         RESULT_DIRECT_XSLT)
 
     def testXSLTTemplate(self):
         flt = XMLFilter(formats)
@@ -62,7 +64,7 @@ class XMLTraverse(TestCase):
         #print ">>>", etree.tostring(et)
         #print ">>>", etree.tostring(r)
         modified = et.xslt(r)
-        ret = etree.tostring(modified)
+        ret = etree.tostring(modified, encoding='unicode')
         #print "<<<", ret  # --> expected
         self.assertEqual(ret, RESULT_DIRECT_XSLT)
 

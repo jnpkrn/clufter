@@ -34,6 +34,17 @@ from setuptools.command.develop import develop as setuptools_develop
 # with default pip install
 from setuptools.command.install import install as setuptools_install
 
+# Python 3 compatibility
+from sys import version_info
+if version_info[0] >= 3:
+    str_enc = lambda s, encoding='ascii': str(s, encoding)
+else:
+    str_enc = lambda s, *args: str(s)
+try:
+    basestring = basestring
+except NameError:
+    basestring = str
+
 # bail out if any code is not valid (http://stackoverflow.com/a/2240549)
 import py_compile
 orig_py_compile = py_compile.compile
@@ -112,8 +123,8 @@ def pkgconfig(*packages, **kw):
     except ImportError:
         from commands import getoutput
     flag_map = {'-I': 'include_dirs', '-L': 'library_dirs', '-l': 'libraries'}
-    for token in getoutput("pkg-config --libs --cflags {0}"
-                           .format(' '.join(packages))).split():
+    for token in str_enc(getoutput("pkg-config --libs --cflags {0}"
+                                   .format(' '.join(packages)))).split():
         if token[:2] in flag_map:
             kw.setdefault(flag_map.get(token[:2]), []).append(token[2:])
         else:  # throw others to extra_link_args

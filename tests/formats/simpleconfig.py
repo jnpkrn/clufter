@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing simpleconfig format"""
@@ -10,12 +10,14 @@ from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
 from unittest import TestCase
 
 from .format_manager import FormatManager
+from .utils_2to3 import bytes_enc
+
 simpleconfig = FormatManager.init_lookup('simpleconfig').formats['simpleconfig']
 
 
 class FormatsSimpleConfigTestCase(TestCase):
 
-    bytestring = """\
+    bytestring = bytes_enc("""\
 nodelist {
 	node {
 		nodeid: 1
@@ -41,7 +43,7 @@ totem {
 	token: 3000
 	version: 2
 }
-"""
+""")
 
     struct = \
         ('',

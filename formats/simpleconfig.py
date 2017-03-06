@@ -7,7 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..format import SimpleFormat
 from ..protocol import Protocol
-from ..utils_2to3 import basestring
+from ..utils_2to3 import basestring, bytes_enc, str_enc
 from ..utils_func import apply_aggregation_preserving_passing_depth
 from ..utils_prog import getenv_namespaced
 
@@ -104,7 +104,7 @@ class simpleconfig(SimpleFormat):
                         + ([(d - 3) // 2 * indent + rbrace] if d > 1 else [''])
             )(struct)
         )
-        return ret
+        return bytes_enc(ret, 'utf-8')
 
     @SimpleFormat.producing(STRUCT, protect=True)
     def get_struct(self, *iodecl):
@@ -112,7 +112,7 @@ class simpleconfig(SimpleFormat):
         lbrace, rbrace, optsep = self.lbrace_i, self.rbrace_i, self.optsep_i
         csep = self.csep
         attrs, children = [], []
-        work, t = [('', attrs, children)], self.BYTESTRING()
+        work, t = [('', attrs, children)], str_enc(self.BYTESTRING(), 'utf-8')
         while t:
             h, t = t.split('\n', 1)
             if h.startswith(csep):

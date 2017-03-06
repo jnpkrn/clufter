@@ -17,7 +17,7 @@ log = getLogger(__name__)
 from ..format import SimpleFormat
 from ..protocol import Protocol
 from ..utils import head_tail
-from ..utils_2to3 import iter_items
+from ..utils_2to3 import bytes_enc, iter_items
 from ..utils_func import add_item, apply_intercalate, apply_partition
 
 # man bash | grep -A2 '\s\+metacharacter$'
@@ -78,7 +78,7 @@ class command(SimpleFormat):
     def get_bytestring(self, *iodecl):
         """Return command as canonical single string"""
         # chained fallback
-        return ' '.join(self.MERGED(protect_safe=True))
+        return bytes_enc(' '.join(self.MERGED(protect_safe=True)))
 
     @SimpleFormat.producing(SEPARATED, protect=True)
     def get_separated(self, *iodecl):

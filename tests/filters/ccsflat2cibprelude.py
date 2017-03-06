@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing `ccsflat2cibprelude' filter"""
@@ -7,6 +7,8 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 # following makes available also: TeardownFilterTestCase, rewrite_root
 from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_com'))
+
+from .utils_2to3 import bytes_enc
 
 flt = 'ccsflat2cibprelude'
 
@@ -115,7 +117,7 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
             out_obj = flt_obj(in_obj,
                               system='linux', system_extra=('rhel', '7.3'))
             #print out_obj.BYTESTRING()
-            self.assertEquals(out_obj.BYTESTRING(), out_str)
+            self.assertEquals(out_obj.BYTESTRING(), bytes_enc(out_str))
 
     def testSapDatabase(self):
         flt_obj = rewrite_root(self.flt_mgr.filters[flt], 'cluster/rm',
@@ -185,7 +187,7 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
             out_obj = flt_obj(in_obj,
                               system='linux', system_extra=('rhel', '7.3'))
             #print out_obj.BYTESTRING()
-            self.assertEquals(out_obj.BYTESTRING(), out_str)
+            self.assertEquals(out_obj.BYTESTRING(), bytes_enc(out_str))
 
     def testSapInstance(self):
         flt_obj = rewrite_root(self.flt_mgr.filters[flt], 'cluster/rm',

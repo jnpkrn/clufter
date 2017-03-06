@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing format"""
@@ -14,6 +14,8 @@ except ImportError:
 from unittest import TestCase
 
 from .format_manager import FormatManager
+from .utils_2to3 import str_enc
+
 command = FormatManager.init_lookup('command').formats['command']
 
 
@@ -27,7 +29,8 @@ class FormatsCommandTestCase(TestCase):
     def testMergedToBytestring(self):
         c = command('merged', ['cut', '-f', '1', '-d', '@', 'emails.txt'])
         #print c('bytestring')
-        self.assertEqual(c.BYTESTRING(), 'cut -f 1 -d @ emails.txt')
+        self.assertEqual(str_enc(c.BYTESTRING(), 'utf-8'),
+                         'cut -f 1 -d @ emails.txt')
 
     def testBytestringToSeparated(self):
         c = command('bytestring', 'cut -f 1 -d @ emails.txt')
@@ -39,7 +42,8 @@ class FormatsCommandTestCase(TestCase):
         c = command('separated',
                     [('cut',), ('-f', '1'), ('-d', '@'), ('emails.txt', )])
         #print c('bytestring')
-        self.assertEqual(c.BYTESTRING(), 'cut -f 1 -d @ emails.txt')
+        self.assertEqual(str_enc(c.BYTESTRING(), 'utf-8'),
+                         'cut -f 1 -d @ emails.txt')
 
     def testMergedToSeparated(self):
         c = command('merged', ['cut', '-f', '1', '-d', '@', 'emails.txt'])
