@@ -26,6 +26,14 @@ except NameError:
     basestring = str
 
 try:
+    execfile = execfile
+except NameError:
+    def execfile(path, *globals_locals):
+        with open(path) as f:
+            source = compile(f.read(), f.name, 'exec')  # introspection-ready
+            getattr(modules['builtins'], 'exec')(source, *globals_locals)
+
+try:
     xrange = xrange
 except NameError:
     xrange = range

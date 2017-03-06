@@ -1,17 +1,18 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-###
+from ....utils_2to3 import execfile
+from ....utils_prog import dirname_x
 
 from logging import getLogger
 log = getLogger(__name__)
 
 # XXX a bit dirty DRY approach
-from os.path import dirname, join
-use = join(reduce(lambda a, b: dirname(a), xrange(2), __file__), '_fs.py')
+from os.path import join
+use = join(dirname_x(__file__, 2), '_fs.py')
 myglobals = dict(__package__=__package__, __name__=__name__)
 try:
     execfile(use, myglobals)

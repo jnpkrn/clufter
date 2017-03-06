@@ -8,7 +8,11 @@ from __future__ import print_function
 """Testing filter manager"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
-from os.path import join, dirname as d; execfile(join(d(d((__file__))), '_go'))
+from os.path import join, dirname; from sys import modules as m  # 2/3 compat
+b = m.get('builtins', m.get('__builtin__')); e, E, h = 'exec', 'execfile', hash
+c = lambda x: compile(x.read(), x.name, 'exec')
+with open(join(dirname(__file__), '_go')) as f:
+    getattr(b, e, getattr(b, E, h)(f.name).__repr__.__name__.__ne__)(c(f))
 
 
 from unittest import TestCase
@@ -98,4 +102,7 @@ class CompositeFormatIO(FilterManagerTestCase):
                              norm_whitespace(f.read()))
 
 
-from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))
+from os.path import join, dirname; from sys import modules as m  # 2/3 compat
+b = m.get('builtins', m.get('__builtin__')); e, E, h = 'exec', 'execfile', hash
+with open(join(dirname(__file__), '_gone')) as f:
+    getattr(b, e, getattr(b, E, h)(f.name).__repr__.__name__.__ne__)(f.read())

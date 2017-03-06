@@ -1,14 +1,17 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from ....utils_2to3 import execfile
+from ....utils_prog import dirname_x
 
 from logging import getLogger
 log = getLogger(__name__)
 
 # XXX a bit dirty DRY approach
-from os.path import dirname, exists, join
-use = reduce(lambda a, b: dirname(a), xrange(6), __file__)
+from os.path import exists, join
+use = dirname_x(__file__, 6)
 use = join(use, 'fencedevices', 'fencedevice')
 use = use + '.py' if exists(use + '.py') else join(use, '__init__.py')
 myglobals = {'__package__': __package__}
