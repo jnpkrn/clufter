@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing filter"""
@@ -49,7 +49,7 @@ class XMLTraverse(TestCase):
         #print "\n".join([etree.tostring(i) for i in ret])  # --> expected
 
         assert not isinstance(r, list)
-        self.assertTrue(etree.tostring(r) == RESULT_DIRECT_XSLT)
+        self.assertEqual(etree.tostring(r), RESULT_DIRECT_XSLT)
 
     def testXSLTTemplate(self):
         flt = XMLFilter(formats)
@@ -64,7 +64,7 @@ class XMLTraverse(TestCase):
         modified = et.xslt(r)
         ret = etree.tostring(modified)
         #print "<<<", ret  # --> expected
-        self.assertTrue(ret == RESULT_DIRECT_XSLT)
+        self.assertEqual(ret, RESULT_DIRECT_XSLT)
 
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))

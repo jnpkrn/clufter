@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Testing utils module"""
@@ -26,7 +26,7 @@ class FuncDefaultsVarnames(TestCase):
         defaults, varnames = func_defaults_varnames(self._fnc)
         self.assertTrue('a' in varnames)
         self.assertTrue('bar' in varnames)
-        self.assertTrue(defaults['bar'] == "ni")
+        self.assertEqual(defaults['bar'], "ni")
         self.assertEqual(len(varnames), 2)
 
     def test_std_func_skip(self):
