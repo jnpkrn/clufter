@@ -475,7 +475,7 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                                 )
                             fw.write(content)
                     copystat(src, dst)
-                except IOError, e:
+                except IOError as e:
                     raise DistutilsSetupError(str(e))
             else:
                 if DEBUG:
@@ -485,7 +485,7 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                 try:
                     copy(src, dst)
                     copystat(src, dst)
-                except IOError, e:
+                except IOError as e:
                     raise DistutilsSetupError(str(e))
     # class pkg_prepare
 
