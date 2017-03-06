@@ -479,7 +479,8 @@ def cmd_wrap(flt_ctxt, in_obj):
     if tw < 20:  # watch out for deliberate lower limit
         tw = 20 if tw else 72
         log.info('Text width fallback: {0}'.format(tw))
-    cw = TextWrapper(width=tw, subsequent_indent='# ')  # wrapper for comments
+    cw = TextWrapper(width=tw, subsequent_indent='# ',  # wrapper for comments
+                     break_on_hyphens=False)            # <-- for PY3
     color_map = (dict(((k, FancyOutput.get_color(
                                FancyOutput.table.get('pcscmd_' + k, '')))
                        for k in ('comment', 'file', 'metaword', 'pcs', 'subcmd')),
