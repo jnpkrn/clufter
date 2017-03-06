@@ -1,12 +1,12 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
 ###
 
 from ....filters._2pcscmd import verbose_ec_test, verbose_inform
-from ....utils_xslt import NL, xslt_is_member, xslt_string_mapping
+from ....utils_xslt import NL, xslt_is_member
 
 
 needlexml2pcscmd_attrs = (
