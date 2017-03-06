@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Setup script/data"""
@@ -57,10 +57,10 @@ chdir(here)  # make setup.py possess expected CWD + play better with pip install
 
 true_gen = lambda this: True
 # XXX copy-paste of utils_func.py
-bifilter = \
-    lambda fnc, seq: \
-        reduce(lambda acc, x: acc[int(not fnc(x))].append(x) or acc,
-               seq, ([], []))
+#bifilter = \
+#    lambda fnc, seq: \
+#        reduce(lambda acc, x: acc[int(not fnc(x))].append(x) or acc,
+#               seq, ([], []))
 
 # this is needed to workaround naive approach in recent setuptools
 # (https://bitbucket.org/pypa/setuptools/issue/195/no-longer-follows-symbolic)
