@@ -2,6 +2,9 @@
 # Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Test exercising _try_edit"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -30,7 +33,7 @@ class TryEdit(TestCase):
         out_obj = self.flt_mgr('ccs2needlexml', ('file', testfile),
                                editor="sed -i -e 's|-1|1|'")
                                #editor="sed -i 's|\-1|1|;w /dev/stdout' --")
-        #print out_obj('bytestring')
+        #print(out_obj('bytestring'))
         with open(join(dirname(__file__), 'try_edit.ok'), 'rb') as okfd:
             self.assertEqual(out_obj("bytestring"), okfd.read())
 

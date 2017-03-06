@@ -2,6 +2,9 @@
 # Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Testing `ccsflat2cibprelude' filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -116,7 +119,7 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
             in_obj = in_fmt('bytestring', in_str)
             out_obj = flt_obj(in_obj,
                               system='linux', system_extra=('rhel', '7.3'))
-            #print out_obj.BYTESTRING()
+            #print(out_obj.BYTESTRING())
             self.assertEquals(out_obj.BYTESTRING(), bytes_enc(out_str))
 
     def testSapDatabase(self):
@@ -186,7 +189,7 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
             in_obj = in_fmt('bytestring', in_str)
             out_obj = flt_obj(in_obj,
                               system='linux', system_extra=('rhel', '7.3'))
-            #print out_obj.BYTESTRING()
+            #print(out_obj.BYTESTRING())
             self.assertEquals(out_obj.BYTESTRING(), bytes_enc(out_str))
 
     def testSapInstance(self):
@@ -240,7 +243,7 @@ class FiltersCcsFlat2CibPreludeTestCase(TeardownFilterTestCase):
             in_obj = in_fmt('bytestring', in_str)
             out_obj = flt_obj(in_obj,
                               system='linux', system_extra=('rhel', '7.3'))
-            #print out_obj.BYTESTRING()
+            #print(out_obj.BYTESTRING())
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
 

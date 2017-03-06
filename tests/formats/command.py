@@ -22,39 +22,39 @@ command = FormatManager.init_lookup('command').formats['command']
 class FormatsCommandTestCase(TestCase):
     def testBytestringToMerged(self):
         c = command('bytestring', 'cut -f 1 -d @ emails.txt')
-        #print c('merged')
+        #print(c('merged'))
         self.assertEqual(c.MERGED(),
                          ['cut', '-f', '1', '-d', '@', 'emails.txt'])
 
     def testMergedToBytestring(self):
         c = command('merged', ['cut', '-f', '1', '-d', '@', 'emails.txt'])
-        #print c('bytestring')
+        #print(c('bytestring'))
         self.assertEqual(str_enc(c.BYTESTRING(), 'utf-8'),
                          'cut -f 1 -d @ emails.txt')
 
     def testBytestringToSeparated(self):
         c = command('bytestring', 'cut -f 1 -d @ emails.txt')
-        #print c('separated')
+        #print(c('separated'))
         self.assertEqual(c.SEPARATED(),
                          [('cut',), ('-f', '1'), ('-d', '@'), ('emails.txt', )])
 
     def testSeparatedToBytestring(self):
         c = command('separated',
                     [('cut',), ('-f', '1'), ('-d', '@'), ('emails.txt', )])
-        #print c('bytestring')
+        #print(c('bytestring'))
         self.assertEqual(str_enc(c.BYTESTRING(), 'utf-8'),
                          'cut -f 1 -d @ emails.txt')
 
     def testMergedToSeparated(self):
         c = command('merged', ['cut', '-f', '1', '-d', '@', 'emails.txt'])
-        #print c('separated')
+        #print(c('separated'))
         self.assertEqual(c.SEPARATED(),
                          [('cut',), ('-f', '1'), ('-d', '@'), ('emails.txt', )])
 
     def testSeparatedToMerged(self):
         c = command('separated',
                     [('cut',), ('-f', '1'), ('-d', '@'), ('emails.txt', )])
-        #print c('merged')
+        #print(c('merged'))
         self.assertEqual(c.MERGED(),
                          ['cut', '-f', '1', '-d', '@', 'emails.txt'])
 
@@ -63,7 +63,7 @@ class FormatsCommandTestCase(TestCase):
                                          ('-f', ['1']),
                                          ('-d', ['@']),
                                          ('__args__', ['emails.txt'])]))
-        #print c('merged')
+        #print(c('merged'))
         self.assertEqual(c.MERGED(),
                          ['cut', '-f', '1', '-d', '@', 'emails.txt'])
 
@@ -72,7 +72,7 @@ class FormatsCommandTestCase(TestCase):
         c = command('bytestring',
                     'gpg -k 60BCBB4F5CD7F9EF::~/.gnupg/pubring.gpg',
                     magic_split=True)
-        #print c('merged')
+        #print(c('merged'))
         self.assertEqual(c.DICT(),
                          OrderedDict([('__cmd__', ['gpg']),
                                       ('-k', [('60BCBB4F5CD7F9EF',
@@ -80,7 +80,7 @@ class FormatsCommandTestCase(TestCase):
 
     def testBytestringToMergedQuoted(self):
         c = command('bytestring', 'cut -f 1 -d @ "my private emails.txt"')
-        #print c('merged')
+        #print(c('merged'))
         self.assertEqual(c.MERGED(),
                          ['cut', '-f', '1', '-d', '@', "'my private emails.txt'"])
 

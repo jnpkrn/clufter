@@ -2,6 +2,9 @@
 # Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Base filter stuff (metaclass, decorator, etc.)"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -511,15 +514,14 @@ class XMLFilter(Filter, MetaPlugin):
                     if elems is not None:  # active change
                         break
                 else:
-                    print >>stderr, ("Opportunity to recover the invalid"
-                                     " (intermediate) result was repeatedly"
-                                     " abandoned")
+                    print("Opportunity to recover the invalid (intermediate)"
+                          " result was repeatedly abandoned", file=stderr)
                     elems = False
 
                 if not elems:
                     element_juggler.drop(elem)
                     if elems is False:
-                        print >>stderr, "Terminating"
+                        print("Terminating", file=stderr)
                         raise SystemExit
                 elif single_elem:
                     assert len(elems) == 1
@@ -711,7 +713,7 @@ class XMLFilter(Filter, MetaPlugin):
                 not do_mix or parent[1] is None):
                 top = filter(lambda x: x.tag in TOP_LEVEL_XSL, parent[0])
                 for e in top:
-                    #print "at", etree.tostring(ret), "appending", etree.tostring(e)
+                    #print("at", etree.tostring(ret), "appending", etree.tostring(e))
                     ret.append(deepcopy(e))
 
             log.debug("do_mix {0}, hooks {1}".format(do_mix, hooks))
@@ -845,7 +847,7 @@ class XMLFilter(Filter, MetaPlugin):
                 ##    template = snippet
                 # ^ XXX was extend
                 xslt_root.append(template)
-                #print "ee", etree.tostring(xslt_root)
+                #print("ee", etree.tostring(xslt_root))
 
             # append "identity" to preserve application
             if do_mix > 1 or elem.getparent() is None and not children:
@@ -855,7 +857,7 @@ class XMLFilter(Filter, MetaPlugin):
 
             #else:
             #    # we dont't apply if there is nothing local and not at root
-            #    print "zdrham", elem.tag
+            #    print("zdrham", elem.tag)
             #    return elem
 
             if do_mix and elem.getparent() is not None:

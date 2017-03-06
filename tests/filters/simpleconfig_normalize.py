@@ -2,6 +2,9 @@
 # Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Testing `simpleconfig-normalize' filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -26,7 +29,7 @@ class FiltersSimpleconfigNormalizeTestCase(TestCase):
             [],
             [('uidgid', [('uid', '0'), ('uid', '1000'), ('gid', '0')], [])])
         ))
-        #print result.BYTESTRING()
+        #print(result.BYTESTRING())
         self.assertEquals(str_enc(result.BYTESTRING(), 'utf-8'), """\
 uidgid {
 	uid: 0

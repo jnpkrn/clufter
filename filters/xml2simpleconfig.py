@@ -2,6 +2,9 @@
 # Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """xml2simpleconfig filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -23,13 +26,13 @@ def xml2simpleconfig(flt_ctxt, in_obj):
     root = []
     for action, e in etree.iterwalk(in_obj('etree'), events=('start', 'end')):
         if action == 'start':
-            #print ">>> start", e.tag, root
+            #print(">>> start", e.tag, root)
             current = [e.tag, None, None]
             root.append(current)
             current[1] = tuple(sorted(iter_items(e.attrib)))
-            #print "<<< start", e.tag, root
+            #print("<<< start", e.tag, root)
         elif action == 'end':
-            #print ">>> end", e.tag, root
+            #print(">>> end", e.tag, root)
             if len(root) == 1:
                 #assert id(e) == id(root)
                 break
@@ -37,5 +40,5 @@ def xml2simpleconfig(flt_ctxt, in_obj):
             if root[-1][2] is None:
                 root[-1][2] = []
             root[-1][2].append(current)
-            #print "<<< end", e.tag, root
+            #print("<<< end", e.tag, root)
     return ('struct', root[-1])

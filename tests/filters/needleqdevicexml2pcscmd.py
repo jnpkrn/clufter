@@ -1,7 +1,10 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Testing `needleqdevicexml2pcscmd' filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -33,7 +36,7 @@ pcs quorum device add model net host=191.168.10.20
                             validator_specs={in_fmt.ETREE: ''})
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                               system='linux', system_extra=('rhel', '7.3'))
-            #print out_obj.BYTESTRING()
+            #print(out_obj.BYTESTRING())
             self.assertEquals(out_obj.BYTESTRING(), out_str)
 
 

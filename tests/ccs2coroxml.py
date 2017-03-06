@@ -1,7 +1,10 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Testing ccs2coroxml filter(s)"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -17,7 +20,7 @@ class Main(CommonFilterTestCase):
         out_obj = self.flt_mgr('ccs2ccsflat', ('file', testfile))
         out_obj = self.flt_mgr('ccs2needlexml', ('etree', out_obj('etree')),
                                validator_specs={'':''})
-        print out_obj('bytestring')
+        print(out_obj('bytestring'))
 
 
 from os.path import join, dirname as d; execfile(join(d(d(__file__)), '_gone'))

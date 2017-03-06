@@ -2,6 +2,9 @@
 # Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Setup script/data"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -303,7 +306,7 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
         def initialize_options(self):
             # Parameters we want to obtain via setup.cfg, command-line
             # arguments etc. must be prepared as attributes of this object
-            if DEBUG: print (DBGPFX + "\tinitialize_options")
+            if DEBUG: print(DBGPFX + "\tinitialize_options")
             for key in (self.pkg_options + self.needs_any_opt
                         + self.needs_always_opts):
                 setattr(self, key, None)
@@ -312,7 +315,7 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
 
         def finalize_options(self):
             # Obtained parameters are all moved to ``self.pkg_params'' dict
-            if DEBUG: print (DBGPFX + "\tfinalize_options")
+            if DEBUG: print(DBGPFX + "\tfinalize_options")
             for key in self.pkg_options:
                 value = getattr(self, key)
                 if value is None:
@@ -336,11 +339,11 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
             return ()  # called from install command for each subcommand
 
         def run(self):
-            if DEBUG: print (DBGPFX + "\trun")
+            if DEBUG: print(DBGPFX + "\trun")
             if getattr(self, self.DEV_SWITCH, 0) \
             or getattr(self, self.BUILD_DEV_SWITCH, 0):
                 # Mimic ``develop'' command over "prepared" files
-                if DEBUG: print (DBGPFX + "\trun: mimic develop")
+                if DEBUG: print(DBGPFX + "\trun: mimic develop")
                 self._pkg_prepare_build()
                 self.run_command('build_binary')
                 self.run_command('build_ext')
@@ -352,11 +355,11 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                 return
             if self.distribution.get_command_obj('build', create=False):
                 # As a part of ``build'' command
-                if DEBUG: print (DBGPFX + "\trun: build")
+                if DEBUG: print(DBGPFX + "\trun: build")
                 self._pkg_prepare_build()
             if self.distribution.get_command_obj('install', create=False):
                 # As a part of ``install'' command
-                if DEBUG: print (DBGPFX + "\trun: install")
+                if DEBUG: print(DBGPFX + "\trun: install")
                 self._pkg_prepare_install()
             else:
                 from distutils import log
@@ -370,7 +373,7 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                               dst_top,
                               self.distribution.package_dir.get(pkg_name, pkg_name)
                 )
-                if DEBUG: print (DBGPFX + "\tbuild dst_pkg %s" % dst_pkg)
+                if DEBUG: print(DBGPFX + "\tbuild dst_pkg %s" % dst_pkg)
                 for filedef in package_data[pkg_name]:
                     self._pkg_prepare_file(
                         self.pkg_params[filedef['src']],
@@ -440,8 +443,8 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                     glob(src)
                 ))
                 if DEBUG:
-                    print (DBGPFX + "\tinstall data_files: %s"
-                           % self.distribution.data_files)
+                    print(DBGPFX + "\tinstall data_files: %s"
+                          % self.distribution.data_files)
 
         def _pkg_prepare_file(self, src, dst, substitution=False):
             if path_isabs(dst):
@@ -453,7 +456,7 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                        " location %s" % (src, dst))
             if substitution:
                 if DEBUG:
-                    print (DBGPFX + "\tSubstituting strings while copying %s -> %s"
+                    print(DBGPFX + "\tSubstituting strings while copying %s -> %s"
                            % (src, dst))
                 if self.dry_run:
                     return
@@ -467,8 +470,8 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                                 self.pkg_params
                             ):
                                 if DEBUG:
-                                    print (DBGPFX + "\tReplace %s -> %s"
-                                           % ('@' + key.upper() + '@', self.pkg_params[key]))
+                                    print(DBGPFX + "\tReplace %s -> %s"
+                                          % ('@' + key.upper() + '@', self.pkg_params[key]))
                                 content = content.replace(
                                               '@' + key.upper() + '@',
                                               self.pkg_params[key]
@@ -479,7 +482,7 @@ def setup_pkg_prepare(pkg_name, pkg_prepare_options=()):
                     raise DistutilsSetupError(str(e))
             else:
                 if DEBUG:
-                    print (DBGPFX + "\tSimply copying %s -> %s" % (src, dst))
+                    print(DBGPFX + "\tSimply copying %s -> %s" % (src, dst))
                 if self.dry_run:
                     return
                 try:
@@ -516,7 +519,7 @@ while True:
             self_discovery_plan.extend(p[:-len('.egg-info')].split('-', 1)[0]
                                        for p in iglob('*.egg-info'))
         if not self_discovery_plan:
-            print "Cannot find myself, please help me with __project__ symlink"
+            print("Cannot find myself, please help me with __project__ symlink")
             raise
 sys_path[:] = backup_path
 

@@ -2,6 +2,9 @@
 # Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Testing command"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -170,10 +173,10 @@ class ChainResolve(TestCase):
                 ret = cmd_cls(filters)(empty_opts, ())  # no opts/args
                 self.assertTrue(ret is not None)
             except CommandError as e:
-                print "{0}: {1}".format(cmd_cls.name, e)
+                print("{0}: {1}".format(cmd_cls.name, e))
                 self.assertFalse(i < split)
             except Exception as e:
-                print "{0}: {1}".format(cmd_cls.name, e)
+                print("{0}: {1}".format(cmd_cls.name, e))
                 self.assertTrue(i < split)
                 raise
             else:

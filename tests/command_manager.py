@@ -1,7 +1,10 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2014 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Testing command manager"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -26,7 +29,7 @@ class CommandManagerTestCase(TestCase):
 class Default(CommandManagerTestCase):
     def test_default(self):
         commands = self.cmd_mgr.commands
-        #print commands
+        #print(commands)
         for cls in (ccs2pcs_needle, ):
             self.assertTrue(cls.name in commands)
             self.assertEqual(cls, type(commands[cls.name]))

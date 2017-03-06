@@ -2,6 +2,9 @@
 # Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Testing filter manager"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -38,7 +41,7 @@ class Default(FilterManagerTestCase):
         from .filters.ccs2ccsflat import ccs2ccsflat
         from .filters.ccsflat2cibprelude import ccsflat2cibprelude
         filters = self.flt_mgr.filters
-        #print filters
+        #print(filters)
         for cls in ccs2ccsflat, ccsflat2cibprelude:
             # CHECK selected built-in plugin is auto-discovered
             self.assertTrue(cls.name in filters)
@@ -52,7 +55,7 @@ class Default(FilterManagerTestCase):
         self.assertTrue('ccs2ccsflat' in self.flt_mgr.filters)
         out_obj = self.flt_mgr('ccs2ccsflat', ('file', testfile))
         result = str_enc(out_obj('bytestring'), 'utf-8')
-        # XXX print result
+        # XXX print(result)
         # CHECK the externalized representation matches the original
         with open(testfile) as f:
             self.assertEqual(norm_whitespace(result), norm_whitespace(f.read()))
@@ -86,7 +89,7 @@ class CompositeFormatIO(FilterManagerTestCase):
         self.assertTrue(out_objs[0] is not out_objs[1])
         # externalize outputs
         results = out_objs(('composite', ('bytestring', 'bytestring')))
-        # XXX print results
+        # XXX print(results)
         # CHECK resulting externalized representation is, however, tha same
         self.assertEqual(*tuple(norm_whitespace for r in results))
         # CHECK picked externalized representation matches the original

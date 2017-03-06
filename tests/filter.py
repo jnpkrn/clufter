@@ -2,6 +2,9 @@
 # Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Testing filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -46,8 +49,8 @@ class XMLTraverse(TestCase):
                              root_dir=join(dirname(__file__), 'XMLFormat-walk'))
 
         #ret = r if isinstance(r, list) else [r]
-        #print "\n".join([etree.tostring(i, pretty_print=True) for i in ret])
-        #print "\n".join([etree.tostring(i) for i in ret])  # --> expected
+        #print("\n".join([etree.tostring(i, pretty_print=True) for i in ret]))
+        #print("\n".join([etree.tostring(i) for i in ret]))  # --> expected
 
         assert not isinstance(r, list)
         self.assertEqual(etree.tostring(r, encoding='unicode'),
@@ -61,11 +64,11 @@ class XMLTraverse(TestCase):
 
         assert not isinstance(r, list)
         et = in_obj('etree')
-        #print ">>>", etree.tostring(et)
-        #print ">>>", etree.tostring(r)
+        #print(">>>", etree.tostring(et))
+        #print(">>>", etree.tostring(r))
         modified = et.xslt(r)
         ret = etree.tostring(modified, encoding='unicode')
-        #print "<<<", ret  # --> expected
+        #print("<<<", ret)  # --> expected
         self.assertEqual(ret, RESULT_DIRECT_XSLT)
 
 

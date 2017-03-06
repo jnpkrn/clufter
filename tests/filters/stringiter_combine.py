@@ -2,6 +2,9 @@
 # Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Testing `stringiter-combine*' filter(s)"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -31,7 +34,7 @@ class FiltersStringitercombineTestCase(TestCase):
                 formats=(string_iter, string_iter),
             )
         )
-        #print result.BYTESTRING()
+        #print(result.BYTESTRING())
         self.assertEquals(str_enc(result.BYTESTRING(), 'utf-8'),
                          '\n'.join("ABCDEF") + '\n')
 

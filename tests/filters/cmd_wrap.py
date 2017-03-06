@@ -2,6 +2,9 @@
 # Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Testing `cmd-wrap' filter"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -26,7 +29,7 @@ class FiltersCmdWrapTestCase(TestCase):
 /usr/bin/python setup.py saveopts -f setup.cfg pkg_prepare --editor=/usr/bin/vim
 """.splitlines()
         ), text_width=60)
-        #print result.BYTESTRING()
+        #print(result.BYTESTRING())
         self.assertEquals(str_enc(result.BYTESTRING(), 'utf-8'), """\
 # this is a long long long long long long long long,
 # terribly long shell comment
@@ -38,7 +41,7 @@ class FiltersCmdWrapTestCase(TestCase):
         result = cmd_wrap(string_iter('bytestring', """\
 pcs -f tmp-cib.xml resource create RESOURCE-apache-webserver ocf:heartbeat:apache 'options= -Dwebserver' op stop 'id=RESOURCE-apache-webserver-OP-stop' 'name=stop' 'interval=0' 'timeout=122s'
 """), text_width=80)
-        #print result.BYTESTRING()
+        #print(result.BYTESTRING())
         self.assertEquals(str_enc(result.BYTESTRING()), """\
 pcs -f tmp-cib.xml \\
   resource create RESOURCE-apache-webserver ocf:heartbeat:apache \\

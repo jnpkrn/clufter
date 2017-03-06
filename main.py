@@ -2,6 +2,9 @@
 # Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
+
+from __future__ import print_function
+
 """Machinery entry point"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
@@ -331,7 +334,7 @@ def run(argv=None, *args):
             msg = version_parts
             if loglevel <= logging.INFO:
                 msg += ('', "Python runtime:", version)
-            print version_text(*msg)
+            print(version_text(*msg))
             return ec
 
     logging.basicConfig()
@@ -360,7 +363,7 @@ def run(argv=None, *args):
                                         ', use --list to get all:'),
                               ellip=opts.skip_ext or not opts.list)
         if opts.list == 'cmds':
-            print cmds
+            print(cmds)
         elif opts.list and opts.list.startswith('dists_'):
             verbosity, acc = int(opts.list.split('dists_', 1)[1]), []
             if verbosity == 0:
@@ -375,13 +378,13 @@ def run(argv=None, *args):
                     " explicitly supported",
                     "# (all versions any change/update is tracked at)",
                 ))
-            print '\n'.join(acc + [format_dists(verbosity)])
+            print('\n'.join(acc + [format_dists(verbosity)]))
         elif opts.completion:
             c = Completion.get_completion(opts.completion, prog,
                                           opts_common, opts_main, opts_nonmain)
-            print c(iter_items(cm.plugins))
+            print(c(iter_items(cm.plugins)))
         else:
-            print parser.format_customized_help(
+            print(parser.format_customized_help(
                 usage="%prog [<global option> ...] [<cmd> [<cmd option ...>]]",
                 description=description_text(width=0),
                 description_raw=cmds,
@@ -390,7 +393,7 @@ def run(argv=None, *args):
                     " it with --help.",
                     *report_bugs
                 ))
-            )
+            ))
         return ec
     elif prog_simple != prog_real:
         args = [prog_simple] + argv
@@ -418,6 +421,6 @@ def run(argv=None, *args):
     # note that the parser carries opts and "Common options" group
     ec = cm(parser, args)
     #except Exception as e:
-    #    print "FATAL: Unhandled exception: {0}".format(e)
+    #    print("FATAL: Unhandled exception: {0}".format(e))
     #    ex = EC.EXIT_FAILURE
     return ec
