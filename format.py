@@ -665,8 +665,8 @@ class XML(SimpleFormat):
                 else:
                     try:
                         mod = load_module(mname, mfile, mpath, mdesc)
-                    except ImportError:
-                        log.warning("Cannot load `{0}'".format(mpath))
+                    except ImportError as e:
+                        log.warning("Cannot load `{0}': {1}".format(mpath, e))
                         continue
                     finally:
                         if mfile:
