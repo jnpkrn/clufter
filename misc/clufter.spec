@@ -1,5 +1,5 @@
 # distill-spec-prefix: clufter
-%{!?clufter_version: %global clufter_version  %{?!infer:0.59.9}%{?infer:%(
+%{!?clufter_version: %global clufter_version  %{?!infer:0.60.0}%{?infer:%(
                                                 python2 ../setup.py --version)}}
 %{!?clufter_name:    %global clufter_name     %{?!infer:clufter}%{?infer:%(
                                                 python2 ../setup.py --name)}}
