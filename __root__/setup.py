@@ -204,7 +204,7 @@ class build_binary(build_ext):
             raise DistutilsSetupError("Only Binary instances allowed")
 
     def get_ext_filename(self, ext_name):
-        return path_splitext(build_ext.get_ext_filename(self, ext_name))[0]
+        return path_join(*ext_name.split('.'))
 
 
 class develop(setuptools_develop):
