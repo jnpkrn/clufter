@@ -8,6 +8,10 @@ matrix:
                   env:    MAINT_EXTRA=0
                 - python: "2.7_with_system_site_packages"
                   env:    MAINT_EXTRA=1
+                - python: "3.2_with_system_site_packages"
+                  env:    MAINT_EXTRA=0
+                - python: "3.6"
+                  env:    MAINT_EXTRA=0
 
 before_install:
         # http://docs.travis-ci.com/user/installing-dependencies/#Installing-Ubuntu-packages
@@ -17,7 +21,10 @@ before_install:
         - test $MAINT_EXTRA -ne 0
           || python -c
           'from sys import exit, version_info as v; exit(v[:2] in ((2, 7), (3, 2)))'
-          || sudo apt-get install -qq python-lxml python-distribute
+          || sudo apt-get install -qq $(python -c
+             'from sys import exit, version_info as v; exit(v[1] == 2)'
+             && echo "python-lxml python-setuptools"
+             || echo "python3-lxml python3-setuptools")
 
 install:
         - pushd __root__
