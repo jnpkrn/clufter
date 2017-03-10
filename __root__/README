@@ -31,7 +31,7 @@ name searchable in *A new alphabetical vocabulary, Gailic and English*
 The package can either be used as a separate CLI tool (as per *What*) or as
 a Python library, which is the case, e.g., with `pcs`_.
 
-.. _pcs: https://github.com/feist/pcs/
+.. _pcs: https://github.com/ClusterLabs/pcs
 
 
 Demo
