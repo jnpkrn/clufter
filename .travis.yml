@@ -17,15 +17,14 @@ before_install:
         - test $MAINT_EXTRA -ne 0 || sudo apt-get update -qq
         # speed the run up
         - test $MAINT_EXTRA -ne 0
-          || python2 -c
+          || python -c
           'from sys import exit, version_info as v; exit(v[:2] in ((2, 7), (3, 2)))'
           || sudo apt-get install -qq python-lxml python-distribute
 
 install:
         - pushd __root__
         - test $MAINT_EXTRA -ne 0
-          || python2 setup.py -q
-            saveopts -f setup.cfg pkg_prepare
+          || python setup.py -q saveopts -f setup.cfg pkg_prepare
               --ra-metadata-dir="$(pwd)/cluster"
               --ccs-flatten="$(dirname $(pwd))/ccs_flatten"
               --editor="sed -i 's|\(force-block=\"\)false|\1true|;w /dev/stdout'"
