@@ -99,8 +99,8 @@ eval "${CMDTEST} -h >/dev/null 2>/dev/null"
   && CMD="${CMD} --with-coverage" \
   || {
     which coverage2 >/dev/null 2>/dev/null \
-    && CMD="coverage2 run ${CMD}" \
-    || CMD="coverage run ${CMD}"
+    && CMD="${PYTHONEXEC} $(which coverage2) run ${CMD}" \
+    || CMD="${PYTHONEXEC} $(which coverage) run ${CMD}"
   }
 }
 
