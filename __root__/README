@@ -45,13 +45,15 @@ what one can use directly after cloning the repository and running
 .. code-block:: bash
 
   $ ./run-dev ccs2pcscmd -gsq tests/filled.conf
-  # sequence generated on 2016-08-08 19:55:36 with: clufter 0.59.5
+  #!/bin/sh
+  # sequence generated on 2017-03-10 17:01:31 with: clufter 0.60.0a
   # invoked as: ['./run-dev', 'ccs2pcscmd', '-gsq', 'tests/filled.conf']
-  # targeting system: ('linux', 'fedora', '22', 'Twenty Two')
-  pcs cluster auth ju hele
-  pcs cluster setup --name test ju hele --consensus 200 --token 5000 \
-    --join 100
-  pcs cluster start --all && sleep 60
+  # targeting system: ('linux', 'fedora', '27', 'Rawhide')
+  # using interpreter: CPython 2.7.13
+  pcs cluster auth ju hele <>/dev/tty
+  pcs cluster setup --name test ju hele --consensus 200 --join 100 \
+    --token 5000
+  pcs cluster start --all --wait=60
   pcs cluster cib tmp-cib.xml
   pcs -f tmp-cib.xml property set stonith-enabled=false
   pcs cluster cib-push tmp-cib.xml --config
