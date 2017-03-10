@@ -1,14 +1,12 @@
 language: python
-python:
-        - 2.6
-        # cf. https://github.com/travis-ci/travis-ci/issues/2219
-        - "2.7_with_system_site_packages"
-env:
-        - MAINT_EXTRA=0
-        - MAINT_EXTRA=1
 matrix:
-        exclude:
-                - python: 2.6
+        include:
+                - python: "2.6"
+                  env:    MAINT_EXTRA=0
+                # cf. https://github.com/travis-ci/travis-ci/issues/2219
+                - python: "2.7_with_system_site_packages"
+                  env:    MAINT_EXTRA=0
+                - python: "2.7_with_system_site_packages"
                   env:    MAINT_EXTRA=1
 
 before_install:
