@@ -58,6 +58,24 @@ what one can use directly after cloning the repository and running
   pcs -f tmp-cib.xml property set stonith-enabled=false
   pcs cluster cib-push tmp-cib.xml --config
 
+or using Python 3:
+
+.. code-block:: bash
+
+  $ python3 ./run-dev ccs2pcscmd -gsq tests/filled.conf
+  #!/bin/sh
+  # sequence generated on 2017-03-10 17:02:34 with: clufter 0.60.0a
+  # invoked as: ['run-dev', 'ccs2pcscmd', '-gsq', 'tests/filled.conf']
+  # targeting system: ('linux', 'fedora', '27', 'Rawhide')
+  # using interpreter: CPython 3.6.0
+  pcs cluster auth ju hele <>/dev/tty
+  pcs cluster setup --name test ju hele --consensus 200 --join 100 \
+    --token 5000
+  pcs cluster start --all --wait=60
+  pcs cluster cib tmp-cib.xml
+  pcs -f tmp-cib.xml property set stonith-enabled=false
+  pcs cluster cib-push tmp-cib.xml --config
+
 Here we got a sequence of ``pcs`` commands that should get us
 started with rebuilding a cluster originally based on CMAN/rgmanager
 stack (with configuration captured in given file), now targetting
@@ -90,16 +108,19 @@ Dependencies
 
 Python-wise:
 
-- `lxml`_ (``python-lxml``)
+- `lxml`_ (``python-lxml``/``python3-lxml``)
 
 general:
 
-- Python 2
+- Python
 
   - 2.7 preferred
 
   - 2.6 with `ordereddict`_ or some kind of ``collections.OrderedDict``
     backport (#929258) required
+
+  - 3.2+ support currently deemed experimental (the test suite is passing),
+    bug reports appreciated
 
 - embedded ``ccs_flatten`` (originally `pacemaker.git/extra/rgmanager
   <https://github.com/ClusterLabs/pacemaker/commit/6ef3f77>`_) compiled
