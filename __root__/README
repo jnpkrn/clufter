@@ -120,7 +120,7 @@ general:
     backport (#929258) required
 
   - 3.2+ support currently deemed experimental (the test suite is passing),
-    bug reports appreciated
+    bug reports appreciated (see `Reporting issues`_)
 
 - embedded ``ccs_flatten`` (originally `pacemaker.git/extra/rgmanager
   <https://github.com/ClusterLabs/pacemaker/commit/6ef3f77>`_) compiled
@@ -199,6 +199,19 @@ It's also possible this is already performed on the packaging level.
 ---------
  Contact
 ---------
+
+Reporting issues
+~~~~~~~~~~~~~~~~
+
+Bug reports, suggestions and feature requests are best directed at
+https://pagure.io/clufter/issues, alternatively check the bottom of
+``clufter --help`` screen when using a distribution version.
+
+The more feedback samples emerge, the better this project can get.
+
+
+Wider community
+~~~~~~~~~~~~~~~
 
 Common cluster/HA channels falling under `ClusterLabs`_ umbrella:
 
