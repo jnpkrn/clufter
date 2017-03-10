@@ -30,19 +30,19 @@ install:
               --editor="sed -i 's|\(force-block=\"\)false|\1true|;w /dev/stdout'"
         #- cat setup.cfg
         # make following robust enough to deal with pip pre-6.0(?)
-        - test $MAINT_EXTRA -ne 0 || {
-               pip install --disable-pip-version-check -- pip >/dev/null
-               && pip install --disable-pip-version-check -qe .[test,coverage]
-               && pip install --disable-pip-version-check coveralls;
-          } || {
-               pip install --disable-pip-version-check -- pip 2>/dev/null >&2
-               || pip install -qe .[test,coverage]
-               && pip install coveralls;
-          } || {
-               ret=$?;
-               echo "LOGS>"; cat ~/.pip/pip.log ~/.cache/pip/log/debug.log 2>/dev/null;
-               f() { return $1; }; f $ret;
-          }
+        - test $MAINT_EXTRA -ne 0
+          || { _pip() { _log="$(pip "$@")"; _ret=$?;
+                        echo "$_log" | grep -Fi -eCOLLECTED -eINSTALLED -eERROR;
+                        return $_ret; };
+              { _pip install --disable-pip-version-check -- pip
+                && _pip install --disable-pip-version-check -e .[test,coverage]
+                && _pip install --disable-pip-version-check coveralls; }
+              || { _pip install --disable-pip-version-check -- pip 2>/dev/null
+                 || { _pip install -e .[test,coverage]
+                    && _pip install coveralls; }; }
+              || { ret=$?; echo "LOGS>";
+                   cat ~/.pip/pip.log ~/.cache/pip/log/debug.log 2>/dev/null;
+                   f() { return $1; }; f $ret; }; }
         - popd
 
 before_script:
