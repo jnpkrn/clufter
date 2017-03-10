@@ -704,7 +704,9 @@ setup(
     extras_require={
         'test': cond_require('unittest2', unittest='runner'),
         'test-nose': cond_require('nose', unittest='runner'),
-        'coverage': ('coverage', ),
+        # see https://bitbucket.org/ned/coveragepy/issues/407#comment-21934227
+        'coverage': ('coverage', ) if version_info[:2] != (3, 2)
+                                   else ('coverage < 4', ),
     },
 
     # TODO: uncomment this when ready for tests
