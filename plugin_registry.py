@@ -14,6 +14,10 @@ from os.path import abspath, dirname, isabs, isdir, join, splitext
 from re import compile as re_compile
 from sys import modules
 
+try:
+    from .defaults import EXTPLUGINS_SHARED
+except ImportError:
+    EXTPLUGINS_SHARED = ''
 from .utils import args2tuple, \
                    args2sgpl, \
                    classproperty, \
@@ -33,7 +37,7 @@ here = dirname(abspath(__file__))
 
 EXTPLUGINS = tuple(e if isabs(e) else join(here, e) for e in
     map(str.strip, getenv_namespaced(
-        'EXTPLUGINS', 'ext-plugins')
+        'EXTPLUGINS', pathsep.join(('ext-plugins', EXTPLUGINS_SHARED))
     ).rstrip(pathsep).split(pathsep))
 )
 
