@@ -9,7 +9,7 @@ from contextlib import contextmanager
 from fnmatch import translate
 from imp import PY_SOURCE, find_module, get_suffixes, load_module
 from logging import getLogger
-from os import walk
+from os import pathsep, walk
 from os.path import abspath, dirname, isabs, isdir, join, splitext
 from re import compile as re_compile
 from sys import modules
@@ -30,9 +30,12 @@ log = getLogger(__name__)
 module_ext = dict((t, s) for s, m, t in get_suffixes())[PY_SOURCE]
 
 here = dirname(abspath(__file__))
-EXTPLUGINS = getenv_namespaced('EXTPLUGINS', 'ext-plugins')
-if not isabs(EXTPLUGINS):
-    EXTPLUGINS = join(here, EXTPLUGINS)
+
+EXTPLUGINS = tuple(e if isabs(e) else join(here, e) for e in
+    map(str.strip, getenv_namespaced(
+        'EXTPLUGINS', 'ext-plugins')
+    ).rstrip(pathsep).split(pathsep))
+)
 
 
 class MetaPlugin(object):
@@ -301,9 +304,10 @@ class PluginManager(object):
         plugins = args2sgpl(plugin, *plugins)
         ext_plugins = []
         if kwargs.get('ext_plugins', True):
-            for root, dirs, _ in walk(EXTPLUGINS, followlinks=True):
-                ext_plugins.extend(join(root, d) for d in dirs)
-                break
+            for e in EXTPLUGINS:
+                for root, dirs, _ in walk(e, followlinks=True):
+                    ext_plugins.extend(join(root, d) for d in dirs)
+                    break
         ext_plugins.extend(
             abspath(d) for d in
             apply_intercalate([d.split(':') for d in
