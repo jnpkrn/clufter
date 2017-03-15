@@ -6,7 +6,10 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..command import Command, CommandAlias
-from ..defaults import SHELL_BASHLIKE, SHELL_POSIX
+try:
+    from ..defaults import SHELL_BASHLIKE, SHELL_POSIX
+except ImportError:
+    SHELL_BASHLIKE, SHELL_POSIX = ''
 from ..facts import cluster_pcs_flatiron
 from ..filter import XMLFilter
 from ..protocol import protocols

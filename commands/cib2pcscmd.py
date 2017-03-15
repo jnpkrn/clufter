@@ -6,7 +6,10 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ..command import Command
-from ..defaults import SHELL_POSIX
+try:
+    from ..defaults import SHELL_POSIX
+except ImportError:
+    SHELL_POSIX = ''
 from ..filter import XMLFilter
 from ..protocol import protocols
 from ..utils_cib import PATH_CIB
