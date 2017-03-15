@@ -534,14 +534,15 @@ pkg_name = pkg.package_name()
 # into ``pkg_params'' passed as an option to this command in ``setup()''
 # so they can be used for string substitutions as well
 pkg_prepare = setup_pkg_prepare(pkg_name, (
-    ('ccs_flatten',     "location of bundled helper ccs_flatten"),
-    ('editor',          "which editor to use if EDITOR env variable not set"),
-    ('shell_posix',     "POSIX compliant shell for shebangs"),
-    ('shell_bashlike',  "bash-like shell (process subst.) for  shebangs"),
-    ('hashalgo',        "which hash algorithm to use to generate output name"),
-    ('ra_metadata_dir', "location of RGManager agents/metadata"),
-    ('ra_metadata_ext', "extension used for RGManager agents' metadata"),
-    ('report_bugs',     "where to report bugs"),
+    ('ccs_flatten',      "location of bundled helper ccs_flatten"),
+    ('editor',           "which editor to use if EDITOR env variable not set"),
+    ('extplugins_shared',"where plugins are shared between deployments"),
+    ('shell_posix',      "POSIX compliant shell for shebangs"),
+    ('shell_bashlike',   "bash-like shell (process subst.) for  shebangs"),
+    ('hashalgo',         "which hash algorithm to use to generate output name"),
+    ('ra_metadata_dir',  "location of RGManager agents/metadata"),
+    ('ra_metadata_ext',  "extension used for RGManager agents' metadata"),
+    ('report_bugs',      "where to report bugs"),
 ))
 
 # Contains important values that are then referred to from ``package_data'',
