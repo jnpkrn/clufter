@@ -10,7 +10,7 @@ from ..defaults import SHELL_POSIX
 from ..filter import XMLFilter
 from ..protocol import protocols
 from ..utils_cib import PATH_CIB
-from ._chains_pcs import cib2pcscmd_chain_exec, cib2pcscmd_output
+from ._chains_pcs import cib2pcscmd_chain_exec  #, cib2pcscmd_output
 
 
 @Command.deco(('cmd-annotate',
