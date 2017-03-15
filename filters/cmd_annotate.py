@@ -22,7 +22,7 @@ def cmd_annotate(flt_ctxt, in_obj):
     """Emit a comment block with clufter version + command used + target info"""
     ret = (''.join(('#', l)) for l in (
         lambda s: () if not s else (s, ))(
-            flt_ctxt.get('annotate_shell', '').join('! ').rstrip(' !')
+            flt_ctxt.get('annotate_shell', '/bin/false').join('! ').rstrip(' !')
     ) + (
         " sequence generated on {0} with: {1}".format(
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
