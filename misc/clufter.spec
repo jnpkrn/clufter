@@ -1,10 +1,10 @@
 # distill-spec-prefix: clufter
-%{!?clufter_version: %global clufter_version  %{?!infer:0.60.0}%{?infer:%(
-                                                python2 ../setup.py --version)}}
-%{!?clufter_name:    %global clufter_name     %{?!infer:clufter}%{?infer:%(
-                                                python2 ../setup.py --name)}}
-%{!?clufter_license: %global clufter_license  %{?!infer:GPLv2+}%{?infer:%(
-                                                python2 ../setup.py --license)}}
+%{!?clufter_version: %global clufter_version  %{!?infer:0.60.0}%{?infer:%(
+                                                python ../setup.py --version)}}
+%{!?clufter_name:    %global clufter_name     %{!?infer:clufter}%{?infer:%(
+                                                python ../setup.py --name)}}
+%{!?clufter_license: %global clufter_license  %{!?infer:GPLv2+}%{?infer:%(
+                                                python ../setup.py --license)}}
 
 # special vars wrt. versioning
 %{!?clufter_b:       %global clufter_b        1}
@@ -28,10 +28,10 @@
 %{!?clufter_source:  %global clufter_source   %{name}-%{clufter_version}}
 %{!?clufter_check:   %global clufter_check    1}
 %endif
-%{!?clufter_url_main:%global clufter_url_main %{?!pagure:https://github.com/jnpkrn/%{name}}%{?pagure:https://pagure.io/%{name}}}
-%{!?clufter_url_raw: %global clufter_url_raw  %{?!pagure:https://raw.githubusercontent.com/jnpkrn/%{name}/}%{?pagure:https://pagure.io/%{name}/raw/}}
-%{!?clufter_url_dist:%global clufter_url_dist %{?!pagure:https://people.redhat.com/jpokorny/pkgs/%{name}/}%{?pagure:https://pagure.io/releases/%{name}/}}
-%{!?clufter_url_bugs:%global clufter_url_bugs %{?!pagure:https://bugzilla.redhat.com/enter_bug.cgi?product=Fedora&component=%{name}&version=rawhide}%{?pagure:https://pagure.io/%{name}/issues}}
+%{!?clufter_url_main:%global clufter_url_main %{!?pagure:https://github.com/jnpkrn/%{name}}%{?pagure:https://pagure.io/%{name}}}
+%{!?clufter_url_raw: %global clufter_url_raw  %{!?pagure:https://raw.githubusercontent.com/jnpkrn/%{name}/}%{?pagure:https://pagure.io/%{name}/raw/}}
+%{!?clufter_url_dist:%global clufter_url_dist %{!?pagure:https://people.redhat.com/jpokorny/pkgs/%{name}/}%{?pagure:https://pagure.io/releases/%{name}/}}
+%{!?clufter_url_bugs:%global clufter_url_bugs %{!?pagure:https://bugzilla.redhat.com/enter_bug.cgi?product=Fedora&component=%{name}&version=rawhide}%{?pagure:https://pagure.io/%{name}/issues}}
 
 %{!?clufter_pylib:   %global clufter_pylib    python-%{name}}
 %{!?clufter_extlib:  %global clufter_extlib   %{name}-lib}
@@ -103,7 +103,7 @@ BuildRequires:  python-lxml
 BuildRequires:  bash which
 
 ## global test_version 0.X.Y
-%global testver      %{?test_version}%{?!test_version:%{version}}
+%global testver %{?test_version}%{!?test_version:%{version}}
 
 %if "%{clufter_version}" == "%{clufter_version_norm}"
 Source0:        %{clufter_url_dist}%{name}-%{version}.tar.gz
@@ -411,7 +411,7 @@ ret=$?
 %if %{with bashcomp}
 %post %{pkgsimple %{clufter_cli}}
 if [ $1 -gt 1 ]; then  # no gain regenerating it w/ fresh install (same result)
-declare bashcomp="%{?clufter_bashcompreal}%{?!clufter_bashcompreal:$(
+declare bashcomp="%{?clufter_bashcompreal}%{!?clufter_bashcompreal:$(
     pkg-config --variable=completionsdir bash-completion 2>/dev/null \
     || echo '%{clufter_bashcompdir}')/%{name}}"
 %{clufter_script} --completion-bash > "${bashcomp}" 2>/dev/null || :
@@ -421,7 +421,7 @@ fi
 
 %global clufter_post_ext %(
 cat <<EOF
-declare bashcomp="%{?clufter_bashcompreal}%{?!clufter_bashcompreal:\\$(
+declare bashcomp="%{?clufter_bashcompreal}%{!?clufter_bashcompreal:\\$(
     pkg-config --variable=completionsdir bash-completion 2>/dev/null \\\\
     || echo '%{clufter_bashcompdir}')/%{name}}"
 # if the completion file is not present, suppose it is not desired
