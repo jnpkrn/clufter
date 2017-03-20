@@ -749,8 +749,8 @@ class XML(SimpleFormat):
         elif exists(spec):
             spec = args2tuple(spec)
         if not tuplist(spec):
-            return ("Cannot validate, no matching spec: `{0}'"
-                    .format(spec), )
+            return (((0, 0, "Cannot validate, no matching spec: `{0}'"
+                            .format(spec)), ), None, None)
         fatal, master, master_snippet = [], '', ''
         for s in reversed(sorted(spec)):
             fatal, master = [], s
