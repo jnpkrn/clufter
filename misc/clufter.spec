@@ -390,7 +390,7 @@ EOF
            -- gpl-2.0.txt doc/*.txt doc/rgmanager-pacemaker
 
 %check
-%if "0%{clufter_check}"
+%if 0%{clufter_check}
 # just a basic sanity check
 # we need to massage RA metadata files and PATH so the local run works
 # XXX we could also inject buildroot's site_packages dir to PYTHONPATH
@@ -398,7 +398,7 @@ declare ret=0 \
         ccs_flatten_dir="$(dirname '%{buildroot}%{clufter_ccs_flatten}')"
 ln -s '%{buildroot}%{clufter_ra_metadata_dir}'/*.'%{clufter_ra_metadata_ext}' \
       "${ccs_flatten_dir}"
-%if "%{clufter_check}" == 1
+%if %{clufter_check} == 1
 PATH="${PATH:+${PATH}:}${ccs_flatten_dir}" ./run-check
 %else
 PATH="${PATH:+${PATH}:}${ccs_flatten_dir}" ./run-tests
