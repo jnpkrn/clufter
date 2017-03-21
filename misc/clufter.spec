@@ -69,7 +69,7 @@
   %endif
 %endif
 
-%if 0%{?rhel} < 7
+%if 0%{?rhel} && 0%{?rhel} < 7
 %bcond_with generated_schemas
 %else
 %bcond_without generated_schemas
