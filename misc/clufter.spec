@@ -207,7 +207,6 @@ reusable formats and filters.
 %package %{pkgsimple %{clufter_lib}-ccs}
 Group:          System Environment/Libraries
 Summary:        Extra plugins for transforming/analyzing CMAN configuration
-Requires:       %{clufter_pylib} = %{version}-%{release}
 Requires:       %{clufter_lib}-general = %{version}-%{release}
 BuildArch:      noarch
 
@@ -220,7 +219,6 @@ formats and filters.
 %package %{pkgsimple %{clufter_lib}-pcs}
 Group:          System Environment/Libraries
 Summary:        Extra plugins for transforming/analyzing Pacemaker configuration
-Requires:       %{clufter_pylib} = %{version}-%{release}
 Requires:       %{clufter_lib}-general = %{version}-%{release}
 BuildArch:      noarch
 
