@@ -1,4 +1,4 @@
-# distill-spec-prefix: clufter
+# distill-spec-prefix: clufter, cl, rhel, test
 %{!?clufter_version: %global clufter_version  %{!?infer:0.60.0}%{?infer:%(
                                                 python ../setup.py --version)}}
 %{!?clufter_name:    %global clufter_name     %{!?infer:clufter}%{?infer:%(
