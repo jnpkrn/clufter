@@ -1,7 +1,9 @@
 # distill-spec-prefix: clufter, cl, rhel, test
 #
 # virtual provides:
-#   clufter -> clufter-cli
+#   clufter        -> clufter-cli
+#   clufter-lib    -> python.+-clufter (any if multiple)
+#   python-clufter -> python2-clufter (subject of change)
 %{!?clufter_version: %global clufter_version  %{!?infer:0.60.0}%{?infer:%(
                                                 python ../setup.py --version)}}
 %{!?clufter_name:    %global clufter_name     %{!?infer:clufter}%{?infer:%(
@@ -36,7 +38,7 @@
 %{!?clufter_url_dist:%global clufter_url_dist %{!?pagure:https://people.redhat.com/jpokorny/pkgs/%{name}/}%{?pagure:https://pagure.io/releases/%{name}/}}
 %{!?clufter_url_bugs:%global clufter_url_bugs %{!?pagure:https://bugzilla.redhat.com/enter_bug.cgi?product=Fedora&component=%{name}&version=rawhide}%{?pagure:https://pagure.io/%{name}/issues}}
 
-%{!?clufter_pylib:   %global clufter_pylib    python-%{name}}
+%{!?clufter_pylib2:  %{?__python2: %global clufter_pylib2   python2-%{name}}}
 %{!?clufter_bin:     %global clufter_bin      %{name}-bin}
 %{!?clufter_common:  %global clufter_common   %{name}-common}
 %{!?clufter_lib:     %global clufter_lib      %{name}-lib}
@@ -81,6 +83,17 @@
 %bcond_without generated_schemas
 %endif
 
+# Preprocess the above specifications
+
+%global clufter_sitelib    %{python2_sitelib}/%{name}
+%global clufter_setuptools python2-setuptools
+%if 0%{?clufter_pylib2:1}
+%global clufter_pylib  %{clufter_pylib2}
+%endif
+
+# Improper specifications
+
+%{!?clufter_pylib:%({error: need to build against Python 2}}
 
 # universality++
 # https://fedoraproject.org/wiki/EPEL:Packaging?rd=Packaging:EPEL#The_.25license_tag
@@ -98,15 +111,32 @@ URL:            %{clufter_url_main}
 # autosetup
 BuildRequires:  git
 
-# Python side (first item for python2* macros + overall Python run-time)
+# Python side (first item for pythonX* macros + overall Python run-time)
+%if 0%{?clufter_pylib2:1}
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 %if 0%{?clufter_check}
 BuildRequires:  python-lxml
 %endif
+%endif
 
 # following to ensure "which bash" (and, in extension, "which sh") works
 BuildRequires:  bash which
+
+# ccs_flatten helper
+# ~ libxml2-devel
+BuildRequires:  pkgconfig(libxml-2.0)
+
+%if %{with generated_schemas}
+# needed for schemadir path pointer
+BuildRequires:  pkgconfig(pacemaker)
+# needed for schemas themselves
+BuildRequires:  pacemaker
+# needed to squash multi-file schemas to single file
+BuildRequires:  jing
+# needed for xsltproc and xmllint respectively
+BuildRequires:  libxslt libxml2
+%endif
 
 ## global test_version 0.X.Y
 %global testver %{?test_version}%{!?test_version:%{version}}
@@ -154,6 +184,8 @@ BuildRequires:  bash-completion
 %if %{with manpage}
 BuildRequires:  help2man
 %endif
+# following for pkg_resources module
+Requires:       %{clufter_setuptools}
 Requires:       %{clufter_pylib} = %{version}-%{release}
 BuildArch:      noarch
 
@@ -165,22 +197,20 @@ library (packaged as %{clufter_pylib}).
 %endif
 
 
-%package %{pkgsimple %{clufter_pylib}}
+%if 0%{?clufter_pylib2:1}
+%package %{pkgsimple %{clufter_pylib2}}
 Group:          System Environment/Libraries
 Summary:        Library for transforming/analyzing cluster configuration formats
 License:        %{clufter_license} and GFDL
-# ccs_flatten helper
-# ~ libxml2-devel
-BuildRequires:  pkgconfig(libxml-2.0)
-%if %{with generated_schemas}
-# needed for schemadir path pointer
-BuildRequires:  pkgconfig(pacemaker)
-# needed for schemas themselves
-BuildRequires:  pacemaker
-# needed to squash multi-file schemas to single file
-BuildRequires:  jing
-# needed for xsltproc and xmllint respectively
-BuildRequires:  libxslt libxml2
+Provides:       %{clufter_lib} = %{version}-%{release}
+# legacy non-python-versioned business
+%if 0%{?python_provide:1}
+%{?python_provide:%python_provide %{clufter_pylib2}}
+%else
+%if %{clufter_pylib} == %{?clufter_pylib2}
+Provides:       python-%{name} = %{version}-%{release}
+Obsoletes:      python-%{name} < %{version}-%{release}
+%endif
 %endif
 #implied-by#Requires: %%{clufter_ccs_flatten}
 Requires:       %{clufter_bin} = %{version}-%{release}
@@ -190,10 +220,11 @@ Requires:       python-lxml
 Requires:       %{clufter_editor}
 BuildArch:      noarch
 
-%description %{pkgsimple %{clufter_pylib}}
+%description %{pkgsimple %{clufter_pylib2}}
 %{clufter_description}
 
 This package contains %{name} library including built-in plugins.
+%endif
 
 
 %package %{pkgsimple %{clufter_bin}}
@@ -224,7 +255,7 @@ This package contains internal, arch-agnostic files for %{name}.
 %package %{pkgsimple %{clufter_lib}-general}
 Group:          System Environment/Libraries
 Summary:        Extra %{name} plugins usable for/as generic/auxiliary products
-Requires:       %{clufter_pylib} = %{version}-%{release}
+Requires:       %{clufter_lib} = %{version}-%{release}
 BuildArch:      noarch
 
 %description %{pkgsimple %{clufter_lib}-general}
@@ -288,7 +319,17 @@ formats and filters.
                       --executable='%{__python2} -Es'
 
 %build
+%if 0%{?clufter_pylib2:1}
+%if 0%{?py2_build:1}
+%py2_build
+%else
+# make Python interpreter execution sane (via -Es flags)
+%{__python2} setup.py saveopts -f setup.cfg build_scripts \
+                      --executable='%{__python2} %{?py2_shbang_opts}%{!?py2_shbang_opts:-Es}'
 %{__python2} setup.py build
+%endif
+%endif
+
 %if %{with bashcomp}
 ./run-dev --skip-ext --completion-bash 2>/dev/null \
   | sed 's|run[-_]dev|%{name}|g' > .bashcomp
@@ -364,8 +405,15 @@ done
 %endif
 
 %install
+%if 0%{?clufter_pylib2:1}
+%if 0%{?py2_install:1}
+%py2_install
+%else
 # '--root' implies setuptools involves distutils to do old-style install
 %{__python2} setup.py install --skip-build --root '%{buildroot}'
+%endif
+%endif
+
 # following is needed due to umask 022 not taking effect(?) leading to 775
 %{__chmod} -- g-w '%{buildroot}%{clufter_ccs_flatten}'
 %if %{with script}
@@ -383,11 +431,13 @@ test -f '%{buildroot}%{clufter_script}' \
 %{__mkdir_p} -- '%{buildroot}%{_datarootdir}/%{name}/formats'
 for format in cib corosync; do
   %{__cp} -a -t '%{buildroot}%{_datarootdir}/%{name}/formats' \
-          -- "%{buildroot}%{python2_sitelib}/formats/${format}"
+          -- "%{buildroot}%{clufter_sitelib}/formats/${format}"
+%if 0%{?clufter_pylib2:1}
   %{__rm} -f -- "%{buildroot}%{python2_sitelib}/%{name}/formats/${format}"/*
   ln -s -t "%{buildroot}%{python2_sitelib}/%{name}/formats/${format}" \
      -- $(pushd "%{buildroot}%{_datarootdir}/%{name}/formats/${format}" >/dev/null; \
           ls -1A | sed "s:.*:%{_datarootdir}/%{name}/formats/${format}/\\0:")
+%endif
 done
 
 # move ext-plugins from python-specific locations to a single common one
@@ -453,9 +503,13 @@ declare ret=0 \
 ln -s '%{buildroot}%{clufter_ra_metadata_dir}'/*.'%{clufter_ra_metadata_ext}' \
       "${ccs_flatten_dir}"
 %if %{clufter_check} == 1
-PATH="${PATH:+${PATH}:}${ccs_flatten_dir}" ./run-check
+%if 0%{?clufter_pylib2:1}
+PATH="${PATH:+${PATH}:}${ccs_flatten_dir}" PYTHONEXEC="%{__python2} -Es" ./run-check
+%endif
 %else
-PATH="${PATH:+${PATH}:}${ccs_flatten_dir}" ./run-tests
+%if 0%{?clufter_pylib2:1}
+PATH="${PATH:+${PATH}:}${ccs_flatten_dir}" PYTHONEXEC="%{__python2} -Es" ./run-tests
+%endif
 %endif
 ret=$?
 %{__rm} -f -- "${ccs_flatten_dir}"/*.'%{clufter_ra_metadata_ext}'
@@ -505,9 +559,11 @@ EOF)
 %{clufter_script}
 %endif
 
-%files %{pkgsimple %{clufter_pylib}}
+%if 0%{?clufter_pylib2:1}
+%files %{pkgsimple %{clufter_pylib2}}
 %{python2_sitelib}/%{name}
 %{python2_sitelib}/%{name}-*.egg-info
+%endif
 
 %files %{pkgsimple %{clufter_bin}}
 # /usr/libexec/clufter/ccs_flatten -> /usr/libexec/clufter
@@ -540,6 +596,7 @@ EOF)
 %{cl_entry 2017-03-21 0.60.0-0.1.a %{cl_jp}
   split \-bin and \-common packages, the former becoming the only arch-specific
   also move python-specific (entry points, main files) back from \-cli package
+  also rename python-clufter to python2-clufter (former is a legacy alias)
   bump upstream package (version rolling the above changes out)}
 
 %{cl_entry 2017-01-18 0.59.8-1 %{cl_jp}
