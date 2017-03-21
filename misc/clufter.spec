@@ -1,4 +1,5 @@
-# distill-spec-prefix: clufter, cl, rhel, test
+# distill-spec-prefix:   clufter, cl, fedora, python3_pkgversion, rhel, test
+# distill-spec-requires: python2-devel [python3-devel]
 #
 # virtual provides:
 #   clufter        -> clufter-cli
@@ -38,7 +39,9 @@
 %{!?clufter_url_dist:%global clufter_url_dist %{!?pagure:https://people.redhat.com/jpokorny/pkgs/%{name}/}%{?pagure:https://pagure.io/releases/%{name}/}}
 %{!?clufter_url_bugs:%global clufter_url_bugs %{!?pagure:https://bugzilla.redhat.com/enter_bug.cgi?product=Fedora&component=%{name}&version=rawhide}%{?pagure:https://pagure.io/%{name}/issues}}
 
+%{!?clufter_python3: %global clufter_python3  python%{?python3_pkgversion}%{!?python3_pkgversion:3}}
 %{!?clufter_pylib2:  %{?__python2: %global clufter_pylib2   python2-%{name}}}
+%{!?clufter_pylib3:  %{?__python3: %global clufter_pylib3   %{clufter_python3}-%{name}}}
 %{!?clufter_bin:     %global clufter_bin      %{name}-bin}
 %{!?clufter_common:  %global clufter_common   %{name}-common}
 %{!?clufter_lib:     %global clufter_lib      %{name}-lib}
@@ -85,15 +88,21 @@
 
 # Preprocess the above specifications
 
-%global clufter_sitelib    %{python2_sitelib}/%{name}
-%global clufter_setuptools python2-setuptools
+%global clufter_sitelib    %{?clufter_pylib3:%{python3_sitelib}}%{!?clufter_pylib3:%{python2_sitelib}}/%{name}
+%global clufter_setuptools %{?clufter_pylib3:%{clufter_python3}-setuptools}%{!?clufter_pylib3:python2-setuptools}
+# for fedora, we are bound to release that introduced 3.2 since beginning
+# (for python3-lxml this was the case since 14)
+%if 0%{?clufter_pylib3:1} && 0%{?fedora} >= 15
+%global clufter_pylib  %{clufter_pylib3}
+%else
 %if 0%{?clufter_pylib2:1}
 %global clufter_pylib  %{clufter_pylib2}
+%endif
 %endif
 
 # Improper specifications
 
-%{!?clufter_pylib:%({error: need to build against Python 2}}
+%{!?clufter_pylib:%({error: need to build against at least one of Python 2 and 3}}
 
 # universality++
 # https://fedoraproject.org/wiki/EPEL:Packaging?rd=Packaging:EPEL#The_.25license_tag
@@ -117,6 +126,13 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 %if 0%{?clufter_check}
 BuildRequires:  python-lxml
+%endif
+%endif
+%if 0%{?clufter_python3:1}
+BuildRequires:  %{clufter_python3}-devel
+BuildRequires:  %{clufter_python3}-setuptools
+%if 0%{?clufter_check}
+BuildRequires:  %{clufter_python3}-lxml
 %endif
 %endif
 
@@ -227,6 +243,31 @@ This package contains %{name} library including built-in plugins.
 %endif
 
 
+%if 0%{?clufter_pylib3:1}
+%package %{pkgsimple %{clufter_pylib3}}
+Group:          System Environment/Libraries
+Summary:        Library for transforming/analyzing cluster configuration formats
+License:        %{clufter_license} and GFDL
+Provides:       %{clufter_lib} = %{version}-%{release}
+# legacy non-python-versioned business
+%if 0%{?python_provide:1}
+%{?python_provide:%python_provide %{clufter_pylib3}}
+%endif
+#autodected# Requires:       libxml2
+Requires:       %{clufter_python3}-lxml
+#implied-by#Requires: %%{clufter_ccs_flatten}
+Requires:       %{clufter_bin} = %{version}-%{release}
+# "extras"
+Requires:       %{clufter_editor}
+BuildArch:      noarch
+
+%description %{pkgsimple %{clufter_pylib3}}
+%{clufter_description}
+
+This package contains %{name} library including built-in plugins.
+%endif
+
+
 %package %{pkgsimple %{clufter_bin}}
 Group:          System Environment/Libraries
 Summary:        Common internal compiled files for %{name}
@@ -304,19 +345,16 @@ formats and filters.
 %endif
 
 ## for some esoteric reason, the line above has to be empty
-%{__python2} setup.py saveopts -f setup.cfg pkg_prepare \
-                      --ccs-flatten='%{clufter_ccs_flatten}' \
-                      --editor='%{clufter_editor}' \
-                      --extplugins-shared='%{clufter_extplugins_shared}' \
-                      --ra-metadata-dir='%{clufter_ra_metadata_dir}' \
-                      --ra-metadata-ext='%{clufter_ra_metadata_ext}' \
-                      --shell-posix='%{clufter_shell_posix}' \
-                      --shell-bashlike='%{clufter_shell_bashlike}'
-%{__python2} setup.py saveopts -f setup.cfg pkg_prepare \
+%{__python} setup.py saveopts -f setup.cfg pkg_prepare \
+                     --ccs-flatten='%{clufter_ccs_flatten}' \
+                     --editor='%{clufter_editor}' \
+                     --extplugins-shared='%{clufter_extplugins_shared}' \
+                     --ra-metadata-dir='%{clufter_ra_metadata_dir}' \
+                     --ra-metadata-ext='%{clufter_ra_metadata_ext}' \
+                     --shell-posix='%{clufter_shell_posix}' \
+                     --shell-bashlike='%{clufter_shell_bashlike}'
+%{__python} setup.py saveopts -f setup.cfg pkg_prepare \
   --report-bugs='%{clufter_url_bugs}'
-# make Python interpreter execution sane (via -Es flags)
-%{__python2} setup.py saveopts -f setup.cfg build_scripts \
-                      --executable='%{__python2} -Es'
 
 %build
 %if 0%{?clufter_pylib2:1}
@@ -330,8 +368,27 @@ formats and filters.
 %endif
 %endif
 
+%if 0%{?clufter_pylib3:1}
+# see https://fedoraproject.org/wiki/Changes/python3_c.utf-8_locale;
+# specifically:
+#   File "setup.py", line 466, in _pkg_prepare_file
+#     content = fr.read()
+#   File "/usr/lib64/python3.5/encodings/ascii.py", line 26, in decode
+#     return codecs.ascii_decode(input, self.errors)[0]
+# UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 221: ordinal not in range(128)
+export LC_ALL=C.UTF-8 LANG=C.UTF-8
+%if 0%{?py3_build:1}
+%py3_build
+%else
+# make Python interpreter execution sane (via -Es flags)
+%{__python3} setup.py saveopts -f setup.cfg build_scripts \
+                      --executable='%{__python3} %{?py3_shbang_opts}%{!?py3_shbang_opts:-Es}'
+%{__python3} setup.py build
+%endif
+%endif
+
 %if %{with bashcomp}
-./run-dev --skip-ext --completion-bash 2>/dev/null \
+%{__python} ./run-dev --skip-ext --completion-bash 2>/dev/null \
   | sed 's|run[-_]dev|%{name}|g' > .bashcomp
 %endif
 %if %{with manpage}
@@ -414,6 +471,17 @@ done
 %endif
 %endif
 
+%if 0%{?clufter_pylib3:1}
+%if 0%{?py3_install:1}
+# see build section
+export LC_ALL=C.UTF-8 LANG=C.UTF-8
+%py3_install
+%else
+# '--root' implies setuptools involves distutils to do old-style install
+%{__python3} setup.py install --skip-build --root '%{buildroot}'
+%endif
+%endif
+
 # following is needed due to umask 022 not taking effect(?) leading to 775
 %{__chmod} -- g-w '%{buildroot}%{clufter_ccs_flatten}'
 %if %{with script}
@@ -438,6 +506,12 @@ for format in cib corosync; do
      -- $(pushd "%{buildroot}%{_datarootdir}/%{name}/formats/${format}" >/dev/null; \
           ls -1A | sed "s:.*:%{_datarootdir}/%{name}/formats/${format}/\\0:")
 %endif
+%if 0%{?clufter_pylib3:1}
+  %{__rm} -f -- "%{buildroot}%{python3_sitelib}/%{name}/formats/${format}"/*
+  ln -s -t "%{buildroot}%{python3_sitelib}/%{name}/formats/${format}" \
+     -- $(pushd "%{buildroot}%{_datarootdir}/%{name}/formats/${format}" >/dev/null; \
+          ls -1A | sed "s:.*:%{_datarootdir}/%{name}/formats/${format}/\\0:")
+%endif
 done
 
 # move ext-plugins from python-specific locations to a single common one
@@ -446,6 +520,16 @@ done
 %if 0%{?clufter_pylib2:1}
 mv -t '%{buildroot}%{clufter_extplugins_shared}' \
    -- '%{buildroot}%{python2_sitelib}/%{name}'/ext-plugins/*/
+%endif
+%if 0%{?clufter_pylib3:1}
+%if 0%{?clufter_pylib2:1}
+%{__cp} -af -t '%{buildroot}%{clufter_extplugins_shared}' \
+        -- '%{buildroot}%{python3_sitelib}/%{name}'/ext-plugins/*
+%{__rm} -rf -- '%{buildroot}%{python3_sitelib}/%{name}'/ext-plugins/*/
+%else
+mv -t '%{buildroot}%{clufter_extplugins_shared}' \
+   -- '%{buildroot}%{python3_sitelib}/%{name}'/ext-plugins/*/
+%endif
 %endif
 
 %if %{with bashcomp}
@@ -506,9 +590,19 @@ ln -s '%{buildroot}%{clufter_ra_metadata_dir}'/*.'%{clufter_ra_metadata_ext}' \
 %if 0%{?clufter_pylib2:1}
 PATH="${PATH:+${PATH}:}${ccs_flatten_dir}" PYTHONEXEC="%{__python2} -Es" ./run-check
 %endif
+%if 0%{?clufter_pylib3:1}
+# see build section
+export LC_ALL=C.UTF-8 LANG=C.UTF-8
+PATH="${PATH:+${PATH}:}${ccs_flatten_dir}" PYTHONEXEC="%{__python3} -Es" ./run-check
+%endif
 %else
 %if 0%{?clufter_pylib2:1}
 PATH="${PATH:+${PATH}:}${ccs_flatten_dir}" PYTHONEXEC="%{__python2} -Es" ./run-tests
+%endif
+%if 0%{?clufter_pylib3:1}
+# see build section
+export LC_ALL=C.UTF-8 LANG=C.UTF-8
+PATH="${PATH:+${PATH}:}${ccs_flatten_dir}" PYTHONEXEC="%{__python3} -Es" ./run-tests
 %endif
 %endif
 ret=$?
@@ -565,6 +659,12 @@ EOF)
 %{python2_sitelib}/%{name}-*.egg-info
 %endif
 
+%if 0%{?clufter_pylib3:1}
+%files %{pkgsimple %{clufter_pylib3}}
+%{python3_sitelib}/%{name}
+%{python3_sitelib}/%{name}-*.egg-info
+%endif
+
 %files %{pkgsimple %{clufter_bin}}
 # /usr/libexec/clufter/ccs_flatten -> /usr/libexec/clufter
 # /usr/libexec/ccs_flatten         -> /usr/libexec/ccs_flatten
@@ -597,6 +697,7 @@ EOF)
   split \-bin and \-common packages, the former becoming the only arch-specific
   also move python-specific (entry points, main files) back from \-cli package
   also rename python-clufter to python2-clufter (former is a legacy alias)
+  also leverage the above modularization to package python3-clufter in parallel
   bump upstream package (version rolling the above changes out)}
 
 %{cl_entry 2017-01-18 0.59.8-1 %{cl_jp}
