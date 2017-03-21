@@ -40,12 +40,13 @@
 %{!?clufter_lib:     %global clufter_lib      %{name}-lib}
 
 # Python package customizations
-%{!?clufter_ccs_flatten:     %global clufter_ccs_flatten     %{_libexecdir}/%{clufter_source}/ccs_flatten}
-%{!?clufter_editor:          %global clufter_editor          %{_bindir}/nano}
-%{!?clufter_shell_posix:     %global clufter_shell_posix     %(which sh 2>/dev/null || echo /bin/SHELL-POSIX)}
-%{!?clufter_shell_bashlike:  %global clufter_shell_bashlike  %(which bash 2>/dev/null || echo /bin/SHELL-BASHLIKE)}
-%{!?clufter_ra_metadata_dir: %global clufter_ra_metadata_dir %{_datadir}/cluster}
-%{!?clufter_ra_metadata_ext: %global clufter_ra_metadata_ext metadata}
+%{!?clufter_ccs_flatten:      %global clufter_ccs_flatten       %{_libexecdir}/%{clufter_source}/ccs_flatten}
+%{!?clufter_editor:           %global clufter_editor            %{_bindir}/nano}
+%{!?clufter_extplugins_shared:%global clufter_extplugins_shared %{_datarootdir}/%{name}/ext-plugins}
+%{!?clufter_shell_posix:      %global clufter_shell_posix       %(which sh 2>/dev/null || echo /bin/SHELL-POSIX)}
+%{!?clufter_shell_bashlike:   %global clufter_shell_bashlike    %(which bash 2>/dev/null || echo /bin/SHELL-BASHLIKE)}
+%{!?clufter_ra_metadata_dir:  %global clufter_ra_metadata_dir   %{_datadir}/cluster}
+%{!?clufter_ra_metadata_ext:  %global clufter_ra_metadata_ext   metadata}
 
 %bcond_without script
 %if %{with script}
@@ -246,6 +247,7 @@ formats and filters.
 %{__python2} setup.py saveopts -f setup.cfg pkg_prepare \
                       --ccs-flatten='%{clufter_ccs_flatten}' \
                       --editor='%{clufter_editor}' \
+                      --extplugins-shared='%{clufter_extplugins_shared}' \
                       --ra-metadata-dir='%{clufter_ra_metadata_dir}' \
                       --ra-metadata-ext='%{clufter_ra_metadata_ext}' \
                       --shell-posix='%{clufter_shell_posix}' \
@@ -346,6 +348,15 @@ sed -i '1s|^\(#!\)"\(.*\)"$|\1\2|' '%{buildroot}%{_bindir}/%{name}'
 test -f '%{buildroot}%{clufter_script}' \
   || %{__install} -D -pm 644 -- '%{buildroot}%{_bindir}/%{name}' \
                                 '%{buildroot}%{clufter_script}'
+
+# move ext-plugins from python-specific locations to a single common one
+# incl. the different sorts of precompiled bytecodes
+%{__mkdir_p} -- '%{buildroot}%{clufter_extplugins_shared}'
+%if 0%{?clufter_pylib2:1}
+mv -t '%{buildroot}%{clufter_extplugins_shared}' \
+   -- '%{buildroot}%{python2_sitelib}/%{name}'/ext-plugins/*/
+%endif
+
 %if %{with bashcomp}
 declare bashcompdir="$(pkg-config --variable=completionsdir bash-completion \
                        || echo '%{clufter_bashcompdir}')"
@@ -466,7 +477,6 @@ EOF)
 %exclude %{python2_sitelib}/%{name}/__main__.py*
 %exclude %{python2_sitelib}/%{name}/main.py*
 %exclude %{python2_sitelib}/%{name}/completion.py*
-%exclude %{python2_sitelib}/%{name}/ext-plugins/*/
 %{python2_sitelib}/%{name}
 %{python2_sitelib}/%{name}-*.egg-info
 # entry_points.txt only useful for -cli package
@@ -477,13 +487,13 @@ EOF)
 %{clufter_ra_metadata_dir}
 
 %files %{pkgsimple %{clufter_lib}-general}
-%{python2_sitelib}/%{name}/ext-plugins/lib-general
+%{clufter_extplugins_shared}/lib-general
 
 %files %{pkgsimple %{clufter_lib}-ccs}
-%{python2_sitelib}/%{name}/ext-plugins/lib-ccs
+%{clufter_extplugins_shared}/lib-ccs
 
 %files %{pkgsimple %{clufter_lib}-pcs}
-%{python2_sitelib}/%{name}/ext-plugins/lib-pcs
+%{clufter_extplugins_shared}/lib-pcs
 
 
 %define cl_entry() %(LC_ALL=C date -d %1 "+* %%a %%b %%d %%Y %(echo "%3") - %2"
