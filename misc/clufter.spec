@@ -37,6 +37,8 @@
 %{!?clufter_url_bugs:%global clufter_url_bugs %{!?pagure:https://bugzilla.redhat.com/enter_bug.cgi?product=Fedora&component=%{name}&version=rawhide}%{?pagure:https://pagure.io/%{name}/issues}}
 
 %{!?clufter_pylib:   %global clufter_pylib    python-%{name}}
+%{!?clufter_bin:     %global clufter_bin      %{name}-bin}
+%{!?clufter_common:  %global clufter_common   %{name}-common}
 %{!?clufter_lib:     %global clufter_lib      %{name}-lib}
 
 # Python package customizations
@@ -180,16 +182,43 @@ BuildRequires:  jing
 # needed for xsltproc and xmllint respectively
 BuildRequires:  libxslt libxml2
 %endif
+#implied-by#Requires: %%{clufter_ccs_flatten}
+Requires:       %{clufter_bin} = %{version}-%{release}
 #autodected# Requires:       libxml2
 Requires:       python-lxml
 # "extras"
 Requires:       %{clufter_editor}
-# this is _arch-specific_
+BuildArch:      noarch
 
 %description %{pkgsimple %{clufter_pylib}}
 %{clufter_description}
 
 This package contains %{name} library including built-in plugins.
+
+
+%package %{pkgsimple %{clufter_bin}}
+Group:          System Environment/Libraries
+Summary:        Common internal compiled files for %{name}
+License:        %{clufter_license}
+# for metadata
+Requires:       %{clufter_common} = %{version}-%{release}
+
+%description %{pkgsimple %{clufter_bin}}
+%{clufter_description}
+
+This package contains internal, arch-specific files for %{name}.
+
+
+%package %{pkgsimple %{clufter_common}}
+Group:          System Environment/Libraries
+Summary:        Common internal data files for %{name}
+License:        %{clufter_license}
+BuildArch:      noarch
+
+%description %{pkgsimple %{clufter_common}}
+%{clufter_description}
+
+This package contains internal, arch-agnostic files for %{name}.
 
 
 %package %{pkgsimple %{clufter_lib}-general}
@@ -349,6 +378,18 @@ test -f '%{buildroot}%{clufter_script}' \
   || %{__install} -D -pm 644 -- '%{buildroot}%{_bindir}/%{name}' \
                                 '%{buildroot}%{clufter_script}'
 
+# move data files from python-specific locations to a single common one
+# and possibly symlink that back
+%{__mkdir_p} -- '%{buildroot}%{_datarootdir}/%{name}/formats'
+for format in cib corosync; do
+  %{__cp} -a -t '%{buildroot}%{_datarootdir}/%{name}/formats' \
+          -- "%{buildroot}%{python2_sitelib}/formats/${format}"
+  %{__rm} -f -- "%{buildroot}%{python2_sitelib}/%{name}/formats/${format}"/*
+  ln -s -t "%{buildroot}%{python2_sitelib}/%{name}/formats/${format}" \
+     -- $(pushd "%{buildroot}%{_datarootdir}/%{name}/formats/${format}" >/dev/null; \
+          ls -1A | sed "s:.*:%{_datarootdir}/%{name}/formats/${format}/\\0:")
+done
+
 # move ext-plugins from python-specific locations to a single common one
 # incl. the different sorts of precompiled bytecodes
 %{__mkdir_p} -- '%{buildroot}%{clufter_extplugins_shared}'
@@ -394,12 +435,12 @@ EOF
 %{__cp} -a -t '%{buildroot}%{_mandir}' -- .manpages/*
 %endif
 %if %{with generated_schemas}
-%{__cp} -a -f -t '%{buildroot}%{python2_sitelib}/%{name}/formats/cib' \
+%{__cp} -a -f -t '%{buildroot}%{_datarootdir}/%{name}/formats/cib' \
               -- .schemas/pacemaker-*.*.rng
 %endif
 %endif
 %{__mkdir_p} -- '%{buildroot}%{_defaultdocdir}/%{clufter_source}'
-%{__cp} -a -t '%{buildroot}%{_defaultdocdir}/%{clufter-source}' \
+%{__cp} -a -t '%{buildroot}%{_defaultdocdir}/%{clufter_source}' \
            -- gpl-2.0.txt doc/*.txt doc/rgmanager-pacemaker
 
 %check
@@ -462,29 +503,24 @@ EOF)
 %{_mandir}/man%{clufter_manpagesec}/*.%{clufter_manpagesec}*
 %endif
 %{clufter_script}
-%{python2_sitelib}/%{name}/__main__.py*
-%{python2_sitelib}/%{name}/main.py*
-%{python2_sitelib}/%{name}/completion.py*
-# only useful here, rest of egg-info pulled through internal dependency
-%{python2_sitelib}/%{name}-*.egg-info/entry_points.txt
 %endif
 
 %files %{pkgsimple %{clufter_pylib}}
+%{python2_sitelib}/%{name}
+%{python2_sitelib}/%{name}-*.egg-info
+
+%files %{pkgsimple %{clufter_bin}}
+# /usr/libexec/clufter/ccs_flatten -> /usr/libexec/clufter
+# /usr/libexec/ccs_flatten         -> /usr/libexec/ccs_flatten
+%(echo '%{clufter_ccs_flatten}' | sed 's|\(%{_libexecdir}/[^/]\+\).*|\1|')
+
+%files %{pkgsimple %{clufter_common}}
+%{clufter_ra_metadata_dir}
+%{_datarootdir}/%{name}
 # following few paths will get marked as doc automatically based on location
 %dir %{_defaultdocdir}/%{clufter_source}
 %{_defaultdocdir}/%{clufter_source}/*[^[:digit:]]
 %license %{_defaultdocdir}/%{clufter_source}/*[[:digit:]].txt
-%exclude %{python2_sitelib}/%{name}/__main__.py*
-%exclude %{python2_sitelib}/%{name}/main.py*
-%exclude %{python2_sitelib}/%{name}/completion.py*
-%{python2_sitelib}/%{name}
-%{python2_sitelib}/%{name}-*.egg-info
-# entry_points.txt only useful for -cli package
-%exclude %{python2_sitelib}/%{name}-*.egg-info/entry_points.txt
-# /usr/libexec/clufter/ccs_flatten -> /usr/libexec/clufter
-# /usr/libexec/ccs_flatten         -> /usr/libexec/ccs_flatten
-%(echo '%{clufter_ccs_flatten}' | sed 's|\(%{_libexecdir}/[^/]\+\).*|\1|')
-%{clufter_ra_metadata_dir}
 
 %files %{pkgsimple %{clufter_lib}-general}
 %{clufter_extplugins_shared}/lib-general
@@ -501,8 +537,10 @@ EOF)
 %global cl_jp_r Jan Pokorný <jpokorny+rpm-clufter @at@ fedoraproject .dot. org>
 %global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
-%{cl_entry 2017-01-26 0.59.9-0.1.a %{cl_jp}
-  TBD}
+%{cl_entry 2017-03-21 0.60.0-0.1.a %{cl_jp}
+  split \-bin and \-common packages, the former becoming the only arch-specific
+  also move python-specific (entry points, main files) back from \-cli package
+  bump upstream package (version rolling the above changes out)}
 
 %{cl_entry 2017-01-18 0.59.8-1 %{cl_jp}
   bump upstream package}
