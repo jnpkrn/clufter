@@ -1,4 +1,7 @@
 # distill-spec-prefix: clufter, cl, rhel, test
+#
+# virtual provides:
+#   clufter -> clufter-cli
 %{!?clufter_version: %global clufter_version  %{!?infer:0.60.0}%{?infer:%(
                                                 python ../setup.py --version)}}
 %{!?clufter_name:    %global clufter_name     %{!?infer:clufter}%{?infer:%(
@@ -140,6 +143,7 @@ EOF)}%{?infer:%(../run-dev -h | sed '5,8p;d')}
 %package %{pkgsimple %{clufter_cli}}
 Group:          System Environment/Base
 Summary:        Tool for transforming/analyzing cluster configuration formats
+Provides:       %{name} = %{version}-%{release}
 %if %{with bashcomp}
 # for pkg-config file to be inspected during install phase
 BuildRequires:  bash-completion
@@ -148,7 +152,6 @@ BuildRequires:  bash-completion
 BuildRequires:  help2man
 %endif
 Requires:       %{clufter_pylib} = %{version}-%{release}
-Provides:       %{name} = %{version}-%{release}
 BuildArch:      noarch
 
 %description %{pkgsimple %{clufter_cli}}
