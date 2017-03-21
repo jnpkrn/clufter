@@ -185,7 +185,7 @@ cluster_map = {
                 }),
                 ((6, 9), {
                     'pacemaker[+cman]':              (1, 1, 15),
-                    'pcs':                           (0, 9, 155),  # XXX guess
+                    'pcs':                           (0, 9, 155),
                 }),
                 ((7, 0), {
                     'corosync':                      (2, 3),
