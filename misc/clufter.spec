@@ -37,7 +37,7 @@
 %{!?clufter_url_bugs:%global clufter_url_bugs %{!?pagure:https://bugzilla.redhat.com/enter_bug.cgi?product=Fedora&component=%{name}&version=rawhide}%{?pagure:https://pagure.io/%{name}/issues}}
 
 %{!?clufter_pylib:   %global clufter_pylib    python-%{name}}
-%{!?clufter_extlib:  %global clufter_extlib   %{name}-lib}
+%{!?clufter_lib:     %global clufter_lib      %{name}-lib}
 
 # Python package customizations
 %{!?clufter_ccs_flatten:     %global clufter_ccs_flatten     %{_libexecdir}/%{clufter_source}/ccs_flatten}
@@ -191,40 +191,40 @@ Requires:       %{clufter_editor}
 This package contains %{name} library including built-in plugins.
 
 
-%package %{pkgsimple %{clufter_extlib}-general}
+%package %{pkgsimple %{clufter_lib}-general}
 Group:          System Environment/Libraries
 Summary:        Extra %{name} plugins usable for/as generic/auxiliary products
 Requires:       %{clufter_pylib} = %{version}-%{release}
 BuildArch:      noarch
 
-%description %{pkgsimple %{clufter_extlib}-general}
+%description %{pkgsimple %{clufter_lib}-general}
 This package contains set of additional plugins targeting variety of generic
 formats often serving as a byproducts in the intermediate steps of the overall
 process arrangement: either experimental commands or internally unused,
 reusable formats and filters.
 
 
-%package %{pkgsimple %{clufter_extlib}-ccs}
+%package %{pkgsimple %{clufter_lib}-ccs}
 Group:          System Environment/Libraries
 Summary:        Extra plugins for transforming/analyzing CMAN configuration
 Requires:       %{clufter_pylib} = %{version}-%{release}
-Requires:       %{clufter_extlib}-general = %{version}-%{release}
+Requires:       %{clufter_lib}-general = %{version}-%{release}
 BuildArch:      noarch
 
-%description %{pkgsimple %{clufter_extlib}-ccs}
+%description %{pkgsimple %{clufter_lib}-ccs}
 This package contains set of additional plugins targeting CMAN cluster
 configuration: either experimental commands or internally unused, reusable
 formats and filters.
 
 
-%package %{pkgsimple %{clufter_extlib}-pcs}
+%package %{pkgsimple %{clufter_lib}-pcs}
 Group:          System Environment/Libraries
 Summary:        Extra plugins for transforming/analyzing Pacemaker configuration
 Requires:       %{clufter_pylib} = %{version}-%{release}
-Requires:       %{clufter_extlib}-general = %{version}-%{release}
+Requires:       %{clufter_lib}-general = %{version}-%{release}
 BuildArch:      noarch
 
-%description %{pkgsimple %{clufter_extlib}-pcs}
+%description %{pkgsimple %{clufter_lib}-pcs}
 This package contains set of additional plugins targeting Pacemaker cluster
 configuration: either experimental commands or internally unused, reusable
 formats and filters.
@@ -433,13 +433,13 @@ test -x '%{clufter_script}' && test -f "\\${bashcomp}" \\\\
   && %{clufter_script} --completion-bash > "\\${bashcomp}" 2>/dev/null || :
 EOF)
 
-%post %{pkgsimple %{clufter_extlib}-general}
+%post %{pkgsimple %{clufter_lib}-general}
 %{clufter_post_ext}
 
-%post %{pkgsimple %{clufter_extlib}-ccs}
+%post %{pkgsimple %{clufter_lib}-ccs}
 %{clufter_post_ext}
 
-%post %{pkgsimple %{clufter_extlib}-pcs}
+%post %{pkgsimple %{clufter_lib}-pcs}
 %{clufter_post_ext}
 
 
@@ -478,13 +478,13 @@ EOF)
 %(echo '%{clufter_ccs_flatten}' | sed 's|\(%{_libexecdir}/[^/]\+\).*|\1|')
 %{clufter_ra_metadata_dir}
 
-%files %{pkgsimple %{clufter_extlib}-general}
+%files %{pkgsimple %{clufter_lib}-general}
 %{python2_sitelib}/%{name}/ext-plugins/lib-general
 
-%files %{pkgsimple %{clufter_extlib}-ccs}
+%files %{pkgsimple %{clufter_lib}-ccs}
 %{python2_sitelib}/%{name}/ext-plugins/lib-ccs
 
-%files %{pkgsimple %{clufter_extlib}-pcs}
+%files %{pkgsimple %{clufter_lib}-pcs}
 %{python2_sitelib}/%{name}/ext-plugins/lib-pcs
 
 
