@@ -251,8 +251,9 @@ formats and filters.
                       --ra-metadata-dir='%{clufter_ra_metadata_dir}' \
                       --ra-metadata-ext='%{clufter_ra_metadata_ext}' \
                       --shell-posix='%{clufter_shell_posix}' \
-                      --shell-bashlike='%{clufter_shell_bashlike}' \
-                      --report-bugs='%{clufter_url_bugs}'
+                      --shell-bashlike='%{clufter_shell_bashlike}'
+%{__python2} setup.py saveopts -f setup.cfg pkg_prepare \
+  --report-bugs='%{clufter_url_bugs}'
 # make Python interpreter execution sane (via -Es flags)
 %{__python2} setup.py saveopts -f setup.cfg build_scripts \
                       --executable='%{__python2} -Es'
