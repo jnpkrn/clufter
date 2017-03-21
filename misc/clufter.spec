@@ -588,7 +588,7 @@ EOF)
   bump upstream package}
 
 %{cl_entry 2015-02-26 0.10.0-1 %{cl_jp}
-  packaging enhacements (structure, redundancy, ownership, scriptlets, symlink)
+  packaging enhancements (structure, redundancy, ownership, scriptlets, symlink)
   version bump so as not to collide with python-clufter co-packaged with pcs}
 
 %{cl_entry 2015-01-20 0.3.5-1 %{cl_jp}
