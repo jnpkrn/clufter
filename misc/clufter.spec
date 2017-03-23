@@ -128,7 +128,7 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-lxml
 %endif
 %endif
-%if 0%{?clufter_python3:1}
+%if 0%{?clufter_pylib3:1}
 BuildRequires:  %{clufter_python3}-devel
 BuildRequires:  %{clufter_python3}-setuptools
 %if 0%{?clufter_check}
