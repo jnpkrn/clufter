@@ -292,7 +292,7 @@ class _Command(object):
     def _figure_parser_desc_opts(self, fnc_defaults, fnc_varnames,
                                  opt_group=None):
         readopts, common_tail = False, False
-        shortopts, options, expert =  {}, [], []
+        shortopts, options, expert =  OrderedDict(), [], []
         description = []
         fnc_varnames = set(fnc_varnames)
         opt_group = opt_group or OptionParser()
