@@ -14,7 +14,7 @@ from ..facts import cluster_pcs_flatiron
 from ..filter import XMLFilter
 from ..protocol import protocols
 from ..utils_cman import PATH_CLUSTERCONF
-from ._chains_pcs import ccsflat2pcscmd_chain_exec
+from ._chains_pcs import ccsflat2pcscmd_chain_exec, output_set_exec
 
 
 @Command.deco(('cmd-annotate',
@@ -41,6 +41,7 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
                         enable=False,
                         start_wait="{ccspcmk2pcscmd.defs[pcscmd_start_wait]}",
                         noguidance=False,
+                        set_exec=False,
                         text_width='0',
                         _common=XMLFilter.command_common):
     """(CMAN,rgmanager) cluster cfg. -> equivalent in pcs commands
@@ -56,6 +57,7 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
         enable      enable cluster infrastructure services (autostart on reboot)
         start_wait  fixed seconds to give cluster to come up initially
         noguidance  omit extraneous guiding
+        set_exec    make the output file executable (not recommended)
         text_width  for commands rewrapping (0/-1/neg. ~ auto/disable/hi-limit)
     """
     cmd_ctxt['pcscmd_force'] = force
@@ -75,7 +77,7 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
 
     void_proto = protocols.plugins['void'].ensure_proto
     file_proto = protocols.plugins['file'].ensure_proto
-    return (
+    yield (
         (
             void_proto(),
             (
@@ -107,6 +109,9 @@ def ccs2pcscmd_flatiron(cmd_ctxt,
             #),
         ),
     )
+    # post-processing (make resulting file optionally executable)
+    if set_exec:
+        output_set_exec(cmd_ctxt, 'cmd-wrap')
 
 
 @Command.deco(('cmd-annotate',
@@ -135,6 +140,7 @@ def ccs2pcscmd_needle(cmd_ctxt,
                       enable=False,
                       start_wait="{needlexml2pcscmd.defs[pcscmd_start_wait]}",
                       noguidance=False,
+                      set_exec=False,
                       text_width='0',
                       _common=XMLFilter.command_common):
     """(CMAN,rgmanager) cluster cfg. -> equivalent in pcs commands
@@ -150,6 +156,7 @@ def ccs2pcscmd_needle(cmd_ctxt,
         enable      enable cluster infrastructure services (autostart on reboot)
         start_wait  fixed seconds to give cluster to come up initially
         noguidance  omit extraneous guiding
+        set_exec    make the output file executable (not recommended)
         text_width  for commands rewrapping (0/-1/neg. ~ auto/disable/hi-limit)
     """
     cmd_ctxt['pcscmd_force'] = force
@@ -169,7 +176,7 @@ def ccs2pcscmd_needle(cmd_ctxt,
 
     void_proto = protocols.plugins['void'].ensure_proto
     file_proto = protocols.plugins['file'].ensure_proto
-    return (
+    yield (
         (
             void_proto(),
             (
@@ -204,6 +211,9 @@ def ccs2pcscmd_needle(cmd_ctxt,
             #),
         ),
     )
+    # post-processing (make resulting file optionally executable)
+    if set_exec:
+        output_set_exec(cmd_ctxt, 'cmd-wrap')
 
 
 @CommandAlias.deco
