@@ -5,6 +5,9 @@
 """Chains of filters used in *2pcs* commands"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+from os import fchmod, fstat
+import stat
+
 from ..utils import args2tuple, args2unwrapped, tuplist
 from ..utils_func import apply_aggregation_preserving_passing_depth
 
@@ -49,3 +52,21 @@ ccsflat2pcscmd_chain_exec = lambda cont=(): \
 #ccsflat2pcscmd_chain = (ccsflat2cibfinal_chain_exec(cib2pcscmd_chain))
 ccsflat2pcscmd_chain = ccsflat2pcscmd_chain_exec()
 ccsflat2pcscmd_output = cast_output(ccsflat2pcscmd_chain)
+
+
+def output_set_exec(cmd_ctxt, output_flt):
+    """Common post-processing for commands producing scripts, sets exec bits"""
+    o = cmd_ctxt.filter(output_flt)['out'].FILE()
+    if o.startswith('<') and o.endswith('>'):
+        pass  # do not try to manipulate with stdout/stderr
+    else:
+        try:
+            with open(o, 'rb') as f:
+                fd = f.fileno()
+                fchmod(fd, fstat(fd).st_mode | stat.S_IXUSR | stat.S_IXGRP)
+        except IOError:
+            from sys import stderr
+            svc_output = cmd_ctxt.get('svc_output',
+                                      lambda s, **kw: stderr.write(s + '\n'))
+            svc_output("Cannot set output file `{0}` executable".format(o),
+                       base="error", urgent=True)

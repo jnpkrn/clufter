@@ -16,7 +16,7 @@ from ..protocol import protocols
 from ..utils_cib import PATH_CIB
 from ..utils_cman import PATH_CLUSTERCONF
 from ..utils_corosync import PATH_COROCONF
-from ._chains_pcs import cib2pcscmd_chain_exec
+from ._chains_pcs import cib2pcscmd_chain_exec, output_set_exec
 
 
 @Command.deco(('cmd-annotate',
@@ -40,6 +40,7 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
                         enable=False,
                         start_wait="{ccspcmk2pcscmd.defs[pcscmd_start_wait]}",
                         noguidance=False,
+                        set_exec=False,
                         text_width='0',
                         _common=XMLFilter.command_common):
     """(Corosync/CMAN,Pacemaker) cluster cfg. -> reinstating pcs commands
@@ -56,6 +57,7 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
         enable      enable cluster infrastructure services (autostart on reboot)
         start_wait  fixed seconds to give cluster to come up initially
         noguidance  omit extraneous guiding
+        set_exec    make the output file executable (not recommended)
         text_width  for commands rewrapping (0/-1/neg. ~ auto/disable/hi-limit)
     """
     cmd_ctxt['pcscmd_force'] = force
@@ -76,7 +78,7 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
     void_proto = protocols.plugins['void'].ensure_proto
     file_proto = protocols.plugins['file'].ensure_proto
 
-    return (
+    yield (
         (
             void_proto(),
             (
@@ -102,6 +104,9 @@ def pcs2pcscmd_flatiron(cmd_ctxt,
             #),
         ),
     )
+    # post-processing (make resulting file optionally executable)
+    if set_exec:
+        output_set_exec(cmd_ctxt, 'cmd-wrap')
 
 
 @Command.deco(('cmd-annotate',
@@ -130,6 +135,7 @@ def pcs2pcscmd_needle(cmd_ctxt,
                       enable=False,
                       start_wait="{needlexml2pcscmd.defs[pcscmd_start_wait]}",
                       noguidance=False,
+                      set_exec=False,
                       text_width='0',
                       _common=XMLFilter.command_common):
     """(Corosync v2,Pacemaker) cluster cfg. -> reinstating pcs commands
@@ -146,6 +152,7 @@ def pcs2pcscmd_needle(cmd_ctxt,
         enable      enable cluster infrastructure services (autostart on reboot)
         start_wait  fixed seconds to give cluster to come up initially
         noguidance  omit extraneous guiding
+        set_exec    make the output file executable (not recommended)
         text_width  for commands rewrapping (0/-1/neg. ~ auto/disable/hi-limit)
     """
     cmd_ctxt['pcscmd_force'] = force
@@ -165,7 +172,7 @@ def pcs2pcscmd_needle(cmd_ctxt,
 
     void_proto = protocols.plugins['void'].ensure_proto
     file_proto = protocols.plugins['file'].ensure_proto
-    return (
+    yield (
         (
             void_proto(),
             (
@@ -201,6 +208,9 @@ def pcs2pcscmd_needle(cmd_ctxt,
             #),
         ),
     )
+    # post-processing (make resulting file optionally executable)
+    if set_exec:
+        output_set_exec(cmd_ctxt, 'cmd-wrap')
 
 
 @CommandAlias.deco

@@ -31,6 +31,7 @@ def cib2pcscmd(cmd_ctxt,
                tmp_cib="{cib2pcscmd.defs[pcscmd_tmpcib]}",
                dry_run=False,
                enable=False,
+               set_exec=False,
                text_width='0',
                _common=XMLFilter.command_common):
     """CIB -> equivalent in pcs commands
@@ -44,6 +45,7 @@ def cib2pcscmd(cmd_ctxt,
         tmp_cib     file to accumulate the changes (empty ~ direct push, avoid!)
         dry_run     omit intrusive commands (TMP_CIB reset if empty)
         enable      enable cluster infrastructure services (autostart on reboot)
+        set_exec    make the output file executable (not recommended)
         text_width  for commands rewrapping (0/-1/neg. ~ auto/disable/hi-limit)
     """
     cmd_ctxt['pcscmd_force'] = force
@@ -59,7 +61,7 @@ def cib2pcscmd(cmd_ctxt,
 
     void_proto = protocols.plugins['void'].ensure_proto
     file_proto = protocols.plugins['file'].ensure_proto
-    return (
+    yield (
         (
             void_proto(),
             (
@@ -77,3 +79,6 @@ def cib2pcscmd(cmd_ctxt,
             #),
         ),
     )
+    # post-processing (make resulting file optionally executable)
+    if set_exec:
+        output_set_exec(cmd_ctxt, 'cmd-wrap')
