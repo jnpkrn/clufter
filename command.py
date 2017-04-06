@@ -280,7 +280,7 @@ class _Command(object):
 
     @MimicMeta.method
     def _figure_parser_opt_unofficial(self, options, shortopts, fnc_varnames):
-        # unofficial/unsupported ones
+        # unofficial/unsupported ones  (XXX shortopts unused)
         for var in fnc_varnames:
             optname_used = cli_decor(var)
             options.append([["--" + optname_used], dict(
@@ -342,14 +342,15 @@ class _Command(object):
             else:
                 description.append(line)
 
-        for short, aliases in iter_items(shortopts):  # foreach in ideal shorts
-            for i, alias in enumerate(aliases):  # foreach in conflicting ones
+        for short in tuple(shortopts):  # foreach in ideal shorts, ditto in...
+            for i, alias in enumerate(shortopts[short]):  # ... conflicting ones
                 for c in longopt_letters_reprio(options[alias][0][0]):
                     use = '-' + c
-                    if opt_group.has_option(use):
+                    if opt_group.has_option(use) or (i > 0 and c in shortopts):
                         continue
-                    if c not in shortopts or i == 0:
-                        break
+                    if c not in shortopts:
+                        shortopts[c] = (i, )
+                    break
                 else:
                     log.info("Could not find short option for `{0}'"
                              .format(options[alias][0]))
