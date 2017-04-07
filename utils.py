@@ -32,7 +32,8 @@ args2unwrapped = \
 args2tuple = lambda *args: args
 any2iter = \
     lambda x: \
-        x if hasattr(x, 'next') and hasattr(x.next, '__call__') \
+        x if hasattr(getattr(x, 'next', getattr(x, '__next__', None)),
+                     '__call__') \
         else iter(args2sgpl(x, None))
 
 head_tail = \
