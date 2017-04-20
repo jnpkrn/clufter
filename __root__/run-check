@@ -33,7 +33,7 @@ which ccs_flatten 2>/dev/null || (
     make -C ccs-flatten symlink
 ) || { ret=$?; echo "ccs_flatten missing, cannot be built"; exit ${ret}; }
 
-run_check() {
+run_check_ccs2pcs() {
     # self-check for sanity usage
     testcib="$(mktemp)" testcoro="$(mktemp)"
     { { ${PYTHONEXEC} run-dev --dist redhat,7.1,Maipo \
@@ -170,7 +170,7 @@ EOF
     return ${ret}
 }
 
-run_check_cmd() {
+run_check_ccs2pcscmd() {
     # self-check for sanity usage
     testcmd="$(mktemp)"
     { ${PYTHONEXEC} run-dev --dist redhat,7.1,Maipo \
@@ -258,4 +258,11 @@ EOF
     return ${ret}
 }
 
-[ "${NORUN:-0}" -ne 0 ] || { run_check "$@"; run_check_cmd "$@"; }
+run_checks() {
+    ret=0
+    run_check_ccs2pcs "$@"; ret=$?
+    run_check_ccs2pcscmd "$@"; ret=$((ret+$?))
+    return ${ret}
+}
+
+[ "${NORUN:-0}" -ne 0 ] || run_checks
