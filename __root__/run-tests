@@ -136,6 +136,6 @@ trap 'ret=1' USR1
     eval "{ ${DEBUG} ${CMD} ${ACC}; [ \$? -eq 0 ] || kill -USR1 \$\$; } ${TAIL}"
 )
 
-[ "${RUNCHECK}" -eq 0 ] || { run_check; run_check_cmd; } || ret=$((ret+2))
+[ "${RUNCHECK}" -eq 0 ] || { run_checks; } || ret=$((ret+$?))
 
 f() { echo "EXIT STATUS: $1"; return $1; }; f ${ret}
