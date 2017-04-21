@@ -80,6 +80,11 @@ def cib2pcscmd(flt_ctxt, in_obj):
                     flt_ctxt['system'],
                     flt_ctxt['system_extra'],
                 )),
+                pcscmd_extra_agents_via_pacemaker = bool(infer(
+                    'comp:pcs[agents-via-pacemaker]',
+                    flt_ctxt['system'],
+                    flt_ctxt['system_extra'],
+                )),
             ),
         ),
     )
