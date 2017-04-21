@@ -248,6 +248,13 @@ cluster_map = {
                     'pacemaker[+coro]':              (1, 1, 15),
                     'pcs':                           (0, 9, 153),  # universe
                 }),
+                ((17, 4), {
+                    # https://packages.ubuntu.com/zesty/$PACKAGE
+                    'corosync':                      (2, 4),
+                    'pacemaker[+coro]':              (1, 1, 16),
+                    'pcs':                           (0, 9, 155),  # universe
+                    'resource-agents':               (4, 0, 0),
+                }),
             ),
         },
 }
@@ -299,8 +306,8 @@ aliases_rel = {
         '16.04':      '16.4',
         'xenial':     '16.4',   # Xenial Xerus
         'yakkety':    '16.10',  # Yakkety Yak
-        #'17.04':      '17.4',
-        #'zesty':      '17.4',   # Zesty Zapus
+        '17.04':      '17.4',
+        'zesty':      '17.4',   # Zesty Zapus
     }
 }
 
