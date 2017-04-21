@@ -212,6 +212,10 @@ cluster_map = {
                     'pacemaker[+coro]':              (1, 1, 15),
                     'pcs':                           (0, 9, 153),  # 152+patches
                 }),
+                ((7, 4), {
+                    'pacemaker[+coro]':              (1, 1, 16),   # guess
+                    'pcs':                           (0, 9, 157),  # guess
+                }),
             ),
             'ubuntu': (
                 ((13, 4), {
