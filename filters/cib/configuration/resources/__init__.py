@@ -424,7 +424,23 @@ cib2pcscmd = ('''\
 ''' + (
         verbose_inform('"new stonith: ", @id')
 ) + '''
-        <xsl:value-of select="concat($pcscmd_pcs, 'stonith create',
+        <xsl:variable name="PcsStonithCmd">
+            <xsl:choose>
+            <!-- "pcs stonith create ID external/EXT" only supported
+                 with certain newer versions of pcs
+                 (https://github.com/ClusterLabs/pcs/issues/81) -->
+                <xsl:when test="$pcscmd_extra_agents_via_pacemaker
+                                or
+                                not(starts-with(@type, 'external/'))">
+                    <xsl:value-of select="$pcscmd_pcs"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:message>%(stonith_external_msg)s</xsl:message>
+                    <xsl:value-of select="concat($pcscmd_pcs, '--force ')"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:variable>
+        <xsl:value-of select="concat($PcsStonithCmd, 'stonith create',
                                      ' ', @id,
                                      ' ', @type)"/>
 ''' + (
@@ -521,7 +537,7 @@ cib2pcscmd = ('''\
 ) + '''
 
         <!-- "pcs resource utilization" only supported with certain newer
-             versions of pcs -->
+             versions of pcs (https://bugzilla.redhat.com/1158500) -->
         <xsl:choose>
             <xsl:when test="$pcscmd_extra_utilization">
 ''' + (
@@ -556,6 +572,10 @@ cib2pcscmd = ('''\
     NL=NL,
     utilization_msg="WARNING: target pcs version does not support utilization"
                     " attributes, hence omitted",
+    stonith_external_msg="WARNING: target pcs version does not support"
+                         " getting agents metadata through pacemaker, hence"
+                         " special stonith case of external/* needs to be"
+                         " passed by force",
 )
 
 ###

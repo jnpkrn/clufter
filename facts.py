@@ -185,7 +185,7 @@ cluster_map = {
                 }),
                 ((6, 9), {
                     'pacemaker[+cman]':              (1, 1, 15),
-                    'pcs':                           (0, 9, 155),
+                    'pcs[-agents-via-pacemaker]':    (0, 9, 155),
                 }),
                 ((7, 0), {
                     'corosync':                      (2, 3),
@@ -339,12 +339,15 @@ versions_extra = {
         ((0, 9, 145),
             '+node-maintenance'),
         ((0, 9, 148),
-            '+utilization'),
+            '+utilization'),  # https://bugzilla.redhat.com/1158500
         ((0, 9, 150),
             '+wait-cluster-start'),
         ((0, 9, 153),
             # qdevice+qnet preliminary support since 0.9.151, but...
             '+alerts,+qdevice,+qnet'),
+        ((0, 9, 155),
+            # this also implies support for external/* stonith agents
+            '+agents-via-pacemaker'),  # https://github.com/ClusterLabs/pcs/issues/81
     ),
     'resource-agents': (
         # http://lists.linux-ha.org/pipermail/linux-ha/2011-June/043321.html

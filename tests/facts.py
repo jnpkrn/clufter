@@ -108,6 +108,11 @@ class TestExtra(TestCase):
         self.assertFalse(infer(check, 'linux', ('redhat', '6.5')))
         self.assertTrue(infer(check, 'linux', ('redhat', '6.6')))
 
+    def test_extra_pcs_agents_via_pacemaker(self):
+        check = 'comp:pcs[agents-via-pacemaker]'
+        self.assertFalse(infer(check, 'linux', ('redhat', '6.9')))
+        self.assertTrue(infer(check, 'linux', ('redhat', '7.4')))
+
     def test_extra_pcs_utilization(self):
         check = 'comp:pcs[utilization]'
         self.assertFalse(infer(check, 'linux', ('redhat', '6.0')))
