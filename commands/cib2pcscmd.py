@@ -30,7 +30,6 @@ def cib2pcscmd(cmd_ctxt,
                silent=False,
                tmp_cib="{cib2pcscmd.defs[pcscmd_tmpcib]}",
                dry_run=False,
-               enable=False,
                set_exec=False,
                text_width='0',
                _common=XMLFilter.command_common):
@@ -44,7 +43,6 @@ def cib2pcscmd(cmd_ctxt,
         silent      do not track the progress along the steps execution (echoes)
         tmp_cib     file to accumulate the changes (empty ~ direct push, avoid!)
         dry_run     omit intrusive commands (TMP_CIB reset if empty)
-        enable      enable cluster infrastructure services (autostart on reboot)
         set_exec    make the output file executable (not recommended)
         text_width  for commands rewrapping (0/-1/neg. ~ auto/disable/hi-limit)
     """
@@ -53,7 +51,6 @@ def cib2pcscmd(cmd_ctxt,
     cmd_ctxt['pcscmd_verbose'] = not(silent)
     cmd_ctxt['pcscmd_tmpcib'] = tmp_cib
     cmd_ctxt['pcscmd_dryrun'] = dry_run
-    cmd_ctxt['pcscmd_enable'] = enable
     cmd_ctxt['text_width'] = text_width
 
     cmd_ctxt['annotate_shell'] = SHELL_POSIX
