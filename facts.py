@@ -143,6 +143,11 @@ cluster_map = {
                     #'pacemaker[+coro]':              (1, 1, 16),  # updates
                     'pcs':                           (0, 9, 154),
                 }),
+                # coming...
+                #((26, ), {
+                #    'resource-agents':               (4, 0, 1),
+                #    'pacemaker[+coro]':              (1, 1, 17),
+                #}),
             ),
             'redhat': (
                 ((6, 0), {
@@ -312,6 +317,8 @@ aliases_rel = {
         'yakkety':    '16.10',  # Yakkety Yak
         '17.04':      '17.4',
         'zesty':      '17.4',   # Zesty Zapus
+        # https://wiki.ubuntu.com/ArtfulAardvark/ReleaseSchedule
+        #'artful':     '17.10',  # Artful Aardvark
     }
 }
 
@@ -322,6 +329,7 @@ versions_extra = {
             '+qdevice,+qnet'),
     ),
     'pacemaker': (
+        # see also http://wiki.clusterlabs.org/wiki/ReleaseCalendar
         ((1, 1, 8),
             '+schema-1.2'),
         ((1, 1, 12),
@@ -334,6 +342,9 @@ versions_extra = {
             '+alerts,+schema-2.5'),
         ((1, 1, 16),
             '+schema-2.6'),
+        # coming...
+        #((1, 1, 17),
+        #    '+bundle,+schema-2.8'),
     ),
     'pcs': (
         ((0, 9, 145),
