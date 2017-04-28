@@ -12,6 +12,7 @@ from copy import deepcopy
 from functools import reduce
 from glob import glob
 from imp import find_module, load_module
+from itertools import dropwhile, islice
 from logging import getLogger
 from os import extsep, fdopen, stat, walk
 from os.path import basename, commonprefix, dirname, exists, join, sep, splitext
@@ -157,18 +158,33 @@ class _Format(object):
         assert protocol in self._protocols, ("unrecognized protocol `{0}'"
                                              .format(protocol))
         assert args != (None, )
-        validator = self.validator(protocol)
-        if validator:
-            entries, _ = head_tail(validator(*args))
-            if isinstance(entries, basestring):
-                log.warning(entries)
-            elif entries:
-                raise FormatError(self, "Validation: {0}".format(
-                    ', '.join(':'.join(args2tuple(str(e[0]), str(e[1]), *e[2:]))
-                              for e in entries))
-                )
+        constructing = not self._representations  # called from constructor
         prev = self._representations.setdefault(protocol, args)
         assert prev is args
+
+        if not constructing:
+            return  # trust that equivalent of once validated keeps the property
+        log.debug("Will try to validate `{0}' instance"
+                  .format(self.__class__.name))
+
+        cands = (protocol, self.native_protocol) + tuple(self._validators)[:1]
+        validating_protocol = args2unwrapped(*islice(dropwhile(lambda x: x not in
+                                                               self._validators,
+                                                               cands), 1))
+        validator = self.validator(validating_protocol)
+        if not validator:
+            return  # cannot validate in any way
+
+        # XXX make this a validator + updater loop
+        obj = self(validating_protocol)
+        entries, _ = head_tail(validator(obj))
+        if isinstance(entries, basestring):
+            log.warning(entries)
+        elif entries:
+            raise FormatError(self, "Validation: {0}".format(
+                ', '.join(':'.join(args2tuple(str(e[0]), str(e[1]), *e[2:]))
+                          for e in entries))
+            )
 
     @MimicMeta.method
     def producer(self, protocol):
