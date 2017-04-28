@@ -150,7 +150,7 @@ class _Format(object):
 
     @MimicMeta.method
     def swallow(self, protocol, *args):
-        """"Called by implicit constructor to get a format instance"""
+        """Called by native constructor/producer to store a format instance"""
         if protocol == 'native':
             protocol = self.native_protocol
 
@@ -179,7 +179,7 @@ class _Format(object):
 
     @MimicMeta.method
     def produce(self, protocol, *args, **kwargs):
-        """"Called by implicit invocation to get data externalized"""
+        """Called by implicit invocation to get data externalized"""
         if protocol == 'native':
             protocol = self.native_protocol
 
@@ -259,7 +259,7 @@ class _Format(object):
 
         This ought to be the authoritative (and only) way to use
         a validator, do not touch _validators and also validator_specs
-        is not dropped from class attributes for this very reason.
+        is dropped from class attributes for this very reason.
         """
         which = this.native_protocol if protocol is None else protocol
         try:
@@ -291,7 +291,7 @@ class _Format(object):
         As a bonus: caching of representations."""
         def deco_meth(meth):
             def deco_args(self, protocol, *args, **kwargs):
-                # XXX enforce nochain for this interative processing?
+                # XXX enforce nochain for this iterative processing?
                 do_protect = protect and not kwargs.pop('protect_safe', False)
                 produced = None
                 try:
@@ -558,7 +558,7 @@ class CompositeFormat(Format, MetaPlugin):
         return self._designee[index]
 
     def produce(self, protocol, *args, **kwargs):
-        """"Called by implicit invocation to get data externalized"""
+        """Called by implicit invocation to get data externalized"""
         if protocol == 'native':
             protocol = self.native_protocol
 
@@ -580,7 +580,7 @@ class CompositeFormat(Format, MetaPlugin):
 
 
 class XML(SimpleFormat):
-    """"Base for XML-based configuration formats"""
+    """Base for XML-based configuration formats"""
 
     MAX_DEPTH = 1000
 

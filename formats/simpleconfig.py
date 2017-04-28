@@ -13,7 +13,7 @@ from ..utils_prog import getenv_namespaced
 
 
 class simpleconfig(SimpleFormat):
-    """"Structured configuration formats such as corosync.conf
+    """Structured configuration formats such as corosync.conf
 
     Internally ('struct'), it is structured liked this:
 
