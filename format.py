@@ -149,7 +149,7 @@ class _Format(object):
     ###
 
     @MimicMeta.method
-    def swallow(self, protocol, *args):
+    def _swallow(self, protocol, *args):
         """Called by native constructor/producer to store a format instance"""
         if protocol == 'native':
             protocol = self.native_protocol
@@ -227,7 +227,7 @@ class _Format(object):
                 return wrapped_call()
             log.debug("Proxying {0} to add callability".format(attr))
             setattr(self, attr, get_protocol_proxy(getattr(self, attr)))
-        self.swallow(protocol, *args)
+        self._swallow(protocol, *args)
 
     @MimicMeta.classmethod
     def as_instance(cls, *decl_or_instance, **kwargs):
@@ -326,7 +326,7 @@ class _Format(object):
                         if (that_cls is self.__class__
                             and protocol not in self._representations):
                             # computed -> stored normalization
-                            self.swallow(protocol, *arg2wrapped(produced))
+                            self._swallow(protocol, *arg2wrapped(produced))
                         else:
                             do_protect = False
                         break
