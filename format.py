@@ -245,6 +245,23 @@ class _Format(object):
             setattr(self, attr, get_protocol_proxy(getattr(self, attr)))
         self._swallow(protocol, *args)
 
+    @MimicMeta.passdeco(classmethod)
+    def common_protocols(cls, foreign):
+        """Get common local vs. foreign protocols, native ones prioritized"""
+        # XXX composite format
+        if not hasattr(foreign, '_protocols'):
+            raise FormatError(cls, "cannot check common protocols for `{0}'",
+                              repr(foreign))
+        return sorted(
+            reduce(
+                set.intersection,
+                map(set, (cls._protocols, foreign._protocols))
+            ),
+            key=lambda x:
+                int(x == cls.native_protocol) * 2
+                + int(x == foreign.native_protocol)
+        )
+
     @MimicMeta.classmethod
     def as_instance(cls, *decl_or_instance, **kwargs):
         """Create an instance or verify and return existing one"""
