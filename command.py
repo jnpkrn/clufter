@@ -6,7 +6,6 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from collections import MutableMapping
-from functools import reduce
 try:
     from itertools import zip_longest
 except ImportError:  # PY2 backward compatibility
@@ -205,26 +204,17 @@ class _Command(object):
                         "filter `{0}' is feeded by `{1}' more than once",
                         i.__class__.__name__, pass_through.__class__.__name__
                     )
-                common_protocols = None  # for when CompositeFormat involved
+                com = None  # for when CompositeFormat involved
                 if (hasattr(pass_through.out_format, '_protocols')
-                    and hasattr(i.in_format, '_protocols')):
-                    common_protocols = sorted(
-                        reduce(
-                            set.intersection,
-                            map(set, (pass_through.out_format._protocols,
-                                    i.in_format._protocols))
-                        ),
-                        key=lambda x:
-                            int(x == pass_through.out_format.native_protocol)
-                            + int(x == i.in_format.native_protocol)
-                    )
-                    if not common_protocols:
+                        and hasattr(i.in_format, '_protocols')):
+                    com = pass_through.out_format.common_protocols(i.in_format)
+                    if not com:
                         raise CommandError(me,
                             "filter `{0}' and its feeder `{1}' have no protocol"
                             " in common",
                             i.__class__.__name__, pass_through.__class__.__name__
                         )
-                bt[pass_through] = common_protocols
+                bt[pass_through] = com
             if i_tail:
                 # PASSDOWN
                 # this uses a dirty trick of exploiting the end of the list
