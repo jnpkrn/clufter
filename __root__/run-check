@@ -34,7 +34,6 @@ which ccs_flatten 2>/dev/null || (
 ) || { ret=$?; echo "ccs_flatten missing, cannot be built"; exit ${ret}; }
 
 run_check_ccs2pcs() {
-    # self-check for sanity usage
     testcib="$(mktemp)" testcoro="$(mktemp)"
     { { ${PYTHONEXEC} run-dev --dist redhat,7.1,Maipo \
                               ccs2pcs "${@}" -- - - "${testcib}" \
@@ -171,13 +170,12 @@ EOF
 }
 
 run_check_ccs2pcscmd() {
-    # self-check for sanity usage
     testcmd="$(mktemp)"
     { ${PYTHONEXEC} run-dev --dist redhat,7.1,Maipo \
                             ccs2pcscmd "${@}" \
 			    --text-width=72 --silent --noguidance \
 			    -- - - \
-			    | sed '1,2d;6d' > "${testcmd}" \
+			    | sed '1,4d;6d' > "${testcmd}" \
       && echo "TEST: execution OK" \
       || { echo "TEST: execution FAIL"; ret=20; }; }<<EOF
 <?xml version="1.0"?>
@@ -223,8 +221,6 @@ EOF
     { diff -u -- - "${testcmd}" \
       && echo "TEST: cmd diff OK" \
       || { echo "TEST: cmd diff FAIL"; ret=21; }; }<<EOF
-# invoked as: ['run-dev', '--dist', 'redhat,7.1,Maipo', 'ccs2pcscmd',
-# '--text-width=72', '--silent', '--noguidance', '--', '-', '-']
 # targeting system: ('linux', 'redhat', '7.1', 'Maipo')
 pcs cluster auth rhel6-node1 rhel6-node2 <>/dev/tty
 pcs cluster setup --name one rhel6-node1 rhel6-node2 --join 60 \\
@@ -260,9 +256,9 @@ EOF
 
 run_checks() {
     ret=0
-    run_check_ccs2pcs "$@"; ret=$?
-    run_check_ccs2pcscmd "$@"; ret=$((ret+$?))
+    run_check_ccs2pcs "${@}"; ret=$((ret+$?))
+    run_check_ccs2pcscmd "${@}"; ret=$((ret+$?))
     return ${ret}
 }
 
-[ "${NORUN:-0}" -ne 0 ] || run_checks
+[ "${NORUN:-0}" -ne 0 ] || run_checks "${@}"
