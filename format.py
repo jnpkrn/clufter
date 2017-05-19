@@ -771,19 +771,22 @@ class XML(SimpleFormat):
             snippet from "master" validating schema relevant to `start`
         """
         # XXX holds its private cache under cls._validation_cache
-        assert spec
-        if not root_dir:
-            root_dir = dirname(modules[cls.__module__].__file__)
-        if sep not in spec:
-            spec = join(root_dir, cls.root, spec)
-        if any(filter(lambda c: c in spec, '?*')):
-            globbed = glob(spec)
-            spec = globbed or spec
-        elif exists(spec):
-            spec = args2tuple(spec)
-        if not tuplist(spec):
-            return (((0, 0, "Cannot validate, no matching spec: `{0}'"
-                            .format(spec)), ), None, None)
+        if modules[cls.__module__].__file__ != __file__:
+            assert spec
+            if not root_dir:
+                root_dir = dirname(modules[cls.__module__].__file__)
+            if sep not in spec:
+                spec = join(root_dir, cls.root, spec)
+            if any(filter(lambda c: c in spec, '?*')):
+                globbed = glob(spec)
+                spec = globbed or spec
+            elif exists(spec):
+                spec = args2tuple(spec)
+            if not tuplist(spec):
+                return (((0, 0, "Cannot validate, no matching spec: `{0}'"
+                                .format(spec)), ), None, None)
+        else:  # skip validating for plain XML
+            spec = ()
         fatal, master, master_snippet = [], '', ''
         for s in reversed(sorted(spec)):
             fatal, master = [], s
