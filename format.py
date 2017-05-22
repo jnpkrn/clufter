@@ -25,11 +25,12 @@ try:
     from .defaults import HASHALGO
 except ImportError:
     HASHALGO = 'md5'
-from .error import ClufterError
+from .error import ClufterError, ClufterPlainError
 from .plugin_registry import MetaPlugin, PluginRegistry
 from .protocol import Protocol
 from .utils import arg2wrapped, args2sgpl, args2tuple, args2unwrapped, \
                    classproperty, \
+                   filterdict_pop, \
                    head_tail, \
                    hybridmethod, \
                    immutable, \
@@ -49,6 +50,9 @@ DEFAULT_ROOT_DIR = join(dirname(__file__), 'formats')
 
 
 class FormatError(ClufterError):
+    pass
+
+class FormatPlainError(ClufterPlainError, FormatError):
     pass
 
 
@@ -751,8 +755,29 @@ class XML(SimpleFormat):
     }
 
     @classmethod
-    def etree_rng_validator(cls, et, root_dir=None,
-                            spec=validator_specs[ETREE], start=None):
+    def _etree_rng_validator_specs(cls, root_dir=None, spec=None):
+        if modules[cls.__module__].__file__ == __file__:
+            spec = ()    # skip validating for plain XML
+        else:
+            if spec is None:
+                _, spec = cls._validators[cls.ETREE]  # installed by meta-level
+            # XXX use spec getter a was the intention before
+            if not root_dir:
+                root_dir = dirname(modules[cls.__module__].__file__)
+            if sep not in spec:
+                spec = join(root_dir, cls.root, spec)
+            if any(filter(lambda c: c in spec, '?*')):
+                globbed = glob(spec)
+                spec = globbed or spec
+            elif exists(spec):
+                spec = args2tuple(spec)
+            if not tuplist(spec):
+                raise FormatPlainError("Cannot validate, no matching spec:"
+                                       " `{0}'".format(spec))
+        return spec
+
+    @classmethod
+    def etree_rng_validator(cls, et, start=None, **kwargs):
         """RNG-validate `et` ElementTree with schemes as per `root_dir`+`spec`
 
         ... and, optionally, narrowed to `start`-defined grammar segment.
@@ -771,22 +796,12 @@ class XML(SimpleFormat):
             snippet from "master" validating schema relevant to `start`
         """
         # XXX holds its private cache under cls._validation_cache
-        if modules[cls.__module__].__file__ != __file__:
-            assert spec
-            if not root_dir:
-                root_dir = dirname(modules[cls.__module__].__file__)
-            if sep not in spec:
-                spec = join(root_dir, cls.root, spec)
-            if any(filter(lambda c: c in spec, '?*')):
-                globbed = glob(spec)
-                spec = globbed or spec
-            elif exists(spec):
-                spec = args2tuple(spec)
-            if not tuplist(spec):
-                return (((0, 0, "Cannot validate, no matching spec: `{0}'"
-                                .format(spec)), ), None, None)
-        else:  # skip validating for plain XML
-            spec = ()
+        try:
+            spec = cls._etree_rng_validator_specs(
+                **filterdict_pop(kwargs, 'root_dir', 'spec')
+            )
+        except FormatPlainError as e:
+            return (((0, 0, str(e)), ), None, None)
         fatal, master, master_snippet = [], '', ''
         for s in reversed(sorted(spec)):
             fatal, master = [], s
