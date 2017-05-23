@@ -306,6 +306,38 @@ pcs alert recipient add alert-foo 'value=3' id=alert-foo-recipient3
             self.assertEqual(out_obj.BYTESTRING(), out_str)
 
 
+class FiltersCib2pcscmdACLTestCase(TeardownFilterTestCase):
+    def testACLSimple(self):
+        flt_obj = rewrite_root(self.flt_mgr.filters[flt],
+                               'cib/configuration/acls')
+        in_fmt = flt_obj.in_format
+        io_strings = (
+            ('''\
+<acl_role id="no-fd-passwd">
+  <acl_permission id="no-fd-passwd-perm" kind="deny" reference="no-fd-passwd"/>
+</acl_role>
+<acl_target id="observer">
+  <role id="no-fd-passwd"/>
+</acl_target>
+''', '''\
+pcs acl role create no-fd-passwd deny id no-fd-passwd
+pcs acl user create observer no-fd-passwd
+'''),
+        )
+        for (in_str, out_str) in io_strings:
+            in_str = '''\
+<acls>
+''' + in_str + '''
+</acls>
+'''
+            in_obj = in_fmt('bytestring', in_str,
+                            validator_specs={in_fmt.ETREE: ''})
+            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
+                              system='linux', system_extra=('rhel', '7.3'))
+            #print(out_obj.BYTESTRING())
+            self.assertEqual(out_obj.BYTESTRING(), out_str)
+
+
 from os.path import join, dirname; from sys import modules as m  # 2/3 compat
 b = m.get('builtins', m.get('__builtin__')); e, E, h = 'exec', 'execfile', hash
 with open(join(dirname(dirname(__file__)), '_gone')) as f:

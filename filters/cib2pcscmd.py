@@ -47,7 +47,7 @@ def attrset_xsl(attrset, cmd=None, inform=None):
 ''').format(NL=NL, attrset=attrset, cmd=cmd)
 
 
-@XMLFilter.deco('cib', 'string-list', defs=dict(
+@XMLFilter.deco('cib-2', 'string-list', defs=dict(
     pcscmd_force=False,
     pcscmd_verbose=True,
     pcscmd_tmpcib='tmp-cib.xml',
