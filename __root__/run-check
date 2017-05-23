@@ -499,11 +499,274 @@ EOF
     return ${ret}
 }
 
+# as run_check_cib2pcscmd but enforce internal 1.2 -> 2.0+ format upgrade
+run_check_cib2pcscmd_impl_conv() {
+    # config borrowed from: pacemaker.git/pengine/test10/bug-cl-5212.xml
+    testcmd="$(mktemp)"
+    { ${PYTHONEXEC} run-dev --dist rhel,7.4 \
+                            cib2pcscmd "${@}" \
+			    --text-width=72 --silent -- - - \
+			    | sed '1,4d;6d' > "${testcmd}" \
+      && echo "TEST: execution OK" \
+      || { echo "TEST: execution FAIL"; ret=20; }; }<<EOF
+<cib validate-with="pacemaker-1.2" epoch="4" num_updates="46" admin_epoch="0">
+  <configuration>
+    <crm_config>
+      <cluster_property_set id="cib-bootstrap-options">
+        <nvpair id="cib-bootstrap-options-dc-version" name="dc-version" value="1.1.11-f0f09b8"/>
+        <nvpair id="cib-bootstrap-options-cluster-infrastructure" name="cluster-infrastructure" value="corosync"/>
+        <nvpair name="enable-acl" value="true" id="cib-bootstrap-options-enable-acl"/>
+        <nvpair name="no-quorum-policy" value="freeze" id="cib-bootstrap-options-no-quorum-policy"/>
+        <nvpair name="stonith-enabled" value="true" id="cib-bootstrap-options-stonith-enabled"/>
+      </cluster_property_set>
+    </crm_config>
+    <nodes>
+      <node id="3232238300" uname="srv03"/>
+      <node id="3232238280" uname="srv01"/>
+      <node id="3232238290" uname="srv02"/>
+    </nodes>
+    <resources>
+      <group id="grpStonith1">
+        <!--### Group Configuration ###-->
+        <primitive id="prmStonith1-1" class="stonith" type="external/ssh">
+          <instance_attributes id="prmStonith1-1-instance_attributes">
+            <nvpair name="pcmk_reboot_timeout" value="60s" id="prmStonith1-1-instance_attributes-pcmk_reboot_timeout"/>
+            <nvpair name="hostlist" value="srv01" id="prmStonith1-1-instance_attributes-hostlist"/>
+          </instance_attributes>
+          <operations>
+            <op name="start" interval="0s" timeout="60s" on-fail="restart" id="prmStonith1-1-start-0s"/>
+            <op name="monitor" interval="10s" timeout="60s" on-fail="restart" id="prmStonith1-1-monitor-10s"/>
+            <op name="stop" interval="0s" timeout="60s" on-fail="ignore" id="prmStonith1-1-stop-0s"/>
+          </operations>
+        </primitive>
+      </group>
+      <group id="grpStonith2">
+        <primitive id="prmStonith2-1" class="stonith" type="external/ssh">
+          <instance_attributes id="prmStonith2-1-instance_attributes">
+            <nvpair name="pcmk_reboot_timeout" value="60s" id="prmStonith2-1-instance_attributes-pcmk_reboot_timeout"/>
+            <nvpair name="hostlist" value="srv02" id="prmStonith2-1-instance_attributes-hostlist"/>
+          </instance_attributes>
+          <operations>
+            <op name="start" interval="0s" timeout="60s" on-fail="restart" id="prmStonith2-1-start-0s"/>
+            <op name="monitor" interval="10s" timeout="60s" on-fail="restart" id="prmStonith2-1-monitor-10s"/>
+            <op name="stop" interval="0s" timeout="60s" on-fail="ignore" id="prmStonith2-1-stop-0s"/>
+          </operations>
+        </primitive>
+      </group>
+      <group id="grpStonith3">
+        <primitive id="prmStonith3-1" class="stonith" type="external/ssh">
+          <instance_attributes id="prmStonith3-1-instance_attributes">
+            <nvpair name="pcmk_reboot_timeout" value="60s" id="prmStonith3-1-instance_attributes-pcmk_reboot_timeout"/>
+            <nvpair name="hostlist" value="srv03" id="prmStonith3-1-instance_attributes-hostlist"/>
+          </instance_attributes>
+          <operations>
+            <op name="start" interval="0s" timeout="60s" on-fail="restart" id="prmStonith3-1-start-0s"/>
+            <op name="monitor" interval="10s" timeout="60s" on-fail="restart" id="prmStonith3-1-monitor-10s"/>
+            <op name="stop" interval="0s" timeout="60s" on-fail="ignore" id="prmStonith3-1-stop-0s"/>
+          </operations>
+        </primitive>
+      </group>
+      <master id="msPostgresql">
+        <!--### Master/Slave Configuration ###-->
+        <meta_attributes id="msPostgresql-meta_attributes">
+          <nvpair name="master-max" value="1" id="msPostgresql-meta_attributes-master-max"/>
+          <nvpair name="master-node-max" value="1" id="msPostgresql-meta_attributes-master-node-max"/>
+          <nvpair name="clone-max" value="3" id="msPostgresql-meta_attributes-clone-max"/>
+          <nvpair name="clone-node-max" value="1" id="msPostgresql-meta_attributes-clone-node-max"/>
+          <nvpair name="notify" value="true" id="msPostgresql-meta_attributes-notify"/>
+        </meta_attributes>
+        <primitive id="pgsql" class="ocf" provider="pacemaker" type="Stateful">
+          <operations>
+            <op name="start" interval="0s" timeout="300s" on-fail="restart" id="pgsql-start-0s"/>
+            <op name="monitor" interval="10s" timeout="60s" on-fail="restart" id="pgsql-monitor-10s"/>
+            <op name="monitor" role="Master" interval="9s" timeout="60s" on-fail="restart" id="pgsql-monitor-9s"/>
+            <op name="promote" interval="0s" timeout="300s" on-fail="restart" id="pgsql-promote-0s"/>
+            <op name="demote" interval="0s" timeout="300s" on-fail="fence" id="pgsql-demote-0s"/>
+            <op name="notify" interval="0s" timeout="60s" id="pgsql-notify-0s"/>
+            <op name="stop" interval="0s" timeout="300s" on-fail="fence" id="pgsql-stop-0s"/>
+          </operations>
+        </primitive>
+      </master>
+      <clone id="clnPingd">
+        <!--### Clone Configuration ###-->
+        <primitive id="prmPingd" class="ocf" provider="pacemaker" type="ping">
+          <instance_attributes id="prmPingd-instance_attributes">
+            <nvpair name="name" value="default_ping_set" id="prmPingd-instance_attributes-name"/>
+            <nvpair name="host_list" value="192.168.40.1" id="prmPingd-instance_attributes-host_list"/>
+            <nvpair name="multiplier" value="100" id="prmPingd-instance_attributes-multiplier"/>
+            <nvpair name="attempts" value="2" id="prmPingd-instance_attributes-attempts"/>
+            <nvpair name="timeout" value="2" id="prmPingd-instance_attributes-timeout"/>
+          </instance_attributes>
+          <operations>
+            <op name="start" interval="0s" timeout="60s" on-fail="restart" id="prmPingd-start-0s"/>
+            <op name="monitor" interval="10s" timeout="60s" on-fail="restart" id="prmPingd-monitor-10s"/>
+            <op name="stop" interval="0s" timeout="60s" on-fail="ignore" id="prmPingd-stop-0s"/>
+          </operations>
+        </primitive>
+      </clone>
+    </resources>
+    <constraints>
+      <rsc_location id="rsc_location-grpStonith1" rsc="grpStonith1">
+        <!--### Resource Location ###-->
+        <rule score="-INFINITY" id="rsc_location-grpStonith1-rule">
+          <expression attribute="#uname" operation="eq" value="srv01" id="rsc_location-grpStonith1-expression"/>
+        </rule>
+      </rsc_location>
+      <rsc_location id="rsc_location-grpStonith2" rsc="grpStonith2">
+        <rule score="-INFINITY" id="rsc_location-grpStonith2-rule">
+          <expression attribute="#uname" operation="eq" value="srv02" id="rsc_location-grpStonith2-expression"/>
+        </rule>
+      </rsc_location>
+      <rsc_location id="rsc_location-grpStonith3" rsc="grpStonith3">
+        <rule score="-INFINITY" id="rsc_location-grpStonith3-rule">
+          <expression attribute="#uname" operation="eq" value="srv03" id="rsc_location-grpStonith3-expression"/>
+        </rule>
+      </rsc_location>
+      <rsc_location id="rsc_location-msPostgresql-1" rsc="msPostgresql">
+        <rule role="master" score="300" id="rsc_location-msPostgresql-1-rule">
+          <expression attribute="#uname" operation="eq" value="srv01" id="rsc_location-msPostgresql-1-expression"/>
+        </rule>
+        <rule role="master" score="200" id="rsc_location-msPostgresql-1-rule-0">
+          <expression attribute="#uname" operation="eq" value="srv02" id="rsc_location-msPostgresql-1-expression-0"/>
+        </rule>
+        <rule role="master" score="100" id="rsc_location-msPostgresql-1-rule-1">
+          <expression attribute="#uname" operation="eq" value="srv03" id="rsc_location-msPostgresql-1-expression-1"/>
+        </rule>
+      </rsc_location>
+      <rsc_colocation id="rsc_colocation-msPostgresql-clnPingd-1" score="INFINITY" rsc="msPostgresql" rsc-role="Master" with-rsc="clnPingd">
+        <!--### Resource Colocation ###-->
+      </rsc_colocation>
+      <rsc_order id="rsc_order-clnPingd-msPostgresql-1" score="0" first="clnPingd" then="msPostgresql" symmetrical="false">
+        <!--### Resource Order ###-->
+      </rsc_order>
+    </constraints>
+    <fencing-topology>
+      <!--### Fencing Topology ###-->
+      <fencing-level target="srv01" devices="prmStonith1-1" index="1" id="fencing"/>
+      <fencing-level target="srv02" devices="prmStonith2-1" index="1" id="fencing-0"/>
+      <fencing-level target="srv03" devices="prmStonith3-1" index="1" id="fencing-1"/>
+    </fencing-topology>
+    <rsc_defaults>
+      <meta_attributes id="rsc-options">
+        <!--### Resource Defaults ###-->
+        <nvpair name="resource-stickiness" value="INFINITY" id="rsc-options-resource-stickiness"/>
+        <nvpair name="migration-threshold" value="1" id="rsc-options-migration-threshold"/>
+      </meta_attributes>
+    </rsc_defaults>
+    <acls>
+      <acl_user id="fixer">
+        <write id="fixer_write_options" ref="cib-bootstrap-options"/>
+        <deny id="fixer_deny_aclenabled" ref="cib-bootstrap-options-enable-acl"/>
+        <deny id="fixer_deny_stonith" ref="cib-bootstrap-options-stonith-enabled"/>
+        <deny id="fixer_deny_noquorum" ref="cib-bootstrap-options-no-quorum-policy"/>
+      </acl_user>
+    </acls>
+  </configuration>
+</cib>
+EOF
+    { diff -u -- - "${testcmd}" \
+      && echo "TEST: cmd diff OK" \
+      || { echo "TEST: cmd diff FAIL"; ret=21; }; }<<EOF
+# targeting system: ('linux', 'redhat', '7.4')
+pcs cluster cib tmp-cib.xml
+pcs -f tmp-cib.xml property set no-quorum-policy=freeze
+pcs -f tmp-cib.xml property set stonith-enabled=true
+pcs -f tmp-cib.xml \\
+  resource defaults resource-stickiness=INFINITY migration-threshold=1
+pcs -f tmp-cib.xml stonith create prmStonith1-1 external/ssh \\
+  pcmk_reboot_timeout=60s hostlist=srv01 \\
+  op start name=start interval=0s timeout=60s on-fail=restart \\
+  id=prmStonith1-1-start-0s monitor name=monitor interval=10s \\
+  timeout=60s on-fail=restart id=prmStonith1-1-monitor-10s stop \\
+  name=stop interval=0s timeout=60s on-fail=ignore \\
+  id=prmStonith1-1-stop-0s
+pcs -f tmp-cib.xml stonith create prmStonith2-1 external/ssh \\
+  pcmk_reboot_timeout=60s hostlist=srv02 \\
+  op start name=start interval=0s timeout=60s on-fail=restart \\
+  id=prmStonith2-1-start-0s monitor name=monitor interval=10s \\
+  timeout=60s on-fail=restart id=prmStonith2-1-monitor-10s stop \\
+  name=stop interval=0s timeout=60s on-fail=ignore \\
+  id=prmStonith2-1-stop-0s
+pcs -f tmp-cib.xml stonith create prmStonith3-1 external/ssh \\
+  pcmk_reboot_timeout=60s hostlist=srv03 \\
+  op start name=start interval=0s timeout=60s on-fail=restart \\
+  id=prmStonith3-1-start-0s monitor name=monitor interval=10s \\
+  timeout=60s on-fail=restart id=prmStonith3-1-monitor-10s stop \\
+  name=stop interval=0s timeout=60s on-fail=ignore \\
+  id=prmStonith3-1-stop-0s
+pcs -f tmp-cib.xml resource create pgsql ocf:pacemaker:Stateful \\
+  op start interval=0s timeout=300s on-fail=restart monitor interval=10s \\
+  timeout=60s on-fail=restart monitor role=Master interval=9s \\
+  timeout=60s on-fail=restart promote interval=0s timeout=300s \\
+  on-fail=restart demote interval=0s timeout=300s on-fail=fence notify \\
+  interval=0s timeout=60s stop interval=0s timeout=300s on-fail=fence
+pcs -f tmp-cib.xml resource create prmPingd ocf:pacemaker:ping \\
+  name=default_ping_set host_list=192.168.40.1 multiplier=100 attempts=2 \\
+  timeout=2 \\
+  op start interval=0s timeout=60s on-fail=restart monitor \\
+  interval=10s timeout=60s on-fail=restart stop interval=0s \\
+  timeout=60s on-fail=ignore
+pcs -f tmp-cib.xml resource group add grpStonith1 prmStonith1-1
+pcs -f tmp-cib.xml resource group add grpStonith2 prmStonith2-1
+pcs -f tmp-cib.xml resource group add grpStonith3 prmStonith3-1
+pcs -f tmp-cib.xml resource clone prmPingd
+pcs -f tmp-cib.xml \\
+  resource master msPostgresql pgsql master-max=1 master-node-max=1 \\
+  clone-max=3 clone-node-max=1 notify=true
+pcs -f tmp-cib.xml \\
+  constraint location grpStonith1 rule id=rsc_location-grpStonith1-rule \\
+  constraint-id=rsc_location-grpStonith1 score=-INFINITY '#uname' eq \\
+  srv01
+pcs -f tmp-cib.xml \\
+  constraint location grpStonith2 rule id=rsc_location-grpStonith2-rule \\
+  constraint-id=rsc_location-grpStonith2 score=-INFINITY '#uname' eq \\
+  srv02
+pcs -f tmp-cib.xml \\
+  constraint location grpStonith3 rule id=rsc_location-grpStonith3-rule \\
+  constraint-id=rsc_location-grpStonith3 score=-INFINITY '#uname' eq \\
+  srv03
+pcs -f tmp-cib.xml \\
+  constraint location msPostgresql rule \\
+  id=rsc_location-msPostgresql-1-rule \\
+  constraint-id=rsc_location-msPostgresql-1 master score=300 '#uname' \\
+  eq srv01
+pcs -f tmp-cib.xml \\
+  constraint rule add rsc_location-msPostgresql-1 \\
+  id=rsc_location-msPostgresql-1-rule-0 master score=200 '#uname' eq \\
+  srv02
+pcs -f tmp-cib.xml \\
+  constraint rule add rsc_location-msPostgresql-1 \\
+  id=rsc_location-msPostgresql-1-rule-1 master score=100 '#uname' eq \\
+  srv03
+pcs -f tmp-cib.xml \\
+  constraint colocation add master msPostgresql with clnPingd \\
+  id=rsc_colocation-msPostgresql-clnPingd-1
+pcs -f tmp-cib.xml constraint order clnPingd \\
+  then msPostgresql score=0 symmetrical=false \\
+  id=rsc_order-clnPingd-msPostgresql-1
+pcs -f tmp-cib.xml stonith level add 1 srv01 prmStonith1-1
+pcs -f tmp-cib.xml stonith level add 1 srv02 prmStonith2-1
+pcs -f tmp-cib.xml stonith level add 1 srv03 prmStonith3-1
+pcs -f tmp-cib.xml \\
+  acl role create auto-fixer write id cib-bootstrap-options deny id \\
+  cib-bootstrap-options-enable-acl deny id \\
+  cib-bootstrap-options-stonith-enabled deny id \\
+  cib-bootstrap-options-no-quorum-policy
+pcs -f tmp-cib.xml acl user create fixer auto-fixer
+pcs -f tmp-cib.xml property set enable-acl=true
+pcs cluster cib-push tmp-cib.xml --config
+EOF
+    rm -f -- "${testcmd}"
+    unset testcmd
+    return ${ret}
+}
+
 run_checks() {
     ret=0
     run_check_ccs2pcs "${@}"; ret=$((ret+$?))
     run_check_ccs2pcscmd "${@}"; ret=$((ret+$?))
     run_check_cib2pcscmd "${@}"; ret=$((ret+$?))
+    run_check_cib2pcscmd_impl_conv "${@}"; ret=$((ret+$?))
     return ${ret}
 }
 
