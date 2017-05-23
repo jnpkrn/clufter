@@ -69,7 +69,10 @@ class formats(PluginRegistry):
         cls._context = set(popattr(cls, 'context_specs',
                                    attrs.pop('context_specs', ())))
         # protocols merge: top-down through inheritance
-        for base in reversed(bases):
+        # (real base class goes last, rest are "convertible siblings")
+        for i, base in enumerate(reversed(bases)):
+            if i:  # not a proper base
+                continue
             cls._protocols.update(getattr(base, '_protocols', {}))
             cls._validators.update(getattr(base, '_validators', {}))
             cls._context.update(getattr(base, '_context', ()))
@@ -114,6 +117,23 @@ class _Format(object):
               context by raising an exception in the method body
         - create format instance = internalize, call = externalize
         - protocols are property of the class, representation of an instance
+        - basic inheritance rules apply to formats as well, notably that
+          an instance of expected class' subclass is generally acceptable,
+          but there are very specific subtleties that should rather be
+          spelled out:
+          - for a format hierarchy that explicitly arranges for older-to-newer
+            instance upgrades (forthcoming feature)
+            - inheritance for `fmt` placeholder format should be arranged
+              like this:  Format <-- ... <-- fmt <-- fmtN <-- ... <-- fmtM
+              (also, care to stick with a linear inheritance between formats)
+              (where "<--" denotes inheritance as usual, and fmtM/fmtN
+              stands for oldest/newest supported version, respectively, hence
+              we can conclude that older format versions derive from newer
+              ones, transitively)
+            - `fmt` top of the formats hierarchy should be the generalization
+              of the format, that is, able to accept arbitrary instance of
+              its subclasses-or-self (as long as the format has a way to
+              distinguish the format version internally so it won't get lost)
 
 
     Little bit of explanation:
