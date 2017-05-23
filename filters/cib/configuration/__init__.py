@@ -211,7 +211,12 @@ cib2pcscmd = ('''\
     <clufter:descent-mix at="op_defaults"/>
     <clufter:descent-mix at="nodes"/>
     <clufter:descent-mix at="resources"/>
+    <!-- constraints may refer to resource IDs from above -->
     <clufter:descent-mix at="constraints"/>
+    <!-- fencing-level may refer to resource IDs from above,
+         not enforced by schemas per se, but pcs mandates
+         the referential integrity here, anyway
+         (https://bugzilla.redhat.com/1441332#c7) -->
     <clufter:descent-mix at="fencing-topology"/>
     <clufter:descent-mix at="alerts"/>
     <xsl:if test="not($pcscmd_dryrun) and $pcscmd_tmpcib">
