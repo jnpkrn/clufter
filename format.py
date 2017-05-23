@@ -19,6 +19,11 @@ from os.path import basename, commonprefix, dirname, exists, join, sep, splitext
 from sys import modules
 from time import time
 
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
+
 from lxml import etree
 
 try:
@@ -38,8 +43,8 @@ from .utils import arg2wrapped, args2sgpl, args2tuple, args2unwrapped, \
                    isinstanceupto, \
                    popattr, \
                    tuplist
-from .utils_2to3 import MimicMeta, basestring, bytes_enc, xrange
-from .utils_func import foreach
+from .utils_2to3 import MimicMeta, basestring, bytes_enc, iter_items, xrange
+from .utils_func import bifilter_unpack, foreach
 from .utils_lxml import etree_parser_safe
 from .utils_prog import ProtectedDict, getenv_namespaced
 from .utils_xml import rng_get_start, rng_pivot
@@ -68,15 +73,22 @@ class formats(PluginRegistry):
         cls._protocols, cls._validators, cls._protocol_attrs = {}, {}, set()
         cls._context = set(popattr(cls, 'context_specs',
                                    attrs.pop('context_specs', ())))
+        cls._update_to = OrderedDict()  # to be filled "retrospectively"
+        compat = popattr(cls, 'compat_contingency',
+                         attrs.pop('compat_contigency', ()))
+        cls._update_from = OrderedDict((c.in_format, c) for c in compat)
         # protocols merge: top-down through inheritance
         # (real base class goes last, rest are "convertible siblings")
         for i, base in enumerate(reversed(bases)):
-            if i:  # not a proper base
+            if i or base is MetaPlugin:  # not a proper base or CompositeFormat
                 continue
             cls._protocols.update(getattr(base, '_protocols', {}))
             cls._validators.update(getattr(base, '_validators', {}))
             cls._context.update(getattr(base, '_context', ()))
             cls._protocol_attrs.update(getattr(base, '_protocol_attrs', ()))
+            if cls.name in base._update_from:
+                base._update_from[cls] = flt = base._update_from.pop(cls.name)
+                cls._update_to[base] = flt
         # updated with locally defined proto's (marked by `producing` wrapper)
         specs = popattr(cls, 'validator_specs',
                         attrs.pop('validator_specs', {}))
@@ -134,6 +146,19 @@ class _Format(object):
               of the format, that is, able to accept arbitrary instance of
               its subclasses-or-self (as long as the format has a way to
               distinguish the format version internally so it won't get lost)
+            - for the rest (tail) of the hierarchy, we can easily see that
+              instances of newer format versions cannot be used where older
+              ones are explicitly required (forward-consciousness is not
+              assumed at all), but the opposite direction, that is,
+              backward-consciousness, is deliberately possible, implicitly
+              through trial-and-error (a.k.a. lazy) arrangement (see below)
+            - implicit forward compatibility takes the least-resistance
+              approach -- no hassles are needed when an instance of an older
+              format version validates per requirements imposed on the newer
+              format, otherwise this new format is supposed to specify
+              filter(s), via its `compat_contigency` member, sufficient
+              to promote the older instance so it eventually validates
+              (it's a fatal failure if this cannot be achieved)
 
 
     Little bit of explanation:
@@ -160,7 +185,7 @@ class _Format(object):
         that takes protocol name as a parameter.
 
     """
-    context_specs = 'validator_specs',
+    context_specs = 'validator_specs', 'compat_contingency'
 
     @MimicMeta.passdeco(classproperty)
     def context(self):
@@ -199,7 +224,6 @@ class _Format(object):
         if not validator:
             return  # cannot validate in any way
 
-        # XXX make this a validator + updater loop
         obj = self(validating_protocol)
         entries, _ = head_tail(validator(obj))
         if isinstance(entries, basestring):
@@ -233,9 +257,44 @@ class _Format(object):
 
     @MimicMeta.method
     def __new__(cls, protocol, *args, **kwargs):
-        """Format pre-constructor"""
-        retself = object.__new__(cls)
-        retself._construct(protocol, *args, **kwargs)
+        """Format pre-constructor (possibly format-upgrading to parent class)"""
+        good, bad = bifilter_unpack(lambda c, f: not isinstance(c, basestring),
+                                    iter_items(cls._update_from))
+        if bad:
+            log.warning("Unresolved update-from filters for `{0}': {1}".format(
+                        cls.name, ','.join(c for (c, _) in bad)))
+        retself, worklist = None, list(reversed(good)) + [(cls, None)]
+        while worklist:
+            tryfmt, tryflt = worklist.pop()
+            log.debug("Trying pre-construction of `{0}' format going from"
+                      " `{1}'{2}"
+                      .format(cls.name, tryfmt.name,
+                              tryflt.name.join((" (using `", "' filter)"))
+                              if tryflt else ""))
+            try:
+                # for tryflt case, we cannot use `tryflt.in_format` as it is
+                # just a string here
+                obj = object.__new__(tryfmt)
+                obj._construct(protocol, *args, **kwargs)
+                if not tryflt:
+                    retself = obj
+                else:
+                    # note that tryflt is filter class that needs to be
+                    # instantiated by being passed dictionary to resolved
+                    # its formats at
+                    flt = tryflt(formats={
+                        tryflt.in_format: tryfmt,
+                        cls.name: cls,
+                    })
+                    retself = flt(obj)
+            except FormatError as e:
+                retself = e
+                continue
+            else:
+                break
+        assert retself
+        if isinstance(retself, FormatError):
+            raise retself
         return retself
 
     @MimicMeta.method
@@ -300,13 +359,21 @@ class _Format(object):
         """Create an instance or verify and return existing one"""
         if decl_or_instance and isinstance(decl_or_instance[0], Format):
             instance = decl_or_instance[0]
-            # XXX
             if not isinstanceupto(instance, cls, Format):
                 raise FormatError(cls, "input object: format mismatch"
                                   " (expected `{0}' or a superclass, got"
                                   " `{1}')", cls.name, instance.__class__.name)
-        else:
-            instance = cls(*decl_or_instance, **kwargs)
+            if instance.__class__.__bases__[0] is cls:
+                return instance
+
+            # convert using (preferably native) protocol
+            com = instance.common_protocols(cls)
+            if not com:
+                raise FormatError(cls, "no common protocol with source format"
+                                       " `{0}'", instance.name)
+            decl_or_instance = (com[0], instance(com[0]))
+
+        instance = cls(*decl_or_instance, **kwargs)
         return instance
 
     @MimicMeta.method
