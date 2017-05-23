@@ -42,6 +42,11 @@ cib2pcscmd_whitelist = (
     #'default-action-timeout',
 )
 
+# delay list a.k.a. what can play a role later on, but not now
+cib2pcscmd_delaylist = (
+    'enable-acl',
+)
+
 cib2pcscmd = ('''\
     <xsl:for-each select="cluster_property_set">
         <xsl:for-each select="nvpair">
@@ -65,6 +70,11 @@ cib2pcscmd = ('''\
 ''' + (
                     verbose_ec_test
 ) + '''
+                </xsl:when>
+                <xsl:when test="
+''' + (
+                    xslt_is_member('@name', cib2pcscmd_delaylist)
+) + '''">
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:message>

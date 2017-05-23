@@ -219,6 +219,31 @@ cib2pcscmd = ('''\
          (https://bugzilla.redhat.com/1441332#c7) -->
     <clufter:descent-mix at="fencing-topology"/>
     <clufter:descent-mix at="alerts"/>
+    <!-- acls may refer to particular IDs (any) from above -->
+    <clufter:descent-mix at="acls"/>
+
+    <!-- enabling ACLs is sensible only at the very end of processing
+         (was explicitly skipped while descenting into crm_config)
+         XXX: should be more smoothly solved by using different modes
+              with xsl:apply-templates, but that'd be quite an effort -->
+    <xsl:variable name="CibAclEnable"
+                  select="crm_config/cluster_property_set/nvpair[@name='enable-acl']"/>
+    <xsl:if test="$CibAclEnable">
+''' + (
+        verbose_inform('"set singleton cluster property: ", $CibAclEnable/@name')
+) + '''
+        <xsl:value-of select='concat($pcscmd_pcs, "property set")'/>
+        <xsl:if test="$pcscmd_force">
+            <xsl:value-of select="' --force'"/>
+        </xsl:if>
+        <xsl:value-of select='concat(" &apos;", $CibAclEnable/@name,
+                                     "=", $CibAclEnable/@value, "&apos;")'/>
+        <xsl:value-of select="'%(NL)s'"/>
+''' + (
+        verbose_ec_test
+) + '''
+    </xsl:if>
+
     <xsl:if test="not($pcscmd_dryrun) and $pcscmd_tmpcib">
 ''' + (
         verbose_inform('"push CIB: ", $pcscmd_tmpcib')
