@@ -232,8 +232,17 @@ class _Format(object):
         return ret
 
     @MimicMeta.method
-    def __init__(self, protocol, *args, **kwargs):
+    def __new__(cls, protocol, *args, **kwargs):
+        """Format pre-constructor"""
+        retself = object.__new__(cls)
+        retself._construct(protocol, *args, **kwargs)
+        return retself
+
+    @MimicMeta.method
+    def _construct(self, protocol, *args, **kwargs):
         """Format constructor, i.e., object = concrete internal data"""
+        # cannot be doubly-undescored otherwise the "foreign lookup" will miss
+        assert not(getattr(self, '_representations', None)), "int. API misuse"
         rs = {}
         self._representations, self._representations_ro = rs, ProtectedDict(rs)
         if not hasattr(self, '_hash'):  # can be defined at the class level
@@ -423,12 +432,12 @@ class SimpleFormat(Format):
     FILE = Protocol('file')
     void_file = '/dev/null'  # XXX not multi-platform
 
-    def __init__(self, protocol, *args, **kwargs):
+    def _construct(self, protocol, *args, **kwargs):
         """Format constructor, i.e., object = concrete uniformat data"""
         assert isinstance(protocol, basestring), \
                "protocol has to be string for `{0}', not `{1}'" \
                .format(self.__class__.name, protocol)
-        super(SimpleFormat, self).__init__(protocol, *args, **kwargs)
+        super(SimpleFormat, self)._construct(protocol, *args, **kwargs)
 
     @Format.producing(BYTESTRING)
     def get_bytestring(self, *iodecl):
@@ -572,7 +581,9 @@ class CompositeFormat(Format, MetaPlugin):
     native_protocol = 'composite'  # to be overridden by per-instance one
                                    # XXX: hybridproperty?
 
-    def __init__(self, protocol, *args, **kwargs):
+    # XXX def __new__
+
+    def _construct(self, protocol, *args, **kwargs):
         """Format constructor, i.e., object = concrete multiformat data
 
         Parameters:
@@ -606,7 +617,7 @@ class CompositeFormat(Format, MetaPlugin):
             f(p, *args2tuple(a), **kwargs)
             for (f, p, a) in zip(formats, protocol[1], args)
         )
-        super(CompositeFormat, self).__init__(protocol, *args, **kwargs)
+        super(CompositeFormat, self)._construct(protocol, *args, **kwargs)
 
     def __iter__(self):
         return iter(self._designee)
