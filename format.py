@@ -35,6 +35,7 @@ from .plugin_registry import MetaPlugin, PluginRegistry
 from .protocol import Protocol
 from .utils import arg2wrapped, args2sgpl, args2tuple, args2unwrapped, \
                    classproperty, \
+                   filterdict_keep, \
                    filterdict_pop, \
                    head_tail, \
                    hybridmethod, \
@@ -873,6 +874,22 @@ class XML(SimpleFormat):
                 raise FormatPlainError("Cannot validate, no matching spec:"
                                        " `{0}'".format(spec))
         return spec
+
+    @classmethod
+    def etree_rng_validator_proper_specs(cls, **kwargs):
+        """Return class-exclusive validating RNG files, ordered by name"""
+        specs = set(cls._etree_rng_validator_specs(
+            **filterdict_keep(kwargs, 'root_dir', 'spec')
+        ))
+        ancestor_specs = set()
+        for ancestor in cls._update_from:
+            this_ancestor_specs = ancestor._etree_rng_validator_specs(
+                **filterdict_keep(kwargs, 'root_dir', 'spec')
+            )
+            if this_ancestor_specs:
+                ancestor_specs.update(this_ancestor_specs)
+        specs.difference(ancestor_specs)
+        return sorted(specs)
 
     @classmethod
     def etree_rng_validator(cls, et, start=None, **kwargs):
