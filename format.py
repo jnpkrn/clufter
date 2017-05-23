@@ -135,7 +135,7 @@ class _Format(object):
           but there are very specific subtleties that should rather be
           spelled out:
           - for a format hierarchy that explicitly arranges for older-to-newer
-            instance upgrades (forthcoming feature)
+            instance upgrades (`cib` family of formats is one such example)
             - inheritance for `fmt` placeholder format should be arranged
               like this:  Format <-- ... <-- fmt <-- fmtN <-- ... <-- fmtM
               (also, care to stick with a linear inheritance between formats)
