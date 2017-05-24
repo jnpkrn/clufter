@@ -333,7 +333,7 @@ versions_extra = {
         ((1, 1, 8),
             '+schema-1.2'),
         ((1, 1, 12),
-            '+acls,+schema-2.0'),
+            '+schema-2.0'),  # implies new style ACLs
         ((1, 1, 13),
             '+schema-2.3'),
         ((1, 1, 14),
@@ -347,6 +347,8 @@ versions_extra = {
         #    '+bundle,+schema-2.8'),
     ),
     'pcs': (
+        ((0, 9, 123),
+            '+acls'),
         ((0, 9, 145),
             '+node-maintenance'),
         ((0, 9, 148),

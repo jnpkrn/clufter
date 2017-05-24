@@ -2,5 +2,14 @@ ccs2*
 - values of primary resource parameters cannot contain single quotes
   (due to how xslt_id_friendly is expected to be used)
 
+generic:
+- clufter:descent-mix tags cannot be reasonably conditionalized,
+  even if the condition is a constant expression known at the time
+  of starting the transformation process;  using standard
+  xsl:{if,choose,when,otherwise} tags could be too difficult
+  to grasp (at both programmatic preprocessing and human comprehension
+  meanings), but there could be a simplified clufter:* instruction
+  set to support such compile-time (as opposed to run-time) branching
+
 
 (surely there are more, either known or percepted by the 6th sense)

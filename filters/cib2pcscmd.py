@@ -85,6 +85,11 @@ def cib2pcscmd(flt_ctxt, in_obj):
                     flt_ctxt['system'],
                     flt_ctxt['system_extra'],
                 )),
+                pcscmd_extra_acls = bool(infer(
+                    'comp:pacemaker[schema-2.0] + comp:pcs[acls]',
+                    flt_ctxt['system'],
+                    flt_ctxt['system_extra'],
+                )),
             ),
         ),
     )
