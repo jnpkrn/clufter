@@ -103,8 +103,8 @@ class TestExtra(TestCase):
         self.assertFalse(infer(check, 'linux', ('redhat', ' 7.2')))
         self.assertTrue(infer(check, 'linux', ('redhat', ' 7.3')))
 
-    def test_extra_pacemaker_acl(self):
-        check = 'comp:pacemaker[acls]'
+    def test_extra_pacemaker_schema2(self):
+        check = 'comp:pacemaker[schema-2.0]'
         self.assertFalse(infer(check, 'linux', ('redhat', '6.5')))
         self.assertTrue(infer(check, 'linux', ('redhat', '6.6')))
 

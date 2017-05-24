@@ -229,19 +229,30 @@ cib2pcscmd = ('''\
     <xsl:variable name="CibAclEnable"
                   select="crm_config/cluster_property_set/nvpair[@name='enable-acl']"/>
     <xsl:if test="$CibAclEnable">
+
+
+        <!-- "pcs acl" only supported with certain newer versions of
+             pcs/pacemaker (https://bugzilla.redhat.com/1111369) -->
+        <xsl:choose>
+            <xsl:when test="$pcscmd_extra_acls">
 ''' + (
-        verbose_inform('"set singleton cluster property: ", $CibAclEnable/@name')
+                verbose_inform('"set singleton cluster property: ", $CibAclEnable/@name')
 ) + '''
-        <xsl:value-of select='concat($pcscmd_pcs, "property set")'/>
-        <xsl:if test="$pcscmd_force">
-            <xsl:value-of select="' --force'"/>
-        </xsl:if>
-        <xsl:value-of select='concat(" &apos;", $CibAclEnable/@name,
-                                     "=", $CibAclEnable/@value, "&apos;")'/>
-        <xsl:value-of select="'%(NL)s'"/>
+                <xsl:value-of select='concat($pcscmd_pcs, "property set")'/>
+                <xsl:if test="$pcscmd_force">
+                    <xsl:value-of select="' --force'"/>
+                </xsl:if>
+                <xsl:value-of select='concat(" &apos;", $CibAclEnable/@name,
+                                             "=", $CibAclEnable/@value, "&apos;")'/>
+                <xsl:value-of select="'%(NL)s'"/>
 ''' + (
-        verbose_ec_test
+                verbose_ec_test
 ) + '''
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:message>%(acls_msg)s</xsl:message>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:if>
 
     <xsl:if test="not($pcscmd_dryrun) and $pcscmd_tmpcib">
@@ -257,6 +268,8 @@ cib2pcscmd = ('''\
     </xsl:if>
 ''') % dict(
     NL=NL,
+    acls_msg="WARNING: target pcs/pacemaker version does not support"
+             " (new) ACLs, hence &apos;enable-acl&apos; property omitted",
 )
 
 ###
