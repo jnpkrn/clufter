@@ -40,6 +40,8 @@ class simpleconfig(SimpleFormat):
         ('expected_votes', '1'),
         ('two_node', '1')],
        [])])
+
+    See also: https://github.com/lhh/simpleconfig
     """
     # NOTE yacc-based parser in fence-virt
     native_protocol = STRUCT = Protocol('struct')
