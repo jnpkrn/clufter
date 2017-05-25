@@ -12,8 +12,10 @@ from ..filter import Filter
 
 def stringiter_combine(flt_ctxt, in_objs):
     """Combine multiple string-iter objects"""
-    return ('stringiter',
-            chain(*tuple(o('stringiter', protect_safe=True) for o in in_objs)))
+    return (
+        'bytestringiter',
+        chain(*tuple(o('bytestringiter', protect_safe=True) for o in in_objs))
+    )
 
 
 @Filter.deco(('string-iter', ) * 2, 'string-iter')

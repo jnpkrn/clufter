@@ -21,19 +21,19 @@ from unittest import TestCase
 from .filter_manager import FilterManager
 from .format import CompositeFormat
 from .formats.string_iter import string_iter
-from .utils_2to3 import str_enc
+from .utils_2to3 import bytes_enc, str_enc
 
 flt = 'stringiter-combine2'
 stringiter_combine2 = FilterManager.init_lookup(flt).filters[flt]
-#ccs = ccspcmk2pcscmd.in_format
 
 
 class FiltersStringitercombineTestCase(TestCase):
     def testStringiterCombine2(self):
         result = stringiter_combine2(
             CompositeFormat(
-                ('composite', ('stringiter', 'stringiter')),
-                iter("ABC"), iter("DEF"),
+                ('composite', ('bytestringiter', 'bytestringiter')),
+                (bytes_enc(b) for b in iter("ABC")),
+                (bytes_enc(b) for b in iter("DEF")),
                 #"ABC", "DEF",
                 formats=(string_iter, string_iter),
             )

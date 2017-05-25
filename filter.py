@@ -41,7 +41,7 @@ from .utils_2to3 import MimicMeta, basestring, \
                         bytes_enc, str_enc, \
                         iter_items, iter_values, \
                         filter_u, foreach_u, reduce_u, \
-                        xrange
+                        unicode, xrange
 from .utils_lxml import etree_XSLT_safe, \
                         etree_parser_safe, etree_parser_safe_unblanking
 from .utils_func import apply_preserving_depth, \
@@ -1011,7 +1011,7 @@ class XMLFilter(Filter, MetaPlugin):
                 def_first += ('<xsl:param name="system_{0}" select="{1}"/>'
                               .format(str(i), squote(val)))
         if textmode:
-            def_first += '<xsl:output method="text"/>'
+            def_first += '<xsl:output method="text" encoding="UTF-8"/>'
             def_first += '<xsl:strip-space elements="*"/>'
             def_first += '<clufter:descent-mix preserve-rest="false"/>'
         else:
@@ -1031,7 +1031,7 @@ class XMLFilter(Filter, MetaPlugin):
             ret = etree.fromstring(etree.tostring(ret),
                                    parser=etree_parser_safe_unblanking)
         elif textmode:
-            ret = str(ret)
+            ret = bytes_enc(unicode(ret), 'utf-8')
         return ret
 
     def ctxt_proceed_xslt(self, ctxt, in_obj, **kwargs):

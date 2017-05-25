@@ -8,7 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from ..filter import Filter
 from ..formats.command import command, ismetaword
 from ..utils import head_tail
-from ..utils_2to3 import xrange
+from ..utils_2to3 import bytes_enc, str_enc, xrange
 from ..utils_func import add_item
 from ..utils_prog import FancyOutput
 
@@ -489,7 +489,8 @@ def cmd_wrap(flt_ctxt, in_obj):
                 if color else defaultdict(lambda: ''))
 
     ret, continuation = [], []
-    for line in in_obj('stringiter', protect_safe=True):
+    for line in (str_enc(l, 'utf-8')
+                 for l in (in_obj('bytestringiter', protect_safe=True))):
         if line.lstrip().startswith('#'):
             lines = cw.wrap(line)
             last = len(lines) - 1
@@ -555,4 +556,4 @@ def cmd_wrap(flt_ctxt, in_obj):
                     rline = line
                     if itemgroups or itemgroup:
                         break
-    return ('stringiter', ret)
+    return ('bytestringiter', (bytes_enc(l, 'utf-8') for l in ret))

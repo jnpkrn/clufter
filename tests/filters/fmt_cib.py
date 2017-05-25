@@ -17,6 +17,8 @@ with open(join(dirname(dirname(__file__)), '_com')) as f:
 
 
 from .filter_manager import FilterManager
+from .utils_2to3 import bytes_enc
+
 flt = 'fmt-cib-1to2'
 fmt_cib_1to2 = FilterManager.init_lookup(flt).filters[flt]
 cib1 = fmt_cib_1to2.in_format
@@ -54,7 +56,7 @@ class FiltersFmtCib1to2TestCase(TeardownFilterTestCase):
         #print(ret.BYTESTRING())
         self.assertEqual(
             ret.BYTESTRING(),
-            '''\
+            bytes_enc('''\
 <cib validate-with="pacemaker-2.0" epoch="6" num_updates="0" admin_epoch="0">
   <configuration>
     <crm_config>
@@ -82,7 +84,7 @@ class FiltersFmtCib1to2TestCase(TeardownFilterTestCase):
     </acls>
   </configuration>
 </cib>
-'''
+''')
         )
 
 

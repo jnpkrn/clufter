@@ -20,6 +20,7 @@ from os.path import dirname, join
 from unittest import TestCase
 
 from .filter_manager import FilterManager
+from .utils_2to3 import bytes_enc, str_enc
 flt = 'cib2pcscmd'
 cib2pcscmd = FilterManager.init_lookup(flt).filters[flt]
 cib = cib2pcscmd.in_format
@@ -32,7 +33,7 @@ class FiltersCib2pcscmdTestCase(TestCase):
                          system='linux', system_extra=('rhel', '7.3'))
         #print(ret.BYTESTRING())
         self.assertEqual(
-            ret.BYTESTRING(),
+            str_enc(ret.BYTESTRING()),
             '''\
 pcs stonith create FENCEDEV-fence-virt-063 fence_xvm 'auth=sha256' 'hash=sha256' 'key_file=/etc/cluster/fence_xvm.key' 'timeout=5' 'pcmk_host_map=virt-063:virt-063.example.com'
 pcs stonith create FENCEDEV-fence-virt-064 fence_xvm 'auth=sha256' 'hash=sha256' 'key_file=/etc/cluster/fence_xvm.key' 'timeout=5' 'pcmk_host_map=virt-064:virt-064.example.com'
@@ -85,12 +86,12 @@ setoptions id=colocation-my-rsc-set
 ''' + in_str + '''
 </constraints>
 '''
-            in_obj = in_fmt('bytestring', in_str,
+            in_obj = in_fmt('bytestring', bytes_enc(in_str),
                             validator_specs={in_fmt.ETREE: ''})
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                               system='linux', system_extra=('rhel', '7.3'))
             #print(out_obj.BYTESTRING())
-            self.assertEqual(out_obj.BYTESTRING(), out_str)
+            self.assertEqual(str_enc(out_obj.BYTESTRING()), out_str)
 
     def testLocationConstraints(self):
         flt_obj = rewrite_root(self.flt_mgr.filters[flt],
@@ -130,12 +131,12 @@ constraint-id=location-A-on-XYZ score=INFINITY \
 ''' + in_str + '''
 </constraints>
 '''
-            in_obj = in_fmt('bytestring', in_str,
+            in_obj = in_fmt('bytestring', bytes_enc(in_str),
                             validator_specs={in_fmt.ETREE: ''})
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                               system='linux', system_extra=('rhel', '7.3'))
             #print(out_obj.BYTESTRING())
-            self.assertEqual(out_obj.BYTESTRING(), out_str)
+            self.assertEqual(str_enc(out_obj.BYTESTRING()), out_str)
 
     def testOrderConstraints(self):
         flt_obj = rewrite_root(self.flt_mgr.filters[flt],
@@ -180,12 +181,12 @@ setoptions id=order-my-rsc-set
 ''' + in_str + '''
 </constraints>
 '''
-            in_obj = in_fmt('bytestring', in_str,
+            in_obj = in_fmt('bytestring', bytes_enc(in_str),
                             validator_specs={in_fmt.ETREE: ''})
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                               system='linux', system_extra=('rhel', '7.3'))
             #print(out_obj.BYTESTRING())
-            self.assertEqual(out_obj.BYTESTRING(), out_str)
+            self.assertEqual(str_enc(out_obj.BYTESTRING()), out_str)
 
     def testTicketConstraints(self):
         flt_obj = rewrite_root(self.flt_mgr.filters[flt],
@@ -236,12 +237,12 @@ setoptions ticket=my-ticket loss-policy=fence id=ticket-my-ticket-my-rsc-set
 ''' + in_str + '''
 </constraints>
 '''
-            in_obj = in_fmt('bytestring', in_str,
+            in_obj = in_fmt('bytestring', bytes_enc(in_str),
                             validator_specs={in_fmt.ETREE: ''})
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                               system='linux', system_extra=('rhel', '7.3'))
             #print(out_obj.BYTESTRING())
-            self.assertEqual(out_obj.BYTESTRING(), out_str)
+            self.assertEqual(str_enc(out_obj.BYTESTRING()), out_str)
 
 
 class FiltersCib2pcscmdAlertsTestCase(TeardownFilterTestCase):
@@ -267,12 +268,12 @@ pcs alert create 'path=/bin/yes' id=alert-bar 'description=idling avoidance ;-)'
 ''' + in_str + '''
 </alerts>
 '''
-            in_obj = in_fmt('bytestring', in_str,
+            in_obj = in_fmt('bytestring', bytes_enc(in_str),
                             validator_specs={in_fmt.ETREE: ''})
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                               system='linux', system_extra=('rhel', '7.3'))
             #print(out_obj.BYTESTRING())
-            self.assertEqual(out_obj.BYTESTRING(), out_str)
+            self.assertEqual(str_enc(out_obj.BYTESTRING()), out_str)
 
     def testAlertsComplex(self):
         flt_obj = rewrite_root(self.flt_mgr.filters[flt],
@@ -298,12 +299,12 @@ pcs alert recipient add alert-foo 'value=3' id=alert-foo-recipient3
 ''' + in_str + '''
 </alerts>
 '''
-            in_obj = in_fmt('bytestring', in_str,
+            in_obj = in_fmt('bytestring', bytes_enc(in_str),
                             validator_specs={in_fmt.ETREE: ''})
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                               system='linux', system_extra=('rhel', '7.3'))
             #print(out_obj.BYTESTRING())
-            self.assertEqual(out_obj.BYTESTRING(), out_str)
+            self.assertEqual(str_enc(out_obj.BYTESTRING()), out_str)
 
 
 class FiltersCib2pcscmdACLTestCase(TeardownFilterTestCase):
@@ -330,12 +331,12 @@ pcs acl user create observer no-fd-passwd
 ''' + in_str + '''
 </acls>
 '''
-            in_obj = in_fmt('bytestring', in_str,
+            in_obj = in_fmt('bytestring', bytes_enc(in_str),
                             validator_specs={in_fmt.ETREE: ''})
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                               system='linux', system_extra=('rhel', '7.3'))
             #print(out_obj.BYTESTRING())
-            self.assertEqual(out_obj.BYTESTRING(), out_str)
+            self.assertEqual(str_enc(out_obj.BYTESTRING()), out_str)
 
 
 from os.path import join, dirname; from sys import modules as m  # 2/3 compat

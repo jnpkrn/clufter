@@ -19,6 +19,7 @@ from os.path import dirname, join
 from unittest import TestCase
 
 from .filter_manager import FilterManager
+from .utils_2to3 import str_enc
 flt = 'ccspcmk2pcscmd'
 ccspcmk2pcscmd = FilterManager.init_lookup(flt).filters[flt]
 ccs = ccspcmk2pcscmd.in_format
@@ -47,7 +48,7 @@ class FiltersCcspcmk2pcscmdTestCase(TestCase):
                                          pcscmd_noguidance=True,
                                  system='linux', system_extra=system_extra)
             #print(ret.BYTESTRING())
-            self.assertEqual(ret.BYTESTRING(), out_str)
+            self.assertEqual(str_enc(ret.BYTESTRING()), out_str)
 
 from os.path import join, dirname; from sys import modules as m  # 2/3 compat
 b = m.get('builtins', m.get('__builtin__')); e, E, h = 'exec', 'execfile', hash

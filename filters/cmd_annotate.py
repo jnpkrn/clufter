@@ -8,6 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 from .. import package_name, version
 from ..filter import Filter
 from ..utils import args2tuple
+from ..utils_2to3 import bytes_enc
 
 from datetime import datetime
 from platform import python_implementation, python_version
@@ -36,4 +37,4 @@ def cmd_annotate(flt_ctxt, in_obj):
             python_implementation(), python_version(),
         ))),
     ))
-    return ('stringiter', ret)
+    return ('bytestringiter', (bytes_enc(l, 'utf-8') for l in ret))
