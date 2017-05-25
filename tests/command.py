@@ -10,7 +10,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 try:  # because of ./run-tests vs. direct execution difference (also PY2/3)
     from _shared import empty_opts
-except ModuleNotFoundError:
+except ImportError:
     from ._shared import empty_opts
 
 from os.path import join, dirname; from sys import modules as m  # 2/3 compat
