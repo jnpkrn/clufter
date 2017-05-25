@@ -14,22 +14,24 @@ with open(join(dirname(dirname(__file__)), '_go')) as f:
 from unittest import TestCase
 
 from .format_manager import FormatManager
+from .utils_2to3 import bytes_enc
 string_list = FormatManager.init_lookup('string-list').formats['string-list']
 
 
 class FormatsStringIterTestCase(TestCase):
     def testBytestringToStringListSingle(self):
-        sl = string_list('bytestring', "abcd")
-        self.assertEqual(sl.STRINGLIST(), ['abcd'])
+        sl = string_list('bytestring', bytes_enc("abcd"))
+        self.assertEqual(sl.BYTESTRINGLIST(), list((bytes_enc('abcd'), )))
     def testBytestringToStringList(self):
-        sl = string_list('bytestring', """\
+        sl = string_list('bytestring', bytes_enc("""\
 a
 b
 c
 b
 a
-""")
-        self.assertEqual(sl.STRINGLIST(), ['a', 'b', 'c', 'b', 'a'])
+"""))
+        self.assertEqual(sl.BYTESTRINGLIST(),
+                         list(bytes_enc(c) for c in 'abcba'))
 
 
 from os.path import join, dirname; from sys import modules as m  # 2/3 compat

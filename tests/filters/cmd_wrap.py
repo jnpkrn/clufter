@@ -20,7 +20,7 @@ from unittest import TestCase
 
 from .filter_manager import FilterManager
 from .formats.string_iter import string_iter
-from .utils_2to3 import str_enc
+from .utils_2to3 import bytes_enc, str_enc
 
 flt = 'cmd-wrap'
 cmd_wrap = FilterManager.init_lookup(flt).filters[flt]
@@ -28,10 +28,10 @@ cmd_wrap = FilterManager.init_lookup(flt).filters[flt]
 
 class FiltersCmdWrapTestCase(TestCase):
     def testCmdWrap60(self):
-        result = cmd_wrap(string_iter('stringiter', """\
+        result = cmd_wrap(string_iter('bytestringiter', bytes_enc("""\
 # this is a long long long long long long long long, terribly long shell comment
 /usr/bin/python setup.py saveopts -f setup.cfg pkg_prepare --editor=/usr/bin/vim
-""".splitlines()
+""").splitlines()
         ), text_width=60)
         #print(result.BYTESTRING())
         self.assertEqual(str_enc(result.BYTESTRING(), 'utf-8'), """\
@@ -42,9 +42,9 @@ class FiltersCmdWrapTestCase(TestCase):
 """)
 
     def testCmdWrapCib2PcsCmd(self):
-        result = cmd_wrap(string_iter('bytestring', """\
+        result = cmd_wrap(string_iter('bytestring', bytes_enc("""\
 pcs -f tmp-cib.xml resource create RESOURCE-apache-webserver ocf:heartbeat:apache 'options= -Dwebserver' op stop 'id=RESOURCE-apache-webserver-OP-stop' 'name=stop' 'interval=0' 'timeout=122s'
-"""), text_width=80)
+""")), text_width=80)
         #print(result.BYTESTRING())
         self.assertEqual(str_enc(result.BYTESTRING()), """\
 pcs -f tmp-cib.xml \\

@@ -17,6 +17,7 @@ with open(join(dirname(dirname(__file__)), '_com')) as f:
 
 
 from .filter_manager import FilterManager
+from .utils_2to3 import bytes_enc, str_enc
 flt = 'needleqdevicexml2pcscmd'
 cib2pcscmd = FilterManager.init_lookup(flt).filters[flt]
 cib = cib2pcscmd.in_format
@@ -36,12 +37,12 @@ pcs quorum device add model net host=191.168.10.20
 '''),
         )
         for (in_str, out_str) in io_strings:
-            in_obj = in_fmt('bytestring', in_str,
+            in_obj = in_fmt('bytestring', bytes_enc(in_str),
                             validator_specs={in_fmt.ETREE: ''})
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
                               system='linux', system_extra=('rhel', '7.3'))
             #print(out_obj.BYTESTRING())
-            self.assertEqual(out_obj.BYTESTRING(), out_str)
+            self.assertEqual(str_enc(out_obj.BYTESTRING()), out_str)
 
 
 from os.path import join, dirname; from sys import modules as m  # 2/3 compat

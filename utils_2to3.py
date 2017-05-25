@@ -34,6 +34,11 @@ except NameError:
             getattr(modules['builtins'], 'exec')(source, *globals_locals)
 
 try:
+    unicode = unicode
+except NameError:
+    unicode = str
+
+try:
     xrange = xrange
 except NameError:
     xrange = range
