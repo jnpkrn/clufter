@@ -361,6 +361,11 @@ versions_extra = {
         ((0, 9, 155),
             # this also implies support for external/* stonith agents
             '+agents-via-pacemaker'),  # https://github.com/ClusterLabs/pcs/issues/81
+        # http://lists.clusterlabs.org/pipermail/users/2017-February/005103.html
+        ((0, 9, 156),
+            # this is best accompanied with following Pacemaker/crm_diff bugfix
+            # https://github.com/ClusterLabs/pacemaker/commit/20a74b9d37
+            '+push-diff'),
     ),
     'resource-agents': (
         # http://lists.linux-ha.org/pipermail/linux-ha/2011-June/043321.html

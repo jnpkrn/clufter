@@ -205,6 +205,18 @@ cib2pcscmd = ('''\
 ''' + (
         verbose_ec_test
 ) + '''
+        <xsl:if test="$pcscmd_extra_push_diff">
+''' + (
+            verbose_inform('"store the original CIB for later comparison: ",'
+                           ' $pcscmd_tmpcib, ".deltasrc"')
+) + '''
+            <xsl:value-of select="concat('cp ', $pcscmd_tmpcib,
+                                         ' ', $pcscmd_tmpcib, '.deltasrc')"/>
+            <xsl:value-of select="'%(NL)s'"/>
+''' + (
+            verbose_ec_test
+) + '''
+        </xsl:if>
     </xsl:if>
     <clufter:descent-mix at="crm_config"/>
     <clufter:descent-mix at="rsc_defaults"/>
@@ -256,11 +268,23 @@ cib2pcscmd = ('''\
     </xsl:if>
 
     <xsl:if test="not($pcscmd_dryrun) and $pcscmd_tmpcib">
+        <xsl:choose>
+            <xsl:when test="$pcscmd_extra_push_diff">
 ''' + (
-        verbose_inform('"push CIB: ", $pcscmd_tmpcib')
+                verbose_inform('"push CIB (sending just the delta): ", $pcscmd_tmpcib')
 ) + '''
-        <xsl:value-of select="concat('pcs cluster cib-push ',
-                                     $pcscmd_tmpcib, ' --config')"/>
+                <xsl:value-of select="concat('pcs cluster cib-push ',
+                                             $pcscmd_tmpcib, ' diff-against=',
+                                             $pcscmd_tmpcib, '.deltasrc')"/>
+            </xsl:when>
+            <xsl:otherwise>
+''' + (
+                verbose_inform('"push CIB: ", $pcscmd_tmpcib')
+) + '''
+                <xsl:value-of select="concat('pcs cluster cib-push ',
+                                             $pcscmd_tmpcib, ' --config')"/>
+            </xsl:otherwise>
+        </xsl:choose>
         <xsl:value-of select="'%(NL)s'"/>
 ''' + (
         verbose_ec_test
