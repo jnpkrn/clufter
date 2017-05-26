@@ -218,8 +218,8 @@ cluster_map = {
                     'pcs':                           (0, 9, 153),  # 152+patches
                 }),
                 ((7, 4), {
-                    'pacemaker[+coro]':              (1, 1, 16),   # guess
-                    'pcs':                           (0, 9, 157),  # guess
+                    'pacemaker[+coro,+bundle]':      (1, 1, 16),   # guess
+                    'pcs':                           (0, 9, 158),  # guess
                 }),
             ),
             'ubuntu': (
@@ -343,8 +343,8 @@ versions_extra = {
         ((1, 1, 16),
             '+schema-2.6'),
         # coming...
-        #((1, 1, 17),
-        #    '+bundle,+schema-2.8'),
+        ((1, 1, 17),
+            '+bundle,+schema-2.9'),
     ),
     'pcs': (
         ((0, 9, 123),
