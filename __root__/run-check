@@ -414,6 +414,7 @@ EOF
       || { echo "TEST: cmd diff FAIL"; ret=21; }; }<<EOF
 # targeting system: ('linux', 'redhat', '7.4')
 pcs cluster cib tmp-cib.xml
+cp tmp-cib.xml tmp-cib.xml.deltasrc
 pcs -f tmp-cib.xml property set no-quorum-policy=freeze
 pcs -f tmp-cib.xml property set stonith-enabled=true
 pcs -f tmp-cib.xml \\
@@ -492,7 +493,7 @@ pcs -f tmp-cib.xml constraint order clnPingd \\
 pcs -f tmp-cib.xml stonith level add 1 srv01 prmStonith1-1
 pcs -f tmp-cib.xml stonith level add 1 srv02 prmStonith2-1
 pcs -f tmp-cib.xml stonith level add 1 srv03 prmStonith3-1
-pcs cluster cib-push tmp-cib.xml --config
+pcs cluster cib-push tmp-cib.xml diff-against=tmp-cib.xml.deltasrc
 EOF
     rm -f -- "${testcmd}"
     unset testcmd
@@ -669,6 +670,7 @@ EOF
       || { echo "TEST: cmd diff FAIL"; ret=21; }; }<<EOF
 # targeting system: ('linux', 'redhat', '7.4')
 pcs cluster cib tmp-cib.xml
+cp tmp-cib.xml tmp-cib.xml.deltasrc
 pcs -f tmp-cib.xml property set no-quorum-policy=freeze
 pcs -f tmp-cib.xml property set stonith-enabled=true
 pcs -f tmp-cib.xml \\
@@ -754,7 +756,7 @@ pcs -f tmp-cib.xml acl role create auto-fixer write \\
   id cib-bootstrap-options-no-quorum-policy
 pcs -f tmp-cib.xml acl user create fixer auto-fixer
 pcs -f tmp-cib.xml property set enable-acl=true
-pcs cluster cib-push tmp-cib.xml --config
+pcs cluster cib-push tmp-cib.xml diff-against=tmp-cib.xml.deltasrc
 EOF
     rm -f -- "${testcmd}"
     unset testcmd
