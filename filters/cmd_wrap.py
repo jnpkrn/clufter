@@ -414,8 +414,10 @@ def cmd_args_cutter(itemgroups, color_map):
                             pos += len(acc) - 1
                             continue
                     if pos <= end - 2:
-                        if i[pos] in ("op", "meta"):
-                            # "op/meta non-option [non-option...]"
+                        if i[pos] in (
+                            "op", "meta",   # resource create/update
+                            "id", "xpath",  # acl (role create|permission add)
+                                ):
                             ret.extend(map(
                                 lambda x: cmd_args_colorizer_pcs(x, color_map),
                                 filter(bool, (tuple(acc), ))

@@ -747,11 +747,11 @@ pcs -f tmp-cib.xml constraint order clnPingd \\
 pcs -f tmp-cib.xml stonith level add 1 srv01 prmStonith1-1
 pcs -f tmp-cib.xml stonith level add 1 srv02 prmStonith2-1
 pcs -f tmp-cib.xml stonith level add 1 srv03 prmStonith3-1
-pcs -f tmp-cib.xml \\
-  acl role create auto-fixer write id cib-bootstrap-options deny id \\
-  cib-bootstrap-options-enable-acl deny id \\
-  cib-bootstrap-options-stonith-enabled deny id \\
-  cib-bootstrap-options-no-quorum-policy
+pcs -f tmp-cib.xml acl role create auto-fixer write \\
+  id cib-bootstrap-options deny \\
+  id cib-bootstrap-options-enable-acl deny \\
+  id cib-bootstrap-options-stonith-enabled deny \\
+  id cib-bootstrap-options-no-quorum-policy
 pcs -f tmp-cib.xml acl user create fixer auto-fixer
 pcs -f tmp-cib.xml property set enable-acl=true
 pcs cluster cib-push tmp-cib.xml --config
