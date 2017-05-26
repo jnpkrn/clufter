@@ -30,10 +30,12 @@ pcs_commands_hierarchy = {
         'kill': None,
         'enable': None,
         'disable': None,
+        # v-- deprecated (in favor of node {add,remove}-remote)
         'remote-node': {
             'add': None,
             'remove': None,
         },
+        # ^-- deprecated
         'status': None,
         'pcsd-status': None,
         'sync': None,
@@ -44,6 +46,11 @@ pcs_commands_hierarchy = {
         'node': {
             'add': None,
             'remove': None,
+            'add-remote': None,
+            'remove-remote': None,
+            'add-guest': None,
+            'remove-guest': None,
+            'clear': None,
         },
         'uidgid': {
             None: None,
@@ -94,6 +101,10 @@ pcs_commands_hierarchy = {
         'clone': None,
         'unclone': None,
         'master': None,
+        'bundle': {
+            'create': None,
+            'update': None,
+        },
         'manage': None,
         'unmanage': None,
         'defaults': None,
@@ -131,6 +142,10 @@ pcs_commands_hierarchy = {
         'sbd': {
             'enable': None,
             'disable': None,
+            'device': {
+                'setup': None,
+                'message': None,
+            },
             'status': None,
             'config': None,
         },
