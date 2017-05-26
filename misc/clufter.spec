@@ -203,6 +203,8 @@ BuildRequires:  help2man
 # following for pkg_resources module
 Requires:       %{clufter_setuptools}
 Requires:       %{clufter_pylib} = %{version}-%{release}
+# "extras"
+Requires:       %{clufter_editor}
 BuildArch:      noarch
 
 %description %{pkgsimple %{clufter_cli}}
@@ -232,8 +234,6 @@ Obsoletes:      python-%{name} < %{version}-%{release}
 Requires:       %{clufter_bin} = %{version}-%{release}
 #autodected# Requires:       libxml2
 Requires:       python-lxml
-# "extras"
-Requires:       %{clufter_editor}
 BuildArch:      noarch
 
 %description %{pkgsimple %{clufter_pylib2}}
@@ -257,8 +257,6 @@ Provides:       %{clufter_lib} = %{version}-%{release}
 Requires:       %{clufter_python3}-lxml
 #implied-by#Requires: %%{clufter_ccs_flatten}
 Requires:       %{clufter_bin} = %{version}-%{release}
-# "extras"
-Requires:       %{clufter_editor}
 BuildArch:      noarch
 
 %description %{pkgsimple %{clufter_pylib3}}
@@ -693,8 +691,8 @@ EOF)
 %global cl_jp_r Jan Pokorný <jpokorny+rpm-clufter @at@ fedoraproject .dot. org>
 %global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
-%{cl_entry 2017-03-22 0.70.1-0.1.a %{cl_jp}
-  TBD}
+%{cl_entry 2017-05-26 0.70.1-0.1.a %{cl_jp}
+  move nano fallback editor dependency to \-cli package [PGissue#1]}
 
 %{cl_entry 2017-03-21 0.70.0-1 %{cl_jp}
   split \-bin and \-common packages, the former becoming the only arch-specific
