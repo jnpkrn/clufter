@@ -76,7 +76,7 @@ class formats(PluginRegistry):
                                    attrs.pop('context_specs', ())))
         cls._update_to = OrderedDict()  # to be filled "retrospectively"
         compat = popattr(cls, 'compat_contingency',
-                         attrs.pop('compat_contigency', ()))
+                         attrs.pop('compat_contingency', ()))
         cls._update_from = OrderedDict((c.in_format, c) for c in compat)
         # protocols merge: top-down through inheritance
         # (real base class goes last, rest are "convertible siblings")
@@ -157,7 +157,7 @@ class _Format(object):
               approach -- no hassles are needed when an instance of an older
               format version validates per requirements imposed on the newer
               format, otherwise this new format is supposed to specify
-              filter(s), via its `compat_contigency` member, sufficient
+              filter(s), via its `compat_contingency` member, sufficient
               to promote the older instance so it eventually validates
               (it's a fatal failure if this cannot be achieved)
 
