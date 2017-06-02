@@ -169,8 +169,9 @@ Source0:        %{clufter_source}.tar.gz
 Source1:        %{clufter_url_raw}%{clufter_githash}/%{?pagure:f/}misc/run-sdist-per-commit
 %endif
 %if %{with generated_schemas}
-# Helper in "borrow validation schemas from pacemaker installed along" process
+# Helpers in "borrow validation schemas from pacemaker installed along" process
 Source2:        %{clufter_url_raw}%{clufter_githash}/%{?pagure:f/}misc/fix-jing-simplified-rng.xsl
+Source3:        %{clufter_url_raw}%{clufter_githash}/%{?pagure:f/}misc/pacemaker-borrow-schemas
 %endif
 
 
@@ -433,30 +434,7 @@ while read cmd; do
 done < .subcmds
 %endif
 %if %{with generated_schemas}
-schemadir=$(pkg-config --variable schemadir pacemaker)
-%{__mkdir_p} -- .schemas
-for f in "${schemadir}"/pacemaker-*.*.rng; do
-    test -f "${f}" || continue
-    base="$(basename "${f}")"
-    case "${base}" in
-    pacemaker-1.0.rng|pacemaker-2.[126].rng)
-        continue;;  # skip non-defaults of upstream releases (avoid clutter)
-    esac
-    sentinel=10; old=; new="${f}"
-    while [ "$(stat -c '%%s' "${old}")" != "$(stat -c '%%s' "${new}")" ]; do
-        [ "$((sentinel -= 1))" -gt 0 ] || break
-        [ "${old}" = "${f}" ] && old=".schemas/${base}";
-        [ "${new}" = "${f}" ] \
-          && { old="${f}"; new=".schemas/${base}.new"; } \
-          || %{__cp} -f "${new}" "${old}"
-        jing -is "${old}" > "${new}"
-    done
-    # xmllint drops empty lines caused by the applied transformation
-    xsltproc --stringparam filename-or-version "${base}" \
-      "%{SOURCE2}" "${new}" \
-      | xmllint --format - > "${old}"
-    %{__rm} -f -- "${new}"
-done
+OUTPUTDIR=.schemas POSTPROCESS="%{SOURCE2}" sh "%{SOURCE3}" --clobber
 %endif
 
 %install
@@ -692,7 +670,7 @@ EOF)
 %global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
 %{cl_entry 2017-05-29 0.75.1-0.1.a %{cl_jp}
-  TBD}
+  factor "borrow validation schemas from pacemaker" out to a separate script}
 
 %{cl_entry 2017-05-26 0.75.0-1 %{cl_jp}
   move nano fallback editor dependency to \-cli package [PGissue#1]}
