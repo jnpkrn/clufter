@@ -1,10 +1,10 @@
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
 # Intended way of building is via setup.py, this is primarily for maintenance!
 
-.PHONY: all clean metadata full install symlink deepclean
+.PHONY: all clean metadata full install deepclean  # symlink
 
 TARGET  = ccs_flatten
 OBJS    = flatten.o reslist.o resrules.o restree.o xmlconf.o
@@ -65,8 +65,8 @@ install: full
 	install ${TARGET} ${PREFIX}/${ccs_flatten}
 	install *.${ra_metadata_ext} ${PREFIX}/${ra_metadata}
 
-symlink:
-	ln -fs ../build/ccs_flatten .
+#symlink:
+#	ln -fs ../build/ccs_flatten .
 
 clean:
 	${RM} -- ${TARGET} ${OBJS} config.h *.${ra_metadata_ext}.tmp
