@@ -207,6 +207,8 @@ cluster_map = {
                 ((7, 1), {
                     'pacemaker[+coro]':              (1, 1, 12),
                     'pcs':                           (0, 9, 137),
+                     # https://bugzilla.redhat.com/1158500
+                    'resource-agents[+docker]':      (3, 9, 5),
                 }),
                 ((7, 2), {
                     'pacemaker[+coro]':              (1, 1, 13),
@@ -366,6 +368,9 @@ versions_extra = {
             # this is best accompanied with following Pacemaker/crm_diff bugfix
             # https://github.com/ClusterLabs/pacemaker/commit/20a74b9d37
             '+push-diff'),
+        # http://lists.clusterlabs.org/pipermail/users/2017-May/005824.html
+        ((0, 9, 158),
+            '+bundle'),  # https://bugzilla.redhat.com/1433016
     ),
     'resource-agents': (
         # http://lists.linux-ha.org/pipermail/linux-ha/2011-June/043321.html
@@ -385,8 +390,8 @@ versions_extra = {
         #    ),
         # http://lists.linux-ha.org/pipermail/linux-ha/2015-January/048523.html
         # XXX clvm
-        #((3, 9, 6),
-        #    ),
+        ((3, 9, 6),
+            '+docker'),
         # http://oss.clusterlabs.org/pipermail/users/2016-February/002216.html
         #((3, 9, 7),
         #    ),

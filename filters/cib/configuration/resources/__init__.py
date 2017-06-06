@@ -472,8 +472,17 @@ cib2pcscmd = ('''\
         ORDINARY/CLONE/MASTER CLUSTER RESOURCES
      -->
 
-    <!-- primitives -->
-    <xsl:for-each select=".//primitive[@class != 'stonith']">
+    <!-- bundles -->
+    <clufter:descent-mix at="bundle"/>
+
+    <!-- primitives (can depend on bundle, but only if supported) -->
+    <xsl:for-each select=".//primitive[@class != 'stonith'
+                                       and
+                                       (
+                                           name(..) != 'bundle'
+                                           or
+                                           $pcscmd_extra_bundle
+                                       )]">
         <xsl:variable name="ResourceSpec">
             <xsl:choose>
                 <xsl:when test="@class = 'ocf'">
@@ -496,6 +505,11 @@ cib2pcscmd = ('''\
             <xsl:when test="name(..) = 'master'">
 ''' + (
                 verbose_inform('"new resource: ", @id, " (to be set as master)"')
+) + '''
+            </xsl:when>
+            <xsl:when test="name(..) = 'bundle'">
+''' + (
+                verbose_inform('"new resource: ", @id, " (being added to bundle)"')
 ) + '''
             </xsl:when>
             <xsl:otherwise>
@@ -530,6 +544,11 @@ cib2pcscmd = ('''\
 ''' + (
         attrset_xsl("meta_attributes", cmd='" meta"')
 ) + '''
+        <!-- possible containment within (existing) bundle -->
+        <xsl:if test="name(..) = 'bundle'">
+            <xsl:value-of select="concat(' bundle', ' ', ../@id)"/>
+        </xsl:if>
+
         <!-- NOTE clone/master resource specifics handled separately later -->
         <xsl:value-of select="'%(NL)s'"/>
 ''' + (
