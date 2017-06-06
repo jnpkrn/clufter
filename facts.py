@@ -144,10 +144,10 @@ cluster_map = {
                     'pcs':                           (0, 9, 154),
                 }),
                 # coming...
-                #((26, ), {
-                #    'resource-agents':               (4, 0, 1),
-                #    'pacemaker[+coro]':              (1, 1, 17),
-                #}),
+                ((26, ), {
+                    'resource-agents':               (4, 0, 1),
+                    'pacemaker[+coro]':              (1, 1, 17),
+                }),
             ),
             'redhat': (
                 ((6, 0), {
