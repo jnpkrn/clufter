@@ -3,6 +3,7 @@
 
 /defaults.py
 
+/__root__/ccs_flatten
 /__root__/ccs-flatten/Makefile.setup
 /__root__/ccs-flatten/ccs_flatten
 /__root__/ccs-flatten/config.h

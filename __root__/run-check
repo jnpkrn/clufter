@@ -30,7 +30,7 @@ which ccs_flatten 2>/dev/null || (
     ln -frs -- ccs-flatten/*.metadata build 2>/dev/null \
     || ( cd build; ln -fs -- ../ccs-flatten/*.metadata . )
     ln -fs -- build/ccs_flatten .
-    make -C ccs-flatten symlink
+    #make -C ccs-flatten symlink
 ) || { ret=$?; echo "ccs_flatten missing, cannot be built"; exit ${ret}; }
 
 run_check_ccs2pcs() {
