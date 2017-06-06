@@ -18,7 +18,7 @@ cib2pcscmd_id_whitelist = (
 
 cib2pcscmd = ('''\
     <!-- "pcs acl" only supported with certain newer versions of
-         pcs/pacemaker (https://bugzilla.redhat.com/1111369) -->
+         pacemaker/pcs (https://bugzilla.redhat.com/1111369) -->
     <xsl:choose>
         <xsl:when test="$pcscmd_extra_acls">
 ''' + (
@@ -89,6 +89,6 @@ cib2pcscmd = ('''\
     </xsl:choose>
 ''') % dict(
     NL=NL,
-    acls_msg="WARNING: target pcs/pacemaker version does not support"
+    acls_msg="WARNING: target pacemaker/pcs versions do not support"
              " (new) ACLs, hence &apos;acl_role&apos; element(s) omitted",
 )

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -77,9 +77,9 @@ needleqdevicexml2pcscmd = ('''\
                                                    @model,
                                                    '` is currently unhandled',
                                                    ' in the conversion')"/>''',
-    qdevice_msg="WARNING: target corosync+pcs versions do not support qdevice,"
+    qdevice_msg="WARNING: target corosync/pcs versions do not support qdevice,"
                 " hence omitted",
-    qmodel_msg='''<xsl:value-of select="concat('WARNING: target corosync+pcs',
+    qmodel_msg='''<xsl:value-of select="concat('WARNING: target corosync/pcs',
                                                ' versions do not support quorum',
                                                ' device model `',
                                                @model,
