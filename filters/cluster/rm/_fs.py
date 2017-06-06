@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -132,7 +132,7 @@ ccsflat2cibprelude = ('''
                             <xsl:value-of select="'guest'"/>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:message terminate="true"
+                            <xsl:message terminate="yes"
                             >Unexpected *fs RA params combination witnessed.</xsl:message>
                         </xsl:otherwise>
                     </xsl:choose>

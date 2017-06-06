@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -26,7 +26,7 @@ ccsflat2cibprelude = '''\
                             @lv_name != current()/@lv_name
                         ]
                     ) = 1">
-        <xsl:message terminate="true">
+        <xsl:message terminate="yes">
             <xsl:value-of select="concat('Cannot convert lvm when there are',
                                          ' multiple LV bindings for single',
                                          '`', @vg_name, '` VG')"/>

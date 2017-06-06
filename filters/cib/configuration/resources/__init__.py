@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -564,7 +564,7 @@ cib2pcscmd = ('''\
 
     <!-- templates -->
     <xsl:if test="template">
-        <xsl:message terminate="true"
+        <xsl:message terminate="yes"
         >Cannot convert templates to pcs commands yet [https://bugzilla.redhat.com/1281359]</xsl:message>
     </xsl:if>
 
