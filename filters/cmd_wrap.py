@@ -417,6 +417,8 @@ def cmd_args_cutter(itemgroups, color_map):
                         if i[pos] in (
                             "op", "meta",   # resource create/update
                             "id", "xpath",  # acl (role create|permission add)
+                            # bundle feature
+                            "container", "network", "port-map", "storage-map",
                                 ):
                             ret.extend(map(
                                 lambda x: cmd_args_colorizer_pcs(x, color_map),

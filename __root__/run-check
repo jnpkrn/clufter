@@ -458,14 +458,14 @@ pcs -f tmp-cib.xml stonith create prmStonith3-1 external/ssh \\
   timeout=60s on-fail=restart id=prmStonith3-1-monitor-10s stop \\
   name=stop interval=0s timeout=60s on-fail=ignore \\
   id=prmStonith3-1-stop-0s
-pcs -f tmp-cib.xml \\
-  resource bundle create httpd-bundle container docker \\
-  image=pcmktest:http replicas=3 options=--log-driver=journald network \\
-  ip-range-start=192.168.122.131 host-interface=eth0 host-netmask=24 \\
-  port-map id=httpd-port port=80 storage-map id=httpd-root \\
-  source-dir-root=/var/local/containers target-dir=/var/www/html \\
-  options=rw storage-map id=httpd-logs \\
-  source-dir-root=/var/log/pacemaker/bundles \\
+pcs -f tmp-cib.xml resource bundle create httpd-bundle \\
+  container docker image=pcmktest:http replicas=3 \\
+  options=--log-driver=journald \\
+  network ip-range-start=192.168.122.131 host-interface=eth0 \\
+  host-netmask=24 port-map id=httpd-port port=80 \\
+  storage-map id=httpd-root source-dir-root=/var/local/containers \\
+  target-dir=/var/www/html options=rw \\
+  storage-map id=httpd-logs source-dir-root=/var/log/pacemaker/bundles \\
   target-dir=/etc/httpd/logs options=rw
 pcs -f tmp-cib.xml resource create pgsql ocf:pacemaker:Stateful \\
   op start interval=0s timeout=300s on-fail=restart monitor interval=10s \\
