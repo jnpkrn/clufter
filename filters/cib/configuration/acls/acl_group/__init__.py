@@ -21,7 +21,7 @@ cib2pcscmd = ('''\
             </xsl:for-each>
             <xsl:value-of select="'%(NL)s'"/>
 ''' + (
-    verbose_ec_test
+            verbose_ec_test
 ) + '''
         </xsl:when>
         <xsl:when test="not(preceding-sibling::acl_group)">
@@ -30,6 +30,6 @@ cib2pcscmd = ('''\
     </xsl:choose>
 ''') % dict(
     NL=NL,
-    acls_msg="WARNING: target pcs/pacemaker version does not support"
+    acls_msg="WARNING: target pacemaker/pcs versions do not support"
              " (new) ACLs, hence &apos;acl_group&apos; element(s) omitted",
 )

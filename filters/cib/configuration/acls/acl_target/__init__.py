@@ -13,15 +13,15 @@ cib2pcscmd = ('''\
     <xsl:choose>
         <xsl:when test="$pcscmd_extra_acls">
 ''' + (
-    verbose_inform('"new ACL user: ", @id')
+            verbose_inform('"new ACL user: ", @id')
 ) + '''
-    <xsl:value-of select="concat($pcscmd_pcs, 'acl user create', ' ', @id)"/>
-    <xsl:for-each select="role">
-        <xsl:value-of select="concat(' ', @id)"/>
-    </xsl:for-each>
-    <xsl:value-of select="'%(NL)s'"/>
+            <xsl:value-of select="concat($pcscmd_pcs, 'acl user create', ' ', @id)"/>
+            <xsl:for-each select="role">
+                <xsl:value-of select="concat(' ', @id)"/>
+            </xsl:for-each>
+            <xsl:value-of select="'%(NL)s'"/>
 ''' + (
-    verbose_ec_test
+            verbose_ec_test
 ) + '''
         </xsl:when>
         <xsl:when test="not(preceding-sibling::acl_group)">
@@ -30,6 +30,6 @@ cib2pcscmd = ('''\
     </xsl:choose>
 ''') % dict(
     NL=NL,
-    acls_msg="WARNING: target pcs/pacemaker version does not support"
+    acls_msg="WARNING: target pacemaker/pcs versions do not support"
              " (new) ACLs, hence &apos;acl_group&apos; element(s) omitted",
 )
