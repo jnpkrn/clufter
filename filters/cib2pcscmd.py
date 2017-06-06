@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """cib2pcscmd filter"""
@@ -92,6 +92,11 @@ def cib2pcscmd(flt_ctxt, in_obj):
                 )),
                 pcscmd_extra_push_diff  = bool(infer(
                     'comp:pcs[push-diff]',
+                    flt_ctxt['system'],
+                    flt_ctxt['system_extra'],
+                )),
+                pcscmd_extra_bundle = bool(infer(
+                    'comp:pacemaker[bundle] + comp:resource-agents[docker] + comp:pcs[bundle]',
                     flt_ctxt['system'],
                     flt_ctxt['system_extra'],
                 )),
