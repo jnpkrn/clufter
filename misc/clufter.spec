@@ -5,7 +5,7 @@
 #   clufter        -> clufter-cli
 #   clufter-lib    -> python.+-clufter (any if multiple)
 #   python-clufter -> python2-clufter (subject of change)
-%{!?clufter_version: %global clufter_version  %{!?infer:0.76.0}%{?infer:%(
+%{!?clufter_version: %global clufter_version  %{!?infer:0.76.1}%{?infer:%(
                                                 python ../setup.py --version)}}
 %{!?clufter_name:    %global clufter_name     %{!?infer:clufter}%{?infer:%(
                                                 python ../setup.py --name)}}
@@ -669,6 +669,9 @@ EOF)
 %global cl_jp_r Jan Pokorný <jpokorny+rpm-clufter @at@ fedoraproject .dot. org>
 %global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
+%{cl_entry 2017-06-20 0.76.1-0.1.a %{cl_jp}
+  TBD}
+
 %{cl_entry 2017-06-06 0.76.0-1 %{cl_jp}
   factor "borrow validation schemas from pacemaker" out to a separate script
   bump upstream package}
