@@ -37,11 +37,11 @@ class TestCommandContextBase(TestCase):
             except RuntimeError:
                 self.assertEqual(ccb['a'], 42)
             else:
-                self.assertTrue(False)
+                self.fail()
         try:
             ccb['a'] = 43
         except RuntimeError:
-            self.assertTrue(False)
+            self.fail()
         else:
             self.assertEqual(ccb['a'], 43)
 
@@ -53,11 +53,11 @@ class TestCommandContextBase(TestCase):
             except RuntimeError:
                 self.assertEqual(ccb['a']['b'], 42)
             else:
-                self.assertTrue(False)
+                self.fail()
         try:
             ccb['a']['b'] = 43
         except RuntimeError:
-            self.assertTrue(False)
+            self.fail()
         else:
             self.assertEqual(ccb['a']['b'], 43)
 
