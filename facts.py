@@ -60,9 +60,13 @@ cluster_map = {
                 }),
                 ((9, ), {
                     # https://packages.debian.org/stretch/$PACKAGE
-                    'corosync':                      (2, 3, 5),
-                    'pacemaker[+coro]':              (1, 1, 15),
-                    'resource-agents':               (3, 9, 7),
+                    'corosync':                      (2, 4, 2),
+                    'pacemaker[+coro]':              (1, 1, 16),
+                    'pcs':                           (0, 9, 155),
+                    'resource-agents':               (4, 0, 0),
+                }),
+                ((10, ), {
+                    # https://packages.debian.org/buster/$PACKAGE
                 }),
             ),
             'fedora': (
@@ -298,11 +302,13 @@ aliases_rel = {
         'needle':     '2',
     },
     'debian': {  # because of http://bugs.python.org/issue9514 @ 2.6 ?
-        'squeeze':    '6',
-        'wheezy':     '7',
-        'jessie':     '8',
-        'stretch':    '9',
-        'stretch/sid': '9.999',  # XXX ?
+        'squeeze':      '6',
+        'wheezy':       '7',
+        'jessie':       '8',
+        'stretch':      '9',
+        'buster':      '10',
+        #'buster/sid':  '10.999',  # XXX ?
+        #'bullseye':    '11',
     },
     'ubuntu': {
         '13.04':      '13.4',
