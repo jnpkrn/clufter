@@ -83,7 +83,7 @@ class XMLValidationTestCase(TestCase):
             self.assertTrue('Validation' in str(e))
             pass
         else:
-            self.assertTrue(False)
+            self.fail()
 
     def testRngExplicitValidationOk(self):
         entries, _ = head_tail(coroxml_needle.etree_validator(
