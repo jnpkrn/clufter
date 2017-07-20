@@ -47,7 +47,7 @@ from .utils import arg2wrapped, args2sgpl, args2tuple, args2unwrapped, \
 from .utils_2to3 import MimicMeta, basestring, bytes_enc, iter_items, xrange
 from .utils_func import bifilter_unpack, foreach
 from .utils_lxml import etree_parser_safe
-from .utils_prog import ProtectedDict, getenv_namespaced
+from .utils_prog import ProtectedDict, getenv_namespaced, namever_partition
 from .utils_xml import rng_get_start, rng_pivot
 
 log = getLogger(__name__)
@@ -877,7 +877,7 @@ class XML(SimpleFormat):
 
     @classmethod
     def etree_rng_validator_proper_specs(cls, **kwargs):
-        """Return class-exclusive validating RNG files, ordered by name"""
+        """Return class-exclusive validating RNG files, name/version ordered"""
         specs = set(cls._etree_rng_validator_specs(
             **filterdict_keep(kwargs, 'root_dir', 'spec')
         ))
@@ -889,7 +889,7 @@ class XML(SimpleFormat):
             if this_ancestor_specs:
                 ancestor_specs.update(this_ancestor_specs)
         specs.difference(ancestor_specs)
-        return sorted(specs)
+        return sorted(specs, key=lambda x: namever_partition(splitext(x)[0]))
 
     @classmethod
     def etree_rng_validator(cls, et, start=None, **kwargs):
