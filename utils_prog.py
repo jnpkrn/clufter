@@ -489,3 +489,12 @@ def docformat(*args, **kwargs):
                 pass
         return fnc
     return deco
+
+
+def namever_partition(s):
+    """For `.*-*[0-9]*(.[0-9]*)*`, return tuple (prefix, v1, ..., vX)
+
+    For instance, 'pacemaker-2.10' -> ('pacemaker', 2, 10)."""
+    name = s.rstrip("0123456789.")
+    return ((name.rstrip('-'), )
+            + tuple(int(i) for i in s[len(name):].split('.') if i))
