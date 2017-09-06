@@ -6,7 +6,13 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from xml.sax.saxutils import escape
+from base64 import b64encode
+from hashlib import sha256
+from os import getpid
+from time import time
 
+from ..utils_2to3 import bytes_enc, str_enc
+from ..utils_prog import getenv_namespaced
 from ..utils_xslt import NL
 
 verbose_prefix = ':: '
@@ -48,8 +54,16 @@ def coro2pcscmd(**kwargs):
             what=kwargs.get(w) or w
         ) if w in kwargs else ''
     return ('''\
-    <xsl:variable name="ClusterName" select="string(@name
-                                                    |totem/@cluster_name)"/>
+    <xsl:variable name="ClusterName">
+        <xsl:choose>
+            <xsl:when test="string(@name|totem/@cluster_name)">
+                <xsl:value-of select="string(@name|totem/@cluster_name)"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="'%(randomized)s'"/>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:variable>
     <xsl:if test="not($pcscmd_dryrun)">
         <xsl:if test="not($pcscmd_noauth)">
 ''' + (
@@ -151,6 +165,12 @@ def coro2pcscmd(**kwargs):
     msg_enable="NOTE: cluster infrastructure services not enabled"
                " at this point, which can be changed any time by issuing"
                " `pcs cluster enable --all`",
+    randomized='_NEEDED' + (
+        '-' + str_enc(b64encode(sha256(
+            bytes_enc(str(getpid()) + '_BY_PCS_' + str(int(time())), 'ascii')
+        ).digest()), 'ascii')[0:8].replace('+', '-').replace('/', '_')
+        if getenv_namespaced('NOSALT', '0') in ('0', 'false') else '_'
+    ),
     **dict(('descent_' + k, descent(k))
            for k in ('cman', 'node', 'quorum', 'totem'))
 )
