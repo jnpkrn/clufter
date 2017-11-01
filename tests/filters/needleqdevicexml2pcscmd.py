@@ -19,8 +19,6 @@ with open(join(dirname(dirname(__file__)), '_com')) as f:
 from .filter_manager import FilterManager
 from .utils_2to3 import bytes_enc, str_enc
 flt = 'needleqdevicexml2pcscmd'
-cib2pcscmd = FilterManager.init_lookup(flt).filters[flt]
-cib = cib2pcscmd.in_format
 
 
 class FiltersCib2pcscmdQuorumDeviceTestCase(TeardownFilterTestCase):
