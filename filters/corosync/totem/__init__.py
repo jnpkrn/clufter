@@ -56,4 +56,75 @@ needlexml2pcscmd = '''\
             <xsl:value-of select="concat(' --', name(), ' ', .)"/>
         </xsl:if>
     </xsl:for-each>
+
+    <!-- corosync encryption, based on key/keyfile -->
+    <xsl:choose>
+        <xsl:when test="(
+                          @key or @keyfile
+                      ) and (
+                          (
+                            not(@secauth)
+                            or
+                            @secauth != 'off'
+                          ) and (
+                            not(@crypto_cipher)
+                            or
+                            @crypto_cipher != 'none'
+                          )
+                      )">
+            <xsl:choose>
+                <xsl:when test="$pcscmd_extra_corosync_encryption_forced
+                                or
+                                $pcscmd_extra_corosync_encryption">
+                    <xsl:choose>
+                        <xsl:when test="@keyfile and @keyfile != '/etc/corosync/authkey'">
+                            <xsl:message>
+                                <xsl:value-of select="concat('WARNING: `keyfile` granularity not',
+                                                             ' supported, will at least enable',
+                                                             ' encryption as such')"/>
+                            </xsl:message>
+                        </xsl:when>
+                        <xsl:when test="@keyfile">
+                            <xsl:message>
+                                <xsl:value-of select="concat('WARNING: `keyfile` appoints the default',
+                                                             ' path, however that granularity not',
+                                                             ' supported, will enable encryption but',
+                                                             ' overwrite that location at the nodes')"/>
+                            </xsl:message>
+                        </xsl:when>
+                        <xsl:when test="@key">
+                            <xsl:message>
+                                <xsl:value-of select="concat('WARNING: `key` granularity not',
+                                                             ' supported, will at least enable',
+                                                             ' encryption as such')"/>
+                            </xsl:message>
+                        </xsl:when>
+                    </xsl:choose>
+                    <xsl:choose>
+                        <xsl:when test="$pcscmd_extra_corosync_encryption_forced">
+                            <xsl:message>
+                                <xsl:value-of select="concat('NOTE: current pcs will enable encryption',
+                                                             ' automatically, no intervention needed')"/>
+                            </xsl:message>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="' --encryption 1'"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:message>
+                        <xsl:value-of select="concat('WARNING: encryption requested, but current pcs',
+                                                     ' not capable to enforce it')"/>
+                    </xsl:message>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:when>
+        <xsl:when test="$pcscmd_extra_corosync_encryption_forced">
+            <xsl:message>
+                <xsl:value-of select="concat('WARNING: encryption not requested, but current pcs',
+                                             ' will enforce it regardless')"/>
+            </xsl:message>
+        </xsl:when>
+    </xsl:choose>
 '''

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2016 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """needlexml2pcscmd filter"""
@@ -37,6 +37,16 @@ def needlexml2pcscmd(flt_ctxt, in_obj):
 
                 pcscmd_extra_wait_cluster_start = bool(infer(
                     'comp:pcs[wait-cluster-start]',
+                    flt_ctxt['system'],
+                    flt_ctxt['system_extra'],
+                )),
+                pcscmd_extra_corosync_encryption_forced = bool(infer(
+                    'comp:pcs[corosync-encryption-forced]',
+                    flt_ctxt['system'],
+                    flt_ctxt['system_extra'],
+                )),
+                pcscmd_extra_corosync_encryption = bool(infer(
+                    'comp:pcs[corosync-encryption]',
                     flt_ctxt['system'],
                     flt_ctxt['system_extra'],
                 )),
