@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2015 Red Hat, Inc.
+# Copyright 2017 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -45,7 +45,7 @@ needlexml2pcscmd = '''\
 
     <!-- ipv6? -->
     <xsl:if test="@ip_version = 'ipv6'">
-        <xsl:value-of select="' --ipv6 '"/>
+        <xsl:value-of select="' --ipv6'"/>
     </xsl:if>
 
     <xsl:for-each select="@*[
