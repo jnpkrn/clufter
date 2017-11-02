@@ -376,7 +376,13 @@ versions_extra = {
             '+push-diff'),
         # http://lists.clusterlabs.org/pipermail/users/2017-May/005824.html
         ((0, 9, 158),
-            '+bundle'),  # https://bugzilla.redhat.com/1433016
+            # https://bugzilla.redhat.com/1433016
+            # and https://bugzilla.redhat.com/1165821, respectively
+            '+bundle,+corosync-encryption-forced'),
+        # http://oss.clusterlabs.org/pipermail/users/2017-June/005965.html
+        ((0, 9, 159),
+            # https://bugzilla.redhat.com/1165821
+            '-corosync-encryption-forced,+corosync-encryption'),
     ),
     'resource-agents': (
         # http://lists.linux-ha.org/pipermail/linux-ha/2011-June/043321.html

@@ -280,7 +280,8 @@ ccs2needlexml = lazystring(lambda: ('''\
         <totem version="2"
                cluster_name="{@name}">
             <clufter:descent at="totem">
-                <!-- see bz1165821 (pcs currently doesn't handle corosync's keyfile) -->
+                <!-- see bz1165821 (pcs currently still doesn't handle
+                     corosync's keyfile as a first class citizen) -->
                 <xsl:if test="not(totem) or totem[
                                   (
                                       not(@secauth)
