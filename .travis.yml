@@ -16,7 +16,7 @@ matrix:
 before_install:
         # http://docs.travis-ci.com/user/installing-dependencies/#Installing-Ubuntu-packages
         # https://github.com/travis-ci/travis-ci/issues/2124#issuecomment-38992012
-        - test $MAINT_EXTRA -ne 0 || sudo apt-get update -qq
+        - sudo apt-get update -qq
         # speed the run up
         - test $MAINT_EXTRA -ne 0
           || python -c
@@ -25,6 +25,7 @@ before_install:
              'from sys import exit, version_info as v; exit(v[1] == 2)'
              && echo "python-lxml python-setuptools"
              || echo "python3-lxml python3-setuptools")
+        - test $MAINT_EXTRA -eq 0 || sudo apt-get install -qq libxml2-utils
 
 install:
         - pushd __root__
