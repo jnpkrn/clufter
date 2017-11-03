@@ -18,7 +18,9 @@ from sys import modules
 from unittest import TestCase
 
 from .filter_manager import FilterManager
+from .format_manager import FormatManager
 from .utils import filterdict_keep
+from .utils_prog import getenv_namespaced, setenv_namespaced
 
 
 def rewrite_root(flt, new_root, **kwargs):
@@ -33,7 +35,7 @@ def rewrite_root(flt, new_root, **kwargs):
         def _fnc_wrapper(flt_ctxt, *args, **kws):
             flt_ctxt.update(
                 filterdict_keep(kwargs, 'walk_transform',
-                               root_dir=new_root_dir, xml_root=new_xml_root)
+                                root_dir=new_root_dir, xml_root=new_xml_root)
             )
             return fnc(flt_ctxt, *args, **kws)
         return _fnc_wrapper
@@ -43,10 +45,37 @@ def rewrite_root(flt, new_root, **kwargs):
 
 class CommonFilterTestCase(TestCase):
     def setUp(self):
-        self.flt_mgr = FilterManager.init_lookup(ext_plugins=False)
+        self.fmt_mgr = FormatManager.init_lookup(ext_plugins=False)
+        self.flt_mgr = FilterManager.init_lookup(ext_plugins=False,
+                                                 fmt_mgr=self.fmt_mgr)
+
+    def tearDown(self):
+        self.flt_mgr = None
+        self.fmt_mgr = None
 
 
 class TeardownFilterTestCase(CommonFilterTestCase):
+    def setUp(self):
+        # start from scratch
+        self.fmt_mgr = FormatManager.init_lookup(ext_plugins=False,
+                                                 from_scratch=True)
+        self.flt_mgr = FilterManager.init_lookup(ext_plugins=False,
+                                                 from_scratch=True,
+                                                 fmt_mgr=self.fmt_mgr)
+
+
+class DeterministicFilterTestCase(TeardownFilterTestCase):
+    def setUp(self):
+        self.nosalt_prev = getenv_namespaced('NOSALT', None)
+        setenv_namespaced('NOSALT', '1')
+        # start from scratch, incl. proper recycling of the cached "walk"
+        # symbols (needed, because there's some dynamics relied upon in tests)
+        super(DeterministicFilterTestCase, self).setUp()
+        for m in tuple(m for m in modules
+                        if m.startswith(self.fmt_mgr.registry.namespace + '.')
+                        and '.walk_' in m):
+                modules.pop(m)
+
     def tearDown(self):
-        self.flt_mgr.registry.setup(True)  # start from scratch
-        self.flt_mgr = None
+        setenv_namespaced('NOSALT', self.nosalt_prev)
+        super(DeterministicFilterTestCase, self).tearDown()

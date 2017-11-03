@@ -216,7 +216,7 @@ class PluginRegistry(type):
             PluginRegistry._registries.discard(registry)
 
     @classmethod
-    def discover(registry, paths=(), fname_start=''):
+    def discover(registry, paths=(), fname_start='', from_scratch=False):
         """Find relevant plugins available at the specified path(s)
 
         Keyword arguments:
@@ -231,6 +231,8 @@ class PluginRegistry(type):
             translate(fs + '*')
             for fs in (pfx.split('-', 1)[0] for pfx in fname_start_use)
         ))
+        if from_scratch:
+            registry.setup(True)
         for path, path_plugins in registry._context(paths):
             # skip if path already discovered (considered final)
             if not path_plugins:
@@ -289,7 +291,7 @@ class PluginManager(object):
                 ret[plugin] = registry.plugins[plugin]
             except KeyError:
                 to_discover.add(plugin)
-        kwargs = filterdict_keep(kwargs, 'paths')
+        kwargs = filterdict_keep(kwargs, 'paths', 'from_scratch')
         ret.update(registry.discover(fname_start=tuple(to_discover), **kwargs))
 
         to_discover.difference_update(ret)
