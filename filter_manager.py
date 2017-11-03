@@ -38,7 +38,7 @@ class FilterManager(PluginManager):
 
     @staticmethod
     def _resolve(formats, filters):
-        for flt_name, flt_cls in filters.items():
+        for flt_name, flt_cls in tuple(filters.items()):
             ret = flt_cls(formats)
             if ret is not None:
                 filters[flt_name] = ret
