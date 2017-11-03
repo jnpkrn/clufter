@@ -40,6 +40,7 @@ ccs_artefacts = artefact_cond('@keyfile', kind='F', desc='totem keyfile')
 
 ###
 
+ccspcmk2pcscmd_rrp_mode = ('active', 'passive')
 # 1:1 mapping of supported params to pcs arguments (not: rrpmode)
 ccspcmk2pcscmd_supported = (
     'consensus',
@@ -58,7 +59,12 @@ ccspcmk2pcscmd = '''\
             <xsl:value-of select="concat(' --', name(), ' ', .)"/>
         </xsl:if>
     </xsl:for-each>
-    <xsl:if test="@rrp_mode">
+
+    <!-- rrpmode -->
+    <xsl:if test="
+''' + (
+    xslt_is_member('@rrp_mode', ccspcmk2pcscmd_rrp_mode)
+) + '''">
         <xsl:value-of select="concat(' --rrpmode ', @rrp_mode)"/>
     </xsl:if>
 
