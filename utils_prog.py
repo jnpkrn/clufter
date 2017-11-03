@@ -318,8 +318,16 @@ def getenv_namespaced(varname, value=None, namespace=package_name().upper()):
 
 
 def setenv_namespaced(varname, value=None, namespace=package_name().upper()):
-    """Set value of environment variable prefixed with `namespace + '_'`"""
-    environ['_'.join((namespace, varname))] = value
+    """Set value of environment variable prefixed with `namespace + '_'`
+
+    Variable is removed (i.e. undefined) if `value` is `None`."""
+    if value is None:
+        try:
+            del environ['_'.join((namespace, varname))]
+        except KeyError:
+            pass
+    else:
+        environ['_'.join((namespace, varname))] = value
 
 
 # cf. https://github.com/karelzak/util-linux/blob/master/lib/colors.c#L107
