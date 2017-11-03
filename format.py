@@ -513,7 +513,7 @@ class SimpleFormat(Format):
             infile = self.FILE()
             if hasattr(infile, 'read'):
                 # assume fileobj out of our control, do not close
-                return infile.read()
+                return bytes_enc(infile.read(), 'utf-8')
 
             assert isinstance(infile, basestring)
             with open(infile, 'rb') as f:
