@@ -5,11 +5,16 @@
 """Utility functions wrt. cluster systems in general"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+try:
+    from itertools import zip_longest
+except ImportError:  # PY2 backward compatibility
+    from itertools import izip_longest as zip_longest
 from logging import getLogger
 
 from .error import ClufterPlainError
 from .utils import args2sgpl
-from .utils_2to3 import basestring, iter_items, iter_values, reduce_u
+from .utils_2to3 import basestring, enumerate_u, iter_items, iter_values, \
+                        reduce_u
 from .utils_func import apply_intercalate
 
 log = getLogger(__name__)
@@ -419,19 +424,29 @@ def _parse_ver(s):
     if ver:
         try:
             ver = aliases_rel[name][ver]
+            log.debug("resolved: {0}".format(ver))
         except KeyError:
             pass
         ver = tuple(map(int, ver.split('.')))
     return name, ver
 
 
-def _cmp_ver(v1, v2):
+def _cmp_ver(v1, v2, asymmetric=False):
+    """Compare two given encodings of the version
+
+    Parameters:
+        v1            first operand (version tuple if not None)
+        v2            second operand (version tuple if not None)
+        asymmetric    do not compare absolutely, just the prefix match
+    """
     if v1 and v2:
-        v1, v2 = list(reversed(v1)), list(reversed(v2))
-        while v1 and v2:
-            i1, i2 = v1.pop(), v2.pop()
+        len_v1, len_v2 = len(v1), len(v2)
+        len_shorter = len_v1 if len_v1 <= len_v2 else len_v2
+        for i, i1, i2 in enumerate_u(zip_longest(v1, v2, fillvalue=0)):
             if i1 == i2:
                 continue
+            if asymmetric and i > len_shorter:
+                break
             return 1 if i1 > i2 else -1
     return 0
 
@@ -602,7 +617,8 @@ def infer_comp(comp, branches=None):
         for c, c_ver in iter_items(b):
             c, c_extra = _parse_extra(c)
             if c == comp:
-                if (isinstance(c_ver, tuple) and _cmp_ver(comp_ver, c_ver)
+                if (isinstance(c_ver, tuple)
+                        and _cmp_ver(comp_ver, c_ver, asymmetric=True) > 0
                         or comp_extra and comp_extra.difference(c_extra)):
                     continue
                 ret.append(b)
