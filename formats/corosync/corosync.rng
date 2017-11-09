@@ -981,7 +981,7 @@ the protocol is under low utilization.</a:documentation>
         </optional>
         <optional>
           <attribute name="ip_version" a:defaultValue="ipv4">
-	    <a:documentation>Specifies version of IP to use for
+            <a:documentation>Specifies version of IP to use for
 communication.  Value can be one of ipv4 or ipv6.  Default (if
 unspecified) is ipv4.</a:documentation>
             
@@ -1224,7 +1224,7 @@ about 50 milliseconds in addition to this timeout.</a:documentation>
         </optional>
         <optional>
           <attribute name="token_coefficient" a:defaultValue="650">
-	    <a:documentation>This value is used only when
+            <a:documentation>This value is used only when
 nodelist section is specified and contains at least 3 nodes.
 If so, real token timeout is then computed as
 token + (number_of_nodes - 2) * token_coefficient.  This allows
