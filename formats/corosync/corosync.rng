@@ -595,7 +595,12 @@ sum(votes_per_node) - 1 (see `corosync-qdevice(5)`).</a:documentation>
               <data type="unsignedInt"/>
             </attribute>
           </optional>
-          <ref name="qdevice-net"/>
+          <interleave>
+            <ref name="qdevice-net"/>
+            <optional>
+              <ref name="qdevice-heuristics"/>
+            </optional>
+          </interleave>
         </element>
       </optional>
     </element>
@@ -685,6 +690,76 @@ TLS, qdevice will exit with error message
         </group>
       </element>
     </group>
+  </define>
+
+  <define name="qdevice-heuristics">
+    <element name="heuristics">
+      <optional>
+        <attribute name="interval" a:defaultValue="30000">
+          <a:documentation>Specifies interval between two regular
+heuristics execution.  Default value is 3 x *quorum.device.timeout*.
+</a:documentation>
+          <data type="unsignedInt">
+              <param name="minInclusive">1000</param>
+              <param name="maxInclusive">3600000</param>
+          </data>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="mode" a:defaultValue="off">
+          <a:documentation>Specifies mode of operation of heuristics.
+When 'on' is set, heuristics are disabled.  When 'sync' is set,
+heuristics are executed only during startup, membership change and
+when connection to *corosync-qnetd* is established.  When heuristics
+should be running also on regular basis, this option should be set to
+'on' value.</a:documentation>
+          <choice>
+            <value>off</value>
+            <value>on</value>
+            <value>sync</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="sync_timeout" a:defaultValue="15000">
+          <a:documentation>Similar to
+*quorum.device.heuristics.timeout* but used during membership changes.
+Default value is half of the *quorum.device.sync_timeout*.
+</a:documentation>
+          <data type="unsignedInt">
+              <param name="minInclusive">1000</param>
+              <param name="maxInclusive">120000</param>
+          </data>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="timeout" a:defaultValue="5000">
+          <a:documentation>Specifies maximum time in milliseconds how
+long `corosync-qdevice` waits till the heuristics commands finish.
+If some command doesn't finish before the timeout, it's killed and
+heuristics fail.  This timeout is used for heuristics executed at
+regular times.  Default value is half of the *quorum.device.timeout*.
+</a:documentation>
+          <data type="unsignedInt">
+              <param name="minInclusive">1000</param>
+              <param name="maxInclusive">120000</param>
+          </data>
+        </attribute>
+      </optional>
+      <zeroOrMore>
+        <!-- this is to model exec_NAME variable attribute names -->
+        <attribute>
+          <anyName>
+            <except>
+              <name>mode</name>
+              <name>interval</name>
+              <name>sync_timeout</name>
+              <name>timeout</name>
+            </except>
+          </anyName>
+        </attribute>
+      </zeroOrMore>
+    </element>
   </define>
 
   <define name="load_15min">

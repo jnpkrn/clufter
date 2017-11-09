@@ -136,6 +136,11 @@ class TestExtra(TestCase):
         self.assertEqual(component_or_state(check, 'linux', ('debian', 'jessie')),
                          "")
 
+    def test_extra_qdevice_heuristics(self):
+        check = 'comp:corosync[qdevice-heuristics] + comp:pcs[qdevice-heuristics]'
+        self.assertFalse(infer(check, 'linux', ('redhat', ' 7.4')))
+        self.assertTrue(infer(check, 'linux', ('redhat', ' 7.5')))
+
 
 from os.path import join, dirname; from sys import modules as m  # 2/3 compat
 b = m.get('builtins', m.get('__builtin__')); e, E, h = 'exec', 'execfile', hash
