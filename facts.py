@@ -68,10 +68,14 @@ cluster_map = {
                     'corosync':                      (2, 4, 2),
                     'pacemaker[+coro]':              (1, 1, 16),
                     'pcs':                           (0, 9, 155),
-                    'resource-agents':               (4, 0, 0),
+                    'resource-agents':               (4, 0, 0),  # rc1
                 }),
+                # currently a moving target
                 ((10, ), {
                     # https://packages.debian.org/buster/$PACKAGE
+                    'pacemaker[+coro]':              (1, 1, 18),  # rc3
+                    'pcs':                           (0, 9, 161),
+                    'resource-agents':               (4, 0, 1),
                 }),
             ),
             'fedora': (
@@ -148,14 +152,20 @@ cluster_map = {
                     'resource-agents':               (3, 9, 7),
                 }),
                 ((25, ), {
-                    'corosync':                      (2, 4),
+                    'corosync':                      (2, 4, 1),
                     #'pacemaker[+coro]':              (1, 1, 16),  # updates
                     'pcs':                           (0, 9, 154),
                 }),
-                # coming...
                 ((26, ), {
-                    'resource-agents':               (4, 0, 1),
+                    'corosync':                      (2, 4, 2),
                     'pacemaker[+coro]':              (1, 1, 17),
+                    'pcs':                           (0, 9, 156),
+                    'resource-agents':               (4, 0, 1),
+                }),
+                # coming...
+                ((27, ), {
+                    #'corosync':                      (2, 4, 3),  # updates
+                    'pcs':                           (0, 9, 159),
                 }),
             ),
             'redhat': (
@@ -229,8 +239,8 @@ cluster_map = {
                     'pcs':                           (0, 9, 153),  # 152+patches
                 }),
                 ((7, 4), {
-                    'pacemaker[+coro,+bundle]':      (1, 1, 16),   # guess
-                    'pcs':                           (0, 9, 158),  # guess
+                    'pacemaker[+coro,+bundle]':      (1, 1, 16),
+                    'pcs':                           (0, 9, 158),
                 }),
             ),
             'ubuntu': (
@@ -274,6 +284,11 @@ cluster_map = {
                     'pacemaker[+coro]':              (1, 1, 16),
                     'pcs':                           (0, 9, 155),  # universe
                     'resource-agents':               (4, 0, 0),
+                }),
+                ((17, 10), {
+                    # https://packages.ubuntu.com/artful/$PACKAGE
+                    'pcs':                           (0, 9, 159),  # universe
+                    'resource-agents':               (4, 0, 1),
                 }),
             ),
         },
@@ -330,8 +345,10 @@ aliases_rel = {
         'yakkety':    '16.10',  # Yakkety Yak
         '17.04':      '17.4',
         'zesty':      '17.4',   # Zesty Zapus
-        # https://wiki.ubuntu.com/ArtfulAardvark/ReleaseSchedule
-        #'artful':     '17.10',  # Artful Aardvark
+        'artful':     '17.10',  # Artful Aardvark
+        # https://wiki.ubuntu.com/BionicBeaver/ReleaseSchedule
+        #'bionic':     '18.4',
+        #'18.04':      '18.4',   # Bionic Beaver
     }
 }
 
