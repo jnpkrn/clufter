@@ -242,8 +242,10 @@ cluster_map = {
                     'pacemaker[+coro,+bundle]':      (1, 1, 16),
                     'pcs':                           (0, 9, 158),
                 }),
+                # coming...
                 ((7, 5), {
                     'corosync':                      (2, 4, 3),    # guess
+                    'pacemaker[+coro]':              (1, 1, 18),   # guess
                     'pcs':                           (0, 9, 162),  # guess
 
                 }),
@@ -379,8 +381,8 @@ versions_extra = {
             '+alerts,+schema-2.5'),
         ((1, 1, 16),
             '+schema-2.6'),
-        # coming...
         ((1, 1, 17),
+            # note that for our purposes, bundle ~ bundle-extra
             '+bundle,+schema-2.9'),
     ),
     'pcs': (
@@ -410,8 +412,9 @@ versions_extra = {
             '+bundle,+corosync-encryption-forced'),
         # http://oss.clusterlabs.org/pipermail/users/2017-June/005965.html
         ((0, 9, 159),
-            # https://bugzilla.redhat.com/1165821
-            '-corosync-encryption-forced,+corosync-encryption'),
+            # https://bugzilla.redhat.com/1447910
+            # and https://bugzilla.redhat.com/1165821, respectively (1+2)
+            '+bundle-meta,-corosync-encryption-forced,+corosync-encryption'),
         # http://oss.clusterlabs.org/pipermail/users/2017-October/006590.html
         #((0, 9, 160),
         #    ),
