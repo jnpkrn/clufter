@@ -32,13 +32,21 @@ class FiltersCib2pcscmdQuorumDeviceTestCase(TeardownFilterTestCase):
 </device>
 ''', '''\
 pcs quorum device add model net host=191.168.10.20
+'''), ('''\
+<device model="net">
+    <net host="191.168.10.20"/>
+    <heuristics mode="on" timeout="5" sync_timeout="15" interval="30"
+                exec_ping="ping -q -c 1 127.0.0.1"/>
+</device>
+''', '''\
+pcs quorum device add model net host=191.168.10.20 heuristics mode=on timeout=5 sync_timeout=15 interval=30 'exec_ping=ping -q -c 1 127.0.0.1'
 '''),
         )
         for (in_str, out_str) in io_strings:
             in_obj = in_fmt('bytestring', bytes_enc(in_str),
                             validator_specs={in_fmt.ETREE: ''})
             out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
-                              system='linux', system_extra=('rhel', '7.3'))
+                              system='linux', system_extra=('rhel', '7.5'))
             #print(out_obj.BYTESTRING())
             self.assertEqual(str_enc(out_obj.BYTESTRING()), out_str)
 

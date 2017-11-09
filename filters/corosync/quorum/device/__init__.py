@@ -8,11 +8,18 @@
 from ....filters._2pcscmd import verbose_ec_test, verbose_inform
 from ....utils_xslt import NL, xslt_is_member
 
-needlexml2pcscmd_attrs = (
+needleqdevicexml2pcscmd_attrs = (
     # model has a special role here
     'sync_timeout',
     'timeout',
     'votes',
+)
+needleqdevicexml2pcscmd_heuristics_attrs = (
+    # exec_NAME needs to be handled separately
+    'interval',
+    'mode',
+    'sync_timeout',
+    'timeout',
 )
 needleqdevicexml2pcscmd = ('''\
     <!-- "pcs quorum device add" only supported with certain newer
@@ -44,12 +51,43 @@ needleqdevicexml2pcscmd = ('''\
 
                     <xsl:for-each select="@*[
 ''' + (
-                        xslt_is_member('name()', needlexml2pcscmd_attrs)
+                        xslt_is_member('name()', needleqdevicexml2pcscmd_attrs)
 ) + ''']">
                         <xsl:value-of select="concat(' ', name(), '=', .)"/>
                     </xsl:for-each>
 
                     <xsl:value-of select="concat(' model ', @model, $ModelOpts)"/>
+
+                    <xsl:choose>
+                        <xsl:when test="$pcscmd_extra_qdevice_heuristics
+                                        and
+                                        heuristics/@*">
+                            <xsl:value-of select="' heuristics'"/>
+                            <xsl:for-each select="heuristics/@*[
+''' + (
+                                xslt_is_member('name()', needleqdevicexml2pcscmd_heuristics_attrs)
+) + ''']">
+                                <xsl:value-of select="concat(' ', name(), '=', .)"/>
+                            </xsl:for-each>
+                            <xsl:if test="not(heuristics/@*[
+                                              starts-with(name(), 'exec_')
+                                          ])">
+                                <xsl:message>%(qheuristics_disabled_msg)s</xsl:message>
+                            </xsl:if>
+                            <xsl:for-each select="heuristics/@*[
+                                                      starts-with(name(), 'exec_')
+                                                  ]">
+                                <xsl:value-of select='concat(" &apos;", name(), "=", .,
+                                                             "&apos;")'/>
+                            </xsl:for-each>
+                        </xsl:when>
+                        <xsl:when test="$pcscmd_extra_qdevice_heuristics">
+                            <!-- no parameters, nothing to do -->
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:message>%(qheuristics_msg)s</xsl:message>
+                        </xsl:otherwise>
+                    </xsl:choose>
 
                     <xsl:value-of select="'%(NL)s'"/>
 ''' + (
@@ -79,6 +117,10 @@ needleqdevicexml2pcscmd = ('''\
                                                    ' in the conversion')"/>''',
     qdevice_msg="WARNING: target corosync/pcs versions do not support qdevice,"
                 " hence omitted",
+    qheuristics_msg="WARNING: target corosync/pcs versions do not support"
+                    " heuristics, hence omitted",
+    qheuristics_disabled_msg="WARNING: no heuristic commands specified,"
+                             " heuristics will not be enabled by corosync",
     qmodel_msg='''<xsl:value-of select="concat('WARNING: target corosync/pcs',
                                                ' versions do not support quorum',
                                                ' device model `',

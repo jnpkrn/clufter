@@ -242,6 +242,11 @@ cluster_map = {
                     'pacemaker[+coro,+bundle]':      (1, 1, 16),
                     'pcs':                           (0, 9, 158),
                 }),
+                ((7, 5), {
+                    'corosync':                      (2, 4, 3),    # guess
+                    'pcs':                           (0, 9, 162),  # guess
+
+                }),
             ),
             'ubuntu': (
                 ((13, 4), {
@@ -357,6 +362,8 @@ versions_extra = {
     'corosync': (
         ((2, 4),
             '+qdevice,+qnet'),
+        ((2, 4, 3),
+            '+qdevice-heuristics'),
     ),
     'pacemaker': (
         # see also http://wiki.clusterlabs.org/wiki/ReleaseCalendar
@@ -405,6 +412,15 @@ versions_extra = {
         ((0, 9, 159),
             # https://bugzilla.redhat.com/1165821
             '-corosync-encryption-forced,+corosync-encryption'),
+        # http://oss.clusterlabs.org/pipermail/users/2017-October/006590.html
+        #((0, 9, 160),
+        #    ),
+        # http://oss.clusterlabs.org/pipermail/users/2017-November/006744.html
+        #((0, 9, 161),
+        #    ),
+        ((0, 9, 162),
+            # speculative at this point :-/
+            '+qdevice-heuristics'),
     ),
     'resource-agents': (
         # http://lists.linux-ha.org/pipermail/linux-ha/2011-June/043321.html
