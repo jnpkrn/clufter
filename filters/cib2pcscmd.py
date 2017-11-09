@@ -100,6 +100,11 @@ def cib2pcscmd(flt_ctxt, in_obj):
                     flt_ctxt['system'],
                     flt_ctxt['system_extra'],
                 )),
+                pcscmd_extra_bundle_meta = bool(infer(
+                    'comp:pacemaker[bundle] + comp:pcs[bundle-meta]',
+                    flt_ctxt['system'],
+                    flt_ctxt['system_extra'],
+                )),
             ),
         ),
     )

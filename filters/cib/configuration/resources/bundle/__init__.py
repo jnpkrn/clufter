@@ -5,6 +5,7 @@
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
 from ....filters._2pcscmd import verbose_ec_test, verbose_inform
+from ....filters.cib2pcscmd import attrset_xsl
 from ....utils_xslt import NL, xslt_is_member
 
 cib2pcscmd_globaltags = (
@@ -155,6 +156,18 @@ cib2pcscmd = ('''\
                 </xsl:for-each>
             </xsl:for-each>
 
+            <!-- meta attrs -->
+            <xsl:choose>
+                <xsl:when test="$pcscmd_extra_bundle_meta">
+''' + (
+                    attrset_xsl("meta_attributes", cmd='" meta"')
+) + '''
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:message>%(bundle_meta_msg)s</xsl:message>
+                </xsl:otherwise>
+            </xsl:choose>
+
             <xsl:value-of select="'%(NL)s'"/>
 ''' + (
             verbose_ec_test
@@ -168,4 +181,6 @@ cib2pcscmd = ('''\
     NL=NL,
     bundle_msg="WARNING: target pacemaker/pcs versions do not support"
                " `bundle` construct, hence omitted",
+    bundle_meta_msg="WARNING: target pacemaker/pcs versions do not support"
+                    " meta attributes for `bundle` construct, hence omitted",
 )

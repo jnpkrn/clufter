@@ -382,6 +382,50 @@ pcs resource create httpd ocf:heartbeat:apache bundle httpd-bundle
             #print(out_obj.BYTESTRING())
             self.assertEqual(str_enc(out_obj.BYTESTRING()), out_str)
 
+    def testBundleMeta(self):
+        flt_obj = rewrite_root(self.flt_mgr.filters[flt],
+                               'cib/configuration/resources')
+        in_fmt = flt_obj.in_format
+        io_strings = (
+            ('''\
+<bundle id="httpd-bundle">
+  <docker image="pcmktest:http" replicas="3" options="--log-driver=journald" />
+  <network ip-range-start="192.168.122.131" host-interface="eth0" host-netmask="24">
+    <port-mapping id="httpd-port" port="80"/>
+  </network>
+  <storage>
+    <storage-mapping id="httpd-root"
+      source-dir-root="/var/local/containers"
+      target-dir="/var/www/html"
+      options="rw"/>
+    <storage-mapping id="httpd-logs"
+      source-dir-root="/var/log/pacemaker/bundles"
+      target-dir="/etc/httpd/logs"
+      options="rw"/>
+  </storage>
+  <meta_attributes id="httpd-bundle-META">
+    <nvpair id="httpd-bundle-META-" name="is-managed" value="false"/>
+  </meta_attributes>
+  <primitive class="ocf" id="httpd" provider="heartbeat" type="apache"/>
+</bundle>
+''', '''\
+pcs resource bundle create httpd-bundle container docker 'image=pcmktest:http' 'replicas=3' 'options=--log-driver=journald' network  'ip-range-start=192.168.122.131' 'host-interface=eth0' 'host-netmask=24' port-map  'id=httpd-port' 'port=80' storage-map  'id=httpd-root' 'source-dir-root=/var/local/containers' 'target-dir=/var/www/html' 'options=rw' storage-map  'id=httpd-logs' 'source-dir-root=/var/log/pacemaker/bundles' 'target-dir=/etc/httpd/logs' 'options=rw' meta 'is-managed=false'
+pcs resource create httpd ocf:heartbeat:apache bundle httpd-bundle
+'''),
+        )
+        for (in_str, out_str) in io_strings:
+            in_str = '''\
+<resources>
+''' + in_str + '''
+</resources>
+'''
+            in_obj = in_fmt('bytestring', bytes_enc(in_str),
+                            validator_specs={in_fmt.ETREE: ''})
+            out_obj = flt_obj(in_obj, pcscmd_verbose=False, pcscmd_tmpcib='',
+                              system='linux', system_extra=('rhel', '7.5'))
+            #print(out_obj.BYTESTRING())
+            self.assertEqual(str_enc(out_obj.BYTESTRING()), out_str)
+
 
 from os.path import join, dirname; from sys import modules as m  # 2/3 compat
 b = m.get('builtins', m.get('__builtin__')); e, E, h = 'exec', 'execfile', hash
