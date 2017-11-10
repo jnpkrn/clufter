@@ -29,6 +29,7 @@
                 <value type="token">pacemaker-2.7</value>
                 <value type="token">pacemaker-2.8</value>
                 <value type="token">pacemaker-2.9</value>
+                <value type="token">pacemaker-2.10</value>
               </choice>
             </attribute>
           </optional>
@@ -587,7 +588,10 @@
             <ref name="instance_attributes_2"/>
           </choice>
         </zeroOrMore>
-        <ref name="docker"/>
+        <choice>
+          <ref name="docker"/>
+          <ref name="rkt"/>
+        </choice>
         <optional>
           <ref name="network"/>
         </optional>
@@ -940,15 +944,20 @@
         <attribute name="path">
           <text/>
         </attribute>
-        <zeroOrMore>
-          <choice>
-            <ref name="meta_attributes_4"/>
-            <ref name="instance_attributes_3"/>
-          </choice>
-        </zeroOrMore>
-        <zeroOrMore>
-          <ref name="recipient"/>
-        </zeroOrMore>
+        <interleave>
+          <zeroOrMore>
+            <choice>
+              <ref name="meta_attributes_4"/>
+              <ref name="instance_attributes_3"/>
+            </choice>
+          </zeroOrMore>
+          <optional>
+            <ref name="select"/>
+          </optional>
+          <zeroOrMore>
+            <ref name="recipient"/>
+          </zeroOrMore>
+        </interleave>
       </group>
     </element>
   </define>
@@ -1360,6 +1369,45 @@
       </group>
     </element>
   </define>
+  <define name="rkt">
+    <element name="rkt">
+      <group>
+        <attribute name="image">
+          <text/>
+        </attribute>
+        <optional>
+          <attribute name="replicas">
+            <data type="integer"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="replicas-per-host">
+            <data type="integer"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="masters">
+            <data type="integer"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="run-command">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="network">
+            <text/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="options">
+            <text/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
   <define name="network">
     <element name="network">
       <group>
@@ -1630,6 +1678,24 @@
           </interleave>
         </group>
       </choice>
+    </element>
+  </define>
+  <define name="select">
+    <element name="select">
+      <interleave>
+        <optional>
+          <ref name="select_attributes"/>
+        </optional>
+        <optional>
+          <ref name="select_fencing"/>
+        </optional>
+        <optional>
+          <ref name="select_nodes"/>
+        </optional>
+        <optional>
+          <ref name="select_resources"/>
+        </optional>
+      </interleave>
     </element>
   </define>
   <define name="recipient">
@@ -2390,6 +2456,28 @@
       </choice>
     </element>
   </define>
+  <define name="select_attributes">
+    <element name="select_attributes">
+      <zeroOrMore>
+        <ref name="attribute"/>
+      </zeroOrMore>
+    </element>
+  </define>
+  <define name="select_fencing">
+    <element name="select_fencing">
+      <empty/>
+    </element>
+  </define>
+  <define name="select_nodes">
+    <element name="select_nodes">
+      <empty/>
+    </element>
+  </define>
+  <define name="select_resources">
+    <element name="select_resources">
+      <empty/>
+    </element>
+  </define>
   <define name="duration">
     <element name="duration">
       <group>
@@ -2495,6 +2583,18 @@
             <text/>
           </attribute>
         </optional>
+      </group>
+    </element>
+  </define>
+  <define name="attribute">
+    <element name="attribute">
+      <group>
+        <attribute name="id">
+          <data type="ID"/>
+        </attribute>
+        <attribute name="name">
+          <text/>
+        </attribute>
       </group>
     </element>
   </define>

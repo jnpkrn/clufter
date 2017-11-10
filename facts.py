@@ -384,6 +384,9 @@ versions_extra = {
         ((1, 1, 17),
             # note that for our purposes, bundle ~ bundle-extra
             '+bundle,+schema-2.9'),
+        # coming...
+        ((1, 1, 18),
+            '+schema-2.10'),
     ),
     'pcs': (
         ((0, 9, 123),
