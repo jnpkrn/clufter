@@ -42,17 +42,30 @@ class FiltersCmdWrapTestCase(TestCase):
 """)
 
     def testCmdWrapCib2PcsCmd(self):
-        result = cmd_wrap(string_iter('bytestring', bytes_enc("""\
+        io_strings = (
+            ('''\
 pcs -f tmp-cib.xml resource create RESOURCE-apache-webserver ocf:heartbeat:apache 'options= -Dwebserver' op stop 'id=RESOURCE-apache-webserver-OP-stop' 'name=stop' 'interval=0' 'timeout=122s'
-""")), text_width=80)
-        #print(result.BYTESTRING())
-        self.assertEqual(str_enc(result.BYTESTRING()), """\
+''', '''\
 pcs -f tmp-cib.xml \\
   resource create RESOURCE-apache-webserver ocf:heartbeat:apache \\
   'options= -Dwebserver' \\
   op stop id=RESOURCE-apache-webserver-OP-stop name=stop interval=0 \\
   timeout=122s
-""")
+'''), ('''\
+pcs -f tmp-cib.xml resource create RESOURCE-apache-webserver ocf:heartbeat:apache 'options= -Dwebserver' 'config_file=/etc/httpd/lean&mean.conf' op stop 'id=RESOURCE-apache-webserver-OP-stop' 'name=stop' 'interval=0' 'timeout=122s'
+''', '''\
+pcs -f tmp-cib.xml \\
+  resource create RESOURCE-apache-webserver ocf:heartbeat:apache \\
+  'options= -Dwebserver' 'config_file=/etc/httpd/lean&mean.conf' \\
+  op stop id=RESOURCE-apache-webserver-OP-stop name=stop interval=0 \\
+  timeout=122s
+'''),
+            )
+        for (in_str, out_str) in io_strings:
+            out_obj = cmd_wrap(string_iter('bytestring', bytes_enc(in_str)),
+                               text_width=80)
+            #print(out_obj.BYTESTRING())
+            self.assertEqual(str_enc(out_obj.BYTESTRING()), out_str)
 
 
 from os.path import join, dirname; from sys import modules as m  # 2/3 compat

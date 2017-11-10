@@ -75,7 +75,7 @@ def coro2pcscmd(**kwargs):
             <xsl:if test="$pcscmd_force">
                 <xsl:value-of select="' --force'"/>
             </xsl:if>
-            <xsl:value-of select="' &lt;&gt;/dev/tty'"/>
+            <xsl:value-of select="' &lt;&gt; /dev/tty'"/>
             <xsl:value-of select="'%(NL)s'"/>
 ''' + (
             verbose_ec_test

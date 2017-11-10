@@ -48,10 +48,16 @@ class command(SimpleFormat):
     @staticmethod
     def _escape(base, qs=("'", '"')):
         # rule: last but one item in qs cannot be escaped inside enquotion
-        # XXX: escaping _META_CHARACTERS
+        # XXX: shell constructs like "&&" and "<>" need to be blank-separated
+        #      and still there may be a confusion if they are used alone
+        #      (fortunately, pcs uses switches and "X=Y" syntax most of
+        #      the time); real solution would be to implement complete
+        #      context-free(?) grammar of the POSIX shell, which is currently
+        #      a blatant overkill
         ret = []
         for b in base:
-            if any(c in b for c in qs + tuple(' \t#$')):
+            if (b.strip(''.join(_META_CHARACTERS)) and
+                    any(c in b for c in qs + tuple('#$') + _META_CHARACTERS)):
                 use_q, prologue, epilogue = ('', ) * 3
                 if not(b.endswith('(') and b[-2:-1] in '$<'
                        and b[:-2].rstrip(' \t') in ('', '"')
