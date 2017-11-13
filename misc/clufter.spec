@@ -123,9 +123,9 @@ BuildRequires:  git
 # Python side (first item for pythonX* macros + overall Python run-time)
 %if 0%{?clufter_pylib2:1}
 BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
+BuildRequires:  python2-setuptools
 %if 0%{?clufter_check}
-BuildRequires:  python-lxml
+BuildRequires:  python2-lxml
 %endif
 %endif
 %if 0%{?clufter_pylib3:1}
@@ -234,7 +234,7 @@ Obsoletes:      python-%{name} < %{version}-%{release}
 #implied-by#Requires: %%{clufter_ccs_flatten}
 Requires:       %{clufter_bin} = %{version}-%{release}
 #autodected# Requires:       libxml2
-Requires:       python-lxml
+Requires:       python2-lxml
 BuildArch:      noarch
 
 %description %{pkgsimple %{clufter_pylib2}}
@@ -254,10 +254,10 @@ Provides:       %{clufter_lib} = %{version}-%{release}
 %if 0%{?python_provide:1}
 %{?python_provide:%python_provide %{clufter_pylib3}}
 %endif
-#autodected# Requires:       libxml2
-Requires:       %{clufter_python3}-lxml
 #implied-by#Requires: %%{clufter_ccs_flatten}
 Requires:       %{clufter_bin} = %{version}-%{release}
+#autodected# Requires:       libxml2
+Requires:       %{clufter_python3}-lxml
 BuildArch:      noarch
 
 %description %{pkgsimple %{clufter_pylib3}}
