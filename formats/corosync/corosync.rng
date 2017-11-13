@@ -831,6 +831,20 @@ regular times.  Default value is half of the *quorum.device.timeout*.
   <define name="resources">
     <element name="resources">
       <optional>
+        <attribute name="watchdog_device" a:defaultValue="/dev/watchdog" a4doc:discretion-hint="Valid only if Corosync was compiled with watchdog support.">
+          <a:documentation>Specifies watchdog device to use.
+The special value 'off' disables watchdog usage.
+
+In a cluster with properly configured power fencing a watchdog
+provides no additional value.  On the other hand, slow watchdog
+communication may incur multi-second delays in the Corosync main loop,
+potentially breaking down membership.  IPMI watchdogs are particularly
+notorious in this regard: read about kipmid_max_busy_us in IPMI.txt
+in the Linux kernel documentation.</a:documentation>
+          <text/>
+        </attribute>
+      </optional>
+      <optional>
         <ref name="system"/>
       </optional>
     </element>
