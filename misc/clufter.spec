@@ -24,7 +24,7 @@
 
 %bcond_without pagure
 %if 0%{defined:_with_pagure}
-	%global pagure 1
+%global pagure 1
 %endif
 
 %if "%{clufter_version}" == "%{clufter_version_norm}"
@@ -90,6 +90,7 @@
 
 %global clufter_sitelib    %{?clufter_pylib3:%{python3_sitelib}}%{!?clufter_pylib3:%{python2_sitelib}}/%{name}
 %global clufter_setuptools %{?clufter_pylib3:%{clufter_python3}-setuptools}%{!?clufter_pylib3:python-setuptools}
+%global clufter_dopython   %{?clufter_pylib3:%{__python3}}%{!?__clufter_pylib3:%{?__python2}%{!?__python2:%{__python}}}
 # for fedora, we are bound to release that introduced 3.2 since beginning
 # (for python3-lxml this was the case since 14)
 %if 0%{?clufter_pylib3:1} && 0%{?fedora} >= 15
@@ -344,15 +345,15 @@ formats and filters.
 %endif
 
 ## for some esoteric reason, the line above has to be empty
-%{__python} setup.py saveopts -f setup.cfg pkg_prepare \
-                     --ccs-flatten='%{clufter_ccs_flatten}' \
-                     --editor='%{clufter_editor}' \
-                     --extplugins-shared='%{clufter_extplugins_shared}' \
-                     --ra-metadata-dir='%{clufter_ra_metadata_dir}' \
-                     --ra-metadata-ext='%{clufter_ra_metadata_ext}' \
-                     --shell-posix='%{clufter_shell_posix}' \
-                     --shell-bashlike='%{clufter_shell_bashlike}'
-%{__python} setup.py saveopts -f setup.cfg pkg_prepare \
+%{clufter_dopython} setup.py saveopts -f setup.cfg pkg_prepare \
+                             --ccs-flatten='%{clufter_ccs_flatten}' \
+                             --editor='%{clufter_editor}' \
+                             --extplugins-shared='%{clufter_extplugins_shared}' \
+                             --ra-metadata-dir='%{clufter_ra_metadata_dir}' \
+                             --ra-metadata-ext='%{clufter_ra_metadata_ext}' \
+                             --shell-posix='%{clufter_shell_posix}' \
+                             --shell-bashlike='%{clufter_shell_bashlike}'
+%{clufter_dopython} setup.py saveopts -f setup.cfg pkg_prepare \
   --report-bugs='%{clufter_url_bugs}'
 
 %build
@@ -387,7 +388,7 @@ export LC_ALL=C.UTF-8 LANG=C.UTF-8
 %endif
 
 %if %{with bashcomp}
-%{__python} ./run-dev --skip-ext --completion-bash 2>/dev/null \
+%{clufter_dopython} ./run-dev --skip-ext --completion-bash 2>/dev/null \
   | sed 's|run[-_]dev|%{name}|g' > .bashcomp
 %endif
 %if %{with manpage}
