@@ -162,11 +162,19 @@ cluster_map = {
                     'pcs':                           (0, 9, 156),
                     'resource-agents':               (4, 0, 1),
                 }),
-                # coming...
                 ((27, ), {
                     #'corosync':                      (2, 4, 3),  # updates
                     'pcs':                           (0, 9, 159),
                 }),
+                # rawhide, i.e., moving target...
+                ((27, 999), {
+                    'corosync':                      (2, 4, 3),
+                    'pacemaker[+coro]':              (1, 1, 18),
+                    'pcs':                           (0, 9, 160),
+                }),
+                # coming...
+                #((28, ), {
+                #}),
             ),
             'redhat': (
                 ((6, 0), {
@@ -337,6 +345,10 @@ aliases_rel = {
         #'buster/sid':  '10.999',  # XXX ?
         #'bullseye':    '11',
     },
+    'fedora': {
+        '28':         '27.999',
+        'rawhide':    '27.999',
+    },
     'ubuntu': {
         '13.04':      '13.4',
         'raring':     '13.4',   # Raring Ringtail
@@ -384,7 +396,6 @@ versions_extra = {
         ((1, 1, 17),
             # note that for our purposes, bundle ~ bundle-extra
             '+bundle,+schema-2.9'),
-        # coming...
         ((1, 1, 18),
             '+schema-2.10'),
     ),
