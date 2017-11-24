@@ -5,11 +5,13 @@
 """Utility functions wrt. cluster systems in general"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 
+from functools import reduce
 try:
-    from itertools import zip_longest
+    from itertools import chain, zip_longest
 except ImportError:  # PY2 backward compatibility
-    from itertools import izip_longest as zip_longest
+    from itertools import chain, izip_longest as zip_longest
 from logging import getLogger
+from operator import add
 
 from .error import ClufterPlainError
 from .utils import args2sgpl
@@ -867,7 +869,7 @@ def cluster_unknown(*sys_id):
     return not(any(cluster_sys(*sys_id) for cluster_sys in cluster_systems))
 
 
-def format_dists(verbosity=0, aliases_dist_inv={}, aliases_rel_inv={}):
+def format_dists(verbosity=0, sys='', aliases_dist_inv={}, aliases_rel_inv={}):
     # need to flip the translation tables first (if not already)
     if not aliases_dist_inv:
         aliases_dist_inv.update(reduce_u(
@@ -881,10 +883,10 @@ def format_dists(verbosity=0, aliases_dist_inv={}, aliases_rel_inv={}):
                 lambda a, ik, iv: (a.setdefault(iv, []).append(ik), a)[1],
                 iter_items(v), {}
             )
-        ) for k, v in iter_items(aliases_rel) if k in supported_dists('linux'))
+        ) for k, v in iter_items(aliases_rel) if k in supported_dists(sys))
 
-    return '\n'.join('\n\t'.join(
-        args2sgpl(
+    return '\n'.join(chain(*reduce(add, (((system.join(('### ', ' ###')), ),
+        ('\n\t'.join(args2sgpl(
             '\t# aliases: '.join(
                 args2sgpl(k, *filter(
                     len, ('|'.join(sorted(aliases_dist_inv.get(k, ()))), )
@@ -904,5 +906,7 @@ def format_dists(verbosity=0, aliases_dist_inv={}, aliases_rel_inv={}):
                 ) for vv in (v if verbosity else (v[0], ('..', ), v[-1]))
                 for vvv in ('.'.join(str(i) for i in vv[0]), )
             )
-        )
-    ) for k, v in sorted(iter_items(cluster_map['linux'])))
+        )) for k, v in sorted(iter_items(system_map)))
+    ) for system, system_map in sorted(iter_items(cluster_map))
+        if verbosity or not(sys) or system == sys
+    ))))
