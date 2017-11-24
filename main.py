@@ -420,7 +420,7 @@ def run(argv=None, *args):
                     " explicitly supported",
                     "# (all versions any change/update is tracked at)",
                 ))
-            print('\n'.join(acc + [format_dists(verbosity)]))
+            print('\n'.join(acc + [format_dists(verbosity, sys=_system)]))
         elif opts.completion:
             c = Completion.get_completion(opts.completion, prog,
                                           opts_common, opts_main, opts_nonmain)
