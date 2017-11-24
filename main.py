@@ -22,7 +22,7 @@ from . import version_parts, version_text, description_text
 from .command_manager import CommandManager
 from .completion import Completion
 from .error import EC
-from .facts import aliases_dist, format_dists, supported_dists
+from .facts import aliases_dist, aliases_rel, format_dists, supported_dists
 from .utils import args2sgpl, head_tail, identity
 from .utils_2to3 import iter_items, xrange
 from .utils_func import foreach
@@ -62,8 +62,8 @@ def parser_callback_sys(option, opt_str, value, parser, *args, **kwargs):
 
 
 def parser_callback_dist(option, opt_str, value, parser, *args, **kwargs):
-    orig_distro, orig_version = head_tail(value.split(',', 1))
-    distro = orig_distro
+    orig_distro, orig_version = head_tail(value.split(','))
+    distro, recognized = orig_distro, True
     for fn in (lambda x: x.lower(), lambda x: aliases_dist.get(x, x), identity):
         if distro in supported_dists(parser.values.sys):
             if distro != orig_distro:
@@ -74,12 +74,37 @@ def parser_callback_dist(option, opt_str, value, parser, *args, **kwargs):
             break
         distro = fn(distro)
     else:
+        recognized = False
         parser.values._deferred_log = dl = getattr(parser.values,
                                                    '_deferred_log', [])
         dl.append((logging.WARNING, "Unrecognized distro `{0}' may lead to"
                                     " unexpected results".format(orig_distro)))
+    if not orig_version:
+        parser.values._deferred_log = dl = getattr(parser.values,
+                                                   '_deferred_log', [])
+        dl.append((logging.WARNING, "Missing `{0}' distro version may lead to"
+                                    " unexpected results".format(dist_name)))
+    elif recognized:
+        version, version_rest = head_tail(orig_version)
+        aliases_ver = aliases_rel.get(distro, {})
+        for fn in (lambda x: x.lower(), lambda x: aliases_ver.get(x, x), identity):
+            if version != orig_version[0]:
+                parser.values._deferred_log = dl = getattr(parser.values,
+                                                           '_deferred_log', [])
+                dl.append((logging.INFO, "Version `{0}' recognized as `{1}'"
+                                         .format(orig_version[0], version)))
+                break
+            version = fn(version)
+        else:
+            if version.strip("0123456789."):
+                parser.values._deferred_log = dl = getattr(parser.values,
+                                                           '_deferred_log', [])
+                dl.append((logging.WARNING, "Unrecognized non-numeric version `{0}'"
+                                            " may lead to unexpected results"
+                                            .format(orig_version[0])))
+        version = args2sgpl(version, *version_rest)
     setattr(parser.values, option.dest, ','.join(args2sgpl(distro,
-                                                           *orig_version)))
+                                                           *version)))
 
 
 def parser_callback_list_dists(option, opt_str, value, parser):
