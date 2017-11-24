@@ -65,7 +65,7 @@ def parser_callback_dist(option, opt_str, value, parser, *args, **kwargs):
     orig_distro, orig_version = head_tail(value.split(',', 1))
     distro = orig_distro
     for fn in (lambda x: x.lower(), lambda x: aliases_dist.get(x, x), identity):
-        if distro in supported_dists:
+        if distro in supported_dists(parser.values.sys):
             if distro != orig_distro:
                 parser.values._deferred_log = dl = getattr(parser.values,
                                                            '_deferred_log', [])

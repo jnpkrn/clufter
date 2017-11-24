@@ -35,7 +35,7 @@ which ccs_flatten 2>/dev/null || (
 
 run_check_ccs2pcs() {
     testcib="$(mktemp)" testcoro="$(mktemp)"
-    { { ${PYTHONEXEC} run-dev --dist redhat,7.1,Maipo \
+    { { ${PYTHONEXEC} run-dev --sys linux --dist redhat,7.1,Maipo \
                               ccs2pcs "${@}" -- - - "${testcib}" \
         | grep -Ev 'key: _NOT_SECRET--' > "${testcoro}"; } \
     && echo "TEST: execution OK" \
@@ -171,11 +171,11 @@ EOF
 
 run_check_ccs2pcscmd() {
     testcmd="$(mktemp)"
-    { ${PYTHONEXEC} run-dev --dist redhat,7.1,Maipo \
+    { ${PYTHONEXEC} run-dev --sys linux --dist redhat,7.1,Maipo \
                             ccs2pcscmd "${@}" \
 			    --text-width=72 --silent --noguidance \
 			    -- - - \
-			    | sed '1,4d;6d' > "${testcmd}" \
+			    | sed '1,5d;7d' > "${testcmd}" \
       && echo "TEST: execution OK" \
       || { echo "TEST: execution FAIL"; ret=20; }; }<<EOF
 <?xml version="1.0"?>
@@ -258,7 +258,7 @@ run_check_cib2pcscmd() {
     # config borrowed from: pacemaker.git/pengine/test10/bug-cl-5212.xml
     # (but subsequently extended: acls, bundle)
     testcmd="$(mktemp)"
-    { ${PYTHONEXEC} run-dev --dist rhel,7.4 \
+    { ${PYTHONEXEC} run-dev --sys linux --dist rhel,7.4 \
                             cib2pcscmd "${@}" \
 			    --text-width=72 --silent -- - - \
 			    | sed '1,4d;6d' > "${testcmd}" \
@@ -533,7 +533,7 @@ EOF
 run_check_cib2pcscmd_impl_conv() {
     # config borrowed from: pacemaker.git/pengine/test10/bug-cl-5212.xml
     testcmd="$(mktemp)"
-    { ${PYTHONEXEC} run-dev --dist rhel,7.4 \
+    { ${PYTHONEXEC} run-dev --sys linux --dist rhel,7.4 \
                             cib2pcscmd "${@}" \
 			    --text-width=72 --silent -- - - \
 			    | sed '1,4d;6d' > "${testcmd}" \
