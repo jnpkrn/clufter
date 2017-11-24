@@ -309,7 +309,8 @@ cluster_map = {
         },
 }
 
-supported_dists = cluster_map['linux'].keys()
+def supported_dists(sys):
+    return cluster_map.get(sys, {}).keys()
 
 # mere aliases of the distributions (packages remain the same),
 # i.e., downstream rebuilders;
@@ -855,7 +856,7 @@ def format_dists(verbosity=0, aliases_dist_inv={}, aliases_rel_inv={}):
                 lambda a, ik, iv: (a.setdefault(iv, []).append(ik), a)[1],
                 iter_items(v), {}
             )
-        ) for k, v in iter_items(aliases_rel) if k in supported_dists)
+        ) for k, v in iter_items(aliases_rel) if k in supported_dists('linux'))
 
     return '\n'.join('\n\t'.join(
         args2sgpl(
