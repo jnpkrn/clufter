@@ -3,7 +3,9 @@
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
-from __future__ import print_function
+from __future__ import (print_function,
+                        absolute_import,  # for commands/std. library in PY2.6
+                        )
 
 """Machinery entry point"""
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -16,6 +18,11 @@ from os.path import basename, realpath
 # XXX should eventually switch/fallback to "distro" external package for
 # the latter (via https://bugzilla.redhat.com/1219172#c6, but see also #c9)
 from platform import system, linux_distribution
+try:
+    from subprocess import check_output
+    getoutput = lambda cmd: check_output(cmd, shell=True)
+except ImportError:
+    from commands import getoutput
 from sys import version
 
 from . import version_parts, version_text, description_text
@@ -24,7 +31,7 @@ from .completion import Completion
 from .error import EC
 from .facts import aliases_dist, aliases_rel, format_dists, supported_dists
 from .utils import args2sgpl, head_tail, identity
-from .utils_2to3 import iter_items, xrange
+from .utils_2to3 import iter_items, str_enc, xrange
 from .utils_func import foreach
 from .utils_prog import ExpertOption, make_options, set_logging, which
 
@@ -78,8 +85,14 @@ def _resolve_dist(sys, dist_name, *dist_ver, **kws):
 
 _deferred_log = []
 _system = system().lower()
-_system_extra = linux_distribution(full_distribution_name=0) \
-                if _system == 'linux' else ()
+_system_extra = (linux_distribution(full_distribution_name=0)
+                    if _system == 'linux'
+                 else (_system, str_enc(getoutput("/bin/freebsd-version -u"))
+                                .rsplit('-', 1)[0])
+                    if _system == 'freebsd'
+                 else ())
+if _system.endswith("bsd"):
+    _system = "bsd"
 _system_extra = _resolve_dist(_system, *_system_extra,
                               **dict(deferred_log=_deferred_log))
 
