@@ -307,6 +307,31 @@ cluster_map = {
                 }),
             ),
         },
+    'bsd':
+        {
+            'freebsd': (
+                ((10, 4), {
+                    # https://svnweb.freebsd.org/ports/tags/RELEASE_10_4_0/net/$PACKAGE
+                    'corosync':                      (2, 4, 2),
+                    'pacemaker[+coro]':              (1, 1, 16),
+                    'resource-agents':               (4, 0, 1),
+                    #---
+                    'sys::init-sys':                'bsdinit',
+                }),
+                ((11, 0), {
+                    # https://svnweb.freebsd.org/ports/tags/RELEASE_11_0_0/net/$PACKAGE
+                    'corosync':                      (2, 3, 5),
+                    'pacemaker[+coro]':              (1, 1, 14),
+                    'resource-agents':               (3, 9, 7),
+                }),
+                ((11, 1), {
+                    # https://svnweb.freebsd.org/ports/tags/RELEASE_11_1_0/net/$PACKAGE
+                    'corosync':                      (2, 4, 2),
+                    'pacemaker[+coro]':              (1, 1, 16),
+                    'resource-agents':               (4, 0, 1),
+                }),
+            ),
+        },
 }
 
 def supported_dists(sys):
