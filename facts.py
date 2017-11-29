@@ -490,6 +490,18 @@ versions_extra = {
         # http://oss.clusterlabs.org/pipermail/users/2016-February/002216.html
         #((3, 9, 7),
         #    ),
+        # http://oss.clusterlabs.org/pipermail/users/2017-January/004919.html
+        #((4, 0, 0),
+        #    ),
+        # http://oss.clusterlabs.org/pipermail/users/2017-February/004957.html
+        #((4, 0, 1),
+        #    ),
+        # http://oss.clusterlabs.org/pipermail/users/2017-February/004957.html
+        #((4, 0, 1),
+        #    ),
+        # http://oss.clusterlabs.org/pipermail/users/2017-November/006871.html
+        #((4, 1, 0),
+        #    ),
     ),
 }
 
