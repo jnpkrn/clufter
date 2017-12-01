@@ -117,6 +117,7 @@ class simpleconfig(SimpleFormat):
         work, t = [('', attrs, children)], str_enc(self.BYTESTRING(), 'utf-8')
         while t:
             h, t = t.split('\n', 1)
+            h = h.lstrip(" \t")  # otherwise the following may not work
             if h.startswith(csep):
                 continue
             elif lbrace in h:

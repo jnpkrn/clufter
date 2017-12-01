@@ -21,9 +21,10 @@ simpleconfig = FormatManager.init_lookup('simpleconfig').formats['simpleconfig']
 
 class FormatsSimpleConfigTestCase(TestCase):
 
-    bytestring = bytes_enc("""\
+    config = """\
 nodelist {
 	node {
+		#name: fixedone
 		nodeid: 1
 		ring0_addr: virt-063
 	}
@@ -47,7 +48,7 @@ totem {
 	token: 3000
 	version: 2
 }
-""")
+"""
 
     struct = \
         ('',
@@ -71,10 +72,12 @@ totem {
     def testStruct2Bytestring(self):
         sc = simpleconfig('struct', self.struct)
         #print(sc.BYTESTRING())
-        self.assertEqual(sc.BYTESTRING(), self.bytestring)
+        self.assertEqual(sc.BYTESTRING(),
+                         bytes_enc(''.join(l for l in self.config.splitlines(1)
+                                           if '#' not in l)))
 
     def testBytestring2Struct(self):
-        sc = simpleconfig('bytestring', self.bytestring)
+        sc = simpleconfig('bytestring', bytes_enc(self.config))
         #from pprint import pprint
         #pprint(sc.STRUCT())
         self.assertEqual(sc.STRUCT(), self.struct)
