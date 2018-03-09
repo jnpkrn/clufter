@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2017 Red Hat, Inc.
+# Copyright 2018 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -12,7 +12,7 @@ needleqdevicexml2pcscmd_attrs = (
     # model has a special role here
     'sync_timeout',
     'timeout',
-    'votes',
+    'votes',  # extra handling (e.g. set to 1 for ffsplit algorithm to work)
 )
 needleqdevicexml2pcscmd_heuristics_attrs = (
     # exec_NAME needs to be handled separately
@@ -53,7 +53,19 @@ needleqdevicexml2pcscmd = ('''\
 ''' + (
                         xslt_is_member('name()', needleqdevicexml2pcscmd_attrs)
 ) + ''']">
-                        <xsl:value-of select="concat(' ', name(), '=', .)"/>
+                        <xsl:choose>
+                            <xsl:when test="name() = 'votes'">
+                                <xsl:message>
+                                    <xsl:value-of select="concat('NOTE: `quorum.device.votes`',
+                                                                 ' value `', ., '` specified,',
+                                                                 ' but current pcs manages it',
+                                                                 ' solely on its own')"/>
+                                </xsl:message>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="concat(' ', name(), '=', .)"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </xsl:for-each>
 
                     <xsl:value-of select="concat(' model ', @model, $ModelOpts)"/>
