@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2017 Red Hat, Inc.
+# Copyright 2018 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -34,7 +34,7 @@ class FiltersCib2pcscmdQuorumDeviceTestCase(TeardownFilterTestCase):
 pcs quorum device add model net host=191.168.10.20
 '''), ('''\
 <device model="net">
-    <net host="191.168.10.20"/>
+    <net host="191.168.10.20" tls="required"/>
     <heuristics mode="on" timeout="5" sync_timeout="15" interval="30"
                 exec_ping="ping -q -c 1 127.0.0.1"/>
 </device>
