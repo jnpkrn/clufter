@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2017 Red Hat, Inc.
+# Copyright 2018 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Utility functions wrt. cluster systems in general"""
@@ -166,16 +166,19 @@ cluster_map = {
                 }),
                 ((27, ), {
                     #'corosync':                      (2, 4, 3),  # updates
+                    #'pacemaker[+coro]':              (1, 1, 18), # updates
                     'pcs':                           (0, 9, 159),
                 }),
-                # rawhide, i.e., moving target...
-                ((27, 999), {
+                ((28, ), {
                     'corosync':                      (2, 4, 3),
                     'pacemaker[+coro]':              (1, 1, 18),
                     'pcs':                           (0, 9, 160),
                 }),
+                # rawhide, i.e., moving target...
+                #((28, 999), {
+                #}),
                 # coming...
-                #((28, ), {
+                #((29, ), {
                 #}),
             ),
             'redhat': (
@@ -220,6 +223,9 @@ cluster_map = {
                 ((6, 9), {
                     'pacemaker[+cman]':              (1, 1, 15),
                     'pcs[-agents-via-pacemaker]':    (0, 9, 155),
+                }),
+                ((6, 10), {
+                    'pacemaker[+cman]':              (1, 1, 18),  # guess
                 }),
                 ((7, 0), {
                     'corosync':                      (2, 3),
@@ -406,6 +412,9 @@ versions_extra = {
             '+qdevice,+qnet'),
         ((2, 4, 3),
             '+qdevice-heuristics'),
+        # tentative
+        #((3, ),
+        #    '+kronosnet'),
     ),
     'pacemaker': (
         # see also http://wiki.clusterlabs.org/wiki/ReleaseCalendar
@@ -426,6 +435,10 @@ versions_extra = {
             '+bundle,+schema-2.9'),
         ((1, 1, 18),
             '+schema-2.10'),
+        # tentative
+        # corosync is now required unconditionally
+        #((2, 0, 0),
+        #    '+corosync,+schema-3.0'),
     ),
     'pcs': (
         ((0, 9, 123),
@@ -463,9 +476,11 @@ versions_extra = {
         # http://oss.clusterlabs.org/pipermail/users/2017-November/006744.html
         #((0, 9, 161),
         #    ),
+        # https://oss.clusterlabs.org/pipermail/users/2018-February/014530.html
         ((0, 9, 162),
-            # speculative at this point :-/
             '+qdevice-heuristics'),
+        #((0, 9, 163),
+        #    ),
     ),
     'resource-agents': (
         # http://lists.linux-ha.org/pipermail/linux-ha/2011-June/043321.html
@@ -496,11 +511,11 @@ versions_extra = {
         # http://oss.clusterlabs.org/pipermail/users/2017-February/004957.html
         #((4, 0, 1),
         #    ),
-        # http://oss.clusterlabs.org/pipermail/users/2017-February/004957.html
-        #((4, 0, 1),
-        #    ),
         # http://oss.clusterlabs.org/pipermail/users/2017-November/006871.html
         #((4, 1, 0),
+        #    ),
+        # https://oss.clusterlabs.org/pipermail/users/2018-March/014578.html
+        #((4, 1, 1),
         #    ),
     ),
 }
