@@ -670,8 +670,8 @@ EOF)
 %global cl_jp_r Jan Pokorný <jpokorny+rpm-clufter @at@ fedoraproject .dot. org>
 %global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
-%{cl_entry 2017-11-11 0.77.1-0.1.a %{cl_jp}
-  TBD}
+%{cl_entry 2018-03-14 0.77.1-1 %{cl_jp}
+  bump upstream package}
 
 %{cl_entry 2017-11-10 0.77.0-1 %{cl_jp}
   bump upstream package}
