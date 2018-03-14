@@ -89,7 +89,7 @@
 # Preprocess the above specifications
 
 %global clufter_sitelib    %{?clufter_pylib3:%{python3_sitelib}}%{!?clufter_pylib3:%{python2_sitelib}}/%{name}
-%global clufter_setuptools %{?clufter_pylib3:%{clufter_python3}-setuptools}%{!?clufter_pylib3:python-setuptools}
+%global clufter_setuptools %{?clufter_pylib3:%{clufter_python3}-setuptools}%{!?clufter_pylib3:python2-setuptools}
 %global clufter_dopython   %{?clufter_pylib3:%{__python3}}%{!?__clufter_pylib3:%{?__python2}%{!?__python2:%{__python}}}
 # for fedora, we are bound to release that introduced 3.2 since beginning
 # (for python3-lxml this was the case since 14)
