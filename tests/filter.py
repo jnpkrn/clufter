@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2017 Red Hat, Inc.
+# Copyright 2018 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -25,7 +25,7 @@ from .format import formats
 formats = formats.plugins
 from .formats.ccs import ccs
 from .filter import XMLFilter
-from .utils_2to3 import bytes_enc
+from .utils_2to3 import str_enc
 
 WALK_DIR = join(dirname(__file__), 'XMLFormat-walk')
 
@@ -57,7 +57,7 @@ class XMLTraverse(TestCase):
         #print("\n".join([etree.tostring(i) for i in ret]))  # --> expected
 
         assert not isinstance(r, list)
-        self.assertEqual(etree.tostring(r, encoding='unicode'),
+        self.assertEqual(str_enc(etree.tostring(r, encoding='UTF-8'), 'utf-8'),
                          RESULT_DIRECT_XSLT)
 
     def testXSLTTemplate(self):
@@ -71,7 +71,7 @@ class XMLTraverse(TestCase):
         #print(">>>", etree.tostring(et))
         #print(">>>", etree.tostring(r))
         modified = et.xslt(r)
-        ret = etree.tostring(modified, encoding='unicode')
+        ret = str_enc(etree.tostring(modified, encoding='UTF-8'), 'utf-8')
         #print("<<<", ret)  # --> expected
         self.assertEqual(ret, RESULT_DIRECT_XSLT)
 
