@@ -394,19 +394,21 @@ export LC_ALL=C.UTF-8 LANG=C.UTF-8
 %if %{with manpage}
 # generate man pages (proper commands and aliases from a sorted sequence)
 %{__mkdir_p} -- .manpages/man%{clufter_manpagesec}
-{ echo; ./run-dev -l | sed -n 's|^  \(\S\+\).*|\1|p' | sort; } > .subcmds
+{ echo; %{clufter_dopython} ./run-dev -l | sed -n 's|^  \(\S\+\).*|\1|p' \
+  | sort; } > .subcmds
 sed -e 's:\(.\+\):\\\&\\fIrun_dev-\1\\fR\\\|(%{clufter_manpagesec}), :' \
   -e '1s|\(.*\)|\[SEE ALSO\]\n|' \
   -e '$s|\(.*\)|\1\nand perhaps more|' \
   .subcmds > .see-also
 help2man -N -h -H -i .see-also \
-  -n "$(sed -n '2s|[^(]\+(\([^)]\+\))|\1|p' README)" ./run-dev \
-  | sed 's|run\\\?[-_]dev|%{name}|g' \
+  -n "$(sed -n '2s|[^(]\+(\([^)]\+\))|\1|p' README)" \
+  %{clufter_dopython} ./run-dev | sed 's|run\\\?[-_]dev|%{name}|g' \
   > ".manpages/man%{clufter_manpagesec}/%{name}.%{clufter_manpagesec}"
 while read cmd; do
   [ -n "${cmd}" ] || continue
   echo -e "#\!/bin/sh\n{ [ \$# -ge 1 ] && [ \"\$1\" = \"--version\" ] \
-  && ./run-dev \"\$@\" || ./run-dev \"${cmd}\" \"\$@\"; }" > ".tmp-${cmd}"
+  && %{clufter_dopython} ./run-dev \"\$@\" \
+  || ./run-dev \"${cmd}\" \"\$@\"; }" > ".tmp-${cmd}"
   chmod +x ".tmp-${cmd}"
   grep -v "^${cmd}\$" .subcmds \
     | grep -e '^$' -e "$(echo ${cmd} | cut -d- -f1)\(-\|\$\)" \
