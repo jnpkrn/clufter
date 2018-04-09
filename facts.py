@@ -41,6 +41,9 @@ class FactsError(ClufterPlainError):
 # such pacemaker is somehow associated with "cman" (more specificially, it is
 # intended [compilation flags, etc.] to be used with cman), which apparently
 # doesn't match 'pacemaker[coro]' component specification in the input query.
+#
+# Possibly useful:
+# https://gitlab.com/libosinfo/osinfo-db/tree/master/data/os
 cluster_map = {
     'linux':
         {
