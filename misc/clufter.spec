@@ -259,6 +259,7 @@ Provides:       %{clufter_lib} = %{version}-%{release}
 Requires:       %{clufter_bin} = %{version}-%{release}
 #autodected# Requires:       libxml2
 Requires:       %{clufter_python3}-lxml
+Requires:       %{clufter_python3}-distro
 BuildArch:      noarch
 
 %description %{pkgsimple %{clufter_pylib3}}

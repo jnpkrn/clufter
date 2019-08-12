@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2017 Red Hat, Inc.
+# Copyright 2019 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -697,7 +697,8 @@ setup(
     ),
     install_requires=(
         'lxml',
-    ) + cond_require('ordereddict', collections='OrderedDict'),
+    ) + cond_require('ordereddict', collections='OrderedDict')
+    + cond_require('distro', platform='linux_distributions'),
     # Use pure ``package_data'' value (i.e. do no use MANIFEST.ini or CVS tree);
     # see also comment by ``package data''
     include_package_data=False,

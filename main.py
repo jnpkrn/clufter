@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2017 Red Hat, Inc.
+# Copyright 2019 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -15,9 +15,13 @@ from optparse import OptionParser, \
                      OptionGroup, \
                      IndentedHelpFormatter
 from os.path import basename, realpath
-# XXX should eventually switch/fallback to "distro" external package for
-# the latter (via https://bugzilla.redhat.com/1219172#c6, but see also #c9)
-from platform import system, linux_distribution
+from platform import system
+# linux_distribution gone as of Python 3.8, use external replacement
+try:
+    from platform import linux_distribution
+except ImportError:
+    from distro import linux_distribution
+# similar as above, but rather a fallback code for previous in-stdlib location
 try:
     from subprocess import check_output
     getoutput = lambda cmd: check_output(cmd, shell=True)
