@@ -15,7 +15,11 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, Extension
 
-from collections import Callable
+try:
+    from collections.abc import Callable
+except ImportError:
+    from collections import Callable
+
 from glob import glob
 from os import chdir, getcwd, getenv, sep, walk
 from os.path import (join as path_join, realpath as path_real,
