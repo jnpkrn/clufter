@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2017 Red Hat, Inc.
+# Copyright 2019 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Structured configuration formats such as corosync.conf"""
@@ -81,7 +81,7 @@ class simpleconfig(SimpleFormat):
         }
         """
         # try to look (indirectly) if we have a file at hand first
-        ret = super(simpleconfig, self).get_bytestring(self.BYTESTRING)
+        ret = SimpleFormat.get_bytestring(self, self.BYTESTRING)
         if ret is not None:
             return ret
 

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2017 Red Hat, Inc.
+# Copyright 2019 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Easy (at least for usage) plugin framework"""
@@ -104,6 +104,10 @@ class PluginRegistry(type):
         assert '-' not in name, "name cannot contain a dash"
         dname = cli_decor(name)
         attrs = attrs or {}
+        # seems more reasonable than plying even higher meta magic game
+        assert  not(attrs) or '__classcell__' not in attrs, \
+                ("{0} plugin: refrain from '__class__'/'super' (Py3.8+ limit)"
+                ).format(name)
         try:
             ret = registry._plugins[dname]
             log.info("Probe `{0}' plugin under `{1}' registry: already tracked"

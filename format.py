@@ -505,7 +505,7 @@ class SimpleFormat(Format):
         assert isinstance(protocol, basestring), \
                "protocol has to be string for `{0}', not `{1}'" \
                .format(self.__class__.name, protocol)
-        super(SimpleFormat, self)._construct(protocol, *args, **kwargs)
+        Format._construct(self, protocol, *args, **kwargs)
 
     @Format.producing(BYTESTRING)
     def get_bytestring(self, *iodecl):
