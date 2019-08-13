@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2018 Red Hat, Inc.
+# Copyright 2019 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Utility functions wrt. cluster systems in general"""
@@ -75,12 +75,18 @@ cluster_map = {
                     'pcs':                           (0, 9, 155),
                     'resource-agents':               (4, 0, 0),  # rc1
                 }),
-                # currently a moving target
                 ((10, ), {
                     # https://packages.debian.org/buster/$PACKAGE
-                    'pacemaker[+coro]':              (1, 1, 18),  # rc3
-                    'pcs':                           (0, 9, 161),
-                    'resource-agents':               (4, 0, 1),
+                    'corosync':                      (3, 0, 1),
+                    'pacemaker':                     (2, 0, 1),
+                    'pcs':                           (0, 10, 1),
+                    'resource-agents':               (4, 2, 0),
+                }),
+                # currently a moving target
+                ((11, ), {
+                    # https://packages.debian.org/bullseye/$PACKAGE
+                    'pcs':                           (0, 10, 2),
+                    'resource-agents':               (4, 3, 0),
                 }),
             ),
             'fedora': (
@@ -177,11 +183,25 @@ cluster_map = {
                     'pacemaker[+coro]':              (1, 1, 18),
                     'pcs':                           (0, 9, 160),
                 }),
-                # rawhide, i.e., moving target...
-                #((28, 999), {
-                #}),
+                # lower boundary guesses at this point...
+                ((29, ), {
+                    'corosync':                      (3, 0),
+                    'pacemaker':                     (2, 0),
+                    'pcs':                           (0, 10),
+                }),
+                ((30, ), {
+                    'corosync':                      (3, 0, 1),
+                    'pacemaker':                     (2, 0, 1),
+                    'pcs':                           (0, 10, 1),
+                }),
                 # coming...
-                #((29, ), {
+                #((31, ), {
+                #    'corosync':                      (3, 0, 2),
+                #    'pacemaker':                     (2, 0, 2),
+                #    'pcs':                           (0, 10, 2),
+                #}),
+                # rawhide, i.e., moving target...
+                #((31, 999), {
                 #}),
             ),
             'redhat': (
@@ -261,12 +281,24 @@ cluster_map = {
                     'pacemaker[+coro,+bundle]':      (1, 1, 16),
                     'pcs':                           (0, 9, 158),
                 }),
-                # coming...
                 ((7, 5), {
-                    'corosync':                      (2, 4, 3),    # guess
-                    'pacemaker[+coro]':              (1, 1, 18),   # guess
-                    'pcs':                           (0, 9, 162),  # guess
-
+                    'corosync':                      (2, 4, 3),
+                    'pacemaker[+coro]':              (1, 1, 18),
+                    'pcs':                           (0, 9, 162),
+                }),
+                ((7, 6), {
+                    'pacemaker[+coro]':              (1, 1, 19),
+                    'pcs':                           (0, 9, 165),
+                    'resource-agents':               (4, 1, 1),
+                }),
+                ((7, 7), {
+                    'pacemaker[+coro]':              (1, 1, 20),
+                    'pcs':                           (0, 9, 167),
+                }),
+                ((8, 0), {
+                    'corosync':                      (3, 0),
+                    'pacemaker':                     (2, 0, 1),
+                    'pcs':                           (0, 10, 1),
                 }),
             ),
             'ubuntu': (
@@ -313,16 +345,39 @@ cluster_map = {
                 }),
                 ((17, 10), {
                     # https://packages.ubuntu.com/artful/$PACKAGE
+                    'corosync':                      (2, 4, 2),
                     'pcs':                           (0, 9, 159),  # universe
                     'resource-agents':               (4, 0, 1),
                 }),
+                ((18, 4), {
+                    # https://packages.ubuntu.com/bionic/$PACKAGE
+                    'corosync':                      (2, 4, 3),
+                    'pacemaker[+coro]':              (1, 1, 18),
+                    'pcs':                           (0, 9, 164),  # universe
+                    'resource-agents':               (4, 1, 0),
+                }),
+                ((18, 10), {
+                    # https://packages.ubuntu.com/cosmic/$PACKAGE
+                    'corosync':                      (2, 4, 4),
+                    'pcs':                           (0, 9, 165),  # universe
+                }),
+                ((19, 4), {
+                    # https://packages.ubuntu.com/disco/$PACKAGE
+                    'pcs':                           (0, 10, 1),  # universe
+                }),
+                # coming...
+                #((19, 10), {
+                #    # https://packages.ubuntu.com/eoan/$PACKAGE
+                #    'corosync':                      (3, 0, 1),
+                #    'pacemaker':                     (2, 0, 1),
+                #}),
             ),
         },
     'bsd':
         {
             'freebsd': (
                 ((10, 4), {
-                    # https://svnweb.freebsd.org/ports/tags/RELEASE_10_4_0/net/$PACKAGE
+                    # https://svnweb.freebsd.org/ports/tags/RELEASE_10_4_0/net{,-mgmt}/$PACKAGE
                     'corosync':                      (2, 4, 2),
                     'pacemaker[+coro]':              (1, 1, 16),
                     'resource-agents':               (4, 0, 1),
@@ -330,16 +385,28 @@ cluster_map = {
                     'sys::init-sys':                'bsdinit',
                 }),
                 ((11, 0), {
-                    # https://svnweb.freebsd.org/ports/tags/RELEASE_11_0_0/net/$PACKAGE
+                    # https://svnweb.freebsd.org/ports/tags/RELEASE_11_0_0/net{,-mgmt}/$PACKAGE
                     'corosync':                      (2, 3, 5),
                     'pacemaker[+coro]':              (1, 1, 14),
                     'resource-agents':               (3, 9, 7),
                 }),
                 ((11, 1), {
-                    # https://svnweb.freebsd.org/ports/tags/RELEASE_11_1_0/net/$PACKAGE
+                    # https://svnweb.freebsd.org/ports/tags/RELEASE_11_1_0/net{,-mgmt}/$PACKAGE
                     'corosync':                      (2, 4, 2),
                     'pacemaker[+coro]':              (1, 1, 16),
                     'resource-agents':               (4, 0, 1),
+                }),
+                ((11, 2), {
+                    # https://svnweb.freebsd.org/ports/tags/RELEASE_11_2_0/net{,-mgmt}/$PACKAGE
+                    # --- nothing new --
+                }),
+                ((11, 3), {
+                    # https://svnweb.freebsd.org/ports/tags/RELEASE_11_3_0/net{,-mgmt}/$PACKAGE
+                    'corosync':                      (2, 4, 4),
+                    #'corosync':                      (2, 99),  # both corosync2/3
+                    'pacemaker[+coro]':              (1, 1, 19),
+                    #'pacemaker':                     (2, 0),  # rc4, both pacemaker1/2
+                    'resource-agents':               (4, 1, 1),
                 }),
             ),
         },
@@ -372,6 +439,7 @@ aliases_rel = {
     'corosync': {
         'flatiron':   '1',
         'needle':     '2',
+        'camelback':  '3',
     },
     'debian': {  # because of http://bugs.python.org/issue9514 @ 2.6 ?
         'squeeze':      '6',
@@ -379,12 +447,13 @@ aliases_rel = {
         'jessie':       '8',
         'stretch':      '9',
         'buster':      '10',
-        #'buster/sid':  '10.999',  # XXX ?
-        #'bullseye':    '11',
+        'bullseye':    '11',
+        #'bullseye/sid':  '11.999',  # XXX ?
+        #'bookworm':    '12',
     },
     'fedora': {
-        '28':         '27.999',
-        'rawhide':    '27.999',
+        #'31':         '30.999',
+        'rawhide':    '31.999',
     },
     'ubuntu': {
         '13.04':      '13.4',
@@ -402,9 +471,13 @@ aliases_rel = {
         '17.04':      '17.4',
         'zesty':      '17.4',   # Zesty Zapus
         'artful':     '17.10',  # Artful Aardvark
-        # https://wiki.ubuntu.com/BionicBeaver/ReleaseSchedule
-        #'bionic':     '18.4',
-        #'18.04':      '18.4',   # Bionic Beaver
+        'bionic':     '18.4',
+        '18.04':      '18.4',   # Bionic Beaver
+        'cosmic':     '18.10',  # Cosmic Cuttlefish
+        '19.04':      '19.4',
+        'disco':      '19.4',   # Disco Dingo
+        # https://wiki.ubuntu.com/EoanErmine/ReleaseSchedule
+        #'eoan':       '19.10',  # Eoan Ermine
     }
 }
 
@@ -415,9 +488,21 @@ versions_extra = {
             '+qdevice,+qnet'),
         ((2, 4, 3),
             '+qdevice-heuristics'),
-        # tentative
-        #((3, ),
-        #    '+kronosnet'),
+        # https://lists.clusterlabs.org/pipermail/users/2018-April/014840.html
+        #((2, 4, 4),
+        #    ),
+        # https://lists.clusterlabs.org/pipermail/users/2019-July/026111.html
+        #((2, 4, 5),
+        #    ),
+        # https://lists.clusterlabs.org/pipermail/users/2018-December/015989.html
+        ((3, ),
+            '+kronosnet'),
+        # https://lists.clusterlabs.org/pipermail/users/2019-January/016083.html
+        #((3, 0, 1),
+        #    ),
+        # https://lists.clusterlabs.org/pipermail/users/2019-June/025887.html
+        #((3, 0, 2),
+        #    ),
     ),
     'pacemaker': (
         # see also http://wiki.clusterlabs.org/wiki/ReleaseCalendar
@@ -438,10 +523,19 @@ versions_extra = {
             '+bundle,+schema-2.9'),
         ((1, 1, 18),
             '+schema-2.10'),
-        # tentative
+        # https://lists.clusterlabs.org/pipermail/users/2019-March/025462.html
+        #((1, 1, 20),
+        #    ),
+        # https://lists.clusterlabs.org/pipermail/users/2018-July/015333.html
         # corosync is now required unconditionally
-        #((2, 0, 0),
-        #    '+corosync,+schema-3.0'),
+        ((2, 0, 0),
+            '+corosync,+schema-3.1'),
+        # https://lists.clusterlabs.org/pipermail/users/2019-March/025462.html
+        ((2, 0, 1),
+            '+schema-3.2'),
+        # https://lists.clusterlabs.org/pipermail/users/2019-June/025864.html
+        #((2, 0, 2),
+        #    ),
     ),
     'pcs': (
         ((0, 9, 123),
@@ -484,6 +578,27 @@ versions_extra = {
             '+qdevice-heuristics'),
         #((0, 9, 163),
         #    ),
+        # https://lists.clusterlabs.org/pipermail/users/2018-April/014813.html
+        #((0, 9, 164),
+        #    ),
+        # https://lists.clusterlabs.org/pipermail/users/2018-June/015239.html
+        #((0, 9, 165),
+        #    ),
+        # https://lists.clusterlabs.org/pipermail/users/2018-October/015794.html
+        #((0, 9, 166),
+        #    ),
+        # https://lists.clusterlabs.org/pipermail/users/2019-March/025540.html
+        #((0, 9, 167),
+        #    ),
+        # https://lists.clusterlabs.org/pipermail/users/2019-August/026205.html
+        #((0, 9, 168),
+        #    ),
+        # https://lists.clusterlabs.org/pipermail/users/2018-November/015956.html
+        #((0, 10, 1),
+        #    ),
+        # https://lists.clusterlabs.org/pipermail/users/2019-June/025891.html
+        #((0, 10, 2),
+        #    ),
     ),
     'resource-agents': (
         # http://lists.linux-ha.org/pipermail/linux-ha/2011-June/043321.html
@@ -519,6 +634,12 @@ versions_extra = {
         #    ),
         # https://oss.clusterlabs.org/pipermail/users/2018-March/014578.html
         #((4, 1, 1),
+        #    ),
+        # https://lists.clusterlabs.org/pipermail/users/2018-October/015861.html
+        #((4, 2, 0),
+        #    ),
+        # https://lists.clusterlabs.org/pipermail/users/2019-June/025912.html
+        #((4, 3, 0),
         #    ),
     ),
 }
