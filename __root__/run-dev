@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-# Copyright 2017 Red Hat, Inc.
+# Copyright 2019 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -75,6 +75,12 @@ sys.path.pop(0)
 # set the correct __package__ for relative imports
 __package__ = maybe_root_real  # XXX optionally strip whole '-..' part
 assert __package__ in sys.modules
+# since Py3.6, ImportWarning when __package__ does not equal __spec__.parent,
+# which itself is not modifiable, hence just drop all that new complexity off
+try:
+    del __spec__
+except NameError:
+    pass
 
 if __name__ == '__main__':
     if basename(real_script_path) == basename(sys.argv[0]):  # __file__ undef?
