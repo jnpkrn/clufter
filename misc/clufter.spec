@@ -702,9 +702,10 @@ EOF)
 %global cl_jp_r Jan Pokorný <jpokorny+rpm-clufter @at@ fedoraproject .dot. org>
 %global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
-%{cl_entry 2018-03-15 0.77.2-0.1.a %{cl_jp}
+%{cl_entry 2019-08-14 0.77.2-1 %{cl_jp}
   fix previously omitted unqualified python invocations
-  also take full grip on Python byte-compilation where familiarity established}
+  also take full grip on Python byte-compilation where familiarity established
+  bump upstream package}
 
 %{cl_entry 2018-03-14 0.77.1-1 %{cl_jp}
   bump upstream package}
