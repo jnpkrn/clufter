@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2017 Red Hat, Inc.
+# Copyright 2019 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Base format stuff (metaclass, classes, etc.)"""
@@ -810,6 +810,8 @@ class XML(SimpleFormat):
                 # suppress problems with missing parent in module hierarchy
                 modules.setdefault(particular_namespace, modules[__name__])
                 if mname in modules:
+                    if mfile:
+                        mfile.close()
                     mod = modules[mname]
                     if hasattr(mod, '__path__') and mod.__path__[0] != mpath:
                         # XXX robust?
