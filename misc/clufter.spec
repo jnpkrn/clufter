@@ -12,6 +12,12 @@
 %{!?clufter_license: %global clufter_license  %{!?infer:GPLv2+}%{?infer:%(
                                                 python ../setup.py --license)}}
 
+# byte compilation vol.1
+%if 0%{?fedora} >= 13 || 0%{?rhel} >= 6
+# https://fedoraproject.org/wiki/Packaging:Python_Appendix#Manual_byte_compilation
+%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
+%endif
+
 # special vars wrt. versioning
 %{!?clufter_b:       %global clufter_b        1}
 %global clufter_version_norm %(echo '%{clufter_version}' | tr '-' '_' \\
@@ -512,6 +518,29 @@ mv -t '%{buildroot}%{clufter_extplugins_shared}' \
 %endif
 %endif
 
+# byte-compilation vol.2
+# py_byte_compile macro introduced in Fedora in python3 for f13, f30 is
+# then boundary where no to use sanity options (against revamped version
+# of that macro, since it exactly abuses what shall not be done in the
+# buildroot, alas...)
+%if 0%{?fedora} >= 13 || 0%{?rhel} >= 6
+%if %{with python2}
+%if ("%{?quote:1}" != "" && "%{?quote:1}" != "1" && (0%{?fedora} && 0%{?fedora} <= 30 || 0%{?rhel} && 0%{?rhel} <= 8))
+%py_byte_compile %{quote:%{__python2} -Es} %{python2_sitelib}/%{name}
+%py_byte_compile %{quote:%{__python2} -Es} %{buildroot}%{_datarootdir}/%{name}/ext-plugins
+%else
+%py_byte_compile %{__python2} %{python2_sitelib}/%{name}
+%py_byte_compile %{__python2} %{buildroot}%{_datarootdir}/%{name}/ext-plugins
+%endif
+%endif
+%if ("%{?quote:1}" != "" && "%{?quote:1}" != "1" && (0%{?fedora} && 0%{?fedora} <= 30 || 0%{?rhel} && 0%{?rhel} <= 8))
+%py_byte_compile %{quote:%{__python3} -I} %{python3_sitelib}/%{name}
+%py_byte_compile %{quote:%{__python3} -I} %{buildroot}%{_datarootdir}/%{name}/ext-plugins
+%else
+%py_byte_compile %{__python3} %{python3_sitelib}/%{name}
+%py_byte_compile %{__python3} %{buildroot}%{_datarootdir}/%{name}/ext-plugins
+%endif
+
 %if %{with bashcomp}
 declare bashcompdir="$(pkg-config --variable=completionsdir bash-completion \
                        || echo '%{clufter_bashcompdir}')"
@@ -674,7 +703,8 @@ EOF)
 %global cl_jp   %(echo -n '%{cl_jp_r}' | sed 's| @at@ |@|;s| \.dot\. |.|g')
 %changelog
 %{cl_entry 2018-03-15 0.77.2-0.1.a %{cl_jp}
-  TBD}
+  fix previously omitted unqualified python invocations
+  also take full grip on Python byte-compilation where familiarity established}
 
 %{cl_entry 2018-03-14 0.77.1-1 %{cl_jp}
   bump upstream package}
