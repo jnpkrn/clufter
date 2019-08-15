@@ -139,6 +139,7 @@ BuildRequires:  python2-lxml
 BuildRequires:  %{clufter_python3}-devel
 BuildRequires:  %{clufter_python3}-setuptools
 %if 0%{?clufter_check}
+BuildRequires:  %{clufter_python3}-distro
 BuildRequires:  %{clufter_python3}-lxml
 %endif
 %endif
@@ -241,7 +242,10 @@ Obsoletes:      python-%{name} < %{version}-%{release}
 #implied-by#Requires: %%{clufter_ccs_flatten}
 Requires:       %{clufter_bin} = %{version}-%{release}
 #autodected# Requires:       libxml2
+# see https://fedoraproject.org/wiki/Changes/EnablingPythonGeneratorsByDefault
+%if 0%{?fedora} < 30
 Requires:       python2-lxml
+%endif
 BuildArch:      noarch
 
 %description %{pkgsimple %{clufter_pylib2}}
@@ -264,8 +268,11 @@ Provides:       %{clufter_lib} = %{version}-%{release}
 #implied-by#Requires: %%{clufter_ccs_flatten}
 Requires:       %{clufter_bin} = %{version}-%{release}
 #autodected# Requires:       libxml2
-Requires:       %{clufter_python3}-lxml
+# see https://fedoraproject.org/wiki/Changes/EnablingPythonGeneratorsByDefault
+%if 0%{?fedora} < 30
 Requires:       %{clufter_python3}-distro
+Requires:       %{clufter_python3}-lxml
+%endif
 BuildArch:      noarch
 
 %description %{pkgsimple %{clufter_pylib3}}
