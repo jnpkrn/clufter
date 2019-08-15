@@ -1,20 +1,28 @@
 language: python
 matrix:
         include:
-                - python: "2.6"
+                - dist: precise
+                  python: "2.6"  # looks bad when lxml-4.0.0 no longer on PyPI
                   env:    MAINT_EXTRA=0
                 # cf. https://github.com/travis-ci/travis-ci/issues/2219
                 - python: "2.7_with_system_site_packages"
                   env:    MAINT_EXTRA=0
                 - python: "2.7_with_system_site_packages"
                   env:    MAINT_EXTRA=1
-                - python: "3.2"  # looks bad when lxml-4.0.0 no longer on PyPI
+                - dist: trusty
+                  python: "3.2"  # looks bad when lxml-4.0.0 no longer on PyPI
                   env:    MAINT_EXTRA=0
-                - python: "3.4_with_system_site_packages"  # trusty, 3.2@precise
+                - dist: trusty
+                  python: "3.4"
                   env:    MAINT_EXTRA=0
-                - python: "3.6"
+                - dist: bionic
+                  python: "3.6_with_system_site_packages"
                   env:    MAINT_EXTRA=0
-                - python: "3.7-dev"
+                - dist: bionic
+                  python: "3.7"
+                  env:    MAINT_EXTRA=0
+                - dist: bionic
+                  python: "3.8-dev"
                   env:    MAINT_EXTRA=0
 
 before_install:
@@ -24,7 +32,7 @@ before_install:
         # speed the run up
         - test $MAINT_EXTRA -ne 0
           || python -c
-          'from sys import exit, version_info as v; exit(v[:2] in ((2, 7), (3, 4)))'
+          'from sys import exit, version_info as v; exit(v[:2] in ((2, 7), (3, 6)))'
           || sudo apt-get install -qq $(python -c
              'from sys import exit, version_info as v; exit(v[1] == 2)'
              && echo "python-lxml python-setuptools"
@@ -45,12 +53,16 @@ install:
                         echo "$_log" | grep -Fi -eCOLLECTED -eINSTALLED -eERROR;
                         return $_ret; };
                { _pip install --disable-pip-version-check -- pip
-                 && { test "$TRAVIS_PYTHON_VERSION" != 3.2
+                 && { { test "$TRAVIS_PYTHON_VERSION" != 2.6
+                        && test "$TRAVIS_PYTHON_VERSION" != 3.2
+                        && test "$TRAVIS_PYTHON_VERSION" != 3.4; }
                       || _pip install --disable-pip-version-check "lxml <= 4.0"; }
                  && _pip install --disable-pip-version-check -e .[test,coverage]
                  && _pip install --disable-pip-version-check coveralls; }
                || { _pip install --disable-pip-version-check -- pip 2>/dev/null
-                    || { { test "$TRAVIS_PYTHON_VERSION" != 3.2
+                    || { { { test "$TRAVIS_PYTHON_VERSION" != 2.6
+                             && test "$TRAVIS_PYTHON_VERSION" != 3.2
+                             && test "$TRAVIS_PYTHON_VERSION" != 3.4; }
                            || _pip install "lxml <= 4.0"; }
                          && _pip install -e .[test,coverage]
                          && _pip install coveralls; }; }
