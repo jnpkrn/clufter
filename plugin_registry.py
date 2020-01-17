@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2019 Red Hat, Inc.
+# Copyright 2020 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """Easy (at least for usage) plugin framework"""
@@ -104,7 +104,7 @@ class PluginRegistry(type):
         assert '-' not in name, "name cannot contain a dash"
         dname = cli_decor(name)
         attrs = attrs or {}
-        # seems more reasonable than plying even higher meta magic game
+        # seems more reasonable than playing even higher meta magic game
         assert  not(attrs) or '__classcell__' not in attrs, \
                 ("{0} plugin: refrain from '__class__'/'super' (Py3.8+ limit)"
                 ).format(name)
@@ -287,9 +287,10 @@ class PluginManager(object):
 
     @classmethod
     def lookup(cls, plugins, registry=None, **kwargs):
-        ret, to_discover = {}, set()
+        ret, to_discover, wildcard = {}, set(), True
         registry = cls._default_registry if registry is None else registry
         for plugin in args2sgpl(plugins):
+            wildcard = False
             # XXX we could introspect sys.modules here as well
             try:
                 ret[plugin] = registry.plugins[plugin]
@@ -300,9 +301,12 @@ class PluginManager(object):
 
         to_discover.difference_update(ret)
         native_plugins = registry.native_plugins
-        ret.update(filterdict_remove(to_discover,
-                                     _fn_=lambda x: native_plugins[x],
-                                     *native_plugins.keys()))
+        if wildcard:
+            ret.update(native_plugins)
+        else:
+            ret.update(filterdict_remove(to_discover,
+                                         _fn_=lambda x: native_plugins[x],
+                                         *native_plugins.keys()))
         to_discover = apply_intercalate(tuple(to_discover))
         if to_discover:
             log.debug("Couldn't look up everything: {0}".format(', '.join(
