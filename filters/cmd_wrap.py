@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2017 Red Hat, Inc.
+# Copyright 2020 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 """cmd-wrap filter"""
@@ -12,7 +12,11 @@ from ..utils_2to3 import bytes_enc, str_enc, xrange
 from ..utils_func import add_item
 from ..utils_prog import FancyOutput
 
-from collections import MutableMapping, defaultdict
+try:
+    from collections.abc import MutableMapping
+except ImportError:
+    from collections import MutableMapping
+from collections import defaultdict
 from logging import getLogger
 from os import getenv, isatty
 from sys import maxsize
