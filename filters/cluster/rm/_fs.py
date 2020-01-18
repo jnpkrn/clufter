@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2017 Red Hat, Inc.
+# Copyright 2020 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -7,7 +7,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 # following 2nd chance import is to allow direct usage context (testing, etc.)
 try:
     from ....utils_xslt import xslt_is_member
-except ValueError:  # Value?
+except (ImportError, ValueError):
     from ...utils_xslt import xslt_is_member
 
 ###
@@ -18,7 +18,7 @@ except ValueError:  # Value?
 
 try:
     from ....utils_cib import ResourceSpec
-except ValueError:
+except (ImportError, ValueError):
     from ...utils_cib import ResourceSpec
 
 ccsflat2cibprelude = ('''

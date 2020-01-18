@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# Copyright 2017 Red Hat, Inc.
+# Copyright 2020 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
@@ -8,7 +8,7 @@ __author__ = "Jan Pokorný <jpokorny @at@ Red Hat .dot. com>"
 try:
     from ....utils_2to3 import bytes_enc, str_enc
     from ....utils_xslt import xslt_is_member
-except ValueError:  # Value?
+except (ImportError, ValueError):
     from ...utils_2to3 import bytes_enc, str_enc
     from ...utils_xslt import xslt_is_member
 
@@ -234,7 +234,7 @@ from time import time
 try:
     from ....utils import lazystring
     from ....utils_prog import getenv_namespaced
-except ValueError:  # Value?
+except (ImportError, ValueError):
     from ...utils import lazystring
     from ...utils_prog import getenv_namespaced
 
@@ -323,7 +323,7 @@ ccs2needlexml = lazystring(lambda: ('''\
 try:
     from .... import package_name, version
     from ....utils_xslt import xslt_id_friendly
-except ValueError:
+except (ImportError, ValueError):
     from ... import package_name, version
     from ...utils_xslt import xslt_id_friendly
 ccsflat2cibprelude_self_id = ' '.join((package_name(), version))
@@ -492,7 +492,7 @@ ccsflat2cibprelude = ('''\
 # following 2nd chance import is to allow direct usage context (testing, etc.)
 try:
     from ....utils_xslt import xslt_is_member
-except ValueError:  # Value?
+except (ImportError, ValueError):
     from ...utils_xslt import xslt_is_member
 
 ccs_revitalize_fa_domain = tuple(
@@ -673,7 +673,7 @@ ccs_obfuscate_identifiers = '''\
 # following 2nd chance import is to allow direct usage context (testing, etc.)
 try:
     from ....filters._2pcscmd import coro2pcscmd
-except ValueError:  # Value?
+except (ImportError, ValueError):
     from ...filters._2pcscmd import coro2pcscmd
 
 ccspcmk2pcscmd = coro2pcscmd(cman='', node='clusternode', totem='')
