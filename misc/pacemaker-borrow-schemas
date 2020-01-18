@@ -1,5 +1,5 @@
 #!/bin/sh
-# Copyright 2017 Red Hat, Inc.
+# Copyright 2020 Red Hat, Inc.
 # Part of clufter project
 # Licensed under GPLv2+ (a copy included | http://gnu.org/licenses/gpl-2.0.txt)
 
@@ -56,7 +56,8 @@ consolidate() {
 
 which jing >/dev/null 2>&1 || die "jing (from jing-trang project) required"
 
-: "${INPUTDIR=$(pkg-config --variable schemadir pacemaker)}"
+: "${INPUTDIR=$(pkg-config --variable schemadir pacemaker-schemas 2>/dev/null \
+     || pkg-config --variable schemadir pacemaker-cib)}"
 test -n "${INPUTDIR}" || die "Input dir with pacemaker schemas not known"
 
 : "${OUTPUTDIR=schemas-consolidated}"

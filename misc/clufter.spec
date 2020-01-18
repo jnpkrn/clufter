@@ -152,10 +152,20 @@ BuildRequires:  bash which
 BuildRequires:  pkgconfig(libxml-2.0)
 
 %if %{with generated_schemas}
-# needed for schemadir path pointer
-BuildRequires:  pkgconfig(pacemaker)
-# needed for schemas themselves
+
+# schemadir path pointer (former since pacemaker 2.0.3)
+%if 0%{?fedora} >= 32
+BuildRequires:  pkgconfig(pacemaker-schemas)
+%else
+BuildRequires:  pkgconfig(pacemaker-cib)
+%endif
+# nschemas themselves (former since pacemaker 2.0.1)
+%if 0%{?fedora} >= 30
+BuildRequires:  pacemaker-schemas
+%else
 BuildRequires:  pacemaker
+%endif
+
 # needed to squash multi-file schemas to single file
 BuildRequires:  jing
 # needed for xsltproc and xmllint respectively
