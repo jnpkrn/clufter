@@ -24,6 +24,8 @@ matrix:
                 - dist: bionic
                   python: "3.8-dev"
                   env:    MAINT_EXTRA=0
+                - python: "3.9-dev"
+                  env:    MAINT_EXTRA=0
 
 before_install:
         # http://docs.travis-ci.com/user/installing-dependencies/#Installing-Ubuntu-packages
